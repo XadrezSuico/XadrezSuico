@@ -23,7 +23,7 @@ class CreateGrupoEventoTable extends Migration
         Schema::create($this->tableName, function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->increments('id');
-            $table->string('name', 45);
+            $table->string('name', 60);
             $table->timestamps();
         });
     }

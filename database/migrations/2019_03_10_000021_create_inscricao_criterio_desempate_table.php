@@ -25,9 +25,9 @@ class CreateInscricaoCriterioDesempateTable extends Migration
             $table->increments('id');
             $table->decimal('valor', 3, 2);
             $table->unsignedInteger('inscricao_id');
-            $table->unsignedInteger('criterio_desempate_idcriterio_desempate');
+            $table->unsignedInteger('criterio_desempate_id');
 
-            $table->index(["criterio_desempate_idcriterio_desempate"], 'fk_inscricao_criterio_desempate_criterio_desempate1_idx');
+            $table->index(["criterio_desempate_id"], 'fk_inscricao_criterio_desempate_criterio_desempate1_idx');
 
             $table->index(["inscricao_id"], 'fk_inscricao_criterio_desempate_inscricao1_idx');
             $table->timestamps();
@@ -38,8 +38,8 @@ class CreateInscricaoCriterioDesempateTable extends Migration
                 ->onDelete('no action')
                 ->onUpdate('no action');
 
-            $table->foreign('criterio_desempate_idcriterio_desempate', 'fk_inscricao_criterio_desempate_criterio_desempate1_idx')
-                ->references('idcriterio_desempate')->on('criterio_desempate')
+            $table->foreign('criterio_desempate_id', 'fk_inscricao_criterio_desempate_criterio_desempate1_idx')
+                ->references('id')->on('criterio_desempate')
                 ->onDelete('no action')
                 ->onUpdate('no action');
         });

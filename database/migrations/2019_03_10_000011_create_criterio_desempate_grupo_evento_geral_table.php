@@ -24,17 +24,17 @@ class CreateCriterioDesempateGrupoEventoGeralTable extends Migration
             $table->engine = 'InnoDB';
             $table->increments('id');
             $table->integer('prioridade');
-            $table->unsignedInteger('criterio_desempate_idcriterio_desempate');
+            $table->unsignedInteger('criterio_desempate_id');
             $table->unsignedInteger('grupo_evento_id');
 
-            $table->index(["criterio_desempate_idcriterio_desempate"], 'fk_criterio_desempate_grupo_evento_geral_criterio_desempate_idx');
+            $table->index(["criterio_desempate_id"], 'fk_criterio_desempate_grupo_evento_geral_criterio_desempate_idx');
 
             $table->index(["grupo_evento_id"], 'fk_criterio_desempate_grupo_evento_geral_grupo_evento1_idx');
             $table->timestamps();
 
 
-            $table->foreign('criterio_desempate_idcriterio_desempate', 'fk_criterio_desempate_grupo_evento_geral_criterio_desempate_idx')
-                ->references('idcriterio_desempate')->on('criterio_desempate')
+            $table->foreign('criterio_desempate_id', 'fk_criterio_desempate_grupo_evento_geral_criterio_desempate_idx')
+                ->references('id')->on('criterio_desempate')
                 ->onDelete('no action')
                 ->onUpdate('no action');
 
