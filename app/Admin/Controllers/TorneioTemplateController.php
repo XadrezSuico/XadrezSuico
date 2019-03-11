@@ -23,8 +23,8 @@ class TorneioTemplateController extends Controller
     public function index(Content $content)
     {
         return $content
-            ->header('Index')
-            ->description('description')
+            ->header('Listar Template de Torneio')
+            ->description('')
             ->body($this->grid());
     }
 
@@ -38,8 +38,8 @@ class TorneioTemplateController extends Controller
     public function show($id, Content $content)
     {
         return $content
-            ->header('Detail')
-            ->description('description')
+            ->header('Mostrar Template de Torneio')
+            ->description('')
             ->body($this->detail($id));
     }
 
@@ -53,8 +53,8 @@ class TorneioTemplateController extends Controller
     public function edit($id, Content $content)
     {
         return $content
-            ->header('Edit')
-            ->description('description')
+            ->header('Editar Template de Torneio')
+            ->description('')
             ->body($this->form()->edit($id));
     }
 
@@ -67,8 +67,8 @@ class TorneioTemplateController extends Controller
     public function create(Content $content)
     {
         return $content
-            ->header('Create')
-            ->description('description')
+            ->header('Criar Template de Torneio')
+            ->description('')
             ->body($this->form());
     }
 
@@ -80,9 +80,8 @@ class TorneioTemplateController extends Controller
     protected function grid()
     {
         $grid = new Grid(new TorneioTemplate);
-
-
-
+        $grid->id('#');
+        $grid->name('Nome do Template de Torneio');
         return $grid;
     }
 
@@ -109,9 +108,7 @@ class TorneioTemplateController extends Controller
     protected function form()
     {
         $form = new Form(new TorneioTemplate);
-
-
-
+        $form->text('name', 'Nome do Template de Torneio');
         return $form;
     }
 }

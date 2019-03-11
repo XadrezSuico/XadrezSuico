@@ -24,10 +24,11 @@ class CreatePontuacaoTable extends Migration
             $table->engine = 'InnoDB';
             $table->increments('id');
             $table->integer('posicao');
-            $table->decimal('pontuacao', 3, 2);
+            $table->integer('pontuacao');
             $table->unsignedInteger('torneio_id')->nullable();
             $table->unsignedInteger('evento_id')->nullable();
             $table->unsignedInteger('grupo_evento_id')->nullable();
+            $table->timestamps();
 
             $table->index(["grupo_evento_id"], 'fk_pontuacao_grupo_evento1_idx');
 

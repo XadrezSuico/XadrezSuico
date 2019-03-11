@@ -25,6 +25,7 @@ class CreateTorneioTemplateGrupoEventoTable extends Migration
             $table->increments('id');
             $table->unsignedInteger('grupo_evento_id');
             $table->unsignedInteger('torneio_template_id');
+            $table->timestamps();
 
             $table->index(["torneio_template_id"], 'fk_torneio_template_grupo_evento_torneio_template1_idx');
 

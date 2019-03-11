@@ -3,6 +3,8 @@
 namespace App\Admin\Controllers;
 
 use App\CategoriaTorneioTemplate;
+use App\TorneioTemplate;
+use App\Categoria;
 use App\Http\Controllers\Controller;
 use Encore\Admin\Controllers\HasResourceActions;
 use Encore\Admin\Form;
@@ -23,7 +25,7 @@ class CategoriaTorneioTemplateController extends Controller
     public function index(Content $content)
     {
         return $content
-            ->header('Index')
+            ->header('Listar Categorias do Template de Torneio')
             ->description('description')
             ->body($this->grid());
     }
@@ -38,7 +40,7 @@ class CategoriaTorneioTemplateController extends Controller
     public function show($id, Content $content)
     {
         return $content
-            ->header('Detail')
+            ->header('Mostrar Categoria do Template de Torneio')
             ->description('description')
             ->body($this->detail($id));
     }
@@ -53,7 +55,7 @@ class CategoriaTorneioTemplateController extends Controller
     public function edit($id, Content $content)
     {
         return $content
-            ->header('Edit')
+            ->header('Editar Categoria do Template de Torneio')
             ->description('description')
             ->body($this->form()->edit($id));
     }
@@ -67,8 +69,8 @@ class CategoriaTorneioTemplateController extends Controller
     public function create(Content $content)
     {
         return $content
-            ->header('Create')
-            ->description('description')
+            ->header('Relacionar Categoria ao Template de Torneio')
+            ->description('')
             ->body($this->form());
     }
 
@@ -80,7 +82,13 @@ class CategoriaTorneioTemplateController extends Controller
     protected function grid()
     {
         $grid = new Grid(new CategoriaTorneioTemplate);
-
+        $grid->id('#');
+        $grid->torneio_template_id('Template de Torneio')->display(function($torneio_template_id) {
+            return TorneioTemplate::find($torneio_template_id)->name;
+        });
+        $grid->categoria_id('Categoria')->display(function($categoria_id) {
+            return Categoria::find($categoria_id)->name;
+        });
 
 
         return $grid;
@@ -109,9 +117,8 @@ class CategoriaTorneioTemplateController extends Controller
     protected function form()
     {
         $form = new Form(new CategoriaTorneioTemplate);
-
-
-
+        $form->select('torneio_template_id', 'Template de Torneio')->options(TorneioTemplate::all()->pluck('name', 'id'));
+        $form->select('categoria_id', 'Categoria')->options(Categoria::all()->pluck('name', 'id'));
         return $form;
     }
 }

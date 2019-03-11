@@ -15,7 +15,10 @@ Route::group([
     $router->resource('config/cidade', CidadeController::class);
     $router->resource('config/clube', ClubeController::class);
     $router->resource('config/tipotorneio', TipoTorneioController::class);
+    $router->resource('config/torneio/template', TorneioTemplateController::class);
+    $router->resource('config/torneio/categoria', CategoriaTorneioTemplateController::class);
     $router->resource('config/criteriodesempate', CriterioDesempateController::class);
+    $router->resource('pontuacao', PontuacaoController::class);
     $router->resource('evento/grupo', GrupoEventoController::class);
     $router->resource('evento/categoria', CategoriaEventoController::class);
     $router->resource('evento/torneio/categoria', CategoriaTorneioController::class);

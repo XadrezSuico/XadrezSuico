@@ -25,6 +25,7 @@ class CreateCategoriaTorneioTemplateTable extends Migration
             $table->increments('id');
             $table->unsignedInteger('torneio_template_id');
             $table->unsignedInteger('categoria_id');
+            $table->timestamps();
 
             $table->index(["torneio_template_id"], 'fk_categoria_torneio_template_torneio_template1_idx');
 
