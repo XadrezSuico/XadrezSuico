@@ -24,4 +24,6 @@ Route::get('/inscricao/{id}/busca/categoria', 'InscricaoController@buscaCategori
 Route::get('/inscricao/{id}/busca/cidade', 'InscricaoController@buscaCidade')->name('inscricao.busca.cidade');
 Route::get('/inscricao/{id}/busca/clube', 'InscricaoController@buscaClube')->name('inscricao.busca.clube');
 Route::post('/inscricao/{id}/enxadrista/novo', 'InscricaoController@adicionarNovoEnxadrista')->name('inscricao.enxadrista.novo');
+Route::post('/inscricao/{id}/cidade/nova', 'InscricaoController@adicionarNovaCidade')->name('inscricao.cidade.nova');
+Route::post('/inscricao/{id}/clube/novo', 'InscricaoController@adicionarNovoClube')->name('inscricao.clube.novo');
 Route::post('/inscricao/{id}/inscricao', 'InscricaoController@adicionarNovaInscricao')->name('inscricao.enviar');

@@ -144,6 +144,61 @@ class InscricaoController extends Controller
         }
     }
 
+    
+    public function adicionarNovaCidade(Request $request){
+        if(
+            !$request->has("name")
+        ){
+            return response()->json(["ok"=>0,"error"=>1,"message" => "O campo obrigatório não está preenchido. Por favor, verifique e envie novamente!","registred"=>0]);
+        }elseif(
+            $request->input("name") == NULL || $request->input("name") == ""
+        ){
+            return response()->json(["ok"=>0,"error"=>1,"message" => "O campo obrigatório não está preenchido. Por favor, verifique e envie novamente!","registred"=>0]);
+        }
+        $cidade = new Cidade;
+
+        $temCidade = Cidade::where([["name","=",mb_strtoupper($request->input("name"))]])->first();
+        if(count($temCidade) > 0){
+            return response()->json(["ok"=>0,"error"=>1,"message" => "Esta cidade já está cadastrada! Selecionamos ela para você.","registred"=>1,"cidade"=>["id"=>$temCidade->id,"name"=>$temCidade->name]]);
+        }
+
+        $cidade->name = mb_strtoupper($request->input("name"));
+        $cidade->save();
+        if($cidade->id > 0){
+            return response()->json(["ok"=>1,"error"=>0,"cidade"=>["id"=>$cidade->id,"name"=>$cidade->name]]);
+        }else{
+            return response()->json(["ok"=>0,"error"=>1,"message" => "Um erro inesperado aconteceu. Por favor, tente novamente mais tarde.","registred"=>0]);
+        }
+    }
+    
+    public function adicionarNovoClube(Request $request){
+        if(
+            !$request->has("name") || !$request->has("cidade_id")
+        ){
+            return response()->json(["ok"=>0,"error"=>1,"message" => "Os campos obrigatórios não estão preenchidos. Por favor, verifique e envie novamente!","registred"=>0]);
+        }elseif(
+            $request->input("name") == NULL || $request->input("name") == "" ||
+            $request->input("cidade_id") == NULL || $request->input("cidade_id") == ""
+        ){
+            return response()->json(["ok"=>0,"error"=>1,"message" => "Os campos obrigatórios não estão preenchidos. Por favor, verifique e envie novamente!","registred"=>0]);
+        }
+        $clube = new Clube;
+
+        $temClube = Clube::where([["name","=",mb_strtoupper($request->input("name"))],["cidade_id","=",$request->input("cidade_id")]])->first();
+        if(count($temClube) > 0){
+            return response()->json(["ok"=>0,"error"=>1,"message" => "Este clube já está cadastrado! Selecionamos ele para você.","registred"=>1,"clube"=>["id"=>$temClube->id,"name"=>$temClube->name]]);
+        }
+
+        $clube->name = mb_strtoupper($request->input("name"));
+        $clube->cidade_id = mb_strtoupper($request->input("cidade_id"));
+        $clube->save();
+        if($clube->id > 0){
+            return response()->json(["ok"=>1,"error"=>0,"clube"=>["id"=>$clube->id,"name"=>$clube->name]]);
+        }else{
+            return response()->json(["ok"=>0,"error"=>1,"message" => "Um erro inesperado aconteceu. Por favor, tente novamente mais tarde.","registred"=>0]);
+        }
+    }
+
 
 
     public function buscaEnxadrista(Request $request){

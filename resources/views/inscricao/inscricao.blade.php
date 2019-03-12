@@ -17,41 +17,56 @@
 @endsection
 
 @section("content")
-<div class="modal fade modal-danger" id="alerts" tabindex="-1" role="dialog" aria-labelledby="alerts">
-  <div class="modal-dialog" role="document">
-		<div class="modal-content">
-			<div class="modal-header">
-			<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-			<h4 class="modal-title">ERRO!</h4>
-			</div>
-			<div class="modal-body">
-			<span id="alertsMessage"></span>
-			</div>
-			<div class="modal-footer">
-			<button type="button" class="btn btn-success" data-dismiss="modal">OK</button>
-			</div>
-		</div>
-  </div>
+
+<div class="modal fade modal-warning" id="novaCidade" tabindex="-1" role="dialog" aria-labelledby="alerts">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">Cadastrar Nova Cidade</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="name">Nome *</label>
+                    <input type="text" name="name" class="form-control" id="cidade_nome" placeholder="Insira o Nome Completo da Cidade" required="required">
+                </div>
+            </div>
+            <div class="modal-footer">
+            <button type="button" class="btn btn-warning" data-dismiss="modal">Não Quero Mais</button>
+            <button type="button" id="cadastrarCidade" class="btn btn-success">Cadastrar</button>
+            </div>
+        </div>
+    </div>
 </div>
-<div class="modal fade modal-success" id="success" tabindex="-1" role="dialog" aria-labelledby="alerts">
-  <div class="modal-dialog" role="document">
-		<div class="modal-content">
-			<div class="modal-header">
-			<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-			<h4 class="modal-title">SUCESSO!</h4>
-			</div>
-			<div class="modal-body">
-			<span id="successMessage"></span>
-			</div>
-			<div class="modal-footer">
-			<button type="button" class="btn btn-success" data-dismiss="modal">OK</button>
-			</div>
-		</div>
-  </div>
+<div class="modal fade modal-warning" id="novoClube" tabindex="-1" role="dialog" aria-labelledby="alerts">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">Cadastrar Novo Clube</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="name">Nome *</label>
+                    <input type="text" name="name" class="form-control" id="clube_nome" placeholder="Insira o Nome Completo do Clube" required="required">
+                </div>
+                <div class="form-group">
+                    <label for="clube_cidade_id">Cidade *</label>
+                    <select id="clube_cidade_id" class="form-control">
+                        <option value="">--- Selecione uma cidade ---</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+            <button type="button" class="btn btn-warning" data-dismiss="modal">Não Quero Mais</button>
+            <button type="button" id="cadastrarClube" class="btn btn-success">Cadastrar</button>
+            </div>
+        </div>
+    </div>
 </div>
 <!-- Main row -->
 <ul class="nav nav-pills">
-  <li role="presentation"><a href="/senha">Listar Todas</a></li>
+  <li role="presentation"><a href="/inscricao/{{$evento->id}}">Nova Inscrição</a></li>
 </ul>
 <div class="row">
   <!-- Left col -->
@@ -68,8 +83,8 @@
 			Se você já jogou alguma etapa dos Circuitos Regionais de Xadrez de 2017 e 2018, você já possui cadastro.
 		</div>
 		<div class="box-footer">
-			<button id="tenhoCadastro" class="btn btn-success">Tenho Cadastro</button>
-			<button id="naoTenhoCadastro" class="btn btn-warning">Não Tenho Cadastro</button>
+			<button id="tenhoCadastro" class="btn btn-success btn-lg">Tenho Cadastro</button>
+			<button id="naoTenhoCadastro" class="btn btn-warning btn-lg">Não Tenho Cadastro</button>
 		</div>
 	</div>
 	<div class="box box-primary collapsed-box" id="naoPossuiCadastro">
@@ -79,24 +94,26 @@
 	  <!-- form start -->
 			<div class="box-body">
 				<div class="form-group">
-					<label for="name">Nome Completo</label>
+					<label for="name">Nome Completo *</label>
 					<input type="text" name="name" class="form-control" id="name" placeholder="Insira o Nome Completo do(a) Enxadrista" required="required">
 				</div>
 				<div class="form-group">
-					<label for="born">Data de Nascimento</label>
+					<label for="born">Data de Nascimento *</label>
 					<input type="text" name="born" class="form-control" id="born" placeholder="Insira a Data de Nascimento do(a) Enxadrista" required="required">
 				</div>
 				<div class="form-group">
-					<label for="enxadrista_cidade_id">Cidade</label>
-					<select id="enxadrista_cidade_id" class="form-control">
+					<label for="enxadrista_cidade_id">Cidade *</label>
+					<select id="enxadrista_cidade_id" class="cidade_id form-control">
 						<option value="">--- Selecione uma cidade ---</option>
-					</select>
+					</select><br/>
+                    <button id="cidadeNaoCadastradaEnxadrista" class="btn btn-success">A minha cidade não está cadastrada</button>
 				</div>
 				<div class="form-group">
 					<label for="enxadrista_clube_id">Clube</label>
-					<select id="enxadrista_clube_id" class="form-control">
+					<select id="enxadrista_clube_id" class="clube_id form-control">
 						<option value="">--- Você pode escolher um clube ---</option>
-					</select>
+					</select><br/>
+                    <button id="clubeNaoCadastradoEnxadrista" class="btn btn-success">O meu clube não está cadastrado</button>
 				</div>
 			</div>
 			<!-- /.box-body -->
@@ -114,26 +131,26 @@
 	  <!-- form start -->
 			<div class="box-body">
 				<div class="form-group">
-					<label for="enxadrista_id">Enxadrista</label>
+					<label for="enxadrista_id">Enxadrista *</label>
 					<select id="enxadrista_id" class="form-control">
 						<option value="">--- Selecione um enxadrista ---</option>
 					</select>
 				</div>
 				<div class="form-group">
-					<label for="categoria_id">Categoria</label>
+					<label for="categoria_id">Categoria *</label>
 					<select id="categoria_id" class="form-control">
 						<option value="">--- Selecione primeiramente um Enxadrista ---</option>
 					</select>
 				</div>
 				<div class="form-group">
-					<label for="cidade_id">Cidade</label>
-					<select id="cidade_id" class="form-control">
+					<label for="cidade_id">Cidade *</label>
+					<select id="cidade_id" class="cidade_id form-control">
 						<option value="">--- Selecione uma cidade ---</option>
 					</select>
 				</div>
 				<div class="form-group">
-					<label for="clube_id">Clube</label>
-					<select id="clube_id" class="form-control">
+					<label for="clube_id">Clube *</label>
+					<select id="clube_id" class="clube_id form-control">
 						<option value="">--- Você pode escolher um clube ---</option>
 					</select>
 				</div>
@@ -231,6 +248,55 @@
 					});
 			});
 		}
+
+        function sendNovaCidade(select_id,data){
+            $.ajax({
+                type: "post",
+                url: "{{url("/inscricao/".$evento->id."/cidade/nova")}}",
+                data: data,
+                dataType: "json",
+                success: function(data){
+                    if(data.ok == 1){
+                        $("#novaCidade").modal("hide");
+                        setTimeout(function(){
+                            var newOptionCidade = new Option(data.cidade.name, data.cidade.id, false, false);
+                            $('#'.concat(select_id)).append(newOptionCidade).trigger('change');
+                            $("#".concat(select_id)).val(data.cidade.id).change();
+
+                            $("#successMessage").html("A Cidade foi cadastrada com sucesso!");
+                            $("#success").modal("show");
+                        },600);
+                    }else{
+                        $("#alertsMessage").html(data.message);
+                        $("#alerts").modal();
+                    }
+                }
+            });
+        }
+        function sendNovoClube(select_id,data){
+            $.ajax({
+                type: "post",
+                url: "{{url("/inscricao/".$evento->id."/clube/novo")}}",
+                data: data,
+                dataType: "json",
+                success: function(data){
+                    if(data.ok == 1){
+                        $("#novoClube").modal("hide");
+                        setTimeout(function(){
+                            var newOptionClube = new Option(data.clube.name, data.clube.id, false, false);
+                            $('#'.concat(select_id)).append(newOptionClube).trigger('change');
+                            $("#".concat(select_id)).val(data.clube.id).change();
+
+                            $("#successMessage").html("O Clube foi cadastrado com sucesso!");
+                            $("#success").modal("show");
+                        },600);
+                    }else{
+                        $("#alertsMessage").html(data.message);
+                        $("#alerts").modal();
+                    }
+                }
+            });
+        }
 		$("#tenhoCadastro").on("click",function(){
 			$("#vocePossuiCadastro").boxWidget('collapse');
 			$("#inscricao").boxWidget('expand');
@@ -320,6 +386,38 @@
 				});
 			});
 		});
+
+
+        $("#cidadeNaoCadastradaEnxadrista").on("click",function(){
+            $("#cidade_nome").val("");
+            $("#novaCidade").modal("show");
+
+            $("#cadastrarCidade").on("click",function(){
+                sendNovaCidade("enxadrista_cidade_id","name=".concat($("#cidade_nome").val()));
+            });
+        });
+        $("#clubeNaoCadastradoEnxadrista").on("click",function(){
+            $("#clube_nome").val("");
+            $("#clube_cidade_id").val("");
+            $("#novoClube").modal("show");
+            setTimeout(function(){
+                $("#clube_cidade_id").select2({
+                    ajax: {
+                        url: '{{url("/inscricao/".$evento->id."/busca/cidade")}}',
+                        delay: 250,
+                        processResults: function (data) {
+                            return {
+                                results: data.results
+                            };
+                        }
+                    }
+                });
+            },300);
+
+            $("#cadastrarClube").on("click",function(){
+                sendNovoClube("enxadrista_clube_id","name=".concat($("#clube_nome").val()).concat("&cidade_id=").concat($("#clube_cidade_id").val()));
+            });
+        });
   });
 </script>
 @endsection
