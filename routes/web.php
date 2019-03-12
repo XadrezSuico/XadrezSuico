@@ -19,3 +19,9 @@ Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
 Route::get('/inscricao/{id}', 'InscricaoController@inscricao')->name('inscricao.inscricao');
+Route::get('/inscricao/{id}/busca/enxadrista', 'InscricaoController@buscaEnxadrista')->name('inscricao.busca.enxadrista');
+Route::get('/inscricao/{id}/busca/categoria', 'InscricaoController@buscaCategoria')->name('inscricao.busca.categoria');
+Route::get('/inscricao/{id}/busca/cidade', 'InscricaoController@buscaCidade')->name('inscricao.busca.cidade');
+Route::get('/inscricao/{id}/busca/clube', 'InscricaoController@buscaClube')->name('inscricao.busca.clube');
+Route::post('/inscricao/{id}/enxadrista/novo', 'InscricaoController@adicionarNovoEnxadrista')->name('inscricao.enxadrista.novo');
+Route::post('/inscricao/{id}/inscricao', 'InscricaoController@adicionarNovaInscricao')->name('inscricao.enviar');

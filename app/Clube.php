@@ -11,6 +11,6 @@ class Clube extends Model
     protected $table = 'clube';
 
     public function cidade() {
-        return $this->belongsTo("App/Cidade","cidade_id","id");
+        return $this->belongsTo("App\Cidade","cidade_id","id");
     }
 }

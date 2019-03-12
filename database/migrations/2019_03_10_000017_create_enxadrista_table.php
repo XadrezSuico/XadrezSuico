@@ -27,11 +27,8 @@ class CreateEnxadristaTable extends Migration
             $table->string('name', 200);
             $table->date('born');
             $table->unsignedInteger('cidade_id');
-            $table->unsignedInteger('clube_id');
+            $table->unsignedInteger('clube_id')->nullable();
 
-            $table->index(["clube_id"], 'fk_enxadrista_clube1_idx');
-
-            $table->index(["cidade_id"], 'fk_enxadrista_cidade1_idx');
             $table->timestamps();
 
 
