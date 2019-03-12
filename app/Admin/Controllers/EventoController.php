@@ -125,6 +125,7 @@ class EventoController extends Controller
         $form->date('data_inicio', 'Data de Início');
         $form->date('data_fim', 'Data de Fim');
         $form->text('local', 'Local do Evento');
+        $form->text('link', 'Link do Evento');
         $form->select('cidade_id', 'Cidade')->options(Cidade::all()->pluck('name', 'id'));
         $form->select('grupo_evento_id', 'Grupo de Evento')->options(GrupoEvento::all()->pluck('name', 'id'));
 

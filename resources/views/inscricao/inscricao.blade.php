@@ -72,6 +72,24 @@
   <!-- Left col -->
   <section class="col-lg-12 connectedSortable">
 	<!-- general form elements -->
+	<div class="box box-primary">
+		<div class="box-header">
+			<h3 class="box-title">Evento: {{$evento->name}}</h3>
+			<div class="pull-right box-tools">
+			</div>
+		</div>
+
+		<div class="box-body">
+			<strong>Categorias:</strong><br/>
+			@foreach($evento->categorias->all() as $categoria)
+				{{$categoria->categoria->name}}, 
+			@endforeach<br/>
+			<strong>Cidade:</strong> {{$evento->cidade->name}}<br/>
+			<strong>Local:</strong> {{$evento->local}}<br/>
+			<strong>Data:</strong> {{$evento->getDataInicio()}}<br/>
+			<strong>Maiores informações em:</strong> <a href="{{$evento->link}}" target="_blank">{{$evento->link}}</a><br/>
+		</div>
+	</div>
 	<div class="box box-primary" id="vocePossuiCadastro">
 		<div class="box-header">
 			<h3 class="box-title">Você já possui cadastro?</h3>
@@ -147,12 +165,14 @@
 					<select id="cidade_id" class="cidade_id form-control">
 						<option value="">--- Selecione uma cidade ---</option>
 					</select>
+                    <button id="cidadeNaoCadastradaInscricao" class="btn btn-success">A minha cidade não está cadastrada</button>
 				</div>
 				<div class="form-group">
 					<label for="clube_id">Clube *</label>
 					<select id="clube_id" class="clube_id form-control">
 						<option value="">--- Você pode escolher um clube ---</option>
 					</select>
+                    <button id="clubeNaoCadastradoInscricao" class="btn btn-success">O meu clube não está cadastrado</button>
 				</div>
 			</div>
 			<!-- /.box-body -->
@@ -267,6 +287,13 @@
                             $("#success").modal("show");
                         },600);
                     }else{
+                        if(data.registred == 1){
+                            $("#novaCidade").modal("hide");
+
+                            var newOptionCidade = new Option(data.cidade.name, data.cidade.id, false, false);
+                            $('#'.concat(select_id)).append(newOptionCidade).trigger('change');
+                            $("#".concat(select_id)).val(data.cidade.id).change();
+                        }
                         $("#alertsMessage").html(data.message);
                         $("#alerts").modal();
                     }
@@ -291,6 +318,13 @@
                             $("#success").modal("show");
                         },600);
                     }else{
+                        if(data.registred == 1){
+                            $("#novoClube").modal("hide");
+                            
+                            var newOptionclube = new Option(data.clube.name, data.clube.id, false, false);
+                            $('#'.concat(select_id)).append(newOptionclube).trigger('change');
+                            $("#".concat(select_id)).val(data.clube.id).change();
+                        }
                         $("#alertsMessage").html(data.message);
                         $("#alerts").modal();
                     }
@@ -416,6 +450,39 @@
 
             $("#cadastrarClube").on("click",function(){
                 sendNovoClube("enxadrista_clube_id","name=".concat($("#clube_nome").val()).concat("&cidade_id=").concat($("#clube_cidade_id").val()));
+            });
+        });
+
+
+
+        $("#cidadeNaoCadastradaInscricao").on("click",function(){
+            $("#cidade_nome").val("");
+            $("#novaCidade").modal("show");
+
+            $("#cadastrarCidade").on("click",function(){
+                sendNovaCidade("cidade_id","name=".concat($("#cidade_nome").val()));
+            });
+        });
+        $("#clubeNaoCadastradoInscricao").on("click",function(){
+            $("#clube_nome").val("");
+            $("#clube_cidade_id").val("");
+            $("#novoClube").modal("show");
+            setTimeout(function(){
+                $("#clube_cidade_id").select2({
+                    ajax: {
+                        url: '{{url("/inscricao/".$evento->id."/busca/cidade")}}',
+                        delay: 250,
+                        processResults: function (data) {
+                            return {
+                                results: data.results
+                            };
+                        }
+                    }
+                });
+            },300);
+
+            $("#cadastrarClube").on("click",function(){
+                sendNovoClube("clube_id","name=".concat($("#clube_nome").val()).concat("&cidade_id=").concat($("#clube_cidade_id").val()));
             });
         });
   });
