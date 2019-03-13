@@ -204,7 +204,7 @@ class InscricaoController extends Controller
     public function buscaEnxadrista(Request $request){
         $enxadristas = Enxadrista::where([
             ["name","like","%".$request->input("q")."%"],
-        ])->get();
+        ])->orderBy("name","ASC")->get();
         $results = array();
         foreach($enxadristas as $enxadrista){
             $results[] = array("id" => $enxadrista->id, "text" => $enxadrista->name." | ".$enxadrista->getBorn());

@@ -1,0 +1,317 @@
+ID,Código Enxadrista,Nome,Sobrenome,Gênero,Código Clube,Clube,Código Cidade,Cidade,Data de Nascimento,K,Rating Atual
+1,1,Agostinho,CASAGRANDE,M,1,Cascavel - Clube de Xadrez de Cascavel,1,Cascavel,07.09.1960,20,1889
+2,2,Alexandre Oppermann,LINK,M,1,Cascavel - Clube de Xadrez de Cascavel,1,Cascavel,08.04.1987,20,1911
+3,3,Alexsandro Willian Baldus,WOGEL,M,2,Corbélia - C. E. Duque de Caxias,1,Cascavel,04.07.2000,20,1870
+4,4,Alvonei Lucas,BRESOLIN,M,,Quedas do Iguaçu,12,Quedas do Iguaçu,24.11.1991,20,1908
+5,5,Anderson Borges Da,SILVA,M,4,Cascavel - Clube XBA,1,Cascavel,20.02.1984,20,1918
+6,6,André Luiz Nunes dos,SANTOS,M,1,Cascavel - Clube de Xadrez de Cascavel,1,Cascavel,02.07.1993,20,1870
+7,7,André Rodriguez,LIMA,M,,Guaíra,9,Guaíra,15.01.1967,20,1872
+8,8,Anthony Gabriel Pusini De,SOUZA,M,8,Boa Vista da Aparecida - C. E. Paulo VI,2,Boa Vista da Aparecida,07.09.2002,20,1888
+9,9,Caio Cesar Machado,GOMES,M,,Marechal Cândido Rondon,5,Marechal Cândido Rondon,01.05.1995,20,1880
+10,10,Camila Vitoria De Mello,PINTO,F,8,Boa Vista da Aparecida - C. E. Paulo VI,2,Boa Vista da Aparecida,27.05.2002,20,1847
+11,11,Cirino Graciano de,LIMA,M,,Cascavel,1,Cascavel,22.07.1996,20,1897
+12,12,Dafynni,SAFRAIDER,F,1,Cascavel - Clube de Xadrez de Cascavel,1,Cascavel,27.07.1987,20,1893
+13,13,Daisy,VIEIRA,F,1,Cascavel - Clube de Xadrez de Cascavel,1,Cascavel,19.04.1996,20,1928
+14,14,Daniel,KOTRICH,M,1,Cascavel - Clube de Xadrez de Cascavel,1,Cascavel,24.01.1994,20,1846
+15,15,Débora Alves,CARDOSO,F,,Toledo,8,Toledo,19.11.1997,20,1898
+16,16,Denise de,LIMA,F,3,Cascavel - Colégio FAG,1,Cascavel,29.01.1978,20,1846
+17,17,Douglas,WISNIEWSKI,M,1,Cascavel - Clube de Xadrez de Cascavel,1,Cascavel,05.11.1975,20,1921
+18,18,Dyovana Mathias,MARTINS,F,5,Lindoeste - C. E. Lindoeste,4,Lindoeste,09.07.2002,20,1854
+19,19,Edgar,RODRIGUES,M,,Mogi das Cruzes/SP,11,Mogi das Cruzes/SP,03.10.1982,20,2012
+20,20,Eduardo de Biasio,MILANO,M,1,Cascavel - Clube de Xadrez de Cascavel,1,Cascavel,25.10.1996,20,1862
+21,21,Eulci,TOZZO,F,2,Corbélia - C. E. Duque de Caxias,3,Corbélia,16.01.1970,20,1872
+22,22,Fabiano,TADIOTO,M,2,Corbélia - C. E. Duque de Caxias,3,Corbélia,29.08.2000,20,1872
+23,23,Felipe Kotrich de,LIMA,M,6,Campo Bonito - Clube de Xadrez Campo Bonito,7,Campo Bonito,03.12.1983,20,1835
+24,24,Fernando Miguel,KUHN,M,,Toledo,8,Toledo,27.08.1984,20,1932
+25,25,Gabriel Felipe,BELLO,M,,Toledo,8,Toledo,27.09.2001,20,1938
+26,26,Geder Paulo Friedrich,COMINETTI,M,,Toledo,8,Toledo,27.12.1984,20,1902
+27,27,Giovani Iago Dos Santos Lopes De,CARVALHO,M,,Guaíra,9,Guaíra,28.12.1995,20,1938
+28,28,Gustavo Antonio,MARTINI,M,5,Lindoeste - C. E. Lindoeste,4,Lindoeste,26.06.2002,20,1835
+29,29,Gustavo Aurelio Ragazzan,HOFFMANN,M,1,Cascavel - Clube de Xadrez de Cascavel,1,Cascavel,21.04.1987,20,1890
+30,30,Gustavo De,SOUZA,M,2,Corbélia - C. E. Duque de Caxias,3,Corbélia,31.08.2000,20,1860
+31,31,Gustavo Ferreira,ARANTES,M,1_1,Santa Lúcia - Clube de Xadrez de Cascavel,6,Santa Lúcia,09.07.1979,20,1915
+32,32,Henrique,POMPEO,M,1,Cascavel - Clube de Xadrez de Cascavel,1,Cascavel,27.08.1993,20,1861
+33,33,Iloyziel João Da Silva,MOREIRA,M,7,Cascavel - Passo Certo Growing,1,Cascavel,18.02.1996,20,1980
+34,34,Ivo Renato De Rosa,MOURA,M,,Toledo,8,Toledo,,20,1870
+35,35,Jean,WERLANG,M,,Marechal Cândido Rondon,5,Marechal Cândido Rondon,09.07.1988,20,1860
+36,36,Jesse Emanoel,LORENSETTI,M,,Toledo,8,Toledo,20.12.1999,20,2056
+37,37,Jhonathan De Souza,D'WITT,M,2,Corbélia - C. E. Duque de Caxias,3,Corbélia,11.02.1994,20,1890
+38,38,Jhoni,ZINI,M,1,Cascavel - Clube de Xadrez de Cascavel,1,Cascavel,05.08.1985,20,2037
+39,39,Jhony Miguel De,SOUZA,M,5,Lindoeste - C. E. Lindoeste,4,Lindoeste,06.03.2002,20,1864
+40,40,Jonas Borges,MARCOS,M,8,Boa Vista da Aparecida - C. E. Paulo VI,2,Boa Vista da Aparecida,28.03.2002,20,1912
+41,41,Joziel Amaro da,SILVA,M,,Medianeira,13,Medianeira,09.11.1974,20,1918
+42,42,Karl Heins,EWALD,M,1,Cascavel - Clube de Xadrez de Cascavel,1,Cascavel,26.05.1984,20,2059
+43,43,Karla,AZEVEDO,F,1,Cascavel - Clube de Xadrez de Cascavel,1,Cascavel,23.03.1997,20,1931
+44,44,Kleberson Rodrigo do,NASCIMENTO,M,,Umuarama,14,Umuarama,30.10.1984,20,1885
+45,45,Kleberton Aparecido Leme,CRACCO,M,1,Cascavel - Clube de Xadrez de Cascavel,1,Cascavel,08.04.1983,20,1984
+46,46,Laís Tauana,SYCHOCKY,F,8,Boa Vista da Aparecida - C. E. Paulo VI,2,Boa Vista da Aparecida,19.07.2002,20,1878
+47,47,Leonardo,CLIVATI,M,,Toledo,8,Toledo,06.12.2000,20,1902
+48,48,Leticia Marques De,OLIVEIRA,F,8,Boa Vista da Aparecida - C. E. Paulo VI,2,Boa Vista da Aparecida,18.07.2002,20,1888
+49,49,Livia Schwambach,MEDEIROS,F,2,Corbélia - C. E. Duque de Caxias,3,Corbélia,04.06.2002,20,1902
+50,50,Luana Paula,MATTE,F,,Toledo,8,Toledo,12.07.2000,20,1933
+51,51,Lucas,PILONETTO,M,1,Cascavel - Clube de Xadrez de Cascavel,1,Cascavel,25.05.1996,20,1898
+52,52,Lucas da Silva,MARIANO,M,1,Cascavel - Clube de Xadrez de Cascavel,1,Cascavel,29.06.1999,20,1976
+53,53,Lucas Henrique Costa Da,SILVA,M,5,Lindoeste - C. E. Lindoeste,4,Lindoeste,26.02.2002,20,1870
+54,54,Marcos Vinícius,ZANCHET,M,,Toledo,8,Toledo,26.05.1979,20,1955
+55,55,Marcus Vinicius,MAZARO,M,2,Corbélia - C. E. Duque de Caxias,3,Corbélia,15.03.2001,20,1992
+56,56,Matheus Back,RECH,M,,Toledo,8,Toledo,03.05.2000,20,1878
+57,57,Mayara Alvez,HOTZ,F,2,Corbélia - C. E. Duque de Caxias,3,Corbélia,27.06.2001,20,1870
+58,58,Nelson,PEREIRA,M,3,Cascavel - Colégio FAG,1,Cascavel,10.08.1962,20,1882
+59,59,Neri,BENETTI,M,,Toledo,8,Toledo,28.12.1969,20,1980
+60,60,Nicolas,BATTISTI,M,,Toledo,8,Toledo,06.12.2000,20,1900
+61,61,Odair Betim Do,PRADO,M,1,Cascavel - Clube de Xadrez de Cascavel,1,Cascavel,13.11.1976,20,1901
+62,62,Osmar,SERAFINI,M,,Cascavel,1,Cascavel,27.05.1967,20,1914
+63,63,Osvaldo Cezar Gonçalves de,ANDRADE,M,1,Cascavel - Clube de Xadrez de Cascavel,1,Cascavel,18.08.1971,20,1989
+64,64,Otávio,TADIOTO,M,2,Corbélia - C. E. Duque de Caxias,3,Corbélia,02.04.2001,20,1850
+65,65,Pedro Henrique,GOMES,M,,Toledo,8,Toledo,13.11.1976,20,2008
+66,66,Rainer,BRACHT,M,1,Cascavel - Clube de Xadrez de Cascavel,1,Cascavel,23.03.1953,20,2127
+67,67,Renan Educaro Biazzi,BIANCHI,M,1,Cascavel - Clube de Xadrez de Cascavel,1,Cascavel,17.09.2002,20,1878
+68,68,Rosilene,PELISSER,F,5,Lindoeste - C. E. Lindoeste,4,Lindoeste,08.10.1961,20,1872
+69,69,Rozinete Oliveira Gomes,CAIMI,F,8,Boa Vista da Aparecida - C. E. Paulo VI,2,Boa Vista da Aparecida,10.11.1966,20,1878
+70,70,Sara Guilhermina Schmidt,EGLI,F,,Cascavel,1,Cascavel,30.07.1998,20,1868
+71,71,Silas Pereira de Oliveira,NETO,M,1,Cascavel - Clube de Xadrez de Cascavel,1,Cascavel,01.06.1998,20,1978
+72,72,Tailane da Silva,LEODORO,F,8,Boa Vista da Aparecida - C. E. Paulo VI,2,Boa Vista da Aparecida,18.07.2002,20,1873
+73,73,Valter,MOLINA,M,3,Cascavel - Colégio FAG,1,Cascavel,09.12.1962,20,1890
+74,74,Vinicius,WALICKI,M,5,Lindoeste - C. E. Lindoeste,4,Lindoeste,22.01.2001,20,1890
+75,75,Vitoria,VIEIRA,F,1,Cascavel - Clube de Xadrez de Cascavel,1,Cascavel,22.09.2000,20,1912
+76,76,Wesley Klewerton Guez,ASSUNÇÃO,M,,Toledo,8,Toledo,30.04.1985,20,2012
+77,77,Yukihar,ISHIDA,M,,Toledo,8,Toledo,24.04.1955,20,1902
+78,78,Ágatha Franck Bittencourt,MOREIRA,F,1,Cascavel - Clube de Xadrez de Cascavel,1,Cascavel,30.03.2006,30,2013
+79,79,Alcedir Ferreira Prestes,JUNIOR,M,5,Lindoeste - C. E. Lindoeste,4,Lindoeste,06.09.2005,30,1743
+80,80,Angelo Gabriel Bento,DALBERTO,M,8,Boa Vista da Aparecida - C. E. Paulo VI,2,Boa Vista da Aparecida,17.10.2003,30,1795
+81,81,Anna Luiza Canevesi,GRACI,F,,Toledo,8,Toledo,29.03.2006,30,1903
+82,82,Arthur Lopes,FERREIRA,M,3,Cascavel - Colégio FAG,1,Cascavel,30.06.2010,30,1770
+83,83,Arthur Yudi Reinstein Vilas,BOAS,M,,Toledo,8,Toledo,07.10.2009,30,1773
+84,84,Beatriz Francor da,ROSA,F,5,Lindoeste - C. E. Lindoeste,4,Lindoeste,29.01.2003,30,1780
+85,85,Brendo Gonçalves de,ANDRADE,M,1,Cascavel - Clube de Xadrez de Cascavel,1,Cascavel,26.02.2004,30,1779
+86,86,Bruno,BEVILACQUA,M,1,Cascavel - Clube de Xadrez de Cascavel,1,Cascavel,12.02.2004,30,1756
+87,87,Bruno Eduardo de Oliveira,BERTAN,M,,Toledo,8,Toledo,30.04.2004,30,1918
+88,88,Bruno Vinicius Machado,CASTANHO,M,8,Boa Vista da Aparecida - C. E. Paulo VI,2,Boa Vista da Aparecida,23.03.2003,30,1820
+89,89,Caio Bisinella De,LIMA,M,6,Campo Bonito - Clube de Xadrez Campo Bonito,7,Campo Bonito,29.08.2009,30,2026
+90,90,Caíque Kenzo Reinstein Vilas,BOAS,M,,Toledo,8,Toledo,18.07.2007,30,1821
+91,91,Carlos Eduardo,VEIGA,M,5,Lindoeste - C. E. Lindoeste,4,Lindoeste,07.11.2003,30,1782
+92,92,Carlos Eduardo Motta,ANTUNES,M,8,Boa Vista da Aparecida - C. E. Paulo VI,2,Boa Vista da Aparecida,06.09.2005,30,1777
+93,93,Cibele Fernanda de,PAULA,F,8,Boa Vista da Aparecida - C. E. Paulo VI,2,Boa Vista da Aparecida,13.10.2005,30,1769
+94,94,Danilo Dias,BALERINI,M,2,Corbélia - C. E. Duque de Caxias,3,Corbélia,12.04.2005,30,1776
+95,95,Deyson,RODRIGUES,M,2,Corbélia - C. E. Duque de Caxias,3,Corbélia,01.10.2003,30,1755
+96,96,Eduarda Reis,MATIELLO,F,5,Lindoeste - C. E. Lindoeste,1,Cascavel,23.06.2003,30,1763
+97,97,Eduarda Zuco,CAETANO,F,8,Boa Vista da Aparecida - C. E. Paulo VI,2,Boa Vista da Aparecida,03.06.2003,30,1740
+98,98,Eduardo,COZER,M,1,Cascavel - Clube de Xadrez de Cascavel,1,Cascavel,23.10.2004,30,2007
+99,99,Eduardo Coelho,FERREIRA,M,8,Boa Vista da Aparecida - C. E. Paulo VI,2,Boa Vista da Aparecida,17.02.2003,30,1862
+100,100,Emanuelly De,OLIVEIRA,F,1,Cascavel - Clube de Xadrez de Cascavel,1,Cascavel,16.01.2006,30,1863
+101,101,Enzo Ferrari,SCHROEDER,M,17,Cascavel - Colégio Marista,1,Cascavel,14.07.2003,30,1808
+102,102,Eric Kusnik,BELLINCANTA,M,3,Cascavel - Colégio FAG,1,Cascavel,08.12.2007,30,1740
+103,103,Érike Francisco Da Costa,BORGES,M,2,Corbélia - C. E. Duque de Caxias,3,Corbélia,30.04.2005,30,1716
+104,104,Felipe Heringer Carvalho,SILVA,M,3,Cascavel - Colégio FAG,1,Cascavel,01.03.2006,30,1739
+105,105,Fernando Moraes,CELLA,M,,Cascavel,1,Cascavel,18.01.2007,30,1818
+106,106,Fernando Rafael De Morais,RIBEIRO,M,5,Lindoeste - C. E. Lindoeste,4,Lindoeste,16.09.2004,30,1822
+107,107,Gabriel Lemes Silvério Cardoso,FARIAS,M,1,Cascavel - Clube de Xadrez de Cascavel,1,Cascavel,02.05.2005,30,1899
+108,108,Gabriel,MOLINA,M,3,Cascavel - Colégio FAG,1,Cascavel,13.05.2009,30,1819
+109,109,Gabriel,SERAFINI,M,,Cascavel,1,Cascavel,15.04.2008,30,1710
+110,110,Gabriel,KARAN,M,,Toledo,8,Toledo,05.12.2003,30,1716
+111,111,Gabriel Henrique,BIANCHI,M,2,Corbélia - C. E. Duque de Caxias,3,Corbélia,10.08.2007,30,1785
+112,112,Gabriel Neves,RUTHMOND,M,1,Cascavel - Clube de Xadrez de Cascavel,1,Cascavel,30.07.2003,30,1832
+113,113,Guilherme,TEIXEIRA,M,1,Cascavel - Clube de Xadrez de Cascavel,1,Cascavel,"16,03,2004",30,1709
+114,114,Guilherme Wansowski,LENA,M,,Toledo,8,Toledo,02.09.2009,30,1785
+115,115,Gustavo,KOJI,M,,Toledo,8,Toledo,25.02.2007,30,1786
+116,116,Henrique Kliemann,FRANZOI,M,16,Cascavel - Colégio ALFA,1,Cascavel,12.01.2003,30,1838
+117,117,Henrique Ferraz Pazzinatto,DRESCH,M,3,Cascavel - Colégio FAG,1,Cascavel,02.10.2006,30,1742
+118,118,Ingrid Franck Bittencourt,MOREIRA,F,1,Cascavel - Clube de Xadrez de Cascavel,1,Cascavel,24.03.2008,30,1878
+119,119,Jackson Meurer de,SOUZA,M,2,Corbélia - C. E. Duque de Caxias,3,Corbélia,24.10.2003,30,1770
+120,120,João Henrique de Campos,PERMONIAN,M,,Toledo,8,Toledo,28.02.2006,30,1984
+121,121,João Pedro Veroneze,SARAIVA,M,3,Cascavel - Colégio FAG,1,Cascavel,22.03.2010,30,1770
+122,122,João Vitor Eugenio da,SILVA,M,1,Cascavel - Clube de Xadrez de Cascavel,1,Cascavel,25.06.2005,30,1722
+123,123,João Vitor Moraes,CELLA,M,7,Cascavel - Passo Certo Growing,1,Cascavel,18.07.2007,30,1821
+124,124,Jordan Franck Bittencourt ,MOREIRA,M,1,Cascavel - Clube de Xadrez de Cascavel,1,Cascavel,24.03.2008,30,2106
+125,125,José Carlos Costa da ,CUNHA,M,8,Boa Vista da Aparecida - C. E. Paulo VI,2,Boa Vista da Aparecida,08.05.2003,30,1731
+126,126,Kamila da Silva,ÓBICE,F,9,Lindoeste - E. E. Cielito Lindo,4,Lindoeste,01.09.2006,30,1796
+127,127,Kerstyn Bianca,BATISTA,F,5,Lindoeste - C. E. Lindoeste,4,Lindoeste,31.05.2003,30,1777
+128,128,Kleber Lucas Ribeiro de,OLIVEIRA,M,1,Cascavel - Clube de Xadrez de Cascavel,1,Cascavel,11.12.2003,30,1983
+129,129,Kleberson Kuche,COSTA,M,5,Lindoeste - C. E. Lindoeste,4,Lindoeste,13.04.2004,30,1977
+130,130,Leonardo Gabriel Mezzon da,SILVA,M,1,Cascavel - Clube de Xadrez de Cascavel,1,Cascavel,18.10.2008,30,1811
+131,131,Lucas,MOLINA,M,3,Cascavel - Colégio FAG,1,Cascavel,01.08.2007,30,1689
+132,132,Lucas Felipe Rodrigues,PACHECO,M,8,Boa Vista da Aparecida - C. E. Paulo VI,2,Boa Vista da Aparecida,30.04.2003,30,1841
+133,133,Luiz Eduardo,BODANESE,M,5,Lindoeste - C. E. Lindoeste,4,Lindoeste,29.12.2004,30,1782
+134,134,Luiz Eduardo,BARBOSA,M,9,Lindoeste - E. E. Cielito Lindo,4,Lindoeste,29.12.2004,30,1792
+135,135,Maria Alice,CERETTA,F,,Toledo,8,Toledo,18.02.2003,30,1875
+136,136,Maria Cecília Wansowski,LENA,F,,Toledo,8,Toledo,19.03.2007,30,1713
+137,137,Maria Clara Dombroski De,SOUZA,F,9,Lindoeste - E. E. Cielito Lindo,4,Lindoeste,27.11.2004,30,1627
+138,138,Maria Rita Leite,BURDINHÃO,F,2,Corbélia - C. E. Duque de Caxias,3,Corbélia,30.09.2004,30,1755
+139,139,Maristela Alflen,POLIS,F,1,Cascavel - Clube de Xadrez de Cascavel,1,Cascavel,20.05.2004,30,1854
+140,140,Mateus Henrique Da,COSTA,M,1,Cascavel - Clube de Xadrez de Cascavel,1,Cascavel,03.09.2008,30,1926
+141,141,Mikael,WERUS,M,1,Cascavel - Clube de Xadrez de Cascavel,1,Cascavel,30.04.2005,30,1924
+142,142,Milene Fernanda da,SILVA,F,1,Cascavel - Clube de Xadrez de Cascavel,1,Cascavel,01.11.2011,30,1755
+143,143,Natan Henrique,DOMINIAK,M,6,Campo Bonito - Clube de Xadrez Campo Bonito,7,Campo Bonito,04.12.2004,30,1824
+144,144,Nathan Enrique Rossoni,SPEZIA,M,8,Boa Vista da Aparecida - C. E. Paulo VI,2,Boa Vista da Aparecida,29.10.2004,30,1875
+145,145,Patrik Rodrigues Dos,SANTOS,M,5,Lindoeste - C. E. Lindoeste,4,Lindoeste,22.09.2003,30,1956
+146,146,Pedro Antonio de,MEDEIROS,M,1,Cascavel - Clube de Xadrez de Cascavel,1,Cascavel,14.05.2006,30,1727
+147,147,Pedro Felipe,GALVAN,M,,Cascavel,1,Cascavel,30.10.2003,30,1785
+148,148,Pedro Henrique Calixto,COSTA,M,,Toledo,8,Toledo,25.02.2009,30,1743
+149,149,Poliana A. de,PAULA,F,8,Boa Vista da Aparecida - C. E. Paulo VI,2,Boa Vista da Aparecida,09.03.2003,30,1815
+150,150,Rafael Almeida,SANTOS,M,2,Corbélia - C. E. Duque de Caxias,1,Cascavel,20.06.2004,30,1788
+151,151,Raul Poisk,RODRIGUES,M,7,Cascavel - Passo Certo Growing,1,Cascavel,13.02.2003,30,1830
+152,152,Ricardo Dalmina,MARQUES,M,7,Cascavel - Passo Certo Growing,1,Cascavel,27.11.2003,30,1755
+153,153,Samuel Monteiro de Melo,BALTAZAR,M,,Toledo,8,Toledo,24.04.2007,30,1785
+154,154,Tales Lopes,FERREIRA,M,3,Cascavel - Colégio FAG,1,Cascavel,24.09.2011,30,1740
+155,155,Thamirez Marasca,RAMIREZ,F,2,Corbélia - C. E. Duque de Caxias,3,Corbélia,09.08.2003,30,1815
+156,156,William Franck Bittencourt,MOREIRA,M,1,Cascavel - Clube de Xadrez de Cascavel,1,Cascavel,26.10.2011,30,1941
+157,157,Henrique,CRIPPA,M,,Cascavel,1,Cascavel,23.09.1987,30,1974
+158,158,Gabriel Stevão de Freitas Borges,ARAGÃO,M,1,Cascavel - Clube de Xadrez de Cascavel,1,Cascavel,27.05.1997,20,1914
+159,159,Rômulo Ribeiro,BRITO,M,1,Cascavel - Clube de Xadrez de Cascavel,1,Cascavel,25.07.1973,20,2000
+160,160,Lucas,CORDEIRO,M,1,Cascavel - Clube de Xadrez de Cascavel,1,Cascavel,30.04.2002,20,1831
+161,161,André Henrique Pinto,RIBEIRO,M,1,Cascavel - Clube de Xadrez de Cascavel,1,Cascavel,15.08.1992,20,1875
+162,162,Guilherme Perin,TURATTO,M,1,Cascavel - Clube de Xadrez de Cascavel,1,Cascavel,15.07.1992,20,1864
+163,163,Gabryel Ribeiro Brito,BALEEIRO,M,,Cascavel,1,Cascavel,12.09.2007,30,1662
+164,164,Lucas Franck Bittencourt,MOREIRA,M,1,Cascavel - Clube de Xadrez de Cascavel,1,Cascavel,26.10.2011,30,1871
+165,165,Eliandra,FRARON,F,,Cascavel,1,Cascavel,27.11.1994,20,1880
+166,166,Marcioni Miguel,ZINI,M,,Cascavel,1,Cascavel,26.04.1988,20,1926
+167,167,Jhonata Willian Gulchinski de,OLIVEIRA,M,8,Boa Vista da Aparecida - C. E. Paulo VI,2,Boa Vista da Aparecida,23.05.2005,30,1786
+168,168,Mariana Yasmin Nonato da,SILVA,M,8,Boa Vista da Aparecida - C. E. Paulo VI,2,Boa Vista da Aparecida,20.04.2006,30,1746
+169,169,Matheus,CABRAL,M,8,Boa Vista da Aparecida - C. E. Paulo VI,2,Boa Vista da Aparecida,21.08.2005,30,1773
+170,170,Richard,AZEVEDO,M,8,Boa Vista da Aparecida - C. E. Paulo VI,2,Boa Vista da Aparecida,28.05.2005,30,1764
+171,171,Adriano do Amaral da,SILVA,M,8,Boa Vista da Aparecida - C. E. Paulo VI,2,Boa Vista da Aparecida,24.11.2004,30,1772
+172,172,Alexandre Henrique,ALMEIDA,M,,Cascavel,1,Cascavel,16.11.1990,20,1858
+173,173,Anderson Soares,PEREIRA,M,,Cafelândia,15,Cafelândia,16.01.1993,20,1912
+174,174,Bianca Rika Ebe,ISHISAKI,F,,Cascavel,1,Cascavel,13.11.2001,20,1891
+175,175,Claudemir,KIRK,M,,Cafelândia,15,Cafelândia,06.12.1985,20,1910
+176,176,Edson,TAVARES,M,,Marechal Cândido Rondon,5,Marechal Cândido Rondon,12.03.1966,20,1913
+177,177,Elaine Patricia Tavares,GRAEBNER,F,10,Cascavel - UNIVEL,1,Cascavel,22.07.1987,20,1893
+178,178,Gabriel,BERNARDO,M,,Cascavel,1,Cascavel,14.07.1996,20,1859
+179,179,Gustavo Niedermayer,WAGNER,M,,Maripá,16,Maripá,23.08.1994,20,1870
+180,180,Jocimar Roque,MANFROI,M,,Cascavel,1,Cascavel,17.08.1968,20,1891
+181,181,Marcelo da,SILVA,M,1,Cascavel - Clube de Xadrez de Cascavel,1,Cascavel,13.11.1982,20,1891
+182,182,Mateus,MILANI,M,,Toledo,8,Toledo,23.05.1994,20,1970
+183,183,Rafael de Oliveira,RODRIGUES,M,10_1,Cafelândia - UNIVEL,15,Cafelândia,26.05.1996,20,1916
+184,184,Talita Daiane,TAVARES,F,,Cascavel,1,Cascavel,09.03.1989,20,1861
+185,185,Pedro Leonardo,UBER,M,,Toledo,8,Toledo,07.03.2007,30,1736
+186,186,Nikita Franck Bittencourt,MOREIRA,F,1,Cascavel - Clube de Xadrez de Cascavel,1,Cascavel,01.07.2003,30,1800
+187,187,Angelo Afonso,FABRIS,M,11,Toledo - UFPR,8,Toledo,24.11.1999,20,1864
+188,188,Jacson Henrique,GATELLI,M,12,Foz do Iguaçu - CAIA,17,Foz do Iguaçu,23.11.1989,20,1915
+189,189,Luiz,ROYER,M,,Cascavel,1,Cascavel,06.05.1980,20,2005
+190,190,Railtson Guerke,CRUZ,M,,Cascavel,1,Cascavel,26.04.1960,20,1887
+191,191,Fernando Ruiz de,ARAUJO,M,12,Foz do Iguaçu - CAIA,17,Foz do Iguaçu,06.12.2003,20,1900
+192,192,Adilson Cury,NETO,M,12,Foz do Iguaçu - CAIA,17,Foz do Iguaçu,25.09.2004,30,1776
+193,193,Elvis Muller Pereira de,BARROS,M,13,Cascavel - C. E. Santa Felicidade,1,Cascavel,26.06.2004,30,1773
+194,194,Erick Cristiano Winck,MUILLER,M,12,Foz do Iguaçu - CAIA,17,Foz do Iguaçu,05.10.2005,30,1836
+195,195,Werisson Gonçalves,NOGUEIRA,M,12,Foz do Iguaçu - CAIA,17,Foz do Iguaçu,14.02.2004,30,1861
+196,196,Gabriel Ruiz de,ARAUJO,M,12,Foz do Iguaçu - CAIA,17,Foz do Iguaçu,08.11.2007,30,1823
+197,197,Alezandre de,CARVALHO,M,3,Cascavel - Colégio FAG,1,Cascavel,03.07.1979,20,1865
+198,198,Angell Victória Santos de,CASTRO,F,13,Cascavel - C. E. Santa Felicidade,1,Cascavel,05.07.2002,20,1826
+199,199,Bruno Henrique,KRAUS,M,8,Boa Vista da Aparecida - C. E. Paulo VI,2,Boa Vista da Aparecida,02.08.2003,20,1852
+200,200,Diego de Abreu,BECKER,M,,Cascavel,1,Cascavel,04.12.2002,20,1863
+201,201,Emanuelli Caroline Oliveira,BARBOSA,F,,Lindoeste,4,Lindoeste,17.04.2002,20,1868
+202,202,Erick,YUITI,M,1,Cascavel - Clube de Xadrez de Cascavel,1,Cascavel,26.02.2001,20,1888
+203,203,Isaqui Camargo ,BARAINE,M,3,Cascavel - Colégio FAG,1,Cascavel,31.08.2002,20,1894
+204,204,Kauê F. R.,BORGES,M,8,Boa Vista da Aparecida - C. E. Paulo VI,2,Boa Vista da Aparecida,30.12.2003,20,1873
+205,205,Leonardo Gomes,JUNIOR,M,,Cascavel,1,Cascavel,23.09.1985,20,1950
+206,,,,,,,,,,,
+207,207,Marcos Antonio,GAZONI,M,,Cascavel,1,Cascavel,18.03.2001,20,1899
+208,208,Maria Carolina,MOLINA,F,,Cascavel,1,Cascavel,15.03.2000,20,1880
+209,,,,,,,,,,,
+210,210,Ralph Wilians ,CAMARGO,M,3,Cascavel - Colégio FAG,1,Cascavel,01.08.1980,20,1852
+211,211,Wilson Wanderley,BOROSKE,M,,Quatro Pontes,18,Quatro Pontes,13.04.1972,20,1884
+212,212,Wilson Tadeu de,OLIVEIRA,M,14,Cascavel - UNIOESTE,1,Cascavel,06.02.1962,20,1865
+213,213,Daniel ,COMUINETTI,M,,Cascavel,1,Cascavel,05.05.1987,20,1921
+214,214,Andre Spagnol,MUSSULIN,M,8,Boa Vista da Aparecida - C. E. Paulo VI,2,Boa Vista da Aparecida,11.04.2005,30,1750
+215,215,Bryan de Oliveira ,CABRAL,M,,Cascavel,1,Cascavel,15.06.2005,30,1752
+216,216,Ingrid Vitoria Ferreira de,CARVALHO,F,8,Boa Vista da Aparecida - C. E. Paulo VI,2,Boa Vista da Aparecida,29.03.2006,30,1702
+217,217,Wesley,BARBARA,M,8,Boa Vista da Aparecida - C. E. Paulo VI,2,Boa Vista da Aparecida,13.12.2005,30,1716
+218,218,Gabriel Victor da,SILVA,M,,Cascavel,1,Cascavel,13.03.2004,30,1778
+219,219,Anthony Gabriel Ramos ,DAROS,M,8,Boa Vista da Aparecida - C. E. Paulo VI,2,Boa Vista da Aparecida,01.03.2006,30,1851
+220,220,Gabriel,BREANSINI,M,8,Boa Vista da Aparecida - C. E. Paulo VI,2,Boa Vista da Aparecida,29.03.2007,30,1773
+221,221,Gianlucca Kastener,PONTES,M,8,Boa Vista da Aparecida - C. E. Paulo VI,2,Boa Vista da Aparecida,11.11.2006,30,1861
+222,222,Guilherme,DIETRICH,M,7,Cascavel - Passo Certo Growing,1,Cascavel,11.03.2007,30,1837
+223,223,Guilherme,PASSAROTO,M,3,Cascavel - Colégio FAG,1,Cascavel,27.11.2007,30,1800
+224,224,Gustavo Davitte,CANDIDO,M,,Toledo,8,Toledo,31.10.2006,30,1760
+225,225,João Vitor Bonfim de,DEUS,M,13,Cascavel - C. E. Santa Felicidade,1,Cascavel,23.06.2006,30,1952
+226,226,Pedro Pagliosa,GUEDES,M,15,Cascavel - Escola Sagrada Família,1,Cascavel,12.04.2007,30,1789
+227,227,Alicia de Souza ,DUARTE,F,3,Cascavel - Colégio FAG,1,Cascavel,07.08.2009,30,1788
+228,228,Bianca,ITO,F,3,Cascavel - Colégio FAG,1,Cascavel,08.08.2008,30,1823
+229,229,Caroline,VANZIN,F,3,Cascavel - Colégio FAG,1,Cascavel,02.07.2010,30,1799
+230,230,Marcos Antonio Mocelin ,NETO,M,3,Cascavel - Colégio FAG,1,Cascavel,04.08.2014,30,1739
+231,231,Maria Clara,MACENO,F,3,Cascavel - Colégio FAG,1,Cascavel,05.01.2008,30,1735
+232,232,Miguel Augusto dos Santos Ribeiro,ROCHA,M,3,Cascavel - Colégio FAG,1,Cascavel,14.07.2010,30,1777
+233,233,Narahara ,MOCELIN,F,3,Cascavel - Colégio FAG,1,Cascavel,03.04.2010,30,1772
+234,234,Rafaela,ALCANTARA,F,3,Cascavel - Colégio FAG,1,Cascavel,04.07.2011,30,1758
+235,235,Rafaela Bavaresco,SILVA,F,3,Cascavel - Colégio FAG,1,Cascavel,28.04.2009,30,1738
+236,236,Sophia Tozo de,CAMARGO,F,3,Cascavel - Colégio FAG,1,Cascavel,07.02.2011,30,1775
+237,237,Vinicius Chiaca,GALLINA,M,3,Cascavel - Colégio FAG,1,Cascavel,19.10.2009,30,1785
+238,238,Yara Keila,CARVALHO,F,3,Cascavel - Colégio FAG,1,Cascavel,03.07.2010,30,1774
+239,239,Pedro Henrique Souza de ,LUNA,M,1,Cascavel - Clube de Xadrez de Cascavel,1,Cascavel,13.02.2009,30,1800
+240,240,André Rodrigues ,MATSUMOTO,M,,Cascavel,1,Cascavel,22.04.1976,20,1923
+241,241,João Francisco ,COSTA,M,,Cascavel,1,Cascavel,29.03.1966,20,1900
+242,242,Dyonathan José ,GRANDO,M,7,Cascavel - Passo Certo Growing,1,Cascavel,11.07.2005,30,1784
+243,243,Liryel Francini Lemos de ,SOUZA,F,7,Cascavel - Passo Certo Growing,1,Cascavel,02.11.2005,30,1752
+244,244,Felipe,SANTOS,M,7,Cascavel - Passo Certo Growing,1,Cascavel,12.07.2005,30,1800
+245,245,Matheus Bombonato,BERNARDI,M,3,Cascavel - Colégio FAG,1,Cascavel,15.12.2006,30,1772
+246,246,Marcos Alberto,BRITO,M,1,Cascavel - Clube de Xadrez de Cascavel,1,Cascavel,09.03.1975,20,1900
+247,247,Erik Felipe Olinek de,CASTILHO,M,,Cascavel,1,Cascavel,11.01.2003,20,1891
+248,248,Yuri Vacelh Zamulhar,ZDEBSKI,M,,Cascavel,1,Cascavel,14.02.2003,20,1884
+249,249,Carollina Bauermann,LUZZI,F,16,Cascavel - Colégio ALFA,1,Cascavel,31.01.2003,20,1875
+250,250,Jhonata Lauro,FORLIN,M,,Lindoeste,4,Lindoeste,25.03.2003,20,1855
+251,251,Andre de Brito,KRAY,M,13,Cascavel - C. E. Santa Felicidade,1,Cascavel,04.05.2004,30,1871
+252,252,Caetano Bauermann,LUZZI,M,7,Cascavel - Passo Certo Growing,1,Cascavel,21.08.2006,30,1870
+253,253,Théo,FERRARI,M,7,Cascavel - Passo Certo Growing,1,Cascavel,23.03.2009,30,1819
+254,254,Danielly Carolina dos Santos,TOSCAN,F,3,Cascavel - Colégio FAG,1,Cascavel,30.04.2009,30,1763
+255,255,Max Gruber,METZNER,M,,Marechal Cândido Rondon,5,Marechal Cândido Rondon,08.03.2010,30,1767
+256,,,,,,,,,,,
+257,257,Jaime Ettori,KIRSTEN,M,,Marechal Cândido Rondon,5,Marechal Cândido Rondon,29.06.1977,20,1907
+258,258,José Rogério Duarte de,OLIVEIRA,M,1,Cascavel - Clube de Xadrez de Cascavel,1,Cascavel,03.01.1985,20,1894
+259,259,José Felipe,SANTOS,M,7,Cascavel - Passo Certo Growing,1,Cascavel,12.08.2005,30,1783
+260,260,Leandro Rafael,LIMA,M,13,Cascavel - C. E. Santa Felicidade,1,Cascavel,14.10.2005,30,1675
+261,261,Artur Guilherme,LIMKE,M,13,Cascavel - C. E. Santa Felicidade,1,Cascavel,05.02.2007,30,1785
+262,262,Bruna Izabelly Rocha Souza,NEVES,F,13,Cascavel - C. E. Santa Felicidade,1,Cascavel,05.10.2007,30,1777
+263,263,Davyd Therry,HANSEN,M,13,Cascavel - C. E. Santa Felicidade,1,Cascavel,01.03.2007,30,1813
+264,264,Devid Proença,SILVA,M,13,Cascavel - C. E. Santa Felicidade,1,Cascavel,27.03.2006,30,1867
+265,265,Fellipi Gabriel Borges da,SILVA,M,13,Cascavel - C. E. Santa Felicidade,1,Cascavel,11.08.2006,30,1791
+266,266,Gabriel Leandro,KÜHL,M,3,Cascavel - Colégio FAG,1,Cascavel,26.09.2006,30,1815
+267,267,Isabela Morais de,SOUZA,F,,Lindoeste,4,Lindoeste,13.02.2007,30,1740
+268,268,José Daniel,BAHLS,M,13,Cascavel - C. E. Santa Felicidade,1,Cascavel,18.07.2007,30,1771
+269,269,Lais Priscila da,SILVA,F,13,Cascavel - C. E. Santa Felicidade,1,Cascavel,27.01.2006,30,1795
+270,270,Leonardo Felipe,NEVES,M,13,Cascavel - C. E. Santa Felicidade,1,Cascavel,20.10.2007,30,1761
+271,271,Lucas Gabriel da,SILVA,M,13,Cascavel - C. E. Santa Felicidade,1,Cascavel,10.04.2006,30,1822
+272,272,Matheus Ferreira,KROPOCHINSKI,M,,Mercedes,19,Mercedes,19.06.2007,30,1835
+273,273,Nikolas Alexsandro Guimarães,VIEIRA,M,13,Cascavel - C. E. Santa Felicidade,1,Cascavel,27.09.2006,30,1805
+274,274,Paulo Cesar Correia,FILHO,M,13,Cascavel - C. E. Santa Felicidade,1,Cascavel,13.08.2007,30,1800
+275,275,Victor Weber,FIOVARANTI,M,,Mercedes,19,Mercedes,15.03.2006,30,1815
+276,276,Vinícios,PAUWELS,M,13,Cascavel - C. E. Santa Felicidade,1,Cascavel,02.08.2008,30,1802
+277,277,Giovane Lourenço,RIBEIRO,M,,Lindoeste,4,Lindoeste,27.11.2003,30,1800
+278,278,Isabella Leticia,GERALDO,F,,Lindoeste,4,Lindoeste,17.01.2007,30,1800
+279,279,Ertes,SCHWAMBACH,M,,Cascavel,1,Cascavel,12.11.1978,20,1921
+280,280,Andre dos Santos,LUCIO,M,,Cascavel,1,Cascavel,30.08.1995,20,1915
+281,281,Luis Marcos de Oliveira,DALMAS,M,18,Cascavel - Capivara-City,1,Cascavel,19.12.1963,20,1894
+282,282,Ademar Alves,PEREIRA,M,,Cascavel,1,Cascavel,21.01.1954,20,1874
+283,283,Lucas,SIGNORINI,M,8,Boa Vista da Aparecida - C. E. Paulo VI,2,Boa Vista da Aparecida,24.07.2003,20,1824
+284,284,Beatriz,ANTONIAZZI,F,15,Cascavel - Escola Sagrada Família,1,Cascavel,13.04.2005,30,1800
+285,285,Dionathan José,GRANDO,M,7,Cascavel - Passo Certo Growing,1,Cascavel,10.05.2005,30,1792
+286,286,João,PADILHA,M,7,Cascavel - Passo Certo Growing,1,Cascavel,08.12.2005,30,1780
+287,287,Lucas,HADADA,M,15,Cascavel - Escola Sagrada Família,1,Cascavel,16.12.2005,30,1787
+288,288,Luize Vitoria Dutra da,SILVA,F,8,Boa Vista da Aparecida - C. E. Paulo VI,2,Boa Vista da Aparecida,02.06.2004,30,1725
+289,289,Marcos Felipe,FAQUINELLO,M,13,Cascavel - C. E. Santa Felicidade,1,Cascavel,18.07.2005,30,1774
+290,290,Nicolas Alexsandro G.,VIEIRA,M,13,Cascavel - C. E. Santa Felicidade,1,Cascavel,27.09.2005,30,1770
+291,291,Ana Caroline Mainardi de,SOUZA,F,13,Cascavel - C. E. Santa Felicidade,1,Cascavel,21.12.2007,30,1759
+292,292,Augusto,FORMIGLIERI,M,15,Cascavel - Escola Sagrada Família,1,Cascavel,29.03.2007,30,1798
+293,293,Eduardo Natan O.,TIBURCIO,M,13,Cascavel - C. E. Santa Felicidade,1,Cascavel,21.08.2007,30,1816
+294,,,,,,,,,,,
+295,295,Gabriel E.,EVANGELISTA,M,8,Boa Vista da Aparecida - C. E. Paulo VI,2,Boa Vista da Aparecida,01.01.2007,30,1779
+296,296,Isabeli,SCHWAMBACH,F,19,Cascavel - Santa Maria,1,Cascavel,03.05.2006,30,1797
+297,297,Luciano Necre de,SOUZA,M,8,Boa Vista da Aparecida - C. E. Paulo VI,2,Boa Vista da Aparecida,29.07.2006,30,1753
+298,298,Rogério Paixão Militão da,SILVA,M,20,Cascavel - Colégio Anglo,1,Cascavel,07.10.2007,30,1859
+299,299,Camila Antunes,BITENCOURT,F,13,Cascavel - C. E. Santa Felicidade,1,Cascavel,24.11.2007,30,1765
+300,300,Kauan Molina,RODRIGUES,M,21,Cascavel - E. Dorival Pian,1,Cascavel,03.08.2010,30,1758
+301,301,Maria Eduarda Zoia,DUTRA,F,3,Cascavel - Colégio FAG,1,Cascavel,27.05.2008,30,1789
+302,302,Daniele,GUIMARÃES,F,13,Cascavel - C. E. Santa Felicidade,1,Cascavel,01.10.2003,20,1888
+303,303,Evando Ribeiro,NETO,M,8,Boa Vista da Aparecida - C. E. Paulo VI,1,Cascavel,24.07.2004,20,1885
+304,304,Gabriel Henrique,CAIMI,M,,Boa Vista da Aparecida,2,Boa Vista da Aparecida,19.01.1996,20,1910
+305,305,Gabriela Aparecida Ribeiro,CORSO,F,8,Boa Vista da Aparecida - C. E. Paulo VI,2,Boa Vista da Aparecida,10.10.2002,20,1890
+306,306,Jean Lucas,ZONIN,M,,Cascavel,1,Cascavel,30.10.2000,20,1900
+307,307,João Henrique Abroncio dos,SANTOS,M,,Boa Vista da Aparecida,2,Boa Vista da Aparecida,01.10.1986,20,1922
+308,308,Ricardo,GOMES,M,,Boa Vista da Aparecida,2,Boa Vista da Aparecida,15.03.1989,20,1888
+309,309,Eduardo,MASSUDA,M,8,Boa Vista da Aparecida - C. E. Paulo VI,2,Boa Vista da Aparecida,10.09.2004,30,1789
+310,310,Pedro Henrique,COSTA,M,8,Boa Vista da Aparecida - C. E. Paulo VI,2,Boa Vista da Aparecida,25.06.2005,30,1792
+311,311,Daiane da,COSTA,F,8,Boa Vista da Aparecida - C. E. Paulo VI,2,Boa Vista da Aparecida,26.11.2007,30,1783
+312,312,Eduardo,CORDEIRO,M,8,Boa Vista da Aparecida - C. E. Paulo VI,2,Boa Vista da Aparecida,15.07.2007,30,1751
+313,313,Kauan Adames da ,SILVA,M,13,Cascavel - C. E. Santa Felicidade,1,Cascavel,04.12.2006,30,1848
+314,314,Laura,RAMOS,F,8,Boa Vista da Aparecida - C. E. Paulo VI,2,Boa Vista da Aparecida,,30,1736
+315,315,Patrick Emanuel Botelho,CHAVES,M,13,Cascavel - C. E. Santa Felicidade,1,Cascavel,15.08.2006,30,1763
+316,316,Ryan Cordeiro,GAMBA,M,13,Cascavel - C. E. Santa Felicidade,1,Cascavel,24.12.2007,30,1774

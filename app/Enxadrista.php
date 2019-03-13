@@ -38,6 +38,21 @@ class Enxadrista extends Model
         }else
             return false;
     }
+    public function setBornFromSM($born){
+        $datetime = DateTime::createFromFormat('d.m.Y', $born);
+        if($datetime){
+            $this->born = $datetime->format("Y-m-d");
+            return true;
+        }else
+            return false;
+    }
+    public function getBornToSM(){
+        $datetime = DateTime::createFromFormat('Y-m-d', $this->born);
+        if($datetime){
+            return $datetime->format("d.m.Y");
+        }else
+            return false;
+    }
 
     public function howOld(){
         $datetime = DateTime::createFromFormat('Y-m-d', $this->born);
