@@ -74,7 +74,7 @@ class EventoController extends Controller
         return $content
             ->header('Criar Evento')
             ->description('')
-            ->body($this->form());
+            ->body($this->form_new());
     }
 
     /**
@@ -121,7 +121,7 @@ class EventoController extends Controller
      *
      * @return Form
      */
-    protected function form()
+    protected function form_edit()
     {
         $form = new Form(new Evento);
         
@@ -133,32 +133,12 @@ class EventoController extends Controller
             $form->text('link', 'Link do Evento');
             $form->select('cidade_id', 'Cidade')->options(Cidade::all()->pluck('name', 'id'));
             $form->select('grupo_evento_id', 'Grupo de Evento')->options(GrupoEvento::all()->pluck('name', 'id'));
-        });
-        
-        $form->saved(function (Form $form) {
+        })
+        ->tab('Categorias', function ($form) {
 
-            foreach($form->model()->grupo_evento->torneios->all() as $torneio_template){
-                $torneio = new Torneio;
-                $torneio->name = $torneio_template->name; 
-                $torneio->evento_id = $form->model()->id; 
-                $torneio->tipo_torneio_id = 1; 
-                $torneio->torneio_template_id = $torneio_template->id; 
-                $torneio->save();
-
-                foreach($torneio_template->categorias->all() as $categoria){
-                    $categoria_torneio = new CategoriaTorneio;
-                    $categoria_torneio->categoria_id = $categoria->categoria->id; 
-                    $categoria_torneio->torneio_id = $torneio->id; 
-                    $categoria_torneio->save();
-                }
-            }
-
-            foreach($form->model()->grupo_evento->categorias->all() as $categoria){
-                $categoria_evento = new CategoriaEvento;
-                $categoria_evento->categoria_id = $categoria->categoria->id; 
-                $categoria_evento->evento_id = $evento->id; 
-                $categoria_evento->save();
-            }
+            $form->hasMany('categorias', function ($form) {
+                $form->select('categoria_id', 'Categoria')->options(Categoria::all()->pluck('name', 'id'));
+            });
 
         });
 
@@ -171,11 +151,12 @@ class EventoController extends Controller
      *
      * @return Form
      */
-    protected function form_edit()
+    protected function form_new()
     {
         $form = new Form(new Evento);
 
         $form->tab('Informações Básicas', function ($form) {
+
             $form->text('name', 'Nome do Evento');
             $form->date('data_inicio', 'Data de Início');
             $form->date('data_fim', 'Data de Fim');
@@ -183,14 +164,69 @@ class EventoController extends Controller
             $form->text('link', 'Link do Evento');
             $form->select('cidade_id', 'Cidade')->options(Cidade::all()->pluck('name', 'id'));
             $form->select('grupo_evento_id', 'Grupo de Evento')->options(GrupoEvento::all()->pluck('name', 'id'));
-        })->tab('Categorias', function ($form) {
+
+        });
+
+        return $form;
+    }
+    /**
+     * Make a form builder.
+     *
+     * @return Form
+     */
+    protected function form()
+    {
+        $form = new Form(new Evento);
+
+        $form->tab('Informações Básicas', function ($form) {
+
+            $form->text('name', 'Nome do Evento');
+            $form->date('data_inicio', 'Data de Início');
+            $form->date('data_fim', 'Data de Fim');
+            $form->text('local', 'Local do Evento');
+            $form->text('link', 'Link do Evento');
+            $form->select('cidade_id', 'Cidade')->options(Cidade::all()->pluck('name', 'id'));
+            $form->select('grupo_evento_id', 'Grupo de Evento')->options(GrupoEvento::all()->pluck('name', 'id'));
+
+        })
+        ->tab('Categorias', function ($form) {
+
             $form->hasMany('categorias', function ($form) {
                 $form->select('categoria_id', 'Categoria')->options(Categoria::all()->pluck('name', 'id'));
             });
-        })->tab('Torneios', function ($form) {
-            $form->hasMany('torneios', function ($form) {
-                $form->select('torneio_id', 'Torneio')->options(Categoria::all()->pluck('name', 'id'));
-            });
+
+        });
+
+        
+        
+        $form->saved(function (Form $form) {
+            if($form->model()->torneios()->count() == 0){
+                foreach($form->model()->grupo_evento->torneios->all() as $torneio_template){
+                    $torneio = new Torneio;
+                    $torneio->name = $torneio_template->template->name; 
+                    $torneio->evento_id = $form->model()->id; 
+                    $torneio->tipo_torneio_id = 1; 
+                    $torneio->torneio_template_id = $torneio_template->template->id; 
+                    $torneio->save();
+
+                    foreach($torneio_template->template->categorias->all() as $categoria){
+                        $categoria_torneio = new CategoriaTorneio;
+                        $categoria_torneio->categoria_id = $categoria->categoria->id; 
+                        $categoria_torneio->torneio_id = $torneio->id; 
+                        $categoria_torneio->save();
+                    }
+                }
+            }
+
+            if($form->model()->categorias()->count() == 0){
+                foreach($form->model()->grupo_evento->categorias->all() as $categoria){
+                    $categoria_evento = new CategoriaEvento;
+                    $categoria_evento->categoria_id = $categoria->categoria->id; 
+                    $categoria_evento->evento_id = $form->model()->id; 
+                    $categoria_evento->save();
+                }
+            }
+
         });
 
 

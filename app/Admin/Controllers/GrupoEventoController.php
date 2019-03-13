@@ -57,7 +57,7 @@ class GrupoEventoController extends Controller
         return $content
             ->header('Editar Grupo de Evento')
             ->description('description')
-            ->body($this->form_edit()->edit($id));
+            ->body($this->form()->edit($id));
     }
 
     /**
@@ -110,20 +110,6 @@ class GrupoEventoController extends Controller
      * @return Form
      */
     protected function form()
-    {
-        $form = new Form(new GrupoEvento);
-        $form->tab('Informações Básicas', function ($form) {
-            $form->text('name', 'Nome do Grupo de Evento');
-        });
-        return $form;
-    }
-
-    /**
-     * Make a form builder.
-     *
-     * @return Form
-     */
-    protected function form_edit()
     {
         $form = new Form(new GrupoEvento);
         $form->tab('Informações Básicas', function ($form) {

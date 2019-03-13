@@ -82,13 +82,15 @@ class EnxadristaController extends Controller
     protected function grid()
     {
         $grid = new Grid(new Enxadrista);
+        $grid->id('#');
+        $grid->rating_id('ID Rating');
         $grid->name('Nome do Enxadrista');
         $grid->born('Data de Nascimento');
         $grid->cidade_id('Cidade')->display(function($cidade_id) {
             return Cidade::find($cidade_id)->name;
         });
         $grid->clube_id('Clube')->display(function($clube_id) {
-            return Clube::find($clube_id)->name;
+            if($clube_id) return Clube::find($clube_id)->name;
         });
 
         return $grid;
