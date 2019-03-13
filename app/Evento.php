@@ -11,6 +11,10 @@ class Evento extends Model
     protected $primaryKey = 'id';
     protected $table = 'evento';
 
+    public function grupo_evento() {
+        return $this->belongsTo("App\GrupoEvento","grupo_evento_id","id");
+    }
+
     public function cidade() {
         return $this->belongsTo("App\Cidade","cidade_id","id");
     }

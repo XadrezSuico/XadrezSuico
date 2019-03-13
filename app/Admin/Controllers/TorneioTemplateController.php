@@ -3,6 +3,7 @@
 namespace App\Admin\Controllers;
 
 use App\TorneioTemplate;
+use App\Categoria;
 use App\Http\Controllers\Controller;
 use Encore\Admin\Controllers\HasResourceActions;
 use Encore\Admin\Form;
@@ -108,7 +109,15 @@ class TorneioTemplateController extends Controller
     protected function form()
     {
         $form = new Form(new TorneioTemplate);
-        $form->text('name', 'Nome do Template de Torneio');
+        $form->tab('Informações Básicas', function ($form) {
+            $form->text('name', 'Nome do Template de Torneio');
+        })->tab('Categorias', function ($form) {
+
+            $form->hasMany('categorias', function ($form) {
+                $form->select('categoria_id', 'Categoria')->options(Categoria::all()->pluck('name', 'id'));
+            });
+
+        });
         return $form;
     }
 }

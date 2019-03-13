@@ -10,6 +10,12 @@ class Torneio extends Model
     protected $primaryKey = 'id';
     protected $table = 'torneio';
 
+    public function template() {
+        return $this->belongsTo("App\TorneioTemplate","torneio_template_id","id");
+    }
+    public function evento() {
+        return $this->belongsTo("App\Evento","evento_id","id");
+    }
     public function categorias() {
         return $this->hasMany("App\CategoriaTorneio","torneio_id","id");
     }

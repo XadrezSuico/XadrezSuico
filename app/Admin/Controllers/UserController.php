@@ -2,9 +2,8 @@
 
 namespace App\Admin\Controllers;
 
-use App\GrupoEvento;
-use App\Categoria;
-use App\TorneioTemplate;
+use App\User;
+use App\Perfil;
 use App\Http\Controllers\Controller;
 use Encore\Admin\Controllers\HasResourceActions;
 use Encore\Admin\Form;
@@ -12,7 +11,7 @@ use Encore\Admin\Grid;
 use Encore\Admin\Layout\Content;
 use Encore\Admin\Show;
 
-class GrupoEventoController extends Controller
+class UserController extends Controller
 {
     use HasResourceActions;
 
@@ -25,7 +24,7 @@ class GrupoEventoController extends Controller
     public function index(Content $content)
     {
         return $content
-            ->header('Listar Grupos de Evento')
+            ->header('Listar Usuários')
             ->description('description')
             ->body($this->grid());
     }
@@ -40,7 +39,7 @@ class GrupoEventoController extends Controller
     public function show($id, Content $content)
     {
         return $content
-            ->header('Mostrar Grupo de Evento')
+            ->header('Mostrar Usuário')
             ->description('description')
             ->body($this->detail($id));
     }
@@ -55,7 +54,7 @@ class GrupoEventoController extends Controller
     public function edit($id, Content $content)
     {
         return $content
-            ->header('Editar Grupo de Evento')
+            ->header('Editar Usuário')
             ->description('description')
             ->body($this->form_edit()->edit($id));
     }
@@ -69,7 +68,7 @@ class GrupoEventoController extends Controller
     public function create(Content $content)
     {
         return $content
-            ->header('Criar Grupo de Evento')
+            ->header('Criar Usuário')
             ->description('description')
             ->body($this->form());
     }
@@ -81,10 +80,11 @@ class GrupoEventoController extends Controller
      */
     protected function grid()
     {
-        $grid = new Grid(new GrupoEvento);
-        $grid->id('#');
-        $grid->name('Nome do Grupo de Evento');
+        $grid = new Grid(new User);
 
+        $grid->id('#');
+        $grid->name('Nome');
+        $grid->email('Email');
 
         return $grid;
     }
@@ -97,9 +97,13 @@ class GrupoEventoController extends Controller
      */
     protected function detail($id)
     {
-        $show = new Show(GrupoEvento::findOrFail($id));
+        $show = new Show(User::findOrFail($id));
 
-
+        $show->id('ID');
+        $show->name('Nome');
+        $show->email('Email');
+        $show->created_at('Criado em');
+        $show->updated_at('Atualizado em');
 
         return $show;
     }
@@ -111,10 +115,25 @@ class GrupoEventoController extends Controller
      */
     protected function form()
     {
-        $form = new Form(new GrupoEvento);
+        $form = new Form(new User);
+
         $form->tab('Informações Básicas', function ($form) {
-            $form->text('name', 'Nome do Grupo de Evento');
+
+            $form->text('name', 'Nome');
+            $form->email('email', 'Email');
+            $form->password('password', 'Senha');
+
+        })->tab('Perfis', function ($form) {
+
+            $form->hasMany('perfis', function ($form) {
+                $form->select('perfils_id', 'Perfil')->options(Perfil::all()->pluck('name', 'id'));
+            });
+
         });
+        $form->submitted(function (Form $form) {
+            //...
+        });
+
         return $form;
     }
 
@@ -125,18 +144,24 @@ class GrupoEventoController extends Controller
      */
     protected function form_edit()
     {
-        $form = new Form(new GrupoEvento);
+        $form = new Form(new User);
+
         $form->tab('Informações Básicas', function ($form) {
-            $form->text('name', 'Nome do Grupo de Evento');
-        })->tab('Categorias', function ($form) {
-            $form->hasMany('categorias', function ($form) {
-                $form->select('categoria_id', 'Categoria')->options(Categoria::all()->pluck('name', 'id'));
+
+            $form->text('name', 'Nome');
+            $form->email('email', 'Email');
+
+        })->tab('Perfis', function ($form) {
+
+            $form->hasMany('perfis', function ($form) {
+                $form->select('perfils_id', 'Perfil')->options(Perfil::all()->pluck('name', 'id'));
             });
-        })->tab('Template de Torneio', function ($form) {
-            $form->hasMany('torneios', function ($form) {
-                $form->select('torneio_template_id', 'Template de Torneio')->options(TorneioTemplate::all()->pluck('name', 'id'));
-            });
+
         });
+        $form->submitted(function (Form $form) {
+            //...
+        });
+
         return $form;
     }
 }

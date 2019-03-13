@@ -2,9 +2,7 @@
 
 namespace App\Admin\Controllers;
 
-use App\CategoriaTorneio;
-use App\Categoria;
-use App\Torneio;
+use App\Perfil;
 use App\Http\Controllers\Controller;
 use Encore\Admin\Controllers\HasResourceActions;
 use Encore\Admin\Form;
@@ -12,7 +10,7 @@ use Encore\Admin\Grid;
 use Encore\Admin\Layout\Content;
 use Encore\Admin\Show;
 
-class CategoriaTorneioController extends Controller
+class PerfilController extends Controller
 {
     use HasResourceActions;
 
@@ -25,8 +23,8 @@ class CategoriaTorneioController extends Controller
     public function index(Content $content)
     {
         return $content
-            ->header('Listar Categorias dos Torneios')
-            ->description('description')
+            ->header('Listar Perfis')
+            ->description('')
             ->body($this->grid());
     }
 
@@ -40,8 +38,8 @@ class CategoriaTorneioController extends Controller
     public function show($id, Content $content)
     {
         return $content
-            ->header('Mostrar Categoria do Torneio')
-            ->description('description')
+            ->header('Mostrar Perfil')
+            ->description('')
             ->body($this->detail($id));
     }
 
@@ -55,8 +53,8 @@ class CategoriaTorneioController extends Controller
     public function edit($id, Content $content)
     {
         return $content
-            ->header('Editar Categoria do Torneio')
-            ->description('description')
+            ->header('Editar Perfil')
+            ->description('')
             ->body($this->form()->edit($id));
     }
 
@@ -69,8 +67,8 @@ class CategoriaTorneioController extends Controller
     public function create(Content $content)
     {
         return $content
-            ->header('Vincular Categoria ao Torneio')
-            ->description('description')
+            ->header('Criar Perfil')
+            ->description('')
             ->body($this->form());
     }
 
@@ -81,16 +79,10 @@ class CategoriaTorneioController extends Controller
      */
     protected function grid()
     {
-        $grid = new Grid(new CategoriaTorneio);
+        $grid = new Grid(new Perfil);
+
         $grid->id('#');
-        $grid->torneio_id('Torneio')->display(function($torneio_id) {
-            return Torneio::find($torneio_id)->name;
-        });
-        $grid->categoria_id('Categoria')->display(function($categoria_id) {
-            return Categoria::find($categoria_id)->name;
-        });
-
-
+        $grid->name('Nome do Perfil');
 
         return $grid;
     }
@@ -103,9 +95,10 @@ class CategoriaTorneioController extends Controller
      */
     protected function detail($id)
     {
-        $show = new Show(CategoriaTorneio::findOrFail($id));
+        $show = new Show(Perfil::findOrFail($id));
 
-
+        $show->id('#');
+        $show->name('Nome do Perfil');
 
         return $show;
     }
@@ -117,16 +110,10 @@ class CategoriaTorneioController extends Controller
      */
     protected function form()
     {
-        $form = new Form(new CategoriaTorneio);
-        $form->select('torneio_id', 'Torneio')->options(function() {
-            // return Categoria::find($categoria_id)->name;
-            $return = array();
-            foreach(Torneio::all() as $torneio){
-                $return[$torneio->id] = $torneio->evento->name." - ".$torneio->name;
-            }
-            return $return;
-        });
-        $form->select('categoria_id', 'Categoria')->options(Categoria::all()->pluck('name', 'id'));
+        $form = new Form(new Perfil);
+
+        $form->text('name', 'Nome do Perfil');
+
         return $form;
     }
 }
