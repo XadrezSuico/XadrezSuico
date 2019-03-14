@@ -10,6 +10,7 @@ use App\Cidade;
 use App\Clube;
 use App\Http\Controllers\Controller;
 use Encore\Admin\Controllers\HasResourceActions;
+use Illuminate\Support\MessageBag;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Layout\Content;
@@ -99,7 +100,7 @@ class InscricaoController extends Controller
             return Cidade::find($cidade_id)->name;
         });
         $grid->clube_id('Clube')->display(function($clube_id) {
-            return Clube::find($clube_id)->name;
+            if($clube_id) return Clube::find($clube_id)->name;
         });
 
 
@@ -130,11 +131,40 @@ class InscricaoController extends Controller
     protected function form()
     {
         $form = new Form(new Inscricao);
-        $form->select('enxadrista_id', 'Enxadrista')->options(Enxadrista::all()->pluck('name', 'id'));
+        $form->select('enxadrista_id', 'Enxadrista')->options(Enxadrista::all()->pluck('name', 'id'))->rules(function($form){
+
+        });
         $form->select('torneio_id', 'Torneio')->options(Torneio::all()->pluck('name', 'id'));
         $form->select('categoria_id', 'Categoria')->options(Categoria::all()->pluck('name', 'id'));
         $form->select('cidade_id', 'Cidade')->options(Cidade::all()->pluck('name', 'id'));
         $form->select('clube_id', 'Clube')->options(Clube::all()->pluck('name', 'id'));
+
+        $form->saving(function (Form $form) {            
+            $form->model()->regulamento_aceito = true;
+            $inscricao = Inscricao::whereHas("torneio",function($query) use ($form){
+                $query->whereHas("evento",function($Query) use ($form){
+                    $Query->whereHas("torneios",function($q) use ($form){
+                        $q->whereHas("inscricoes",function($Q) use ($form) {
+                            if($form->id){
+                                $Q->where([["enxadrista_id","=",$form->enxadrista_id],["id","!=",$form->id]]);
+                            }else{
+                                $Q->where([["enxadrista_id","=",$form->enxadrista_id]]);
+                                $form->cidade_id = 4;
+                            }
+                        });
+                    });
+                });
+            })->first();
+            if(count($inscricao) > 0){
+                 $error = new MessageBag([
+                    'title'   => 'ERRO!',
+                    'message' => 'O enxadrista já se encontra cadastrado neste evento! Inscrição #'.$inscricao->id,
+                ]);
+
+                return back()->with(compact('error'));
+            }
+        });
+
         return $form;
     }
 }

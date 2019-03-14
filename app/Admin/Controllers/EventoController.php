@@ -134,6 +134,11 @@ class EventoController extends Controller
             $form->select('cidade_id', 'Cidade')->options(Cidade::all()->pluck('name', 'id'));
             $form->select('grupo_evento_id', 'Grupo de Evento')->options(GrupoEvento::all()->pluck('name', 'id'));
         })
+        ->tab('Inscrições', function ($form) {
+
+            $form->datetime('data_limite_inscricoes_abertas', 'Data Limite para Inscrições pelo Site');
+
+        })
         ->tab('Categorias', function ($form) {
 
             $form->hasMany('categorias', function ($form) {
@@ -165,6 +170,10 @@ class EventoController extends Controller
             $form->select('cidade_id', 'Cidade')->options(Cidade::all()->pluck('name', 'id'));
             $form->select('grupo_evento_id', 'Grupo de Evento')->options(GrupoEvento::all()->pluck('name', 'id'));
 
+        })->tab('Inscrições', function ($form) {
+
+            $form->datetime('data_limite_inscricoes_abertas', 'Data Limite para Inscrições pelo Site');
+
         });
 
         return $form;
@@ -187,6 +196,11 @@ class EventoController extends Controller
             $form->text('link', 'Link do Evento');
             $form->select('cidade_id', 'Cidade')->options(Cidade::all()->pluck('name', 'id'));
             $form->select('grupo_evento_id', 'Grupo de Evento')->options(GrupoEvento::all()->pluck('name', 'id'));
+
+        })
+        ->tab('Inscrições', function ($form) {
+
+            $form->datetime('data_limite_inscricoes_abertas', 'Data Limite para Inscrições pelo Site');
 
         })
         ->tab('Categorias', function ($form) {

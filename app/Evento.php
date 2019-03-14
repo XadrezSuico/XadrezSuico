@@ -42,4 +42,31 @@ class Evento extends Model
         }else
             return false;
     }
+    
+    public function getDataFimInscricoesOnline(){
+        $datetime = DateTime::createFromFormat('Y-m-d H:i:s', $this->data_limite_inscricoes_abertas);
+        if($datetime){
+            return $datetime->format("d/m/Y H:i");
+        }else
+            return false;
+    }
+    
+    public function inscricoes_encerradas($api = false){
+        $datetime = DateTime::createFromFormat('Y-m-d H:i:s', $this->data_limite_inscricoes_abertas);
+        if($datetime){
+            if($api){
+                if($datetime->getTimestamp()+(60*5) >= time()){
+                    return false;
+                }else{
+                    return true;
+                }
+            }
+            if($datetime->getTimestamp() >= time()){
+                return false;
+            }else{
+                return true;
+            }
+        }else
+            return false;
+    }
 }

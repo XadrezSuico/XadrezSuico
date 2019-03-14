@@ -88,6 +88,7 @@
 			<strong>Local:</strong> {{$evento->local}}<br/>
 			<strong>Data:</strong> {{$evento->getDataInicio()}}<br/>
 			<strong>Maiores informações em:</strong> <a href="{{$evento->link}}" target="_blank">{{$evento->link}}</a><br/>
+			@if($evento->getDataFimInscricoesOnline()) <h3><strong>Inscrições antecipadas até:</strong> {{$evento->getDataFimInscricoesOnline()}}.</h3>@endif
 		</div>
 	</div>
 	<div class="box box-primary" id="vocePossuiCadastro">
@@ -174,6 +175,9 @@
 					</select>
                     <button id="clubeNaoCadastradoInscricao" class="btn btn-success">O meu clube não está cadastrado</button>
 				</div>
+				<div class="form-group">
+					<label><input type="checkbox" id="regulamento_aceito"> Eu aceito o regulamento do {{$evento->grupo_evento->name}} integralmente.</label>
+				</div>
 			</div>
 			<!-- /.box-body -->
 
@@ -249,7 +253,9 @@
 
 			$("#enviarInscricao").on("click",function(){
 					var data = "evento_id={{$evento->id}}&enxadrista_id=".concat($("#enxadrista_id").val()).concat("&categoria_id=").concat($("#categoria_id").val()).concat("&cidade_id=").concat($("#cidade_id").val()).concat("&clube_id=").concat($("#clube_id").val());
-					
+					if($("#regulamento_aceito").is(":checked")){
+						data = data.concat("&regulamento_aceito=true");
+					}
 					$.ajax({
 						type: "post",
 						url: "{{url("/inscricao/".$evento->id."/inscricao")}}",

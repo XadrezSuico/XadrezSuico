@@ -4,7 +4,6 @@
 
 @section('content_header')
   <h1>ERRO!</h1>
-  </ol>
 @stop
 
 

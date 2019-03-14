@@ -16,7 +16,11 @@ class InscricaoController extends Controller
     public function inscricao($id){
         $evento = Evento::find($id);
         if($evento){
-            return view("inscricao.inscricao",compact("evento"));
+            if($evento->inscricoes_encerradas()){
+                return view("inscricao.encerradas",compact("evento"));
+            }else{
+                return view("inscricao.inscricao",compact("evento"));
+            }
         }else{
             return view("inscricao.naoha");
         }
@@ -25,6 +29,10 @@ class InscricaoController extends Controller
 
     public function adicionarNovaInscricao(Request $request){
         if(
+            !$request->has("regulamento_aceito")
+        ){
+            return response()->json(["ok"=>0,"error"=>1,"message" => "Você deve aceitar o regulamento do evento!","registred"=>0]);
+        }elseif(
             !$request->has("enxadrista_id") || !$request->has("categoria_id") || !$request->has("cidade_id") || !$request->has("evento_id")
         ){
             return response()->json(["ok"=>0,"error"=>1,"message" => "Um dos campos obrigatórios não está preenchido. Por favor, verifique e envie novamente!","registred"=>0]);
@@ -80,6 +88,7 @@ class InscricaoController extends Controller
                 $inscricao->clube_id = $request->input("clube_id");
             }
         }
+        $inscricao->regulamento_aceito = true;
         $inscricao->save();
         if($inscricao->id > 0){
             return response()->json(["ok"=>1,"error"=>0]);
@@ -126,7 +135,7 @@ class InscricaoController extends Controller
         }
 
         $enxadrista->name = mb_strtoupper($request->input("name"));
-        $enxadrista->cidade_id = $request->has("cidade_id");
+        $enxadrista->cidade_id = $request->input("cidade_id");
         if($request->has("clube_id")){
             if($request->input("clube_id") > 0){
                 $enxadrista->clube_id = $request->input("clube_id");
