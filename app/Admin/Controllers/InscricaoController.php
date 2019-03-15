@@ -145,11 +145,10 @@ class InscricaoController extends Controller
                 $query->whereHas("evento",function($Query) use ($form){
                     $Query->whereHas("torneios",function($q) use ($form){
                         $q->whereHas("inscricoes",function($Q) use ($form) {
-                            if($form->id){
-                                $Q->where([["enxadrista_id","=",$form->enxadrista_id],["id","!=",$form->id]]);
+                            if($form->model()->id){
+                                $Q->where([["enxadrista_id","=",$form->enxadrista_id],["id","!=",$form->model()->id]]);
                             }else{
                                 $Q->where([["enxadrista_id","=",$form->enxadrista_id]]);
-                                $form->cidade_id = 4;
                             }
                         });
                     });

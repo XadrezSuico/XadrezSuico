@@ -48,6 +48,11 @@ class InscricaoController extends Controller
         $inscricao = new Inscricao;
         $torneio = NULL;
         $evento = Evento::find($request->input("evento_id"));
+
+        if($evento->inscricoes_encerradas(true)){
+            return response()->json(["ok"=>0,"error"=>1,"message" => "O prazo de inscrições antecipadas se esgotou. As inscrições poderão ser feitas no local do evento conforme regulamento."]);
+        }
+
         foreach($evento->torneios->all() as $Torneio){
             foreach($Torneio->categorias->all() as $categoria){
                 if($categoria->categoria_id == $request->input("categoria_id")){
