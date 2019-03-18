@@ -69,4 +69,18 @@ class Evento extends Model
         }else
             return false;
     }
+
+    
+
+    
+    public function isDeletavel(){
+        if($this->id != null){
+            if($this->categorias()->count() > 0 || $this->torneios()->count() > 0){
+                return false;
+            }
+            return true;
+        }else{
+            return false;
+        }
+    }
 }

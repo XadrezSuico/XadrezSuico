@@ -40,4 +40,23 @@ class User extends Authenticatable
     public function perfis(){
         return $this->hasMany("App\UserPerfil","users_id","id");
     }
+
+    
+    public function isDeletavel(){
+        if($this->id != null){
+            if($this->perfis()->count() > 0){
+                return false;
+            }
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    public static function canRegisterWithoutLogin(){
+        if(count(User::all()) == 0){
+            return true;
+        }
+        return false;
+    }
 }
