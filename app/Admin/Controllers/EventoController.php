@@ -8,6 +8,7 @@ use App\Cidade;
 use App\Torneio;
 use App\Categoria;
 use App\CategoriaEvento;
+use App\CategoriaTorneio;
 use App\Http\Controllers\Controller;
 use Encore\Admin\Controllers\HasResourceActions;
 use Encore\Admin\Form;

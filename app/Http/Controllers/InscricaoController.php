@@ -63,7 +63,9 @@ class InscricaoController extends Controller
         if(!$torneio){
             return response()->json(["ok"=>0,"error"=>1,"message" => "Ocorreu um erro inesperado de pesquisa de Torneio. Por favor, tente novamente mais tarde."]);
         }
-        $temInscricao = $evento->torneios()->whereHas("inscricoes",function($q) use ($request){ $q->where([["enxadrista_id","=",$request->input("enxadrista_id")]]); })->first();
+        $temInscricao = $evento->torneios()->whereHas("inscricoes",function($q) use ($request){ 
+            $q->where([["enxadrista_id","=",$request->input("enxadrista_id")]]);
+        })->first();
         if(count($temInscricao) > 0){
             $inscricao = Inscricao::where([["enxadrista_id","=",$request->input("enxadrista_id")],["torneio_id","=",$temInscricao->id]])->first();
             return response()->json(["ok"=>0,"error"=>1,"message" => "Você já possui inscrição para este evento!<br/> Categoria: ".$inscricao->categoria->name."<br/> Caso queira efetuar alguma alteração, favor enviar via email para circuitoxadrezcascavel@gmail.com."]);

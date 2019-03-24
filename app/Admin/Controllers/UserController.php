@@ -56,7 +56,7 @@ class UserController extends Controller
         return $content
             ->header('Editar Usuário')
             ->description('description')
-            ->body($this->form_edit()->edit($id));
+            ->body($this->form()->edit($id));
     }
 
     /**
@@ -122,44 +122,12 @@ class UserController extends Controller
             $form->text('name', 'Nome');
             $form->email('email', 'Email');
             $form->password('password', 'Senha');
-
         })->tab('Perfis', function ($form) {
 
             $form->hasMany('perfis', function ($form) {
                 $form->select('perfils_id', 'Perfil')->options(Perfil::all()->pluck('name', 'id'));
             });
 
-        });
-        $form->submitted(function (Form $form) {
-            //...
-        });
-
-        return $form;
-    }
-
-    /**
-     * Make a form builder.
-     *
-     * @return Form
-     */
-    protected function form_edit()
-    {
-        $form = new Form(new User);
-
-        $form->tab('Informações Básicas', function ($form) {
-
-            $form->text('name', 'Nome');
-            $form->email('email', 'Email');
-
-        })->tab('Perfis', function ($form) {
-
-            $form->hasMany('perfis', function ($form) {
-                $form->select('perfils_id', 'Perfil')->options(Perfil::all()->pluck('name', 'id'));
-            });
-
-        });
-        $form->submitted(function (Form $form) {
-            //...
         });
 
         return $form;

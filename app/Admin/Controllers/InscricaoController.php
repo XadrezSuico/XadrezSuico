@@ -138,29 +138,42 @@ class InscricaoController extends Controller
         $form->select('categoria_id', 'Categoria')->options(Categoria::all()->pluck('name', 'id'));
         $form->select('cidade_id', 'Cidade')->options(Cidade::all()->pluck('name', 'id'));
         $form->select('clube_id', 'Clube')->options(Clube::all()->pluck('name', 'id'));
+        $form->checkbox('confirmado', 'Confirmado?')->options(['confirmado' => 'Confirmado?']);;
 
         $form->saving(function (Form $form) {            
             $form->model()->regulamento_aceito = true;
-            $inscricao = Inscricao::whereHas("torneio",function($query) use ($form){
-                $query->whereHas("evento",function($Query) use ($form){
-                    $Query->whereHas("torneios",function($q) use ($form){
-                        $q->whereHas("inscricoes",function($Q) use ($form) {
+            $inscricao = Inscricao::whereHas("torneio",function($q1) use ($form){
+                $q1->where([["id","=",$form->torneio_id]]);
+                $q1->whereHas("evento",function($q2) use ($form){
+                    $q2->whereHas("torneios",function($q3) use ($form){
+                        $q3->whereHas("inscricoes",function($q4) use ($form) {
                             if($form->model()->id){
-                                $Q->where([["enxadrista_id","=",$form->enxadrista_id],["id","!=",$form->model()->id]]);
+                                $q4->where([["enxadrista_id","=",$form->enxadrista_id],["id","!=",$form->model()->id]]);
                             }else{
-                                $Q->where([["enxadrista_id","=",$form->enxadrista_id]]);
+                                $q4->where([["enxadrista_id","=",$form->enxadrista_id]]);
                             }
                         });
                     });
                 });
-            })->first();
-            if(count($inscricao) > 0){
+                $q1->where([["enxadrista_id","=",$form->enxadrista_id]]);
+            });
+            // $sql = $inscricao->toSql();
+            $count = $inscricao->count();
+            $inscricao = $inscricao->first();
+            if($count > 0){
                  $error = new MessageBag([
                     'title'   => 'ERRO!',
                     'message' => 'O enxadrista já se encontra cadastrado neste evento! Inscrição #'.$inscricao->id,
                 ]);
 
                 return back()->with(compact('error'));
+            }
+
+
+            if(isset($form->confirmado["confirmado"])){
+                $form->confirmado = 1; 
+            }else{
+                $form->confirmado = 0;
             }
         });
 

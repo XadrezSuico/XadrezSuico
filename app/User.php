@@ -40,4 +40,10 @@ class User extends Authenticatable
     public function perfis(){
         return $this->hasMany("App\UserPerfil","users_id","id");
     }
+
+    public function checkPassword(){
+        if(mb_strlen($this->password) == 0){
+            $this->password = User::find($this->id)->password;
+        }
+    }
 }
