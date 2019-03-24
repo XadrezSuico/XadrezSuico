@@ -41,9 +41,30 @@ class User extends Authenticatable
         return $this->hasMany("App\UserPerfil","users_id","id");
     }
 
+<<<<<<< HEAD
     public function checkPassword(){
         if(mb_strlen($this->password) == 0){
             $this->password = User::find($this->id)->password;
         }
     }
+=======
+    
+    public function isDeletavel(){
+        if($this->id != null){
+            if($this->perfis()->count() > 0){
+                return false;
+            }
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    public static function canRegisterWithoutLogin(){
+        if(count(User::all()) == 0){
+            return true;
+        }
+        return false;
+    }
+>>>>>>> 2b93b8f13ddda6460dce067fa1494c70e222bdf7
 }
