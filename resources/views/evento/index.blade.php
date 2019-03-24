@@ -41,6 +41,7 @@
                                 <a class="btn btn-default" href="{{url("/evento/edit/".$evento->id)}}" role="button">Editar</a>
                                 <a class="btn btn-default" href="{{url("/evento/".$evento->id."/torneios")}}" role="button">Torneios</a>
                                 <a class="btn btn-success" href="{{url("/evento/inscricao/".$evento->id)}}" role="button">Nova Inscrição</a>
+                                <a class="btn btn-success" href="{{url("/evento/inscricao/".$evento->id."/confirmacao")}}" role="button">Confirmar Inscrição</a>
                                 @if($evento->isDeletavel()) <a class="btn btn-danger" href="{{url("/evento/delete/".$evento->id)}}" role="button">Apagar</a> @endif
                             </td>
                         </tr>

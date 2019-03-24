@@ -262,9 +262,9 @@
 								$("#clube_id").val(null).change();
 								if(data.updated == 1){
 									if(data.confirmed == 1){
-										$("#successMessage").html("<strong>A inscrição foi efetuada e confirmada e o cadastro do enxadrita atualizado com sucesso!</strong>");
+										$("#successMessage").html("<strong>A inscrição foi efetuada e confirmada e o cadastro do enxadrista atualizado com sucesso!</strong>");
 									}else{
-										$("#successMessage").html("<strong>A inscrição foi efetuada e o cadastro do enxadrita atualizado com com sucesso!</strong>");
+										$("#successMessage").html("<strong>A inscrição foi efetuada e o cadastro do enxadrista atualizado com com sucesso!</strong>");
 									}
 								}else{
 									if(data.confirmed == 1){
