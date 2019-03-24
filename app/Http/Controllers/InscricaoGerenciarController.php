@@ -92,10 +92,40 @@ class InscricaoGerenciarController extends Controller
         }
         $inscricao->regulamento_aceito = true;
         $inscricao->save();
-        if($inscricao->id > 0){
-            return response()->json(["ok"=>1,"error"=>0]);
+
+        if($request->has("atualizar_cadastro")){
+            $enxadrista->cidade_id = $inscricao->cidade_id;
+            if($request->has("clube_id")){
+                if($request->input("clube_id") > 0){
+                    $enxadrista->clube_id = $request->input("clube_id");
+                }else{
+                    $enxadrista->clube_id = NULL;
+                }
+            }else{
+                $enxadrista->clube_id = NULL;
+            }
+            $enxadrista->save();
+            
+        
+            if($inscricao->id > 0){
+                if($inscricao->confirmado){
+                    return response()->json(["ok"=>1,"error"=>0,"updated"=>1,"confirmed"=>1]);
+                }else{
+                    return response()->json(["ok"=>1,"error"=>0,"updated"=>1,"confirmed"=>0]);
+                }
+            }else{
+                return response()->json(["ok"=>0,"error"=>1,"message" => "Um erro inesperado aconteceu. Por favor, tente novamente mais tarde.","updated"=>1]);
+            }
         }else{
-            return response()->json(["ok"=>0,"error"=>1,"message" => "Um erro inesperado aconteceu. Por favor, tente novamente mais tarde."]);
+            if($inscricao->id > 0){
+                if($inscricao->confirmado){
+                    return response()->json(["ok"=>1,"error"=>0,"updated"=>0,"confirmed"=>1]);
+                }else{
+                    return response()->json(["ok"=>1,"error"=>0,"updated"=>0,"confirmed"=>0]);
+                }
+            }else{
+                return response()->json(["ok"=>0,"error"=>1,"message" => "Um erro inesperado aconteceu. Por favor, tente novamente mais tarde.","updated"=>0]);
+            }
         }
     }
 
@@ -218,7 +248,10 @@ class InscricaoGerenciarController extends Controller
         ])->orderBy("name","ASC")->get();
         $results = array();
         foreach($enxadristas as $enxadrista){
-            $results[] = array("id" => $enxadrista->id, "text" => $enxadrista->name." | ".$enxadrista->getBorn());
+            if($enxadrista->estaInscrito($request->input("evento_id"))){
+                $results[] = array("id" => $enxadrista->id, "text" => $enxadrista->name." | ".$enxadrista->getBorn()." - Já Está Inscrito neste Evento");
+            }else 
+                $results[] = array("id" => $enxadrista->id, "text" => $enxadrista->name." | ".$enxadrista->getBorn());
         }
         return response()->json(["results" => $results, "pagination" => true]);
     }
@@ -334,10 +367,11 @@ class InscricaoGerenciarController extends Controller
                 ["confirmado","=",false]
             ]);
         })
+        ->orderBy("id","ASC")
         ->get();
         $results = array();
         foreach($inscricoes as $inscricao){
-            $results[] = array("id" => $inscricao->id, "text" => $inscricao->enxadrista->name." | ".$inscricao->enxadrista->getBorn());
+            $results[] = array("id" => $inscricao->id, "text" => "[#".$inscricao->id."] ".$inscricao->enxadrista->name." | ".$inscricao->enxadrista->getBorn());
         }
         return response()->json(["results" => $results, "pagination" => true]);
     }
@@ -352,6 +386,107 @@ class InscricaoGerenciarController extends Controller
             }
         }else{
             return response()->json(["ok"=>0,"error"=>1,"message"=>"Não há enxadrista com esse código!"]);
+        }
+    }
+
+    public function confirmarInscricao(Request $request){
+        if(
+            !$request->has("inscricao_id") || !$request->has("categoria_id") || !$request->has("cidade_id") || !$request->has("evento_id")
+        ){
+            return response()->json(["ok"=>0,"error"=>1,"message" => "Um dos campos obrigatórios não está preenchido. Por favor, verifique e envie novamente!","registred"=>0]);
+        }elseif(
+            $request->input("inscricao_id") == NULL || $request->input("inscricao_id") == "" ||
+            $request->input("categoria_id") == NULL || $request->input("categoria_id") == "" ||
+            $request->input("cidade_id") == NULL || $request->input("cidade_id") == "" ||
+            $request->input("evento_id") == NULL || $request->input("evento_id") == ""
+        ){
+            return response()->json(["ok"=>0,"error"=>1,"message" => "Um dos campos obrigatórios não está preenchido. Por favor, verifique e envie novamente!"]);
+        }
+
+        $inscricao = Inscricao::find($request->input("inscricao_id"));
+        if(!$inscricao){
+            return response()->json(["ok"=>0,"error"=>1,"message" => "Não existe um inscrição com o código informado!"]);
+        }
+        if($inscricao->confirmado){
+            return response()->json(["ok"=>0,"error"=>1,"message" => "A inscrição já está confirmada!"]);
+        }
+        $torneio = NULL;
+        if($request->input("categoria_id") != $inscricao->categoria_id){
+            $evento = Evento::find($request->input("evento_id"));
+
+            foreach($evento->torneios->all() as $Torneio){
+                foreach($Torneio->categorias->all() as $categoria){
+                    if($categoria->categoria_id == $request->input("categoria_id")){
+                        $torneio = $Torneio;
+                    }
+                }
+            }
+            if(!$torneio){
+                return response()->json(["ok"=>0,"error"=>1,"message" => "Ocorreu um erro inesperado de pesquisa de Torneio. Por favor, tente novamente mais tarde."]);
+            }
+            
+            $categoria = Categoria::find($request->input("categoria_id"));
+            if($categoria){
+                if($categoria->idade_minima){
+                    if(!($categoria->idade_minima <= $enxadrista->howOld())){
+                        return response()->json(["ok"=>0,"error"=>1,"message" => "Você não está apto a participar da categoria que você enviou! Motivo: Não possui idade mínima."]);
+                    }
+                }
+                if($categoria->idade_maxima){
+                    if(!($categoria->idade_maxima >= $enxadrista->howOld())){
+                        return response()->json(["ok"=>0,"error"=>1,"message" => "Você não está apto a participar da categoria que você enviou! Motivo: Idade ultrapassa a máxima."]);
+                    }
+                }
+            }
+            $inscricao->categoria_id = $categoria->id;
+            $inscricao->torneio_id = $torneio->id;
+        }
+
+        if($inscricao->cidade_id != $request->input("cidade_id")) $inscricao->cidade_id = $request->input("cidade_id");
+        if($inscricao->clube_id != $request->input("clube_id"))
+            if($request->has("clube_id")){
+                if($request->input("clube_id") > 0){
+                    $inscricao->clube_id = $request->input("clube_id");
+                }
+            }
+        $inscricao->confirmado = true;
+        $inscricao->regulamento_aceito = true;
+        $inscricao->save();
+
+        if($request->has("atualizar_cadastro")){
+            $enxadrista = Enxadrista::find($inscricao->enxadrista_id);
+            $enxadrista->cidade_id = $inscricao->cidade_id;
+            if($request->has("clube_id")){
+                if($request->input("clube_id") > 0){
+                    $enxadrista->clube_id = $request->input("clube_id");
+                }else{
+                    $enxadrista->clube_id = NULL;
+                }
+            }else{
+                $enxadrista->clube_id = NULL;
+            }
+            $enxadrista->save();
+            
+        
+            if($inscricao->id > 0){
+                if($inscricao->confirmado){
+                    return response()->json(["ok"=>1,"error"=>0,"updated"=>1,"confirmed"=>1]);
+                }else{
+                    return response()->json(["ok"=>1,"error"=>0,"updated"=>1,"confirmed"=>0]);
+                }
+            }else{
+                return response()->json(["ok"=>0,"error"=>1,"message" => "Um erro inesperado aconteceu. Por favor, tente novamente mais tarde.","updated"=>1]);
+            }
+        }else{
+            if($inscricao->id > 0){
+                if($inscricao->confirmado){
+                    return response()->json(["ok"=>1,"error"=>0,"updated"=>0,"confirmed"=>1]);
+                }else{
+                    return response()->json(["ok"=>1,"error"=>0,"updated"=>0,"confirmed"=>0]);
+                }
+            }else{
+                return response()->json(["ok"=>0,"error"=>1,"message" => "Um erro inesperado aconteceu. Por favor, tente novamente mais tarde.","updated"=>0]);
+            }
         }
     }
 }

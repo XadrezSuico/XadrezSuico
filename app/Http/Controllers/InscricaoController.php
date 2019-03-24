@@ -223,7 +223,10 @@ class InscricaoController extends Controller
         ])->orderBy("name","ASC")->get();
         $results = array();
         foreach($enxadristas as $enxadrista){
-            $results[] = array("id" => $enxadrista->id, "text" => $enxadrista->name." | ".$enxadrista->getBorn());
+            if($enxadrista->estaInscrito($request->input("evento_id"))){
+                $results[] = array("id" => $enxadrista->id, "text" => $enxadrista->name." | ".$enxadrista->getBorn()." - Já Está Inscrito neste Evento");
+            }else 
+                $results[] = array("id" => $enxadrista->id, "text" => $enxadrista->name." | ".$enxadrista->getBorn());
         }
         return response()->json(["results" => $results, "pagination" => true]);
     }

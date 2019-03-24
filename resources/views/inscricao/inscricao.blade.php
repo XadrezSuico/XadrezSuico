@@ -201,7 +201,7 @@
 		function setInscricaoSelects(){
 			$("#enxadrista_id").select2({
 				ajax: {
-					url: '{{url("/inscricao/".$evento->id."/busca/enxadrista")}}',
+					url: '{{url("/inscricao/".$evento->id."/busca/enxadrista")}}?evento_id={{$evento->id}}',
 					delay: 250,
 					processResults: function (data) {
 						return {

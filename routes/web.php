@@ -39,6 +39,19 @@ Route::get('/home', 'HomeController@index')->name('home');
 
 
 
+// Novas Inscrições
+Route::get('/inscricao/{id}', 'InscricaoController@inscricao')->name('inscricao.inscricao');
+Route::get('/inscricao/{id}/busca/enxadrista', 'InscricaoController@buscaEnxadrista')->name('inscricao.busca.enxadrista');
+Route::get('/inscricao/{id}/busca/categoria', 'InscricaoController@buscaCategoria')->name('inscricao.busca.categoria');
+Route::get('/inscricao/{id}/busca/cidade', 'InscricaoController@buscaCidade')->name('inscricao.busca.cidade');
+Route::get('/inscricao/{id}/busca/clube', 'InscricaoController@buscaClube')->name('inscricao.busca.clube');
+Route::post('/inscricao/{id}/enxadrista/novo', 'InscricaoController@adicionarNovoEnxadrista')->name('inscricao.enxadrista.novo');
+Route::post('/inscricao/{id}/cidade/nova', 'InscricaoController@adicionarNovaCidade')->name('inscricao.cidade.nova');
+Route::post('/inscricao/{id}/clube/novo', 'InscricaoController@adicionarNovoClube')->name('inscricao.clube.novo');
+Route::post('/inscricao/{id}/inscricao', 'InscricaoController@adicionarNovaInscricao')->name('inscricao.enviar');
+Route::get('/inscricao/{id}/enxadrista/getCidadeClube/{enxadrista_id}', 'InscricaoController@getCidadeClube')->name('inscricao.getCidadeClube');
+
+
 Route::group(["prefix"=>"usuario"],function(){
 	Route::get('/', 'UserController@index')->name('usuario.index');
 	Route::get('/new', 'UserController@new')->name('usuario.new');
@@ -75,4 +88,5 @@ Route::group(["prefix"=>"evento"],function(){
     Route::get('/inscricao/{id}/confirmacao', 'InscricaoGerenciarController@confirmacao')->name('evento.inscricao.confirmacao');
     Route::get('/inscricao/{id}/confirmacao/busca/enxadrista', 'InscricaoGerenciarController@buscaEnxadristaParaConfirmacao')->name('evento.inscricao.confirmacao.busca.enxadrista');
     Route::get('/inscricao/{id}/confirmacao/getInfo/{inscricao_id}', 'InscricaoGerenciarController@getInscricaoDados')->name('evento.inscricao.confirmacao.getInfo');
+    Route::post('/inscricao/{id}/confirmacao/confirmar', 'InscricaoGerenciarController@confirmarInscricao')->name('evento.inscricao.confirmacao.confirmarInscricao');
 });

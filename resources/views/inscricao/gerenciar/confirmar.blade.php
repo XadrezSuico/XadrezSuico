@@ -67,6 +67,7 @@
 <!-- Main row -->
 <ul class="nav nav-pills">
   <li role="presentation"><a href="/evento">Voltar a Lista de Eventos</a></li>
+  <li role="presentation"><a href="/evento/inscricao/{{$evento->id}}">Efetuar Nova Inscrição</a></li>
 </ul>
 <div class="row">
   <!-- Left col -->
@@ -92,14 +93,14 @@
 	</div>
 	<div class="box box-primary" id="inscricao">
 		<div class="box-header">
-			<h3 class="box-title">Inscrição</h3>
+			<h3 class="box-title">Confirmar Pré-Inscrição</h3>
 		</div>
 	  <!-- form start -->
 			<div class="box-body">
 				<div class="form-group">
 					<label for="inscricao_id">Enxadrista Pré-Inscrito *</label>
 					<select id="inscricao_id" class="form-control">
-						<option value="">--- Selecione um enxadrista ---</option>
+						<option value="">--- Selecione um enxadrista pré-inscrito ---</option>
 					</select>
 				</div>
 				<div class="form-group">
@@ -122,11 +123,14 @@
 					</select>
                     <button id="clubeNaoCadastradoInscricao" class="btn btn-success">O clube não está cadastrado</button>
 				</div>
+				<div class="form-group">
+					<label><input type="checkbox" id="atualizar_cadastro"> Atualizar Cadastro</label>
+				</div>
 			</div>
 			<!-- /.box-body -->
 
 			<div class="box-footer">
-				<button id="confirmarInscricao" class="btn btn-success">Confirmar Inscrição</button>
+				<button id="confirmarInscricao" class="btn btn-success">Confirmar Pré-Inscrição</button>
 			</div>
 	</div>
 
@@ -224,18 +228,26 @@
 
 			$("#confirmarInscricao").on("click",function(){
                 var data = "evento_id={{$evento->id}}&inscricao_id=".concat($("#inscricao_id").val()).concat("&categoria_id=").concat($("#categoria_id").val()).concat("&cidade_id=").concat($("#cidade_id").val()).concat("&clube_id=").concat($("#clube_id").val());
-                if($("#confirmado").is(":checked")){
-                    data = data.concat("&confirmado=true");
+                if($("#atualizar_cadastro").is(":checked")){
+                    data = data.concat("&atualizar_cadastro=true");
                 }
                 $.ajax({
                     type: "post",
-                    url: "{{url("/evento/inscricao/".$evento->id."/inscricao")}}",
+                    url: "{{url("/evento/inscricao/".$evento->id."/confirmacao/confirmar")}}",
                     data: data,
                     dataType: "json",
                     success: function(data){
                         if(data.ok == 1){
-                            $("#inscricao").boxWidget('collapse');
-                            $("#successMessage").html("<strong>Sua inscrição foi efetuada com sucesso!</strong>");
+                            if(data.updated == 1){
+                                $("#successMessage").html("<strong>A inscrição foi confirmada e o cadastro de enxadrista atualizado com sucesso!</strong>");
+                            }else{
+                                $("#successMessage").html("<strong>A inscrição foi confirmada com sucesso!</strong>");
+                            }
+                            $("#inscricao_id").val(null).change();
+                            $("#categoria_id").val(null).change();
+                            $("#cidade_id").val(null).change();
+                            $("#clube_id").val(null).change();
+                            $("#atualizar_cadastro").prop("checked", false);
                             $("#success").modal();
                         }else{
                             $("#alertsMessage").html(data.message);
