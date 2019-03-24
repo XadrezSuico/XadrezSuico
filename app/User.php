@@ -41,13 +41,11 @@ class User extends Authenticatable
         return $this->hasMany("App\UserPerfil","users_id","id");
     }
 
-<<<<<<< HEAD
     public function checkPassword(){
         if(mb_strlen($this->password) == 0){
             $this->password = User::find($this->id)->password;
         }
     }
-=======
     
     public function isDeletavel(){
         if($this->id != null){
@@ -66,5 +64,4 @@ class User extends Authenticatable
         }
         return false;
     }
->>>>>>> 2b93b8f13ddda6460dce067fa1494c70e222bdf7
 }
