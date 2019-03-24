@@ -228,6 +228,19 @@ class InscricaoController extends Controller
         return response()->json(["results" => $results, "pagination" => true]);
     }
 
+    public function getCidadeClube($id,$enxadrista_id){
+        $enxadrista = Enxadrista::find($enxadrista_id);
+        if($enxadrista){
+            if($enxadrista->clube){
+                return response()->json(["ok"=>1,"error"=>0,"cidade"=>["id"=>$enxadrista->cidade->id,"name"=>$enxadrista->cidade->name],"clube"=>["id"=>$enxadrista->clube->id,"name"=>$enxadrista->clube->name]]);
+            }else{
+                return response()->json(["ok"=>1,"error"=>0,"cidade"=>["id"=>$enxadrista->cidade->id,"name"=>$enxadrista->cidade->name],"clube"=>["id"=>0]]);
+            }
+        }else{
+            return response()->json(["ok"=>0,"error"=>1,"message"=>"Não há enxadrista com esse código!"]);
+        }
+    }
+
     public function buscaCategoria(Request $request){
         $evento = Evento::find($request->input("evento_id"));
         $enxadrista = Enxadrista::find($request->input("enxadrista_id"));

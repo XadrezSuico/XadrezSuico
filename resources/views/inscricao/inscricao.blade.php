@@ -273,6 +273,29 @@
 						}
 					});
 			});
+			setCidadeClubeFromEnxadrista();
+		}
+
+		function setCidadeClubeFromEnxadrista(){
+			$("#enxadrista_id").on("select2:select",function(){
+				$.getJSON("/inscricao/{{$evento->id}}/enxadrista/getCidadeClube/".concat($("#enxadrista_id").val()),function(data){
+					if(data.ok == 1){
+						var newOptionCidade = new Option(data.cidade.name, data.cidade.id, false, false);
+						$('#cidade_id').append(newOptionCidade).trigger('change');
+						$("#cidade_id").val(data.cidade.id).change();
+						if(data.clube.id > 0){
+							var newOptionClube = new Option(data.clube.name, data.clube.id, false, false);
+							$('#clube_id').append(newOptionClube).trigger('change');
+							$("#clube_id").val(data.clube.id).change();
+						}else{
+							$("#clube_id").val(null).trigger('change');
+						}
+					}else{
+						$("#alertsMessage").html(data.message);
+						$("#alerts").modal();
+					}
+				});
+			});
 		}
 
         function sendNovaCidade(select_id,data){
@@ -396,7 +419,9 @@
 									if(data.clube.id > 0){
 										var newOptionClube = new Option(data.clube.name, data.clube.id, false, false);
 										$('#clube_id').append(newOptionClube).trigger('change');
-										$("#clube_id").val(data.cidade.id).change();
+										$("#clube_id").val(data.clube.id).change();
+									}else{
+										$("#clube_id").val(null).trigger('change');
 									}
 								},"800");
 							}else{
@@ -414,7 +439,9 @@
 										if(data.clube.id > 0){
 											var newOptionClube = new Option(data.clube.name, data.clube.id, false, false);
 											$('#clube_id').append(newOptionClube).trigger('change');
-											$("#clube_id").val(data.cidade.id).change();
+											$("#clube_id").val(data.clube.id).change();
+										}else{
+											$("#clube_id").val(null).trigger('change');
 										}
 									},"800");
 								}
