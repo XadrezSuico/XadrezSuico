@@ -23,11 +23,9 @@
                     <tr>
                         <th>#</th>
                         <th>Nome</th>
-                        <th>Data de Início</th>
-                        <th>Data de Fim</th>
+                        <th>Período</th>
                         <th>Local</th>
                         <th>Grupo de Evento</th>
-                        <th>Cidade</th>
                         <th width="20%">Opções</th>
                     </tr>
                 </thead>
@@ -36,15 +34,14 @@
                         <tr>
                             <td>{{$evento->id}}</td>
                             <td>{{$evento->name}}</td>
-                            <td>{{$evento->getDataInicio()}}</td>
-                            <td>{{$evento->getDataFim()}}</td>
-                            <td>{{$evento->local}}</td>
+                            <td>{{$evento->getDataInicio()}}<br/>{{$evento->getDataFim()}}</td>
+                            <td>{{$evento->cidade->name}} - {{$evento->local}}</td>
                             <td>{{$evento->grupo_evento->name}}</td>
-                            <td>{{$evento->cidade->name}}</td>
                             <td>
-                                <a class="btn btn-default" href="{{url("/usuario/edit/".$evento->id)}}" role="button">Editar</a>
-                                <a class="btn btn-default" href="{{url("/usuario/".$evento->id."/torneios")}}" role="button">Torneios</a>
-                                @if($evento->isDeletavel()) <a class="btn btn-danger" href="{{url("/usuario/delete/".$evento->id)}}" role="button">Apagar</a> @endif
+                                <a class="btn btn-default" href="{{url("/evento/edit/".$evento->id)}}" role="button">Editar</a>
+                                <a class="btn btn-default" href="{{url("/evento/".$evento->id."/torneios")}}" role="button">Torneios</a>
+                                <a class="btn btn-success" href="{{url("/evento/inscricao/".$evento->id)}}" role="button">Nova Inscrição</a>
+                                @if($evento->isDeletavel()) <a class="btn btn-danger" href="{{url("/evento/delete/".$evento->id)}}" role="button">Apagar</a> @endif
                             </td>
                         </tr>
                     @endforeach
