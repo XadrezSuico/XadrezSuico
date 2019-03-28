@@ -16,6 +16,23 @@ class InscricaoGerenciarController extends Controller
     public function __construct(){
         $this->middleware("auth");
     }
+	
+	public function index($id,$torneio_id){
+        $evento = Evento::find($id);
+        $torneio = Torneio::find($torneio_id);
+        $inscricoes = $torneio->inscricoes->all();
+		return view("evento.torneio.inscricao.index",compact("evento","torneio","inscricoes"));
+	}
+
+
+
+
+
+
+
+
+
+
 
     public function inscricao($id){
         $evento = Evento::find($id);

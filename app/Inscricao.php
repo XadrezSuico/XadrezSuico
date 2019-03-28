@@ -29,4 +29,12 @@ class Inscricao extends Model
     public function clube() {
         return $this->belongsTo("App\Clube","clube_id","id");
     }
+    
+    public function isDeletavel(){
+        if($this->id != null){
+            return true;
+        }else{
+            return false;
+        }
+    }
 }

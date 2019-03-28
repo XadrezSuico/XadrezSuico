@@ -32,4 +32,15 @@ class Torneio extends Model
     public function inscricoes() {
         return $this->hasMany("App\Inscricao","torneio_id","id");
     }
+    
+    public function isDeletavel(){
+        if($this->id != null){
+            if($this->categorias()->count() > 0 || $this->inscricoes()->count() > 0){
+                return false;
+            }
+            return true;
+        }else{
+            return false;
+        }
+    }
 }
