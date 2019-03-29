@@ -21,6 +21,9 @@ class Enxadrista extends Model
     public function inscricoes() {
         return $this->hasMany("App\Inscricao","enxadrista_id","id");
     }
+    public function ratings() {
+        return $this->hasMany("App\Rating","enxadrista_id","id");
+    }
 
 
     public function setBorn($born){

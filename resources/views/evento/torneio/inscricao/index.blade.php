@@ -23,6 +23,7 @@
                     <tr>
                         <th>#</th>
                         <th>Nome</th>
+                        <th>Rating</th>
                         <th>Categoria</th>
                         <th>Cidade</th>
                         <th>Clube</th>
@@ -34,6 +35,7 @@
                         <tr>
                             <td>{{$inscricao->id}}</td>
                             <td>{{$inscricao->enxadrista->name}}</td>
+                            <td>@if($inscricao->enxadrista->ratings()->where([["tipo_ratings_id","=",$evento->tipo_rating->tipo_ratings_id]])->count() > 0) {{$inscricao->enxadrista->ratings()->where([["tipo_ratings_id","=",$evento->tipo_rating->tipo_ratings_id]])->first()->valor}} @else Não Há @endif</td>
                             <td>{{$inscricao->categoria->name}}</td>
                             <td>{{$inscricao->cidade->name}}</td>
                             <td>@if($inscricao->clube) {{$inscricao->clube->name}} @else Sem Clube @endif</td>

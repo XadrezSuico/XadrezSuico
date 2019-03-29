@@ -26,6 +26,10 @@ class Evento extends Model
     public function torneios() {
         return $this->hasMany("App\Torneio","evento_id","id");
     }
+
+    public function tipo_rating() {
+        return $this->hasOne("App\TipoRatingEvento","evento_id","id");
+    }
     
     public function getDataInicio(){
         $datetime = DateTime::createFromFormat('Y-m-d', $this->data_inicio);

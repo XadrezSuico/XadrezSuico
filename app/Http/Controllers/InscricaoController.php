@@ -218,15 +218,24 @@ class InscricaoController extends Controller
 
 
     public function buscaEnxadrista(Request $request){
+        $evento = Evento::find($request->input("evento_id"));
         $enxadristas = Enxadrista::where([
             ["name","like","%".$request->input("q")."%"],
         ])->orderBy("name","ASC")->get();
         $results = array();
         foreach($enxadristas as $enxadrista){
-            if($enxadrista->estaInscrito($request->input("evento_id"))){
-                $results[] = array("id" => $enxadrista->id, "text" => $enxadrista->name." | ".$enxadrista->getBorn()." - Já Está Inscrito neste Evento");
-            }else 
-                $results[] = array("id" => $enxadrista->id, "text" => $enxadrista->name." | ".$enxadrista->getBorn());
+            if($enxadrista->ratings()->where([["tipo_ratings_id","=",$evento->tipo_rating->tipo_ratings_id]])->count() > 0){
+                $rating = $enxadrista->ratings()->where([["tipo_ratings_id","=",$evento->tipo_rating->tipo_ratings_id]])->first();
+                if($enxadrista->estaInscrito($request->input("evento_id"))){
+                    $results[] = array("id" => $enxadrista->id, "text" => $enxadrista->name." | ".$enxadrista->getBorn()." | Rating: ".$rating->valor." - Já Está Inscrito neste Evento");
+                }else 
+                    $results[] = array("id" => $enxadrista->id, "text" => $enxadrista->name." | ".$enxadrista->getBorn()." | Rating: ".$rating->valor);
+            }else{
+                if($enxadrista->estaInscrito($request->input("evento_id"))){
+                    $results[] = array("id" => $enxadrista->id, "text" => $enxadrista->name." | ".$enxadrista->getBorn()." - Já Está Inscrito neste Evento");
+                }else 
+                    $results[] = array("id" => $enxadrista->id, "text" => $enxadrista->name." | ".$enxadrista->getBorn());
+            }
         }
         return response()->json(["results" => $results, "pagination" => true]);
     }

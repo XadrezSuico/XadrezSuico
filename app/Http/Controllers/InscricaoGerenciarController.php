@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 use App\Inscricao;
 use App\Evento;
 use App\Torneio;
@@ -23,7 +24,72 @@ class InscricaoGerenciarController extends Controller
         $inscricoes = $torneio->inscricoes->all();
 		return view("evento.torneio.inscricao.index",compact("evento","torneio","inscricoes"));
 	}
+	
+	public function list_to_manager($id,$torneio_id){
+        $evento = Evento::find($id);
+        $torneio = Torneio::find($torneio_id);
+        $inscricoes = $torneio->inscricoes()->where([["confirmado","=",true]])->get();
+        
+        $texto = "No;Nome Completo;ID;FIDE;DNasc;Cat;Gr;NoClube;Nome Clube;Sobrenome;Nome\r\n";
+    
+        $i = 1;
+        foreach($inscricoes as $inscricao){
+            $texto .= $i++.";";
+            $texto .= $inscricao->enxadrista->name.";";
+            $texto .= $inscricao->enxadrista->id.";";
+            if($inscricao->enxadrista->ratings()->where([["tipo_ratings_id","=",$evento->tipo_rating->tipo_ratings_id]])->count() > 0){
+                $rating = $inscricao->enxadrista->ratings()->where([["tipo_ratings_id","=",$evento->tipo_rating->tipo_ratings_id]])->first();
+                $texto .= $rating->valor.";";
+            }else{
+                $texto .= ";";
+            }
+            $texto .= $inscricao->enxadrista->getBornToSM().";";
+            $texto .= $inscricao->categoria->cat_code.";";
+            $texto .= $inscricao->categoria->code.";";
+            if($inscricao->clube){
+                $texto .= $inscricao->clube->id.";";
+                $texto .= $inscricao->cidade->name." - ".$inscricao->clube->name.";";
+            }else{
+                $texto .= ";";
+                $texto .= $inscricao->cidade->name.";";
+            }
 
+            $nome_exp = explode(" ", $inscricao->enxadrista->name);
+            $count_nome = count($nome_exp);
+            $i = 1;
+            foreach($nome_exp as $n_exp){
+                if($i != $count_nome){
+                    $texto .= $n_exp;
+                }
+                if($i < $count_nome - 1){
+                    $texto .= " ";
+                }else{
+                    if($i == $count_nome){
+                        $texto .= ";";
+                    }
+                }
+                $i++;
+            }
+            $texto .= $nome_exp[$count_nome - 1]."\r\n";
+        }
+
+        // file name that will be used in the download
+        $fileName = "Exp.TXT";
+
+        // use headers in order to generate the download
+        $headers = [
+        'Content-type' => 'text/plain', 
+        'Content-Disposition' => sprintf('attachment; filename="%s"', $fileName),
+        'Content-Length' => sizeof($texto)
+        ];
+
+        // make a response, with the content, a 200 response code and the headers
+        return response(utf8_decode($texto))->withHeaders([
+                    'Content-Type' => 'text/plain; charset=utf-8',
+                    'Cache-Control' => 'no-store, no-cache',
+                    'Content-Disposition' => 'attachment; filename="Exp.TXT',
+                ]);
+    }
 
 
 
