@@ -32,6 +32,16 @@ class Torneio extends Model
     public function inscricoes() {
         return $this->hasMany("App\Inscricao","torneio_id","id");
     }
+
+    public function getCountInscritos(){
+        return $this->inscricoes()->count();
+    }
+    public function getCountInscritosConfirmados(){
+        return $this->inscricoes()->where([["confirmado","=",true]])->count();
+    }
+    public function getCountInscritosNaoConfirmados(){
+        return $this->inscricoes()->where([["confirmado","=",false]])->count();
+    }
     
     public function isDeletavel(){
         if($this->id != null){

@@ -25,6 +25,9 @@
                         <th>#</th>
                         <th>Nome</th>
                         <th>Categorias</th>
+                        <th>Inscritos</th>
+                        <th>Confirmados</th>
+                        <th>Não Confirmados</th>
                         <th>Template de Torneio</th>
                         <th width="20%">Opções</th>
                     </tr>
@@ -39,6 +42,9 @@
                                     {{$categoria->categoria->name}},
                                 @endforeach
                             </td>
+                            <td>{{$torneio->getCountInscritos()}}</td>
+                            <td>{{$torneio->getCountInscritosConfirmados()}}</td>
+                            <td>{{$torneio->getCountInscritosNaoConfirmados()}}</td>
                             <td>
                                 @if($torneio->template)
                                     {{$torneio->template->name}}
@@ -50,6 +56,7 @@
                                 <a class="btn btn-default" href="{{url("/evento/".$evento->id."/torneios/edit/".$torneio->id)}}" role="button">Editar</a>
                                 <a class="btn btn-default" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/inscricoes")}}" role="button">Inscrições</a>
                                 <a class="btn btn-success" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/inscricoes/sm")}}" role="button" target="_blank">Baixar Inscrições Confirmadas</a>
+                                <a class="btn btn-warning" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/inscricoes/sm/all")}}" role="button" target="_blank">Baixar Todas as Inscrições</a>
                                 @if($torneio->isDeletavel()) <a class="btn btn-danger" href="{{url("/evento/".$evento->id."/torneios/delete/".$torneio->id)}}" role="button">Apagar</a> @endif
                             </td>
                         </tr>

@@ -11,6 +11,7 @@ use App\Cidade;
 use App\Clube;
 use App\Enxadrista;
 use App\Categoria;
+use App\TipoRatingRegras;
 
 class InscricaoGerenciarController extends Controller
 {
@@ -30,6 +31,53 @@ class InscricaoGerenciarController extends Controller
         $torneio = Torneio::find($torneio_id);
         $inscricoes = $torneio->inscricoes()->where([["confirmado","=",true]])->get();
         
+        $texto = $this->generateTxt($inscricoes,$evento,$torneio);
+
+        // file name that will be used in the download
+        $fileName = "Exp.TXT";
+
+        // use headers in order to generate the download
+        $headers = [
+        'Content-type' => 'text/plain', 
+        'Content-Disposition' => sprintf('attachment; filename="%s"', $fileName),
+        'Content-Length' => sizeof($texto)
+        ];
+
+        // make a response, with the content, a 200 response code and the headers
+        return response(utf8_decode($texto))->withHeaders([
+                    'Content-Type' => 'text/plain; charset=utf-8',
+                    'Cache-Control' => 'no-store, no-cache',
+                    'Content-Disposition' => 'attachment; filename="Exp.TXT',
+                ]);
+    }
+
+    
+	public function list_to_manager_all($id,$torneio_id){
+        $evento = Evento::find($id);
+        $torneio = Torneio::find($torneio_id);
+        $inscricoes = $torneio->inscricoes()->get();
+        
+        $texto = $this->generateTxt($inscricoes,$evento,$torneio);
+
+        // file name that will be used in the download
+        $fileName = "Exp.TXT";
+
+        // use headers in order to generate the download
+        $headers = [
+        'Content-type' => 'text/plain', 
+        'Content-Disposition' => sprintf('attachment; filename="%s"', $fileName),
+        'Content-Length' => sizeof($texto)
+        ];
+
+        // make a response, with the content, a 200 response code and the headers
+        return response(utf8_decode($texto))->withHeaders([
+                    'Content-Type' => 'text/plain; charset=utf-8',
+                    'Cache-Control' => 'no-store, no-cache',
+                    'Content-Disposition' => 'attachment; filename="Exp.TXT',
+                ]);
+    }
+
+    private function generateTxt($inscricoes,$evento,$torneio){
         $texto = "No;Nome Completo;ID;FIDE;DNasc;Cat;Gr;NoClube;Nome Clube;Sobrenome;Nome\r\n";
     
         $i = 1;
@@ -37,11 +85,37 @@ class InscricaoGerenciarController extends Controller
             $texto .= $i++.";";
             $texto .= $inscricao->enxadrista->name.";";
             $texto .= $inscricao->enxadrista->id.";";
+
+            $rating_regra = TipoRatingRegras::where([
+                    ["tipo_ratings_id","=",$evento->tipo_rating->tipo_ratings_id],
+                ])
+                ->where(function($q1) use ($evento,$inscricao){
+                    $q1->where([
+                        ["idade_minima","<=",$inscricao->enxadrista->howOld()],
+                        ["idade_maxima","=",NULL]
+                    ]);
+                    $q1->orWhere([
+                        ["idade_minima","=",NULL],
+                        ["idade_maxima",">=",$inscricao->enxadrista->howOld()]
+                    ]);
+                    $q1->orWhere([
+                        ["idade_minima","<=",$inscricao->enxadrista->howOld()],
+                        ["idade_maxima",">=",$inscricao->enxadrista->howOld()]
+                    ]);
+                })
+                ->first();
             if($inscricao->enxadrista->ratings()->where([["tipo_ratings_id","=",$evento->tipo_rating->tipo_ratings_id]])->count() > 0){
                 $rating = $inscricao->enxadrista->ratings()->where([["tipo_ratings_id","=",$evento->tipo_rating->tipo_ratings_id]])->first();
-                $texto .= $rating->valor.";";
+                
+                if($rating->valor > 0){
+                    $texto .= $rating->valor.";";
+                }else{
+                    $texto .= $rating_regra->inicial.";";
+                }
+                // $texto .= $rating_regra->k.";";
             }else{
-                $texto .= ";";
+                $texto .= $rating_regra->inicial.";";
+                // $texto .= $rating_regra->k.";";
             }
             $texto .= $inscricao->enxadrista->getBornToSM().";";
             $texto .= $inscricao->categoria->cat_code.";";
@@ -72,23 +146,35 @@ class InscricaoGerenciarController extends Controller
             }
             $texto .= $nome_exp[$count_nome - 1]."\r\n";
         }
+        return $texto;
+    }
 
-        // file name that will be used in the download
-        $fileName = "Exp.TXT";
+    static function cmp_obj($inscrito_a,$inscrito_b){
+        $evento = $inscrito_a->torneio->evento;
+        $r_a = $inscrito_a->enxadrista->ratingParaEvento($evento->id);
+        $r_b = $inscrito_b->enxadrista->ratingParaEvento($evento->id);
+        if($r_a == $r_b){
+            return strnatcmp($inscrito_a->enxadrista->getName(),$inscrito_b->enxadrista->getName());
+        }else{
+            if($r_a > $r_b){
+                return -1;
+            }
+            return 1;
+        }
+    }
 
-        // use headers in order to generate the download
-        $headers = [
-        'Content-type' => 'text/plain', 
-        'Content-Disposition' => sprintf('attachment; filename="%s"', $fileName),
-        'Content-Length' => sizeof($texto)
-        ];
+	public function report_list_subscriptions($id,$torneio_id){
+        $evento = Evento::find($id);
+        $torneio = Torneio::find($torneio_id);
+        $inscricoes = $torneio->inscricoes()->get();
 
-        // make a response, with the content, a 200 response code and the headers
-        return response(utf8_decode($texto))->withHeaders([
-                    'Content-Type' => 'text/plain; charset=utf-8',
-                    'Cache-Control' => 'no-store, no-cache',
-                    'Content-Disposition' => 'attachment; filename="Exp.TXT',
-                ]);
+        $inscritos = array();
+        foreach($inscricoes as $inscricao){
+            $inscritos[] = $inscricao;
+        }
+        usort($inscritos, array("App\Http\Controllers\InscricaoGerenciarController","cmp_obj"));
+        
+        return view("evento.torneio.inscricao.relatorio.inscritos",compact("evento","torneio","inscritos"));
     }
 
 

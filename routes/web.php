@@ -98,6 +98,8 @@ Route::group(["prefix"=>"evento"],function(){
         Route::group(["prefix"=>"{torneio_id}/inscricoes"],function(){
 	        Route::get('/', 'InscricaoGerenciarController@index')->name('evento.torneios.inscricoes.index');
 	        Route::get('/sm', 'InscricaoGerenciarController@list_to_manager')->name('evento.torneios.inscricoes.sm');
+	        Route::get('/relatorio/inscritos', 'InscricaoGerenciarController@report_list_subscriptions')->name('evento.torneios.inscricoes.relatorio.inscritos');
+	        Route::get('/sm/all', 'InscricaoGerenciarController@list_to_manager_all')->name('evento.torneios.inscricoes.sm.all');
         });
     });
 });

@@ -25,6 +25,9 @@ class Enxadrista extends Model
         return $this->hasMany("App\Rating","enxadrista_id","id");
     }
 
+    public function getName(){
+        return mb_strtoupper($this->name);
+    }
 
     public function setBorn($born){
         $datetime = DateTime::createFromFormat('d/m/Y', $born);
@@ -74,6 +77,45 @@ class Enxadrista extends Model
             });
         })->count() > 0){
             return true;
+        }
+        return false;
+    }
+
+    public function ratingParaEvento($evento_id){
+        $enxadrista = $this;
+        $evento = Evento::find($evento_id);
+        $inscricao = $this->whereHas("inscricoes",function($q1) use ($evento_id,$enxadrista) {
+            $q1->where([["enxadrista_id","=",$enxadrista->id]]);
+            $q1->whereHas("torneio",function($q2) use ($evento_id,$enxadrista) {
+                $q2->where([["evento_id","=",$evento_id]]);
+            });
+        });
+        if($inscricao->count() > 0){
+            $rating_regra = TipoRatingRegras::where([
+                    ["tipo_ratings_id","=",$evento->tipo_rating->tipo_ratings_id],
+                ])
+                ->where(function($q1) use ($evento,$enxadrista){
+                    $q1->where([
+                        ["idade_minima","<=",$enxadrista->howOld()],
+                        ["idade_maxima","=",NULL]
+                    ]);
+                    $q1->orWhere([
+                        ["idade_minima","=",NULL],
+                        ["idade_maxima",">=",$enxadrista->howOld()]
+                    ]);
+                    $q1->orWhere([
+                        ["idade_minima","<=",$enxadrista->howOld()],
+                        ["idade_maxima",">=",$enxadrista->howOld()]
+                    ]);
+                })
+                ->first();
+            $rating = $this->ratings()->where([["tipo_ratings_id","=",$evento->tipo_rating->tipo_ratings_id]])->first();
+            if($rating){
+                if($rating->valor > 0){
+                    return $rating->valor;
+                }
+            }
+            return $rating_regra->inicial;
         }
         return false;
     }
