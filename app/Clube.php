@@ -13,4 +13,8 @@ class Clube extends Model
     public function cidade() {
         return $this->belongsTo("App\Cidade","cidade_id","id");
     }
+
+    public function getName(){
+        return mb_strtoupper($this->name);
+    }
 }

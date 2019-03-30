@@ -13,4 +13,8 @@ class Cidade extends Model
     public function clubes() {
         return $this->hasMany("App/Clube","cidade_id","id");
     }
+
+    public function getName(){
+        return mb_strtoupper($this->name);
+    }
 }

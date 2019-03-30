@@ -81,7 +81,14 @@ class InscricaoGerenciarController extends Controller
         $texto = "No;Nome Completo;ID;FIDE;DNasc;Cat;Gr;NoClube;Nome Clube;Sobrenome;Nome\r\n";
     
         $i = 1;
+        
+        $inscritos = array();
         foreach($inscricoes as $inscricao){
+            $inscritos[] = $inscricao;
+        }
+        usort($inscritos, array("App\Http\Controllers\InscricaoGerenciarController","cmp_obj"));
+
+        foreach($inscritos as $inscricao){
             $texto .= $i++.";";
             $texto .= $inscricao->enxadrista->name.";";
             $texto .= $inscricao->enxadrista->id.";";
@@ -162,6 +169,25 @@ class InscricaoGerenciarController extends Controller
             return 1;
         }
     }
+    static function cmp_obj_alf($inscrito_a,$inscrito_b){
+        return strnatcmp($inscrito_a->enxadrista->getName(),$inscrito_b->enxadrista->getName());
+    }
+    
+    static function cmp_obj_club($inscrito_a,$inscrito_b){
+        $evento = $inscrito_a->torneio->evento;
+        if($inscrito_a->cidade_id == $inscrito_b->cidade_id){
+            if($inscrito_a->clube_id == $inscrito_b->clube_id){
+                return strnatcmp($inscrito_a->enxadrista->getName(),$inscrito_b->enxadrista->getName());
+            }else{
+                if($inscrito_a->clube_id == NULL || $inscrito_b->clube_id == NULL){
+                    return strnatcmp($inscrito_a->enxadrista->getName(),$inscrito_b->enxadrista->getName());
+                }
+                return strnatcmp($inscrito_a->clube->getName(),$inscrito_b->clube->getName());
+            }
+        }else{
+            return strnatcmp($inscrito_a->cidade->getName(),$inscrito_b->cidade->getName());
+        }     
+    }
 
 	public function report_list_subscriptions($id,$torneio_id){
         $evento = Evento::find($id);
@@ -173,6 +199,34 @@ class InscricaoGerenciarController extends Controller
             $inscritos[] = $inscricao;
         }
         usort($inscritos, array("App\Http\Controllers\InscricaoGerenciarController","cmp_obj"));
+        
+        return view("evento.torneio.inscricao.relatorio.inscritos",compact("evento","torneio","inscritos"));
+    }
+
+	public function report_list_subscriptions_alf($id,$torneio_id){
+        $evento = Evento::find($id);
+        $torneio = Torneio::find($torneio_id);
+        $inscricoes = $torneio->inscricoes()->get();
+
+        $inscritos = array();
+        foreach($inscricoes as $inscricao){
+            $inscritos[] = $inscricao;
+        }
+        usort($inscritos, array("App\Http\Controllers\InscricaoGerenciarController","cmp_obj_alf"));
+        
+        return view("evento.torneio.inscricao.relatorio.inscritos",compact("evento","torneio","inscritos"));
+    }
+
+	public function report_list_subscriptions_cidade_alf($id,$torneio_id){
+        $evento = Evento::find($id);
+        $torneio = Torneio::find($torneio_id);
+        $inscricoes = $torneio->inscricoes()->get();
+
+        $inscritos = array();
+        foreach($inscricoes as $inscricao){
+            $inscritos[] = $inscricao;
+        }
+        usort($inscritos, array("App\Http\Controllers\InscricaoGerenciarController","cmp_obj_club"));
         
         return view("evento.torneio.inscricao.relatorio.inscritos",compact("evento","torneio","inscritos"));
     }
