@@ -23,7 +23,7 @@ class GrupoEvento extends Model
     }
 
     public function criterios() {
-        return $this->hasMany("App\CriterioDesempateGRupoEvento","grupo_evento_id","id");
+        return $this->hasMany("App\CriterioDesempateGrupoEvento","grupo_evento_id","id");
     }
 
     public function tipo_rating() {
