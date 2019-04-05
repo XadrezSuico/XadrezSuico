@@ -9,4 +9,8 @@ class CriterioDesempate extends Model
     public $timestamps = true;
     protected $primaryKey = 'id';
     protected $table = 'criterio_desempate';
+
+    // public static function isCriterio($tag){
+    //     $criterio = CriterioDesempate::where()
+    // }
 }

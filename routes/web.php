@@ -95,6 +95,8 @@ Route::group(["prefix"=>"evento"],function(){
 
     Route::group(["prefix"=>"{id}/torneios"],function(){
 	    Route::get('/', 'TorneioController@index')->name('evento.torneios.index');
+	    Route::get('/{torneio_id}/resultados', 'TorneioController@formResults')->name('evento.torneios.resultados');
+	    Route::post('/{torneio_id}/resultados', 'TorneioController@sendResultsTxt')->name('evento.torneios.resultados.post');
         Route::group(["prefix"=>"{torneio_id}/inscricoes"],function(){
 	        Route::get('/', 'InscricaoGerenciarController@index')->name('evento.torneios.inscricoes.index');
 	        Route::get('/sm', 'InscricaoGerenciarController@list_to_manager')->name('evento.torneios.inscricoes.sm');

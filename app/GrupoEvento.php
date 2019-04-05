@@ -21,4 +21,12 @@ class GrupoEvento extends Model
     public function categorias() {
         return $this->hasMany("App\CategoriaGrupoEvento","grupo_evento_id","id");
     }
+
+    public function criterios() {
+        return $this->hasMany("App\CriterioDesempateGRupoEvento","grupo_evento_id","id");
+    }
+
+    public function tipo_rating() {
+        return $this->hasOne("App\TipoRatingEvento","grupo_evento_id","id");
+    }
 }

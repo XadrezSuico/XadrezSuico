@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use App\TipoRatingRegras;
 use DateTime;
 
 class Evento extends Model
@@ -25,6 +26,10 @@ class Evento extends Model
 
     public function torneios() {
         return $this->hasMany("App\Torneio","evento_id","id");
+    }
+
+    public function criterios() {
+        return $this->hasMany("App\CriterioDesempateEvento","evento_id","id");
     }
 
     public function tipo_rating() {
@@ -72,6 +77,27 @@ class Evento extends Model
             }
         }else
             return false;
+    }
+
+    public function getRegraRating(){
+        return TipoRatingRegras::where([
+                ["tipo_ratings_id","=",$evento->tipo_rating->tipo_ratings_id],
+            ])
+            ->where(function($q1) use ($evento,$enxadrista){
+                $q1->where([
+                    ["idade_minima","<=",$enxadrista->howOld()],
+                    ["idade_maxima","=",NULL]
+                ]);
+                $q1->orWhere([
+                    ["idade_minima","=",NULL],
+                    ["idade_maxima",">=",$enxadrista->howOld()]
+                ]);
+                $q1->orWhere([
+                    ["idade_minima","<=",$enxadrista->howOld()],
+                    ["idade_maxima",">=",$enxadrista->howOld()]
+                ]);
+            })
+            ->first();
     }
 
     

@@ -42,6 +42,21 @@ class Torneio extends Model
     public function getCountInscritosNaoConfirmados(){
         return $this->inscricoes()->where([["confirmado","=",false]])->count();
     }
+    public function getCountCriterios(){
+        if($this->evento->criterios()->count() > 0) return $this->evento->criterios()->count();
+        return $this->evento->grupo_evento->criterios()->count();
+    }
+    public function getCriterios(){
+        if($this->evento->criterios()->count() > 0) return $this->evento->criterios()->orderBy("prioridade","ASC")->get();
+        return $this->evento->grupo_evento->criterios()->orderBy("prioridade","ASC")->get();
+    }
+    public function findByTagCategoria($tag){
+        return Torneio::whereHas("categorias",function ($q0) use ($tag){
+            $q0->whereHas("categoria",function($q1) use ($tag){
+                $q1->where([["code","=",$tag]]);
+            });
+        })->first();
+    }
     
     public function isDeletavel(){
         if($this->id != null){
