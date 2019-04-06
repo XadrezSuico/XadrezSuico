@@ -27,6 +27,11 @@ class AppServiceProvider extends ServiceProvider
     public function boot(Dispatcher $events)
     {
 		$events->listen(BuildingMenu::class, function (BuildingMenu $event) {
+            $event->menu->add([
+                'text' => 'Ratings',
+                'url'  => '/rating',
+                'icon' => 'star'
+            ]);
             if(Auth::check()){
                 $event->menu->add([
                     'text' => 'Eventos',

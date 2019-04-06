@@ -53,6 +53,16 @@ Route::group(["prefix"=>"inscricao"],function(){
     Route::get('/{id}/enxadrista/getCidadeClube/{enxadrista_id}', 'InscricaoController@getCidadeClube')->name('inscricao.getCidadeClube');
 });
 
+Route::group(["prefix"=>"rating"],function(){
+    Route::get('/', 'RatingController@index')->name('rating.index');
+    Route::get('/list/{tipo_rating_id}', 'RatingController@list')->name('rating.list');
+    Route::get('/{tipo_rating_id}/view/{rating_id}', 'RatingController@view')->name('rating.view');
+});
+
+
+
+
+
 Route::group(["prefix"=>"usuario"],function(){
 	Route::get('/', 'UserController@index')->name('usuario.index');
 	Route::get('/new', 'UserController@new')->name('usuario.new');
