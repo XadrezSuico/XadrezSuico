@@ -4,6 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use App\TipoRatingRegras;
+use App\Enxadrista;
 use DateTime;
 
 class Evento extends Model
@@ -79,7 +80,9 @@ class Evento extends Model
             return false;
     }
 
-    public function getRegraRating(){
+    public function getRegraRating($enxadrista_id){
+        $evento = $this;
+        $enxadrista = Enxadrista::find($enxadrista_id);
         return TipoRatingRegras::where([
                 ["tipo_ratings_id","=",$evento->tipo_rating->tipo_ratings_id],
             ])

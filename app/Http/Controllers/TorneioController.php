@@ -72,6 +72,7 @@ class TorneioController extends Controller
 				$inscricao = Inscricao::where([["enxadrista_id","=",$line[($fields["ID"])]]])->first();
 				$enxadrista = Enxadrista::find($line[($fields["ID"])]);
 				if(!$inscricao){
+					echo "Não há inscrição deste enxadrista. <br/>";
 					if($enxadrista){
 						$inscricao = new Inscricao;
 						$inscricao->enxadrista_id = $enxadrista->id;
@@ -83,6 +84,7 @@ class TorneioController extends Controller
 					}
 				}	
 				if($enxadrista && $inscricao){
+					echo "Há inscrição deste enxadrista. <br/>";
 					$exp_meio = explode("½",$line[($fields["Pts"])]);
 					$exp_virgula = explode(",",$line[($fields["Pts"])]);
 
@@ -93,34 +95,40 @@ class TorneioController extends Controller
 					$j = 1;
 					$desempates = InscricaoCriterioDesempate::where([["inscricao_id","=",$inscricao->id]])->get();
 					foreach($desempates as $desempate){
+						echo "Apagando desempate antigo. <br/>";
 						$desempate->delete();
 					}
 					
 					foreach($torneio->getCriterios() as $criterio){
 						if($criterio->softwares_id){
+							echo "Inserindo critério de desempate '".$criterio->criterio->name."' <br/>";
 							$exp_meio = explode("½",$line[($fields["C".$j])]);
 							$exp_virgula = explode(",",$line[($fields["C".$j])]);
 
 							$desempate = new InscricaoCriterioDesempate;
 							$desempate->inscricao_id = $inscricao->id;
-							$desempate->criterio_desempate_id = $criterio->id;
+							$desempate->criterio_desempate_id = $criterio->criterio->id;
 							$desempate->valor = (count($exp_meio) > 1) ? $exp_meio[0].".5" : ((count($exp_virgula) > 1) ? $exp_virgula[0].".".$exp_virgula[1] : $exp_virgula[0]);
 							$desempate->save();
 							$j++;
 						}
 					}
 					if($torneio->evento->tipo_rating){
+						echo "O evento calcula rating. <br/>";
 						$temRating = $enxadrista->temRating($torneio->evento->id);
 						if($temRating){
+							echo "O enxadrista possui rating deste tipo. Rating #".$temRating["rating"]->id." <br/>";
 							$rating = $temRating["rating"];
 							$movimentacao = MovimentacaoRating::where([
 								["ratings_id","=",$rating->id],
 								["torneio_id","=",$torneio->id],
 							])->first();
 							if($movimentacao){
+								echo "Apagando movimentação de rating deste torneio. <br/>";
 								$movimentacao->delete();
 							}
 							if($temRating["ok"] == 0){
+								echo "O rating dele está como 0. Colocando rating como o inicial. <br/>";
 								if($rating->movimentacoes()->count() == 0){
 									$movimentacao = new MovimentacaoRating;
 									$movimentacao->tipo_ratings_id = $rating->tipo_ratings_id;
@@ -134,6 +142,8 @@ class TorneioController extends Controller
 							$exp_meio = explode("½",$line[($fields["Val+/-"])]);
 							$exp_virgula = explode(",",$line[($fields["Val+/-"])]);
 
+							echo "Criando a movimentação do rating desta etapa. Modificação:".((count($exp_meio) > 1) ? $exp_meio[0].".5" : (count($exp_virgula) > 1) ? $exp_virgula[0].".".$exp_virgula[1] : $exp_virgula[0])." <br/>";
+
 							$movimentacao = new MovimentacaoRating;
 							$movimentacao->tipo_ratings_id = $rating->tipo_ratings_id;
 							$movimentacao->ratings_id = $rating->id;
@@ -143,34 +153,37 @@ class TorneioController extends Controller
 							$movimentacao->is_inicial = false;
 							$movimentacao->save();
 							$rating->calcular();
-						}
-					}else{
-						$rating = new Rating;
-						$rating->enxadrista_id = $enxadrista->id;
-						$rating->tipo_rating_id = $inscricao->torneio->evento->tipo_rating->tipo_rating_id;
-						$rating->valor = 0;
-						$rating->save();
+						}else{
+							echo "O Enxadrista não possui rating deste tipo. Criando o rating. <br/>";
+							$rating = new Rating;
+							$rating->enxadrista_id = $enxadrista->id;
+							$rating->tipo_ratings_id = $inscricao->torneio->evento->tipo_rating->tipo_ratings_id;
+							$rating->valor = 0;
+							$rating->save();
 
-						$movimentacao = new MovimentacaoRating;
-						$movimentacao->tipo_ratings_id = $rating->tipo_ratings_id;
-						$movimentacao->ratings_id = $rating->id;
-						$movimentacao->valor = $inscricao->torneio->evento->getRegraRating()->inicial;
-						$movimentacao->is_inicial = true;
-						$movimentacao->save();
-								
-						$exp_meio = explode("½",$line[($fields["Val+/-"])]);
-						$exp_virgula = explode(",",$line[($fields["Val+/-"])]);
+							$movimentacao = new MovimentacaoRating;
+							$movimentacao->tipo_ratings_id = $rating->tipo_ratings_id;
+							$movimentacao->ratings_id = $rating->id;
+							$movimentacao->valor = $inscricao->torneio->evento->getRegraRating($enxadrista->id)->inicial;
+							$movimentacao->is_inicial = true;
+							$movimentacao->save();
+							echo "Rating #".$rating->id." <br/>";
+									
+							$exp_meio = explode("½",$line[($fields["Val+/-"])]);
+							$exp_virgula = explode(",",$line[($fields["Val+/-"])]);
 
-						$movimentacao = new MovimentacaoRating;
-						$movimentacao->tipo_ratings_id = $rating->tipo_ratings_id;
-						$movimentacao->ratings_id = $rating->id;
-						$movimentacao->torneio_id = $torneio->id;
-						$movimentacao->inscricao_id = $inscricao->id;
-						$movimentacao->valor = (count($exp_meio) > 1) ? $exp_meio[0].".5" : (count($exp_virgula) > 1) ? $exp_virgula[0].".".$exp_virgula[1] : $exp_virgula[0];
-						$movimentacao->is_inicial = false;
-						$movimentacao->save();
-						$rating->calcular();
-					}	
+							echo "Criando a movimentação do rating desta etapa. Modificação:".((count($exp_meio) > 1) ? $exp_meio[0].".5" : (count($exp_virgula) > 1) ? $exp_virgula[0].".".$exp_virgula[1] : $exp_virgula[0])." <br/>";
+							$movimentacao = new MovimentacaoRating;
+							$movimentacao->tipo_ratings_id = $rating->tipo_ratings_id;
+							$movimentacao->ratings_id = $rating->id;
+							$movimentacao->torneio_id = $torneio->id;
+							$movimentacao->inscricao_id = $inscricao->id;
+							$movimentacao->valor = (count($exp_meio) > 1) ? $exp_meio[0].".5" : (count($exp_virgula) > 1) ? $exp_virgula[0].".".$exp_virgula[1] : $exp_virgula[0];
+							$movimentacao->is_inicial = false;
+							$movimentacao->save();
+							$rating->calcular();
+						}	
+					}
 					echo "Enxadrista: ".$enxadrista->name."<br/>";
 				}else{
 					echo "DEU PROBLEMAAAAA AQUIIIII!";
