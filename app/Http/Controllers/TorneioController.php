@@ -29,7 +29,7 @@ class TorneioController extends Controller
 		return view("evento.torneio.resultados",compact("evento","torneio"));
 	}
 
-	public function sendResultsTxt($torneio_id,Request $request){
+	public function sendResultsTxt($evento_id,$torneio_id,Request $request){
 		$this->setResults($request->input("results"),$torneio_id);
 	}
 
@@ -69,7 +69,11 @@ class TorneioController extends Controller
 			}else{
 				$line = explode(";",$line);
 				print_r($line);echo "<br/>";
-				$inscricao = Inscricao::where([["enxadrista_id","=",$line[($fields["ID"])]]])->first();
+				$inscricao = Inscricao::where([
+					["enxadrista_id","=",$line[($fields["ID"])]],
+					["torneio_id","=",$torneio->id],
+				])
+				->first();
 				$enxadrista = Enxadrista::find($line[($fields["ID"])]);
 				if(!$inscricao){
 					echo "Não há inscrição deste enxadrista. <br/>";

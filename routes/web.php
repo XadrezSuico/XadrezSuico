@@ -75,12 +75,16 @@ Route::group(["prefix"=>"usuario"],function(){
 });
 
 Route::group(["prefix"=>"evento"],function(){
-	Route::get('/', 'EventoController@index')->name('evento.index');
+	Route::get('/', 'EventoGerenciarController@index')->name('evento.index');
 	Route::get('/new', 'UserController@new')->name('evento.new');
 	Route::post('/new', 'UserController@newPost')->name('evento.new.post');
 	Route::get('/edit/{id}', 'UserController@edit')->name('evento.edit');
 	Route::post('/edit/{id}', 'UserController@editPost')->name('evento.edit.post');
     Route::get('/delete/{id}', 'UserController@delete')->name('evento.delete');
+    Route::get('/classificar/{id}', 'EventoGerenciarController@classificar')->name('evento.classificar');
+    Route::get('/classificacao/{id}', 'EventoController@classificacao')->name('evento.classificacao');
+    Route::get('/{id}/toggleresultados', 'EventoGerenciarController@toggleMostrarClassificacao')->name('evento.toggleMostrarClassificacao');
+    Route::get('/{id}/resultados/{categoria_id}', 'EventoController@resultados')->name('evento.resultados');
     
 
 
