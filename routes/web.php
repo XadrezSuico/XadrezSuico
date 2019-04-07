@@ -113,6 +113,8 @@ Route::group(["prefix"=>"evento"],function(){
 	    Route::post('/{torneio_id}/resultados', 'TorneioController@sendResultsTxt')->name('evento.torneios.resultados.post');
         Route::group(["prefix"=>"{torneio_id}/inscricoes"],function(){
 	        Route::get('/', 'InscricaoGerenciarController@index')->name('evento.torneios.inscricoes.index');
+            Route::get('/edit/{inscricao_id}', 'InscricaoGerenciarController@edit')->name('evento.torneios.inscricao.edit');
+            Route::post('/edit/{inscricao_id}', 'InscricaoGerenciarController@edit_post')->name('evento.torneios.inscricao.edit.post');
 	        Route::get('/sm', 'InscricaoGerenciarController@list_to_manager')->name('evento.torneios.inscricoes.sm');
 	        Route::get('/relatorio/inscricoes', 'InscricaoGerenciarController@report_list_subscriptions')->name('evento.torneios.inscricoes.relatorio.inscritos');
 	        Route::get('/relatorio/inscricoes/alfabetico', 'InscricaoGerenciarController@report_list_subscriptions_alf')->name('evento.torneios.inscricoes.relatorio.inscritos.alf');

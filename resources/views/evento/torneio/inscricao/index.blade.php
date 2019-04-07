@@ -27,6 +27,7 @@
                         <th>Categoria</th>
                         <th>Cidade</th>
                         <th>Clube</th>
+                        <th>Confirmado?</th>
                         <th width="20%">Opções</th>
                     </tr>
                 </thead>
@@ -34,11 +35,12 @@
                     @foreach($inscricoes as $inscricao)
                         <tr>
                             <td>{{$inscricao->id}}</td>
-                            <td>{{$inscricao->enxadrista->name}}</td>
+                            <td>#{{$inscricao->enxadrista->id}} - {{$inscricao->enxadrista->name}}</td>
                             <td>@if($inscricao->enxadrista->ratings()->where([["tipo_ratings_id","=",$evento->tipo_rating->tipo_ratings_id]])->count() > 0) {{$inscricao->enxadrista->ratings()->where([["tipo_ratings_id","=",$evento->tipo_rating->tipo_ratings_id]])->first()->valor}} @else Não Há @endif</td>
                             <td>{{$inscricao->categoria->name}}</td>
                             <td>{{$inscricao->cidade->name}}</td>
                             <td>@if($inscricao->clube) {{$inscricao->clube->name}} @else Sem Clube @endif</td>
+                            <td>@if($inscricao->confirmado) Sim @else Não @endif</td>
                             <td>
                                 <a class="btn btn-default" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/inscricoes/edit/".$inscricao->id)}}" role="button">Editar</a>
                                 @if($inscricao->isDeletavel()) <a class="btn btn-danger" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/inscricoes/delete/".$inscricao->id)}}" role="button">Apagar</a> @endif

@@ -26,6 +26,49 @@ class InscricaoGerenciarController extends Controller
 		return view("evento.torneio.inscricao.index",compact("evento","torneio","inscricoes"));
 	}
 	
+	public function edit($id,$torneio_id,$inscricao_id){
+        $evento = Evento::find($id);
+        $torneio = Torneio::find($torneio_id);
+        $inscricao = Inscricao::find($inscricao_id);
+		return view("evento.torneio.inscricao.edit",compact("evento","torneio","inscricao"));
+	}
+	
+	public function edit_post($id,$torneio_id,$inscricao_id,Request $request){
+        $evento = Evento::find($id);
+        $torneio = Torneio::find($torneio_id);
+        $inscricao = Inscricao::find($inscricao_id);
+		if($inscricao){
+            $inscricao->categoria_id = $request->input("categoria_id");
+            $inscricao->cidade_id = $request->input("cidade_id");
+            if($request->has("clube_id")){
+                if($request->input("clube_id") > 0){
+                    $inscricao->clube_id = $request->input("clube_id");
+                }else{
+                    $inscricao->clube_id = NULL;
+                }
+            }else{
+                $inscricao->clube_id = NULL;
+            }
+            $inscricao->save();
+            if($request->has("atualizar_cadastro")){
+                $inscricao->enxadrista->cidade_id = $request->input("cidade_id");
+                if($request->has("clube_id")){
+                    if($request->input("clube_id") > 0){
+                        $inscricao->enxadrista->clube_id = $request->input("clube_id");
+                    }else{
+                        $inscricao->enxadrista->clube_id = NULL;
+                    }
+                }else{
+                    $inscricao->enxadrista->clube_id = NULL;
+                }
+                $inscricao->enxadrista->save();
+            }
+            return redirect("/evento/".$evento->id."/torneios/".$torneio->id."/inscricoes/edit/".$inscricao->id);
+
+
+        }
+	}
+	
 	public function list_to_manager($id,$torneio_id){
         $evento = Evento::find($id);
         $torneio = Torneio::find($torneio_id);
