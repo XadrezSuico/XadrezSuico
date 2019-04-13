@@ -12,9 +12,15 @@
             {{ session('status') }}
         </div>
     @endif
-    <ul class="nav nav-pills">
-        <li role="presentation"><a href="{{url("/evento/classificacao/".$evento->id)}}">Voltar à Seleção da Categoria</a></li>
-    </ul>
+    @if(\Illuminate\Support\Facades\Auth::check())
+        <ul class="nav nav-pills">
+            <li role="presentation"><a href="{{url("/evento/classificacao/".$evento->id."/interno")}}">Voltar à Seleção da Categoria</a></li>
+        </ul>
+    @else
+        <ul class="nav nav-pills">
+            <li role="presentation"><a href="{{url("/evento/classificacao/".$evento->id)}}">Voltar à Seleção da Categoria</a></li>
+        </ul>
+	@endif
 
     <div class="box">
         <div class="box-body">

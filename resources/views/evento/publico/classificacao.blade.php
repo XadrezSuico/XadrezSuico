@@ -12,6 +12,11 @@
 				{{ session('status') }}
 		</div>
 	@endif
+    @if(\Illuminate\Support\Facades\Auth::check())
+        <ul class="nav nav-pills">
+            <li role="presentation"><a href="{{url("/evento/")}}">Voltar à Lista de Eventos</a></li>
+        </ul>
+	@endif
     <div class="box">
         <div class="box-body">
 			<div class="form-group">
