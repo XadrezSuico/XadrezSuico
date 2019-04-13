@@ -77,7 +77,7 @@ class InscricaoGerenciarController extends Controller
         $texto = $this->generateTxt($inscricoes,$evento,$torneio);
 
         // file name that will be used in the download
-        $fileName = "Exp.TXT";
+        $fileName = "Exp_xadrezsuico_ev_".$id."_tor_".$torneio_id."_insc_conf___".date("Ymd-His")."___.TXT";
 
         // use headers in order to generate the download
         $headers = [
@@ -90,7 +90,7 @@ class InscricaoGerenciarController extends Controller
         return response(utf8_decode($texto))->withHeaders([
                     'Content-Type' => 'text/plain; charset=utf-8',
                     'Cache-Control' => 'no-store, no-cache',
-                    'Content-Disposition' => 'attachment; filename="Exp.TXT',
+                    'Content-Disposition' => 'attachment; filename="'.$fileName.'"',
                 ]);
     }
 
@@ -103,7 +103,7 @@ class InscricaoGerenciarController extends Controller
         $texto = $this->generateTxt($inscricoes,$evento,$torneio);
 
         // file name that will be used in the download
-        $fileName = "Exp.TXT";
+        $fileName = "Exp_xadrezsuico_ev_".$id."_tor_".$torneio_id."_tds_insc___".date("Ymd-His")."___.TXT";
 
         // use headers in order to generate the download
         $headers = [
@@ -116,7 +116,7 @@ class InscricaoGerenciarController extends Controller
         return response(utf8_decode($texto))->withHeaders([
                     'Content-Type' => 'text/plain; charset=utf-8',
                     'Cache-Control' => 'no-store, no-cache',
-                    'Content-Disposition' => 'attachment; filename="Exp.TXT',
+                    'Content-Disposition' => 'attachment; filename="'.$fileName.'"',
                 ]);
     }
 
