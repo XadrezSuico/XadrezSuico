@@ -213,8 +213,10 @@ class TorneioController extends Controller
 					$retornos[] = date("d/m/Y H:i:s")." - Durante o processamento da inscrição com o ID #".$line[($fields["ID"])]." ocorreu um erro: não foi possível encontrar o enxadrista cadastrado.";
 				}
 			}
+			$retornos[] = date("d/m/Y H:i:s")." - <hr/>";
 			$i++;
 		}
+		$retornos[] = date("d/m/Y H:i:s")." - Fim do Processamento";
 		$evento = $torneio->evento;
 		return view("evento.torneio.resultadosretorno",compact("retornos","torneio","evento"));
 	}

@@ -23,7 +23,7 @@
         <div class="box-body">
             @php($i=1)
             @foreach($retornos as $linha)
-                {{$i++}} - {{$linha}} <br/>
+                {{$i++}} - {!!$linha!!} <br/>
             @endforeach
 		</div>
 	</div>
