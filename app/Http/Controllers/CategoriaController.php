@@ -13,7 +13,7 @@ class CategoriaController extends Controller
         $evento = Evento::find($evento_id);
         $categoria = Categoria::find($categoria_id);
         $inscritos = array();
-        foreach(Inscricao::where([
+        $inscricoes = Inscricao::where([
                 ["categoria_id","=",$categoria->id]
             ])
             ->whereHas("torneio",function($q1) use ($evento){
@@ -22,16 +22,20 @@ class CategoriaController extends Controller
                 ]);
             })
             ->orderBy("pontos","DESC")
-        ->get() as $inscricao){
+        ->get();
+        echo count($inscricoes);
+        foreach($inscricoes as $inscricao){
             if($inscricao->pontos != NULL && $inscricao->confirmado){
                 $inscritos[] = $inscricao;
             }
         }
-        usort($inscritos, array("App\Http\Controllers\CategoriaController","sort_classificacao_etapa"));
+        usort($inscritos, array("\App\Http\Controllers\CategoriaController","sort_classificacao_etapa"));
         $i = 1;
         foreach($inscritos as $inscricao){
-            $inscricao->posicao = $i++;
+            $inscricao->posicao = $i;
+            echo $i;
             $inscricao->save();
+            $i++;
         }
     }
 
