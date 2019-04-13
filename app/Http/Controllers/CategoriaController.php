@@ -33,7 +33,7 @@ class CategoriaController extends Controller
         $i = 1;
         foreach($inscritos as $inscricao){
             $inscricao->posicao = $i;
-            echo $i;
+            // echo $i;
             $inscricao->save();
             $i++;
         }
