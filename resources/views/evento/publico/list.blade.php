@@ -73,6 +73,7 @@
 <script type="text/javascript">
     $(document).ready(function(){
         $("#tabela").DataTable({
+            responsive: true,
             dom: 'Bfrtip',
             buttons: [
                 'copy', 'csv', 'excel', 'pdf', 'print'

@@ -67,7 +67,9 @@
 @section("js")
 <script type="text/javascript">
     $(document).ready(function(){
-        $("#tabela").DataTable();
+        $("#tabela").DataTable({
+            responsive: true,
+        });
     });
 </script>
 @endsection

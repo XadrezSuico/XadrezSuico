@@ -26,6 +26,7 @@
                         <th>Período</th>
                         <th>Local</th>
                         <th>Grupo de Evento</th>
+                        <th>Inscritos</th>
                         <th width="20%">Opções</th>
                     </tr>
                 </thead>
@@ -38,6 +39,10 @@
                             <td>{{$evento->cidade->name}} - {{$evento->local}}</td>
                             <td>{{$evento->grupo_evento->name}}</td>
                             <td>
+                                Total: {{$evento->quantosInscritos()}}<br/>
+                                Confirmados: {{$evento->quantosInscritosConfirmados()}}
+                            </td>
+                            <td>
                                 <a class="btn btn-default" href="{{url("/evento/edit/".$evento->id)}}" role="button">Editar</a>
                                 <a class="btn btn-default" href="{{url("/evento/".$evento->id."/torneios")}}" role="button">Torneios</a>
                                 <a class="btn btn-default" href="{{url("/evento/".$evento->id."/toggleresultados")}}" role="button">@if($evento->mostrar_resultados) Restringir @else Liberar @endif Classificação Pública</a>
@@ -45,6 +50,8 @@
                                     <a class="btn btn-default" href="{{url("/evento/classificacao/".$evento->id)}}" role="button" target="_blank">Lista Classificação Pública</a>
                                 @endif
                                 <a class="btn btn-default" href="{{url("/evento/classificar/".$evento->id)}}" role="button">Classificar Evento</a>
+                                <a class="btn btn-default" href="{{url("/evento/classificacao/".$evento->id."/interno")}}" role="button">Visualizar Classificação (Interna)</a>
+                                @if($evento->mostrar_resultados)<a class="btn btn-default" href="{{url("/evento/classificacao/".$evento->id."/interno")}}" role="button">Visualizar Classificação (Pública)</a>@endif
                                 <a class="btn btn-success" href="{{url("/evento/inscricao/".$evento->id)}}" role="button">Nova Inscrição</a>
                                 <a class="btn btn-success" href="{{url("/evento/inscricao/".$evento->id."/confirmacao")}}" role="button">Confirmar Inscrição</a>
                                 @if($evento->isDeletavel()) <a class="btn btn-danger" href="{{url("/evento/delete/".$evento->id)}}" role="button">Apagar</a> @endif
@@ -60,7 +67,9 @@
 @section("js")
 <script type="text/javascript">
     $(document).ready(function(){
-        $("#tabela").DataTable();
+        $("#tabela").DataTable({
+            responsive: true,
+        });
     });
 </script>
 @endsection

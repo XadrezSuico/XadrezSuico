@@ -103,7 +103,20 @@ class Evento extends Model
             ->first();
     }
 
-    
+    public function quantosInscritos(){
+        $total = 0;
+        foreach($this->torneios->all() as $torneio){
+            $total += $torneio->inscricoes()->count();
+        }
+        return $total;
+    }
+    public function quantosInscritosConfirmados(){
+        $total = 0;
+        foreach($this->torneios->all() as $torneio){
+            $total += $torneio->inscricoes()->where([["confirmado","=",true]])->count();
+        }
+        return $total;
+    }
 
     
     public function isDeletavel(){

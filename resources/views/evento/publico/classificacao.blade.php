@@ -34,7 +34,11 @@
         $("#categoria_id").select2();
     });
     $("#acessar").on("click",function(){
-        location.href = "{{url("/evento/".$evento->id."/resultados")}}/".concat($("#categoria_id").val());
+        @if(\Illuminate\Support\Facades\Auth::check())
+            location.href = "{{url("/evento/".$evento->id."/resultados")}}/".concat($("#categoria_id").val()).concat("/interno");
+        @else
+            location.href = "{{url("/evento/".$evento->id."/resultados")}}/".concat($("#categoria_id").val());
+        @endif
     });
 </script>
 @endsection

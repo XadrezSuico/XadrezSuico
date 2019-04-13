@@ -38,5 +38,32 @@ class EventoGerenciarController extends Controller
             $evento->save();
 		    return redirect("/evento");
 		}
-    }
+	}
+	
+
+
+	public function classificacao($evento_id){
+		$evento = Evento::find($evento_id);
+		return view("evento.publico.classificacao",compact("evento"));
+	}
+	public function resultados($evento_id,$categoria_id){
+		$evento = Evento::find($evento_id);
+		$categoria = Categoria::find($categoria_id);
+		$inscricoes = Inscricao::where([
+				["categoria_id","=",$categoria->id],
+				["confirmado","=",true]
+            ])
+            ->whereHas("torneio",function($q1) use ($evento){
+                $q1->where([
+                    ["evento_id","=",$evento->id]
+                ]);
+            })
+		->get();
+		if($evento->criterios()->count() > 0){
+			$criterios = $evento->criterios()->orderBy("prioridade")->get();
+		}else{
+			$criterios = $evento->grupo_evento->criterios()->orderBy("prioridade")->get();
+		}
+		return view("evento.publico.list",compact("evento","categoria","inscricoes","criterios"));
+	}
 }
