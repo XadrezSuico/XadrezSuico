@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Evento;
+use App\Categoria;
+use App\Inscricao;
 
 
 class EventoGerenciarController extends Controller
