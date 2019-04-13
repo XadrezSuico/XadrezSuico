@@ -30,7 +30,8 @@ class EventoController extends Controller
                 $q1->where([
                     ["evento_id","=",$evento->id]
                 ]);
-            })
+			})
+			->orderBy("posicao","ASC")
 		->get();
 		if($evento->criterios()->count() > 0){
 			$criterios = $evento->criterios()->orderBy("prioridade")->get();

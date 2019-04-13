@@ -60,6 +60,7 @@ class EventoGerenciarController extends Controller
                     ["evento_id","=",$evento->id]
                 ]);
             })
+			->orderBy("posicao","ASC")
 		->get();
 		if($evento->criterios()->count() > 0){
 			$criterios = $evento->criterios()->orderBy("prioridade")->get();
