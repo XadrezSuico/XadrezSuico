@@ -81,9 +81,9 @@ class InscricaoGerenciarController extends Controller
 
         // use headers in order to generate the download
         $headers = [
-        'Content-type' => 'text/plain', 
-        'Content-Disposition' => sprintf('attachment; filename="%s"', $fileName),
-        'Content-Length' => sizeof($texto)
+            'Content-type' => 'text/plain', 
+            'Content-Disposition' => sprintf('attachment; filename="%s"', $fileName),
+            'Content-Length' => sizeof($texto)
         ];
 
         // make a response, with the content, a 200 response code and the headers

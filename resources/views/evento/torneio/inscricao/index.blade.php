@@ -14,6 +14,8 @@
     @endif
     <ul class="nav nav-pills">
         <li role="presentation"><a href="{{url("/evento/".$evento->id."/torneios")}}">Voltar à Lista de Torneios</a></li>
+        <li role="presentation"><a href="{{url("/evento/inscricao/".$evento->id)}}">Nova Inscrição</a></li>
+        <li role="presentation"><a href="{{url("/evento/inscricao/".$evento->id."/confirmacao")}}">Confirmar Inscrições</a></li>
     </ul>
 
     <div class="box">
