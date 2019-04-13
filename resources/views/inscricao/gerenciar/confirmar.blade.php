@@ -227,6 +227,7 @@
 			});
 
 			$("#confirmarInscricao").on("click",function(){
+				$("#confirmarInscricao").attr("disabled","disabled");
                 var data = "evento_id={{$evento->id}}&inscricao_id=".concat($("#inscricao_id").val()).concat("&categoria_id=").concat($("#categoria_id").val()).concat("&cidade_id=").concat($("#cidade_id").val()).concat("&clube_id=").concat($("#clube_id").val());
                 if($("#atualizar_cadastro").is(":checked")){
                     data = data.concat("&atualizar_cadastro=true");
@@ -253,6 +254,7 @@
                             $("#alertsMessage").html(data.message);
                             $("#alerts").modal();
                         }
+				        $("#confirmarInscricao").removeAttr("disabled");
                     }
                 });
 			});

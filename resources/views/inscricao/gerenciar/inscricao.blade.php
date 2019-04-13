@@ -67,7 +67,7 @@
 <!-- Main row -->
 <ul class="nav nav-pills">
   <li role="presentation"><a href="/evento">Voltar a Lista de Eventos</a></li>
-  <li role="presentation"><a href="/evento/inscricao/{{$evento->id}}">Nova Inscrição</a></li>
+  <!--<li role="presentation"><a href="/evento/inscricao/{{$evento->id}}">Nova Inscrição</a></li>-->
   <li role="presentation"><a href="/evento/inscricao/{{$evento->id}}/confirmacao">Confirmar Inscrições</a></li>
 </ul>
 <div class="row">
@@ -242,6 +242,7 @@
 			});
 
 			$("#enviarInscricao").on("click",function(){
+					$(this).attr("disabled","disabled");
 					var data = "evento_id={{$evento->id}}&enxadrista_id=".concat($("#enxadrista_id").val()).concat("&categoria_id=").concat($("#categoria_id").val()).concat("&cidade_id=").concat($("#cidade_id").val()).concat("&clube_id=").concat($("#clube_id").val());
 					if($("#confirmado").is(":checked")){
 						data = data.concat("&confirmado=true");
@@ -278,6 +279,7 @@
 								$("#alertsMessage").html(data.message);
 								$("#alerts").modal();
 							}
+							$("#enviarInscricao").removeAttr("disabled");
 						}
 					});
 			});
@@ -394,6 +396,8 @@
 		});
 		$("#enxadrista_cidade_id").on("select2:select",function(){
 			$("#cadastrarEnxadrista").on("click",function(){
+				
+				$(this).attr("disabled","disabled");
 				var data = "name=".concat($("#name").val()).concat("&born=").concat($("#born").val()).concat("&cidade_id=").concat($("#enxadrista_cidade_id").val()).concat("&clube_id=").concat($("#enxadrista_clube_id").val());
 				
 				$.ajax({
@@ -403,7 +407,9 @@
 					dataType: "json",
 					success: function(data){
 						if(data.ok == 1){
-							$("#naoPossuiCadastro").boxWidget('collapse');
+							$('html,body').animate({
+								scrollTop: $("#inscricao").offset().top
+							}, 'slow');
 							$("#successMessage").html("<strong>O cadastro do enxadrista foi efetuado com sucesso!</strong>");
 							$("#success").modal();
 
@@ -425,9 +431,10 @@
 							},"800");
 						}else{
 							if(data.registred == 1){
-								$("#naoPossuiCadastro").boxWidget('collapse');
-								$("#inscricao").boxWidget('expand');
 								setInscricaoSelects();
+								$('html,body').animate({
+									scrollTop: $("#inscricao").offset().top
+								}, 'slow');
 								setTimeout(function(){
 									var newOption = new Option(data.enxadrista_name, data.enxadrista_id, false, false);
 									$('#enxadrista_id').append(newOption).trigger('change');
@@ -447,6 +454,8 @@
 							$("#alertsMessage").html(data.message);
 							$("#alerts").modal();
 						}
+						
+						$("#cadastrarEnxadrista").removeAttr("disabled");
 					}
 				});
 			});
