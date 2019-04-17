@@ -19,20 +19,20 @@ Route::get('/', function () {
 });
 
 Auth::routes();
-if(!\App\User::canRegisterWithoutLogin()){
-    Route::get('/register', function(){
-        return redirect("/login");
-    })->name('register');
-    Route::post('/register', function(){
-        return redirect("/login");
-    })->name('register.post');
-}
-Route::get('/wat', function(){
-    echo \App\User::count();
-    foreach(\App\User::All() as $user){
-        echo $user->id;
-    }
-})->name('register.post');
+// if(!\App\User::canRegisterWithoutLogin()){
+//     Route::get('/register', function(){
+//         return redirect("/login");
+//     })->name('register');
+//     Route::post('/register', function(){
+//         return redirect("/login");
+//     })->name('register.post');
+// }
+// Route::get('/wat', function(){
+//     echo \App\User::count();
+//     foreach(\App\User::All() as $user){
+//         echo $user->id;
+//     }
+// })->name('register.post');
 
 
 Route::get('/home', 'HomeController@index')->name('home');

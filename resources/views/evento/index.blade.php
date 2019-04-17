@@ -51,7 +51,7 @@
                                 @endif
                                 <a class="btn btn-default" href="{{url("/evento/classificar/".$evento->id)}}" role="button">Classificar Evento</a>
                                 <a class="btn btn-default" href="{{url("/evento/classificacao/".$evento->id."/interno")}}" role="button">Visualizar Classificação (Interna)</a>
-                                @if($evento->mostrar_resultados)<a class="btn btn-default" href="{{url("/evento/classificacao/".$evento->id."/interno")}}" role="button">Visualizar Classificação (Pública)</a>@endif
+                                @if($evento->mostrar_resultados)<a class="btn btn-default" href="{{url("/evento/classificacao/".$evento->id)}}" role="button">Visualizar Classificação (Pública)</a>@endif
                                 <a class="btn btn-success" href="{{url("/evento/inscricao/".$evento->id)}}" role="button">Nova Inscrição</a>
                                 <a class="btn btn-success" href="{{url("/evento/inscricao/".$evento->id."/confirmacao")}}" role="button">Confirmar Inscrição</a>
                                 @if($evento->isDeletavel()) <a class="btn btn-danger" href="{{url("/evento/delete/".$evento->id)}}" role="button">Apagar</a> @endif
