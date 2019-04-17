@@ -14,7 +14,7 @@ class CreateSoftwareTable extends Migration
     public function up()
     {
         Schema::create('softwares', function (Blueprint $table) {
-            $table->bigIncrements('id');
+            $table->increments('id');
             $table->string('name');
             $table->timestamps();
         });
@@ -27,6 +27,6 @@ class CreateSoftwareTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('software');
+        Schema::dropIfExists('softwares');
     }
 }

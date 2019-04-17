@@ -14,8 +14,8 @@ class UpdateCriterioDesempateGrupoEventoTableAddSoftware extends Migration
     public function up()
     {
         Schema::table('criterio_desempate_grupo_evento', function (Blueprint $table) {
-            $table->bigInteger('softwares_id')->unsigned()->nullable();
-            $table->foreign("softwares_id")->references("id")->on("softwares");
+            $table->integer('softwares_id')->unsigned()->nullable();
+            $table->foreign("softwares_id", 'fk_cdgp_softwares_idx')->references("id")->on("softwares");
         });
     }
 

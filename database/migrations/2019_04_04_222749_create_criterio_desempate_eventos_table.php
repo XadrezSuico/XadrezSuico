@@ -18,7 +18,7 @@ class CreateCriterioDesempateEventosTable extends Migration
             $table->unsignedInteger('evento_id');
             $table->unsignedInteger('criterio_desempate_id');
             $table->unsignedInteger('tipo_torneio_id');
-            $table->bigInteger('softwares_id')->unsigned()->nullable();
+            $table->integer('softwares_id')->unsigned()->nullable();
             
 
 
