@@ -121,7 +121,11 @@ class InscricaoGerenciarController extends Controller
     }
 
     private function generateTxt($inscricoes,$evento,$torneio){
-        $texto = "No;Nome Completo;ID;FIDE;DNasc;Cat;Gr;NoClube;Nome Clube;Sobrenome;Nome\r\n";
+        if($evento->tipo_rating){
+            $texto = "No;Nome Completo;ID;FIDE;DNasc;Cat;Gr;NoClube;Nome Clube;Sobrenome;Nome\r\n";
+        }else{
+            $texto = "No;Nome Completo;ID;DNasc;Cat;Gr;NoClube;Nome Clube;Sobrenome;Nome\r\n";
+        }
     
         $i = 1;
         
@@ -136,37 +140,40 @@ class InscricaoGerenciarController extends Controller
             $texto .= $inscricao->enxadrista->name.";";
             $texto .= $inscricao->enxadrista->id.";";
 
-            $rating_regra = TipoRatingRegras::where([
-                    ["tipo_ratings_id","=",$evento->tipo_rating->tipo_ratings_id],
-                ])
-                ->where(function($q1) use ($evento,$inscricao){
-                    $q1->where([
-                        ["idade_minima","<=",$inscricao->enxadrista->howOld()],
-                        ["idade_maxima","=",NULL]
-                    ]);
-                    $q1->orWhere([
-                        ["idade_minima","=",NULL],
-                        ["idade_maxima",">=",$inscricao->enxadrista->howOld()]
-                    ]);
-                    $q1->orWhere([
-                        ["idade_minima","<=",$inscricao->enxadrista->howOld()],
-                        ["idade_maxima",">=",$inscricao->enxadrista->howOld()]
-                    ]);
-                })
-                ->first();
-            if($inscricao->enxadrista->ratings()->where([["tipo_ratings_id","=",$evento->tipo_rating->tipo_ratings_id]])->count() > 0){
-                $rating = $inscricao->enxadrista->ratings()->where([["tipo_ratings_id","=",$evento->tipo_rating->tipo_ratings_id]])->first();
-                
-                if($rating->valor > 0){
-                    $texto .= $rating->valor.";";
+            if($evento->tipo_rating){
+                $rating_regra = TipoRatingRegras::where([
+                        ["tipo_ratings_id","=",$evento->tipo_rating->tipo_ratings_id],
+                    ])
+                    ->where(function($q1) use ($evento,$inscricao){
+                        $q1->where([
+                            ["idade_minima","<=",$inscricao->enxadrista->howOld()],
+                            ["idade_maxima","=",NULL]
+                        ]);
+                        $q1->orWhere([
+                            ["idade_minima","=",NULL],
+                            ["idade_maxima",">=",$inscricao->enxadrista->howOld()]
+                        ]);
+                        $q1->orWhere([
+                            ["idade_minima","<=",$inscricao->enxadrista->howOld()],
+                            ["idade_maxima",">=",$inscricao->enxadrista->howOld()]
+                        ]);
+                    })
+                    ->first();
+                if($inscricao->enxadrista->ratings()->where([["tipo_ratings_id","=",$evento->tipo_rating->tipo_ratings_id]])->count() > 0){
+                    $rating = $inscricao->enxadrista->ratings()->where([["tipo_ratings_id","=",$evento->tipo_rating->tipo_ratings_id]])->first();
+                    
+                    if($rating->valor > 0){
+                        $texto .= $rating->valor.";";
+                    }else{
+                        $texto .= $rating_regra->inicial.";";
+                    }
+                    // $texto .= $rating_regra->k.";";
                 }else{
                     $texto .= $rating_regra->inicial.";";
+                    // $texto .= $rating_regra->k.";";
                 }
-                // $texto .= $rating_regra->k.";";
-            }else{
-                $texto .= $rating_regra->inicial.";";
-                // $texto .= $rating_regra->k.";";
             }
+
             $texto .= $inscricao->enxadrista->getBornToSM().";";
             $texto .= $inscricao->categoria->cat_code.";";
             $texto .= $inscricao->categoria->code.";";
@@ -203,8 +210,8 @@ class InscricaoGerenciarController extends Controller
         $evento = $inscrito_a->torneio->evento;
         $r_a = $inscrito_a->enxadrista->ratingParaEvento($evento->id);
         $r_b = $inscrito_b->enxadrista->ratingParaEvento($evento->id);
-        if($r_a == $r_b){
-            return strnatcmp($inscrito_a->enxadrista->getName(),$inscrito_b->enxadrista->getName());
+        if($r_a == $r_b || !$r_a || !$r_b){
+            return InscricaoGerenciarController::cmp_obj_alf($inscrito_a,$inscrito_b);
         }else{
             if($r_a > $r_b){
                 return -1;
@@ -220,10 +227,10 @@ class InscricaoGerenciarController extends Controller
         $evento = $inscrito_a->torneio->evento;
         if($inscrito_a->cidade_id == $inscrito_b->cidade_id){
             if($inscrito_a->clube_id == $inscrito_b->clube_id){
-                return strnatcmp($inscrito_a->enxadrista->getName(),$inscrito_b->enxadrista->getName());
+                return InscricaoGerenciarController::cmp_obj_alf($inscrito_a,$inscrito_b);
             }else{
                 if($inscrito_a->clube_id == NULL || $inscrito_b->clube_id == NULL){
-                    return strnatcmp($inscrito_a->enxadrista->getName(),$inscrito_b->enxadrista->getName());
+                    return InscricaoGerenciarController::cmp_obj_alf($inscrito_a,$inscrito_b);
                 }
                 return strnatcmp($inscrito_a->clube->getName(),$inscrito_b->clube->getName());
             }
