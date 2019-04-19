@@ -125,3 +125,12 @@ Route::group(["prefix"=>"evento"],function(){
         });
     });
 });
+
+Route::group(["prefix"=>"categoria"],function(){
+	Route::get('/', 'CategoriaController@index')->name('categoria.index');
+	Route::get('/new', 'CategoriaController@new')->name('categoria.new');
+	Route::post('/new', 'CategoriaController@new_post')->name('categoria.new.post');
+	Route::get('/edit/{id}', 'CategoriaController@edit')->name('categoria.edit');
+	Route::post('/edit/{id}', 'CategoriaController@edit_post')->name('categoria.edit.post');
+	Route::get('/delete/{id}', 'CategoriaController@delete')->name('categoria.delete');
+});

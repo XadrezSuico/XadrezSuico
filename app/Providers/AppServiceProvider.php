@@ -38,6 +38,12 @@ class AppServiceProvider extends ServiceProvider
                     'url'  => '/evento',
                     'icon' => 'fort-awesome'
                 ]);
+                $event->menu->add("ADMINSTRAÇÃO");
+                $event->menu->add([
+                    'text' => 'Categorias',
+                    'url'  => '/categoria',
+                    'icon' => 'certificate'
+                ]);
                 $event->menu->add([
                     'text' => 'Usuários',
                     'url'  => '/usuario',

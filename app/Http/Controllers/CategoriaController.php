@@ -9,6 +9,47 @@ use App\Inscricao;
 
 class CategoriaController extends Controller
 {
+    public function index(){
+        $categorias = Categoria::all();
+        return view('categoria.index',compact("categorias"));
+    }
+    public function new(){
+        return view('categoria.new');
+    }
+    public function new_post(Request $request){
+        $categoria = new Categoria;
+        $categoria->name = $request->input("name");
+        $categoria->idade_minima = $request->input("idade_minima");
+        $categoria->idade_maxima = $request->input("idade_maxima");
+        $categoria->code = $request->input("code");
+        $categoria->cat_code = $request->input("cat_code");
+        $categoria->save();
+        return redirect("/categoria/edit/".$categoria->id);
+    }
+    public function edit($id){
+        $categoria = Categoria::find($id);
+        return view('categoria.edit',compact("categoria"));
+    }
+    public function edit_post($id,Request $request){
+        $categoria = Categoria::find($id);
+        $categoria->name = $request->input("name");
+        $categoria->idade_minima = $request->input("idade_minima");
+        $categoria->idade_maxima = $request->input("idade_maxima");
+        $categoria->code = $request->input("code");
+        $categoria->cat_code = $request->input("cat_code");
+        $categoria->save();
+        return redirect("/categoria/edit/".$categoria->id);
+    }
+    public function delete($id){
+        $categoria = Categoria::find($id);
+        
+        if($categoria->isDeletavel()){
+            $categoria->delete();
+        }
+        return redirect("/categoria");
+    }
+
+
     public static function classificar($evento_id, $categoria_id){
         $evento = Evento::find($evento_id);
         $categoria = Categoria::find($categoria_id);
