@@ -9,6 +9,9 @@ use App\Inscricao;
 
 class CategoriaController extends Controller
 {
+	public function __construct(){
+		return $this->middleware("auth");
+	}
     public function index(){
         $categorias = Categoria::all();
         return view('categoria.index',compact("categorias"));

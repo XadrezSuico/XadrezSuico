@@ -134,3 +134,12 @@ Route::group(["prefix"=>"categoria"],function(){
 	Route::post('/edit/{id}', 'CategoriaController@edit_post')->name('categoria.edit.post');
 	Route::get('/delete/{id}', 'CategoriaController@delete')->name('categoria.delete');
 });
+
+Route::group(["prefix"=>"cidade"],function(){
+	Route::get('/', 'CidadeController@index')->name('cidade.index');
+	Route::get('/new', 'CidadeController@new')->name('cidade.new');
+	Route::post('/new', 'CidadeController@new_post')->name('cidade.new.post');
+	Route::get('/edit/{id}', 'CidadeController@edit')->name('cidade.edit');
+	Route::post('/edit/{id}', 'CidadeController@edit_post')->name('cidade.edit.post');
+	Route::get('/delete/{id}', 'CidadeController@delete')->name('cidade.delete');
+});
