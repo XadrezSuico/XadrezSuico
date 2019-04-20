@@ -45,6 +45,11 @@ class AppServiceProvider extends ServiceProvider
                     'icon' => 'certificate'
                 ]);
                 $event->menu->add([
+                    'text' => 'Cidades',
+                    'url'  => '/cidade',
+                    'icon' => 'map-marker'
+                ]);
+                $event->menu->add([
                     'text' => 'Usuários',
                     'url'  => '/usuario',
                     'icon' => 'users'
