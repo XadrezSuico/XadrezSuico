@@ -14,6 +14,30 @@ class Clube extends Model
         return $this->belongsTo("App\Cidade","cidade_id","id");
     }
 
+    public function enxadristas() {
+        return $this->hasMany("App\Enxadrista","clube_id","id");
+    }
+
+    public function inscricoes() {
+        return $this->hasMany("App\Inscricao","clube_id","id");
+    }
+
+
+
+    public function isDeletavel(){
+        if($this->id != null){
+            if(
+                $this->enxadristas()->count() > 0 ||
+                $this->inscricoes()->count() > 0
+            ){
+                return false;
+            }
+            return true;
+        }else{
+            return false;
+        }
+    }
+
     public function getName(){
         return mb_strtoupper($this->name);
     }

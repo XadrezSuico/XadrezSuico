@@ -143,3 +143,21 @@ Route::group(["prefix"=>"cidade"],function(){
 	Route::post('/edit/{id}', 'CidadeController@edit_post')->name('cidade.edit.post');
 	Route::get('/delete/{id}', 'CidadeController@delete')->name('cidade.delete');
 });
+
+Route::group(["prefix"=>"clube"],function(){
+	Route::get('/', 'ClubeController@index')->name('clube.index');
+	Route::get('/new', 'ClubeController@new')->name('clube.new');
+	Route::post('/new', 'ClubeController@new_post')->name('clube.new.post');
+	Route::get('/edit/{id}', 'ClubeController@edit')->name('clube.edit');
+	Route::post('/edit/{id}', 'ClubeController@edit_post')->name('clube.edit.post');
+	Route::get('/delete/{id}', 'ClubeController@delete')->name('clube.delete');
+});
+
+Route::group(["prefix"=>"enxadrista"],function(){
+	Route::get('/', 'EnxadristaController@index')->name('enxadrista.index');
+	Route::get('/new', 'EnxadristaController@new')->name('enxadrista.new');
+	Route::post('/new', 'EnxadristaController@new_post')->name('enxadrista.new.post');
+	Route::get('/edit/{id}', 'EnxadristaController@edit')->name('enxadrista.edit');
+	Route::post('/edit/{id}', 'EnxadristaController@edit_post')->name('enxadrista.edit.post');
+	Route::get('/delete/{id}', 'EnxadristaController@delete')->name('enxadrista.delete');
+});

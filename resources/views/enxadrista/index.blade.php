@@ -13,6 +13,9 @@
         </div>
     @endif
 
+    <ul class="nav nav-pills">
+        <li role="presentation"><a href="{{url("/enxadrista/new")}}">Novo Enxadrista</a></li>
+    </ul>
     <div class="box">
         <div class="box-body">
             <table id="tabela" class="table-responsive table-condensed table-striped" style="width: 100%">
@@ -21,6 +24,8 @@
                         <th>#</th>
                         <th>Nome</th>
                         <th>Data de Nascimento</th>
+                        <th>Sexo</th>
+                        <th>IDs</th>
                         <th>Cidade</th>
                         <th>Clube</th>
                         <th width="20%">Opções</th>
@@ -30,12 +35,18 @@
                     @foreach($enxadristas as $enxadrista)
                         <tr>
                             <td>{{$enxadrista->id}}</td>
+                            <td>{{$enxadrista->name}}</td>
                             <td>{{$enxadrista->getBorn()}}</td>
-                            <td>{{$enxadrista->categoria->name}}</td>
+                            <td>@if($enxadrista->sexos_id) {{$enxadrista->sexo->name}} @else - @endif</td>
+                            <td>
+                                @if($enxadrista->cbx_id) CBX: {{$enxadrista->cbx_id}} @endif
+                                @if($enxadrista->fide_id) FIDE: {{$enxadrista->fide_id}} @endif
+                            </td>
                             <td>{{$enxadrista->cidade->name}}</td>
+                            <td>@if($enxadrista->clube) {{$enxadrista->clube->name}} @else Não possui clube @endif</td>
                             <td>
                                 <a class="btn btn-default" href="{{url("/enxadrista/edit/".$enxadrista->id)}}" role="button">Editar</a>
-                                @if($inscricao->isDeletavel()) <a class="btn btn-danger" href="{{url("/enxadrista/edit/".$enxadrista->id)}}" role="button">Apagar</a> @endif
+                                @if($enxadrista->isDeletavel()) <a class="btn btn-danger" href="{{url("/enxadrista/delete/".$enxadrista->id)}}" role="button">Apagar</a> @endif
                             </td>
                         </tr>
                     @endforeach

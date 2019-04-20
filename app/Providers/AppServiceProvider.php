@@ -27,16 +27,23 @@ class AppServiceProvider extends ServiceProvider
     public function boot(Dispatcher $events)
     {
 		$events->listen(BuildingMenu::class, function (BuildingMenu $event) {
+            $event->menu->add("ACESSO PÚBLICO");
             $event->menu->add([
                 'text' => 'Ratings',
                 'url'  => '/rating',
                 'icon' => 'star'
             ]);
             if(Auth::check()){
+                $event->menu->add("ACESSO RESTRITO");
                 $event->menu->add([
                     'text' => 'Eventos',
                     'url'  => '/evento',
                     'icon' => 'fort-awesome'
+                ]);
+                $event->menu->add([
+                    'text' => 'Enxadristas',
+                    'url'  => '/enxadrista',
+                    'icon' => 'user'
                 ]);
                 $event->menu->add("ADMINSTRAÇÃO");
                 $event->menu->add([
@@ -48,6 +55,11 @@ class AppServiceProvider extends ServiceProvider
                     'text' => 'Cidades',
                     'url'  => '/cidade',
                     'icon' => 'map-marker'
+                ]);
+                $event->menu->add([
+                    'text' => 'Clubes',
+                    'url'  => '/clube',
+                    'icon' => 'building'
                 ]);
                 $event->menu->add([
                     'text' => 'Usuários',

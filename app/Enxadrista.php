@@ -18,11 +18,30 @@ class Enxadrista extends Model
     public function clube(){
         return $this->belongsTo("App\Clube","clube_id","id");
     }
+    public function sexo(){
+        return $this->belongsTo("App\Sexo","sexos_id","id");
+    }
     public function inscricoes() {
         return $this->hasMany("App\Inscricao","enxadrista_id","id");
     }
     public function ratings() {
         return $this->hasMany("App\Rating","enxadrista_id","id");
+    }
+
+
+
+    public function isDeletavel(){
+        if($this->id != null){
+            if(
+                $this->inscricoes()->count() > 0 ||
+                $this->ratings()->count() > 0
+            ){
+                return false;
+            }
+            return true;
+        }else{
+            return false;
+        }
     }
 
     public function getName(){
