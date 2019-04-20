@@ -39,8 +39,8 @@
                             <td>{{$enxadrista->getBorn()}}</td>
                             <td>@if($enxadrista->sexos_id) {{$enxadrista->sexo->name}} @else - @endif</td>
                             <td>
-                                @if($enxadrista->cbx_id) CBX: {{$enxadrista->cbx_id}} @endif
-                                @if($enxadrista->fide_id) FIDE: {{$enxadrista->fide_id}} @endif
+                                @if($enxadrista->cbx_id) CBX: {{$enxadrista->cbx_id}} <br/>@endif
+                                @if($enxadrista->fide_id) FIDE: {{$enxadrista->fide_id}} <br/>@endif
                             </td>
                             <td>{{$enxadrista->cidade->name}}</td>
                             <td>@if($enxadrista->clube) {{$enxadrista->clube->name}} @else Não possui clube @endif</td>
