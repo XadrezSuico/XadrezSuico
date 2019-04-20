@@ -161,3 +161,12 @@ Route::group(["prefix"=>"enxadrista"],function(){
 	Route::post('/edit/{id}', 'EnxadristaController@edit_post')->name('enxadrista.edit.post');
 	Route::get('/delete/{id}', 'EnxadristaController@delete')->name('enxadrista.delete');
 });
+
+Route::group(["prefix"=>"sexo"],function(){
+	Route::get('/', 'SexoController@index')->name('sexo.index');
+	Route::get('/new', 'SexoController@new')->name('sexo.new');
+	Route::post('/new', 'SexoController@new_post')->name('sexo.new.post');
+	Route::get('/edit/{id}', 'SexoController@edit')->name('sexo.edit');
+	Route::post('/edit/{id}', 'SexoController@edit_post')->name('sexo.edit.post');
+	Route::get('/delete/{id}', 'SexoController@delete')->name('sexo.delete');
+});
