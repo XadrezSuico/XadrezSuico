@@ -62,6 +62,11 @@ class AppServiceProvider extends ServiceProvider
                     'icon' => 'building'
                 ]);
                 $event->menu->add([
+                    'text' => 'Template de Torneio',
+                    'url'  => '/torneiotemplate',
+                    'icon' => 'file-text'
+                ]);
+                $event->menu->add([
                     'text' => 'Usuários',
                     'url'  => '/usuario',
                     'icon' => 'users'

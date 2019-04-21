@@ -170,3 +170,25 @@ Route::group(["prefix"=>"sexo"],function(){
 	Route::post('/edit/{id}', 'SexoController@edit_post')->name('sexo.edit.post');
 	Route::get('/delete/{id}', 'SexoController@delete')->name('sexo.delete');
 });
+
+Route::group(["prefix"=>"grupoevento"],function(){
+	Route::get('/', 'GrupoEventoController@index')->name('grupoevento.index');
+	Route::get('/new', 'GrupoEventoController@new')->name('grupoevento.new');
+	Route::post('/new', 'GrupoEventoController@new_post')->name('grupoevento.new.post');
+	Route::get('/dashboard/{id}', 'GrupoEventoController@edit')->name('grupoevento.dashboard');
+	Route::post('/dashboard/{id}', 'GrupoEventoController@edit_post')->name('grupoevento.dashboard.post');
+	Route::get('/delete/{id}', 'GrupoEventoController@delete')->name('grupoevento.delete');
+});
+
+Route::group(["prefix"=>"torneiotemplate"],function(){
+	Route::get('/', 'TorneioTemplateController@index')->name('torneiotemplate.index');
+	Route::get('/new', 'TorneioTemplateController@new')->name('torneiotemplate.new');
+	Route::post('/new', 'TorneioTemplateController@new_post')->name('torneiotemplate.new.post');
+	Route::get('/dashboard/{id}', 'TorneioTemplateController@edit')->name('torneiotemplate.dashboard');
+	Route::post('/dashboard/{id}', 'TorneioTemplateController@edit_post')->name('torneiotemplate.dashboard.post');
+	Route::get('/delete/{id}', 'TorneioTemplateController@delete')->name('torneiotemplate.delete');
+    Route::group(["prefix"=>"{id}/categoria"],function(){
+        Route::post('/add', 'TorneioTemplateController@categoria_add')->name('torneiotemplate.categoria.add');
+        Route::get('/remove/{categoria_torneio_id}', 'TorneioTemplateController@categoria_remove')->name('torneiotemplate.categoria.remove');
+    });
+});
