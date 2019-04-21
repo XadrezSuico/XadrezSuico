@@ -23,7 +23,7 @@
 </ul>
 <div class="row">
   <!-- Left col -->
-  <section class="col-lg-6 connectedSortable">
+  <section class="col-lg-12 connectedSortable">
 		<div class="box box-primary" id="inscricao">
 			<div class="box-header">
 				<h3 class="box-title">Editar Grupo de Evento</h3>
@@ -35,6 +35,13 @@
 						<label for="name">Nome</label>
 						<input name="name" id="name" class="form-control" type="text" value="{{$grupo_evento->name}}" />
 					</div>
+						<label for="tipo_ratings_id">Tipo de Rating</label>
+						<select name="tipo_ratings_id" id="tipo_ratings_id" class="form-control">
+							<option value="">--- Você pode selecionar um tipo de rating ---</option>
+							@foreach($tipos_rating as $tipo_rating)
+								<option value="{{$tipo_rating->id}}">{{$tipo_rating->id}} - {{$tipo_rating->name}}</option>
+							@endforeach
+						</select>
 				</div>
 				<!-- /.box-body -->
 
@@ -44,9 +51,8 @@
 				</div>
 			</form>
 		</div>
-
-
-
+	</section>
+  <section class="col-lg-6 connectedSortable">
 		<!-- Template de Torneio -->
 		<div class="box box-primary">
 			<div class="box-header">
@@ -93,7 +99,7 @@
 									<td>{{$torneio_template->template->id}}</td>
 									<td>{{$torneio_template->template->name}}</td>
 									<td>
-										<a class="btn btn-danger" href="{{url("/grupoevento/".$grupo_evento->id."/torneiotemplate/remove/".$torneio_template->id)}}" role="button">Remover Relação</a>
+										<a class="btn btn-danger" href="{{url("/grupoevento/".$grupo_evento->id."/torneiotemplate/remove/".$torneio_template->id)}}" role="button"><i class="fa fa-times"></i></a>
 									</td>
 								</tr>
 							@endforeach
@@ -102,10 +108,10 @@
 				</div>
 				<!-- /.box-body -->
 		</div>
+	</section>
 
-
-
-		<!-- Critérios de Desempate -->
+  <section class="col-lg-6 connectedSortable">
+		<!-- Critérios de Desempate de Evento -->
 		<div class="box box-primary">
 			<div class="box-header">
 				<h3 class="box-title">Relacionar Critério de Desempate</h3>
@@ -188,6 +194,70 @@
 				</div>
 				<!-- /.box-body -->
 		</div>
+	</section>
+	
+  <section class="col-lg-6 connectedSortable">		
+		<!-- Critérios de Desempate de Grupo Evento -->
+		<div class="box box-primary">
+			<div class="box-header">
+				<h3 class="box-title">Relacionar Critério de Desempate Geral</h3>
+			</div>
+			<!-- form start -->
+			<form method="post" action="{{url("/grupoevento/".$grupo_evento->id."/criteriodesempategeral/add")}}">
+				<div class="box-body">
+					<div class="form-group">
+						<label for="criterio_desempate_geral_id">Critério de Desempate</label>
+						<select name="criterio_desempate_id" id="criterio_desempate_geral_id" class="form-control">
+							<option value="">--- Selecione ---</option>
+							@foreach($criterios_desempate_geral as $criterio_desempate)
+								<option value="{{$criterio_desempate->id}}">{{$criterio_desempate->id}} - {{$criterio_desempate->name}}</option>
+							@endforeach
+						</select>
+					</div>
+					<div class="form-group">
+						<label for="prioridade_geral">Prioridade</label>
+						<input name="prioridade" id="prioridade_geral" class="form-control" type="number" />						
+					</div>
+				</div>
+				<!-- /.box-body -->
+
+				<div class="box-footer">
+					<button type="submit" class="btn btn-success">Enviar</button>
+					<input type="hidden" name="_token" value="{{ csrf_token() }}">
+				</div>
+			</form>
+		</div>
+		<div class="box box-primary">
+			<div class="box-header">
+				<h3 class="box-title">Critérios de Desempate Geral</h3>
+			</div>
+			<!-- form start -->
+				<div class="box-body">
+					<table id="tabela_criterio_desempate_geral" class="table-responsive table-condensed table-striped" style="width: 100%">
+						<thead>
+							<tr>
+								<th>#</th>
+								<th>Nome</th>
+								<th>Prior.</th>
+								<th width="20%">Opções</th>
+							</tr>
+						</thead>
+						<tbody>
+							@foreach($grupo_evento->criterios_gerais()->orderBy("prioridade","ASC")->get() as $criterio_desempate)
+								<tr>
+									<td>{{$criterio_desempate->criterio->id}}</td>
+									<td>{{$criterio_desempate->criterio->name}}</td>
+									<td>{{$criterio_desempate->prioridade}}</td>
+									<td>
+										<a class="btn btn-danger" href="{{url("/grupoevento/".$grupo_evento->id."/criteriodesempategeral/remove/".$criterio_desempate->id)}}" role="button"><i class="fa fa-times"></i></a>
+									</td>
+								</tr>
+							@endforeach
+						</tbody>
+          			</table>
+				</div>
+				<!-- /.box-body -->
+		</div>
 
   </section>
   <section class="col-lg-6 connectedSortable">
@@ -236,7 +306,66 @@
 									<td>{{$categoria->categoria->id}}</td>
 									<td>{{$categoria->categoria->name}}</td>
 									<td>
-										<a class="btn btn-danger" href="{{url("/grupoevento/".$grupo_evento->id."/categoria/remove/".$categoria->id)}}" role="button">Remover Relação</a>
+										<a class="btn btn-danger" href="{{url("/grupoevento/".$grupo_evento->id."/categoria/remove/".$categoria->id)}}" role="button"><i class="fa fa-times"></i></a>
+									</td>
+								</tr>
+							@endforeach
+						</tbody>
+          			</table>
+				</div>
+				<!-- /.box-body -->
+		</div>
+	</section>
+		
+  <section class="col-lg-6 connectedSortable">
+		<!-- Pontuação -->
+		<div class="box box-primary">
+			<div class="box-header">
+				<h3 class="box-title">Relacionar Pontuação</h3>
+			</div>
+			<!-- form start -->
+			<form method="post" action="{{url("/grupoevento/".$grupo_evento->id."/pontuacao/add")}}">
+				<div class="box-body">
+					<div class="form-group">
+						<label for="posicao">Posição</label>
+						<input name="posicao" id="posicao" class="form-control" type="number" />						
+					</div>
+					<div class="form-group">
+						<label for="pontuacao">Pontuação</label>
+						<input name="pontuacao" id="pontuacao" class="form-control" type="number" />						
+					</div>
+				</div>
+				<!-- /.box-body -->
+
+				<div class="box-footer">
+					<button type="submit" class="btn btn-success">Enviar</button>
+					<input type="hidden" name="_token" value="{{ csrf_token() }}">
+				</div>
+			</form>
+		</div>
+		<div class="box box-primary">
+			<div class="box-header">
+				<h3 class="box-title">Pontuações por Posição</h3>
+			</div>
+			<!-- form start -->
+				<div class="box-body">
+					<table id="tabela_pontuacao" class="table-responsive table-condensed table-striped" style="width: 100%">
+						<thead>
+							<tr>
+								<th>#</th>
+								<th>Posição</th>
+								<th>Pontuação</th>
+								<th width="20%">Opções</th>
+							</tr>
+						</thead>
+						<tbody>
+							@foreach($grupo_evento->pontuacoes()->orderBy("posicao","ASC")->get() as $pontuacao)
+								<tr>
+									<td>{{$pontuacao->id}}</td>
+									<td>{{$pontuacao->posicao}}</td>
+									<td>{{$pontuacao->pontuacao}}</td>
+									<td>
+										<a class="btn btn-danger" href="{{url("/grupoevento/".$grupo_evento->id."/pontuacao/remove/".$pontuacao->id)}}" role="button"><i class="fa fa-times"></i></a>
 									</td>
 								</tr>
 							@endforeach
@@ -260,8 +389,13 @@
 		$("#torneio_template_id").select2();
 		$("#categoria_id").select2();
 		$("#criterio_desempate_id").select2();
+		$("#criterio_desempate_geral_id").select2();
 		$("#tipo_torneio_id").select2();
 		$("#softwares_id").select2();
+		$("#tipo_ratings_id").select2();
+		@if($grupo_evento->tipo_rating)
+			$("#tipo_ratings_id").val([{{$grupo_evento->tipo_rating->tipo_ratings_id}}]).change();
+		@endif
 		$("#tabela_torneio_template").DataTable({
 				responsive: true,
 		});
@@ -269,6 +403,14 @@
 				responsive: true,
 		});
 		$("#tabela_criterio_desempate").DataTable({
+				responsive: true,
+				"ordering": false,
+		});
+		$("#tabela_criterio_desempate_geral").DataTable({
+				responsive: true,
+				"ordering": false,
+		});
+		$("#tabela_pontuacao").DataTable({
 				responsive: true,
 				"ordering": false,
 		});

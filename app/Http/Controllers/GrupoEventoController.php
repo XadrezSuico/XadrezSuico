@@ -12,6 +12,10 @@ use App\CriterioDesempate;
 use App\TipoTorneio;
 use App\Software;
 use App\CriterioDesempateGrupoEvento;
+use App\CriterioDesempateGrupoEventoGeral;
+use App\Pontuacao;
+use App\TipoRating;
+use App\TipoRatingGrupoEvento;
 
 class GrupoEventoController extends Controller
 {
@@ -29,21 +33,55 @@ class GrupoEventoController extends Controller
         $grupo_evento = new GrupoEvento;
         $grupo_evento->name = $request->input("name");
         $grupo_evento->save();
+
+        if($request->has("tipo_ratings_id")){
+            if($request->input("tipo_ratings_id")){
+                $tipo_rating_grupo_evento = new TipoRatingGrupoEvento;
+                $tipo_rating_grupo_evento->grupo_evento_id = $grupo_evento->id;
+                $tipo_rating_grupo_evento->tipo_ratings_id = $request->input("tipo_ratings_id");
+                $tipo_rating_grupo_evento->save();
+            }
+        }
+
         return redirect("/grupoevento/dashboard/".$grupo_evento->id);
     }
     public function edit($id){
         $grupo_evento = GrupoEvento::find($id);
         $torneio_templates = TorneioTemplate::all();
         $categorias = Categoria::all();
-        $criterios_desempate = CriterioDesempate::all();
+        $criterios_desempate = CriterioDesempate::criterios_evento()->get();
+        $criterios_desempate_geral = CriterioDesempate::criterios_grupo_evento()->get();
         $tipos_torneio = TipoTorneio::all();
         $softwares = Software::all();
-        return view('grupoevento.edit',compact("grupo_evento","torneio_templates","categorias","criterios_desempate","tipos_torneio","softwares"));
+        $tipos_rating = TipoRating::all();
+        return view('grupoevento.edit',compact("grupo_evento","torneio_templates","categorias","criterios_desempate","tipos_torneio","softwares","criterios_desempate_geral","tipos_rating"));
     }
     public function edit_post($id,Request $request){
         $grupo_evento = GrupoEvento::find($id);
         $grupo_evento->name = $request->input("name");
         $grupo_evento->save();
+
+        if($request->has("tipo_ratings_id")){
+            if($request->input("tipo_ratings_id")){
+                if(!$grupo_evento->tipo_rating){
+                    $tipo_rating_grupo_evento = new TipoRatingGrupoEvento;
+                    $tipo_rating_grupo_evento->grupo_evento_id = $grupo_evento->id;
+                    $tipo_rating_grupo_evento->tipo_ratings_id = $request->input("tipo_ratings_id");
+                    $tipo_rating_grupo_evento->save();
+                }else{
+                    $grupo_evento->tipo_rating->tipo_ratings_id = $request->input("tipo_ratings_id");
+                    $grupo_evento->tipo_rating->save();
+                }
+            }else{
+                if($grupo_evento->tipo_rating){
+                    $grupo_evento->tipo_rating->delete();
+                }
+            }
+        }else{
+            if($grupo_evento->tipo_rating){
+                $grupo_evento->tipo_rating->delete();
+            }
+        }
         return redirect("/grupoevento/dashboard/".$grupo_evento->id);
     }
     public function delete($id){
@@ -98,6 +136,36 @@ class GrupoEventoController extends Controller
     public function criterio_desempate_remove($id,$cd_grupo_evento_id){
         $criterio_desempate_grupo_evento = CriterioDesempateGrupoEvento::find($cd_grupo_evento_id);
         $criterio_desempate_grupo_evento->delete();
+        return redirect("/grupoevento/dashboard/".$id);
+    }
+    
+
+    public function criterio_desempate_geral_add($id,Request $request){
+        $criterio_desempate_grupo_evento_geral = new CriterioDesempateGrupoEventoGeral;
+        $criterio_desempate_grupo_evento_geral->grupo_evento_id = $id;
+        $criterio_desempate_grupo_evento_geral->criterio_desempate_id = $request->input("criterio_desempate_id");
+        $criterio_desempate_grupo_evento_geral->prioridade = $request->input("prioridade");
+        $criterio_desempate_grupo_evento_geral->save();
+        return redirect("/grupoevento/dashboard/".$id);
+    }
+    public function criterio_desempate_geral_remove($id,$cd_grupo_evento_geral_id){
+        $criterio_desempate_grupo_evento_geral = CriterioDesempateGrupoEventoGeral::find($cd_grupo_evento_geral_id);
+        $criterio_desempate_grupo_evento_geral->delete();
+        return redirect("/grupoevento/dashboard/".$id);
+    }
+    
+
+    public function pontuacao_add($id,Request $request){
+        $pontuacao = new Pontuacao;
+        $pontuacao->grupo_evento_id = $id;
+        $pontuacao->posicao = $request->input("posicao");
+        $pontuacao->pontuacao = $request->input("pontuacao");
+        $pontuacao->save();
+        return redirect("/grupoevento/dashboard/".$id);
+    }
+    public function pontuacao_remove($id,$pontuacao_id){
+        $pontuacao = Pontuacao::find($pontuacao_id);
+        $pontuacao->delete();
         return redirect("/grupoevento/dashboard/".$id);
     }
 }

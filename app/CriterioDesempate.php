@@ -15,6 +15,13 @@ class CriterioDesempate extends Model
     //     $criterio = CriterioDesempate::where()
     // }
 
+    public static function criterios_evento(){
+        return CriterioDesempate::where([["is_geral","=",false]]);
+    }
+    public static function criterios_grupo_evento(){
+        return CriterioDesempate::where([["is_geral","=",true]]);
+    }
+
     public function valor_criterio($inscrito_id){
         $desempate = InscricaoCriterioDesempate::where([
             ["criterio_desempate_id","=",$this->id],

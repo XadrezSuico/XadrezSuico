@@ -190,6 +190,14 @@ Route::group(["prefix"=>"grupoevento"],function(){
         Route::post('/add', 'GrupoEventoController@criterio_desempate_add')->name('grupoevento.criteriodesempate.add');
         Route::get('/remove/{cd_grupo_evento_id}', 'GrupoEventoController@criterio_desempate_remove')->name('grupoevento.criteriodesempate.remove');
     });
+    Route::group(["prefix"=>"{id}/criteriodesempategeral"],function(){
+        Route::post('/add', 'GrupoEventoController@criterio_desempate_geral_add')->name('grupoevento.criteriodesempategeral.add');
+        Route::get('/remove/{cd_grupo_evento_geral_id}', 'GrupoEventoController@criterio_desempate_geral_remove')->name('grupoevento.criteriodesempategeral.remove');
+    });
+    Route::group(["prefix"=>"{id}/pontuacao"],function(){
+        Route::post('/add', 'GrupoEventoController@pontuacao_add')->name('grupoevento.pontuacao.add');
+        Route::get('/remove/{pontuacao_id}', 'GrupoEventoController@pontuacao_remove')->name('grupoevento.pontuacao.remove');
+    });
 });
 
 Route::group(["prefix"=>"torneiotemplate"],function(){
