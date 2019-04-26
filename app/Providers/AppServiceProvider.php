@@ -67,6 +67,11 @@ class AppServiceProvider extends ServiceProvider
                     'icon' => 'file-text'
                 ]);
                 $event->menu->add([
+                    'text' => 'Sexos',
+                    'url'  => '/sexo',
+                    'icon' => 'user'
+                ]);
+                $event->menu->add([
                     'text' => 'Usuários',
                     'url'  => '/usuario',
                     'icon' => 'users'

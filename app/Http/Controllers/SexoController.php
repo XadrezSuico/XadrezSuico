@@ -26,7 +26,7 @@ class SexoController extends Controller
     }
     public function edit($id){
         $sexo = Sexo::find($id);
-        return view('cidade.edit',compact("cidade"));
+        return view('sexo.edit',compact("sexo"));
     }
     public function edit_post($id,Request $request){
         $sexo = Sexo::find($id);
