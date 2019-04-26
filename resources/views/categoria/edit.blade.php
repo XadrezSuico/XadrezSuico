@@ -16,14 +16,15 @@
 @endsection
 
 @section("content")
-<!-- Main row -->
-<ul class="nav nav-pills">
-  <li role="presentation"><a href="/categoria">Voltar a Lista de Categorias</a></li>
-  <li role="presentation"><a href="/categoria/new">Nova Categoria</a></li>
-</ul>
-<div class="row">
-  <!-- Left col -->
+	<!-- Main row -->
+	<ul class="nav nav-pills">
+		<li role="presentation"><a href="/categoria">Voltar a Lista de Categorias</a></li>
+		<li role="presentation"><a href="/categoria/new">Nova Categoria</a></li>
+	</ul>
+	<div class="row">
   <section class="col-lg-6 connectedSortable">
+
+	
 		<div class="box box-primary" id="inscricao">
 			<div class="box-header">
 				<h3 class="box-title">Editar Categoria</h3>

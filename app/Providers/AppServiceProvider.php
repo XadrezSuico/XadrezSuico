@@ -36,6 +36,11 @@ class AppServiceProvider extends ServiceProvider
             if(Auth::check()){
                 $event->menu->add("ACESSO RESTRITO");
                 $event->menu->add([
+                    'text' => 'Grupo de Evento',
+                    'url'  => '/grupoevento',
+                    'icon' => 'calendar'
+                ]);
+                $event->menu->add([
                     'text' => 'Eventos',
                     'url'  => '/evento',
                     'icon' => 'fort-awesome'
