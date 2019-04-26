@@ -130,9 +130,13 @@ Route::group(["prefix"=>"categoria"],function(){
 	Route::get('/', 'CategoriaController@index')->name('categoria.index');
 	Route::get('/new', 'CategoriaController@new')->name('categoria.new');
 	Route::post('/new', 'CategoriaController@new_post')->name('categoria.new.post');
-	Route::get('/edit/{id}', 'CategoriaController@edit')->name('categoria.edit');
-	Route::post('/edit/{id}', 'CategoriaController@edit_post')->name('categoria.edit.post');
+	Route::get('/dashboard/{id}', 'CategoriaController@edit')->name('categoria.dashboard');
+	Route::post('/dashboard/{id}', 'CategoriaController@edit_post')->name('categoria.dashboard.post');
 	Route::get('/delete/{id}', 'CategoriaController@delete')->name('categoria.delete');
+    Route::group(["prefix"=>"{id}/sexo"],function(){
+        Route::post('/add', 'CategoriaController@sexo_add')->name('categoria.sexo.add');
+        Route::get('/remove/{categoria_sexo_id}', 'CategoriaController@sexo_remove')->name('categoria.sexo.remove');
+    });
 });
 
 Route::group(["prefix"=>"cidade"],function(){
