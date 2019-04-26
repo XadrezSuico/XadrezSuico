@@ -31,6 +31,7 @@
 		<!-- Nav tabs -->
 		<ul class="nav nav-tabs" role="tablist">
 			<li role="presentation" class="active"><a href="#editar_evento" aria-controls="editar_evento" role="tab" data-toggle="tab">Editar Evento</a></li>
+			<li role="presentation"><a href="#evento" aria-controls="evento" role="tab" data-toggle="tab">Eventos</a></li>
 			<li role="presentation"><a href="#template_torneio" aria-controls="template_torneio" role="tab" data-toggle="tab">Template de Torneio</a></li>
 			<li role="presentation"><a href="#criterio_desempate" aria-controls="criterio_desempate" role="tab" data-toggle="tab">Critério de Desempate</a></li>
 			<li role="presentation"><a href="#criterio_desempate_geral" aria-controls="criterio_desempate_geral" role="tab" data-toggle="tab">Critério de Desempate Geral</a></li>
@@ -71,6 +72,85 @@
 						</form>
 					</div>
 				</section>
+			</div>
+			<div role="tabpanel" class="tab-pane" id="evento">
+				<br/>
+				<section class="col-lg-6 connectedSortable">
+				
+					<!-- Template de Torneio -->
+					<div class="box box-primary">
+						<div class="box-header">
+							<h3 class="box-title">Criar Evento</h3>
+						</div>
+						<!-- form start -->
+						<form method="post" action="{{url("/grupoevento/".$grupo_evento->id."/evento/new")}}">
+							<div class="box-body">
+								<div class="form-group">
+
+								</div>
+							</div>
+							<!-- /.box-body -->
+
+							<div class="box-footer">
+								<button type="submit" class="btn btn-success">Enviar</button>
+								<input type="hidden" name="_token" value="{{ csrf_token() }}">
+							</div>
+						</form>
+					</div>
+				</section>	
+				<section class="col-lg-6 connectedSortable">
+					<div class="box box-primary">
+						<div class="box-header">
+							<h3 class="box-title">Eventos</h3>
+						</div>
+						<!-- form start -->
+							<div class="box-body">
+								<table id="tabela_evento" class="table-responsive table-condensed table-striped" style="width: 100%">
+									<thead>
+										<tr>
+											<th>#</th>
+											<th>Nome</th>
+											<th>Período</th>
+											<th>Local</th>
+											<th>Grupo de Evento</th>
+											<th>Inscritos</th>
+											<th width="20%">Opções</th>
+										</tr>
+									</thead>
+									<tbody>
+										@foreach($grupo_evento->eventos->all() as $evento)
+											<tr>
+												<td>{{$evento->id}}</td>
+												<td>{{$evento->name}}</td>
+												<td>{{$evento->getDataInicio()}}<br/>{{$evento->getDataFim()}}</td>
+												<td>{{$evento->cidade->name}} - {{$evento->local}}</td>
+												<td>{{$evento->grupo_evento->name}}</td>
+												<td>
+													Total: {{$evento->quantosInscritos()}}<br/>
+													Confirmados: {{$evento->quantosInscritosConfirmados()}}
+												</td>
+												<td>
+													<a class="btn btn-default" href="{{url("/evento/edit/".$evento->id)}}" role="button">Editar</a>
+													<a class="btn btn-default" href="{{url("/evento/".$evento->id."/torneios")}}" role="button">Torneios</a>
+													<a class="btn btn-default" href="{{url("/evento/".$evento->id."/toggleresultados")}}" role="button">@if($evento->mostrar_resultados) Restringir @else Liberar @endif Classificação Pública</a>
+													@if($evento->mostrar_resultados)
+														<a class="btn btn-default" href="{{url("/evento/classificacao/".$evento->id)}}" role="button" target="_blank">Lista Classificação Pública</a>
+													@endif
+													<a class="btn btn-default" href="{{url("/evento/classificar/".$evento->id)}}" role="button">Classificar Evento</a>
+													<a class="btn btn-default" href="{{url("/evento/classificacao/".$evento->id."/interno")}}" role="button">Visualizar Classificação (Interna)</a>
+													@if($evento->mostrar_resultados)<a class="btn btn-default" href="{{url("/evento/classificacao/".$evento->id)}}" role="button">Visualizar Classificação (Pública)</a>@endif
+													<a class="btn btn-success" href="{{url("/evento/inscricao/".$evento->id)}}" role="button">Nova Inscrição</a>
+													<a class="btn btn-success" href="{{url("/evento/inscricao/".$evento->id."/confirmacao")}}" role="button">Confirmar Inscrição</a>
+													@if($evento->isDeletavel()) <a class="btn btn-danger" href="{{url("/evento/delete/".$evento->id)}}" role="button">Apagar</a> @endif
+												</td>
+											</tr>
+										@endforeach
+									</tbody>
+								</table>
+							</div>
+							<!-- /.box-body -->
+					</div>
+				</section>	
 			</div>
 			<div role="tabpanel" class="tab-pane" id="template_torneio">
 				<br/>
