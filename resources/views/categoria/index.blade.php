@@ -52,7 +52,7 @@
                             <td>{{$categoria->cat_code}}</td>
                             <td>{{$categoria->code}}</td>
                             <td>
-                                <a class="btn btn-default" href="{{url("/categoria/edit/".$categoria->id)}}" role="button">Editar</a>
+                                <a class="btn btn-default" href="{{url("/categoria/dashboard/".$categoria->id)}}" role="button">Dashboard</a>
                                 @if($categoria->isDeletavel()) <a class="btn btn-danger" href="{{url("/categoria/delete/".$categoria->id)}}" role="button">Apagar</a> @endif
                             </td>
                         </tr>

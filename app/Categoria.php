@@ -19,6 +19,10 @@ class Categoria extends Model
         return $this->hasMany("App\CategoriaTorneioTemplate","categoria_id","id");
     }
 
+    public function sexos(){
+        return $this->hasMany("App\CategoriaSexo","categoria_id","id");
+    }
+
     public function inscricoes(){
         return $this->hasMany("App\Inscricao","categoria_id","id");
     }

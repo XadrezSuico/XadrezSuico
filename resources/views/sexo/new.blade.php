@@ -1,9 +1,9 @@
 @extends('adminlte::page')
 
-@section("title", "Nova Cidade")
+@section("title", "Novo Sexo")
 
 @section('content_header')
-  <h1>Nova Cidade</h1>
+  <h1>Novo Sexo</h1>
 @stop
 
 
@@ -18,14 +18,14 @@
 @section("content")
 <!-- Main row -->
 <ul class="nav nav-pills">
-  <li role="presentation"><a href="/cidade">Voltar a Lista de Cidades</a></li>
+  <li role="presentation"><a href="/sexo">Voltar a Lista de Sexos</a></li>
 </ul>
 <div class="row">
   <!-- Left col -->
   <section class="col-lg-12 connectedSortable">
 	<div class="box box-primary" id="inscricao">
 		<div class="box-header">
-			<h3 class="box-title">Nova Cidade</h3>
+			<h3 class="box-title">Novo Sexo</h3>
 		</div>
 	  <!-- form start -->
         <form method="post">
