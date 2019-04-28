@@ -107,6 +107,43 @@
 					<input type="text" name="born" class="form-control" id="born" placeholder="Insira a Data de Nascimento do(a) Enxadrista" required="required">
 				</div>
 				<div class="form-group">
+					<label for="sexos_id">Sexo *</label>
+					<select id="sexos_id" name="sexos_id" class="form-control">
+						<option value="">--- Selecione ---</option>
+						@foreach($sexos as $sexo)
+							<option value="{{$sexo->id}}">{{$sexo->name}}</option>
+						@endforeach
+					</select>
+				</div>
+				<div class="row">
+					<div class="col-md-6">
+						<div class="form-group">
+							<label for="cbx_id">ID CBX</label>
+							<input name="cbx_id" id="cbx_id" class="form-control" type="text" />
+						</div>
+					</div>
+					<div class="col-md-6">
+						<div class="form-group">
+							<label for="fide_id">ID FIDE</label>
+							<input name="fide_id" id="fide_id" class="form-control" type="text" />
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-6">
+						<div class="form-group">
+							<label for="email">E-mail </label>
+							<input name="email" id="email" class="form-control" type="text" />
+						</div>
+					</div>
+					<div class="col-md-6">
+						<div class="form-group">
+							<label for="celular">Celular </label>
+							<input name="celular" id="celular" class="form-control" type="text" />
+						</div>
+					</div>
+				</div>
+				<div class="form-group">
 					<label for="enxadrista_cidade_id">Cidade *</label>
 					<select id="enxadrista_cidade_id" class="cidade_id form-control">
 						<option value="">--- Selecione uma cidade ---</option>
@@ -372,6 +409,8 @@
         }
 
 		$("#born").mask('00/00/0000');
+		$("#celular").mask('(00) 00000-0000');
+		$("#sexos_id").select2();
 		$("#enxadrista_cidade_id").select2({
 			ajax: {
 				url: '{{url("/evento/inscricao/".$evento->id."/busca/cidade")}}',
@@ -398,7 +437,15 @@
 			$("#cadastrarEnxadrista").on("click",function(){
 				
 				$(this).attr("disabled","disabled");
-				var data = "name=".concat($("#name").val()).concat("&born=").concat($("#born").val()).concat("&cidade_id=").concat($("#enxadrista_cidade_id").val()).concat("&clube_id=").concat($("#enxadrista_clube_id").val());
+				var data = "name=".concat($("#name").val())
+						.concat("&born=").concat($("#born").val())
+						.concat("&sexos_id=").concat($("#sexos_id").val())
+						.concat("&cbx_id=").concat($("#cbx_id").val())
+						.concat("&fide_id=").concat($("#fide_id").val())
+						.concat("&email=").concat($("#email").val())
+						.concat("&celular=").concat($("#celular").val())
+						.concat("&cidade_id=").concat($("#enxadrista_cidade_id").val())
+						.concat("&clube_id=").concat($("#enxadrista_clube_id").val());
 				
 				$.ajax({
 					type: "post",

@@ -11,6 +11,7 @@ use App\Cidade;
 use App\Clube;
 use App\Enxadrista;
 use App\Categoria;
+use App\Sexo;
 use App\TipoRatingRegras;
 
 class InscricaoGerenciarController extends Controller
@@ -292,8 +293,9 @@ class InscricaoGerenciarController extends Controller
 
     public function inscricao($id){
         $evento = Evento::find($id);
+        $sexos = Sexo::all();
         if($evento){
-            return view("inscricao.gerenciar.inscricao",compact("evento"));
+            return view("inscricao.gerenciar.inscricao",compact("evento","sexos"));
         }else{
             return view("inscricao.gerenciar.naoha");
         }
@@ -302,16 +304,19 @@ class InscricaoGerenciarController extends Controller
 
     public function adicionarNovaInscricao(Request $request){
         if(
-            !$request->has("enxadrista_id") || !$request->has("categoria_id") || !$request->has("cidade_id") || !$request->has("evento_id")
+            !$request->has("enxadrista_id") || 
+            !$request->has("categoria_id") || 
+            !$request->has("cidade_id") || 
+            !$request->has("evento_id")
         ){
-            return response()->json(["ok"=>0,"error"=>1,"message" => "Um dos campos obrigatórios não está preenchido. Por favor, verifique e envie novamente!","registred"=>0]);
+            return response()->json(["ok"=>0,"error"=>1,"message" => "Um dos campos obrigatórios não está preenchido. Por favor, verifique e envie novamente!<br/><br/><strong>Observação</strong>: TODOS os Campos com <strong>*</strong> SÃO OBRIGATÓRIOS!","registred"=>0]);
         }elseif(
             $request->input("enxadrista_id") == NULL || $request->input("enxadrista_id") == "" ||
             $request->input("categoria_id") == NULL || $request->input("categoria_id") == "" ||
             $request->input("cidade_id") == NULL || $request->input("cidade_id") == "" ||
             $request->input("evento_id") == NULL || $request->input("evento_id") == ""
         ){
-            return response()->json(["ok"=>0,"error"=>1,"message" => "Um dos campos obrigatórios não está preenchido. Por favor, verifique e envie novamente!"]);
+            return response()->json(["ok"=>0,"error"=>1,"message" => "Um dos campos obrigatórios não está preenchido. Por favor, verifique e envie novamente!<br/><br/><strong>Observação</strong>: TODOS os Campos com <strong>*</strong> SÃO OBRIGATÓRIOS!","registred"=>0]);
         }
 
         $inscricao = new Inscricao;
@@ -405,15 +410,19 @@ class InscricaoGerenciarController extends Controller
 
     public function adicionarNovoEnxadrista(Request $request){
         if(
-            !$request->has("name") || !$request->has("born") || !$request->has("cidade_id")
+            !$request->has("name") || 
+            !$request->has("born") || 
+            !$request->has("sexos_id") || 
+            !$request->has("cidade_id")
         ){
-            return response()->json(["ok"=>0,"error"=>1,"message" => "Um dos campos obrigatórios não está preenchido. Por favor, verifique e envie novamente!","registred"=>0]);
+            return response()->json(["ok"=>0,"error"=>1,"message" => "Um dos campos obrigatórios não está preenchido. Por favor, verifique e envie novamente!<br/><br/><strong>Observação</strong>: TODOS os Campos com <strong>*</strong> SÃO OBRIGATÓRIOS!","registred"=>0]);
         }elseif(
             $request->input("name") == NULL || $request->input("name") == "" ||
             $request->input("born") == NULL || $request->input("born") == "" ||
+            $request->input("sexos_id") == NULL || $request->input("sexos_id") == "" ||
             $request->input("cidade_id") == NULL || $request->input("cidade_id") == ""
         ){
-            return response()->json(["ok"=>0,"error"=>1,"message" => "Um dos campos obrigatórios não está preenchido. Por favor, verifique e envie novamente!","registred"=>0]);
+            return response()->json(["ok"=>0,"error"=>1,"message" => "Um dos campos obrigatórios não está preenchido. Por favor, verifique e envie novamente!<br/><br/><strong>Observação</strong>: TODOS os Campos com <strong>*</strong> SÃO OBRIGATÓRIOS!","registred"=>0]);
         }
         $enxadrista = new Enxadrista;
         if(!$enxadrista->setBorn($request->input("born"))){
@@ -441,9 +450,25 @@ class InscricaoGerenciarController extends Controller
 
         $enxadrista->name = mb_strtoupper($request->input("name"));
         $enxadrista->cidade_id = $request->input("cidade_id");
-        if($request->has("clube_id")){
-            if($request->input("clube_id") > 0){
-                $enxadrista->clube_id = $request->input("clube_id");
+        $enxadrista->sexos_id = $request->input("sexos_id");
+        if($request->has("cbx_id")){
+            if($request->input("cbx_id") > 0){
+                $enxadrista->cbx_id = $request->input("cbx_id");
+            }
+        }
+        if($request->has("fide_id")){
+            if($request->input("fide_id") > 0){
+                $enxadrista->fide_id = $request->input("fide_id");
+            }
+        }
+        if($request->has("email")){
+            if($request->input("email") > 0){
+                $enxadrista->email = $request->input("email");
+            }
+        }
+        if($request->has("celular")){
+            if($request->input("celular") > 0){
+                $enxadrista->celular = $request->input("celular");
             }
         }
         $enxadrista->save();

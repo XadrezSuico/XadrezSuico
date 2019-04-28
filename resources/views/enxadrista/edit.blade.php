@@ -62,9 +62,19 @@
 							</div>
 						</div>
 					</div>
-					<div class="form-group">
-						<label for="email">E-mail</label>
-						<input name="email" id="email" class="form-control" type="text" value="{{$enxadrista->email}}" />
+					<div class="row">
+						<div class="col-md-6">
+							<div class="form-group">
+								<label for="email">E-mail</label>
+								<input name="email" id="email" class="form-control" type="text" value="{{$enxadrista->email}}" />
+							</div>
+						</div>
+						<div class="col-md-6">
+							<div class="form-group">
+								<label for="celular">Celular</label>
+								<input name="celular" id="celular" class="form-control" type="text" value="{{$enxadrista->celular}}" />
+							</div>
+						</div>
 					</div>
 					<div class="form-group">
 						<label for="cidade_id">Cidade *</label>
@@ -109,6 +119,7 @@
 		$("#cidade_id").select2().val([{{$enxadrista->cidade_id}}]).change();
 		$("#clube_id").select2().val([{{$enxadrista->clube_id}}]).change();
 		$("#sexos_id").select2().val([{{$enxadrista->sexos_id}}]).change();
+		$("#celular").mask("(00) 00000-0000");
   });
 </script>
 @endsection
