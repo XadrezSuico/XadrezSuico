@@ -47,6 +47,11 @@ class AppServiceProvider extends ServiceProvider
                 ]);
                 $event->menu->add("ADMINSTRAÇÃO");
                 $event->menu->add([
+                    'text' => 'Grupos de Evento',
+                    'url'  => '/grupoevento',
+                    'icon' => 'th-large'
+                ]);
+                $event->menu->add([
                     'text' => 'Categorias',
                     'url'  => '/categoria',
                     'icon' => 'certificate'
