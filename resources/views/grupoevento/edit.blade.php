@@ -3,7 +3,7 @@
 @section("title", "Dashboard de Grupo de Evento")
 
 @section('content_header')
-  <h1>Dashboard de Grupo de Evento</h1>
+  <h1>Dashboard de Grupo de Evento: {{$grupo_evento->name}}</h1>
 @stop
 
 
@@ -30,7 +30,7 @@
 
 		<!-- Nav tabs -->
 		<ul class="nav nav-tabs" role="tablist">
-			<li role="presentation" class="active"><a href="#editar_evento" aria-controls="editar_evento" role="tab" data-toggle="tab">Editar Evento</a></li>
+			<li role="presentation" class="active"><a href="#editar_evento" aria-controls="editar_evento" role="tab" data-toggle="tab">Editar Grupo de Evento</a></li>
 			<li role="presentation"><a href="#evento" aria-controls="evento" role="tab" data-toggle="tab">Eventos</a></li>
 			<li role="presentation"><a href="#template_torneio" aria-controls="template_torneio" role="tab" data-toggle="tab">Template de Torneio</a></li>
 			<li role="presentation"><a href="#criterio_desempate" aria-controls="criterio_desempate" role="tab" data-toggle="tab">Critério de Desempate</a></li>
@@ -86,7 +86,39 @@
 						<form method="post" action="{{url("/grupoevento/".$grupo_evento->id."/evento/new")}}">
 							<div class="box-body">
 								<div class="form-group">
-
+									<div class="form-group">
+										<label for="evento_name">Nome *</label>
+										<input name="name" id="evento_name" class="form-control" type="text" />
+									</div>
+									<div class="form-group">
+										<label for="evento_data_inicio">Data de Início *</label>
+										<input name="data_inicio" id="evento_data_inicio" class="form-control" type="text" />
+									</div>
+									<div class="form-group">
+										<label for="evento_data_fim">Data de Fim *</label>
+										<input name="data_fim" id="evento_data_fim" class="form-control" type="text" />
+									</div>
+									<div class="form-group">
+										<label for="evento_cidade_id">Cidade *</label>
+										<select name="cidade_id" id="evento_cidade_id" class="form-control width-100">
+											<option value="">--- Selecione ---</option>
+											@foreach($cidades as $cidade)
+												<option value="{{$cidade->id}}">{{$cidade->id}} - {{$cidade->name}}</option>
+											@endforeach
+										</select>
+									</div>
+									<div class="form-group">
+										<label for="evento_local">Local *</label>
+										<input name="local" id="evento_local" class="form-control" type="text" />
+									</div>
+									<div class="form-group">
+										<label for="evento_link">Link</label>
+										<input name="link" id="evento_link" class="form-control" type="text" />
+									</div>
+									<div class="form-group">
+										<label for="evento_data_limite_inscricoes_abertas">Data e Hora Limite para Inscrições</label>
+										<input name="data_limite_inscricoes_abertas" id="evento_data_limite_inscricoes_abertas" class="form-control" type="text" />
+									</div>
 								</div>
 							</div>
 							<!-- /.box-body -->
@@ -515,6 +547,7 @@
 		$("#tipo_torneio_id").select2();
 		$("#softwares_id").select2();
 		$("#tipo_ratings_id").select2();
+		$("#evento_cidade_id").select2();
 		@if($grupo_evento->tipo_rating)
 			$("#tipo_ratings_id").val([{{$grupo_evento->tipo_rating->tipo_ratings_id}}]).change();
 		@endif
@@ -539,6 +572,9 @@
 		setTimeout(function(){
 			$(".select2").css("width","100%");
 		},"1000");
+		$("#evento_data_inicio").mask("00/00/0000");
+		$("#evento_data_fim").mask("00/00/0000");
+		$("#evento_data_limite_inscricoes_abertas").mask("00/00/0000 00:00");
   });
 </script>
 @endsection

@@ -16,6 +16,7 @@ use App\CriterioDesempateGrupoEventoGeral;
 use App\Pontuacao;
 use App\TipoRating;
 use App\TipoRatingGrupoEvento;
+use App\Cidade;
 
 class GrupoEventoController extends Controller
 {
@@ -54,7 +55,8 @@ class GrupoEventoController extends Controller
         $tipos_torneio = TipoTorneio::all();
         $softwares = Software::all();
         $tipos_rating = TipoRating::all();
-        return view('grupoevento.edit',compact("grupo_evento","torneio_templates","categorias","criterios_desempate","tipos_torneio","softwares","criterios_desempate_geral","tipos_rating"));
+        $cidades = Cidade::all();
+        return view('grupoevento.edit',compact("grupo_evento","torneio_templates","categorias","criterios_desempate","tipos_torneio","softwares","criterios_desempate_geral","tipos_rating","cidades"));
     }
     public function edit_post($id,Request $request){
         $grupo_evento = GrupoEvento::find($id);
@@ -99,12 +101,12 @@ class GrupoEventoController extends Controller
         $torneio_template_grupo_evento->grupo_evento_id = $id;
         $torneio_template_grupo_evento->torneio_template_id = $request->input("torneio_template_id");
         $torneio_template_grupo_evento->save();
-        return redirect("/grupoevento/dashboard/".$id);
+        return redirect("/grupoevento/dashboard/".$id."?tab=torneio_template");
     }
     public function torneio_template_remove($id,$torneio_template_grupo_evento_id){
         $torneio_template_grupo_evento = TorneioTemplateGrupoEvento::find($torneio_template_grupo_evento_id);
         $torneio_template_grupo_evento->delete();
-        return redirect("/grupoevento/dashboard/".$id);
+        return redirect("/grupoevento/dashboard/".$id."?tab=torneio_template");
     }
 
 
@@ -114,12 +116,12 @@ class GrupoEventoController extends Controller
         $categoria_grupo_evento->grupo_evento_id = $id;
         $categoria_grupo_evento->categoria_id = $request->input("categoria_id");
         $categoria_grupo_evento->save();
-        return redirect("/grupoevento/dashboard/".$id);
+        return redirect("/grupoevento/dashboard/".$id."?tab=categoria");
     }
     public function categoria_remove($id,$categoria_grupo_evento_id){
         $categoria_grupo_evento = CategoriaGrupoEvento::find($categoria_grupo_evento_id);
         $categoria_grupo_evento->delete();
-        return redirect("/grupoevento/dashboard/".$id);
+        return redirect("/grupoevento/dashboard/".$id."?tab=categoria");
     }
     
 
@@ -131,12 +133,12 @@ class GrupoEventoController extends Controller
         $criterio_desempate_grupo_evento->softwares_id = $request->input("softwares_id");
         $criterio_desempate_grupo_evento->prioridade = $request->input("prioridade");
         $criterio_desempate_grupo_evento->save();
-        return redirect("/grupoevento/dashboard/".$id);
+        return redirect("/grupoevento/dashboard/".$id."?tab=criterio_desempate");
     }
     public function criterio_desempate_remove($id,$cd_grupo_evento_id){
         $criterio_desempate_grupo_evento = CriterioDesempateGrupoEvento::find($cd_grupo_evento_id);
         $criterio_desempate_grupo_evento->delete();
-        return redirect("/grupoevento/dashboard/".$id);
+        return redirect("/grupoevento/dashboard/".$id."?tab=criterio_desempate");
     }
     
 
@@ -146,12 +148,12 @@ class GrupoEventoController extends Controller
         $criterio_desempate_grupo_evento_geral->criterio_desempate_id = $request->input("criterio_desempate_id");
         $criterio_desempate_grupo_evento_geral->prioridade = $request->input("prioridade");
         $criterio_desempate_grupo_evento_geral->save();
-        return redirect("/grupoevento/dashboard/".$id);
+        return redirect("/grupoevento/dashboard/".$id."?tab=criterio_desempate_geral");
     }
     public function criterio_desempate_geral_remove($id,$cd_grupo_evento_geral_id){
         $criterio_desempate_grupo_evento_geral = CriterioDesempateGrupoEventoGeral::find($cd_grupo_evento_geral_id);
         $criterio_desempate_grupo_evento_geral->delete();
-        return redirect("/grupoevento/dashboard/".$id);
+        return redirect("/grupoevento/dashboard/".$id."?tab=criterio_desempate_geral");
     }
     
 
@@ -161,11 +163,11 @@ class GrupoEventoController extends Controller
         $pontuacao->posicao = $request->input("posicao");
         $pontuacao->pontuacao = $request->input("pontuacao");
         $pontuacao->save();
-        return redirect("/grupoevento/dashboard/".$id);
+        return redirect("/grupoevento/dashboard/".$id."?tab=pontuacao");
     }
     public function pontuacao_remove($id,$pontuacao_id){
         $pontuacao = Pontuacao::find($pontuacao_id);
         $pontuacao->delete();
-        return redirect("/grupoevento/dashboard/".$id);
+        return redirect("/grupoevento/dashboard/".$id."?tab=pontuacao");
     }
 }
