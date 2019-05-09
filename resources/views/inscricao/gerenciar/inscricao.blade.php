@@ -456,13 +456,13 @@
 						if(data.ok == 1){
 							$("#name").val("");
 							$("#born").val("");
-							$("#sexos_id").val("");
+							$("#sexos_id").val("").change();
 							$("#cbx_id").val("");
 							$("#fide_id").val("");
 							$("#email").val("");
 							$("#celular").val("");
-							$("#enxadrista_cidade_id").val("");
-							$("#enxadrista_clube_id").val("");
+							$("#enxadrista_cidade_id").val("").change();
+							$("#enxadrista_clube_id").val("").change();
 							$('html,body').animate({
 								scrollTop: $("#inscricao").offset().top
 							}, 'slow');
