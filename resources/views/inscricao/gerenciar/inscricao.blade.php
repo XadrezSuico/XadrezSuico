@@ -433,36 +433,56 @@
 				}
 			}
 		});
-		$("#enxadrista_cidade_id").on("select2:select",function(){
-			$("#cadastrarEnxadrista").on("click",function(){
-				
-				$(this).attr("disabled","disabled");
-				var data = "name=".concat($("#name").val())
-						.concat("&born=").concat($("#born").val())
-						.concat("&sexos_id=").concat($("#sexos_id").val())
-						.concat("&cbx_id=").concat($("#cbx_id").val())
-						.concat("&fide_id=").concat($("#fide_id").val())
-						.concat("&email=").concat($("#email").val())
-						.concat("&celular=").concat($("#celular").val())
-						.concat("&cidade_id=").concat($("#enxadrista_cidade_id").val())
-						.concat("&clube_id=").concat($("#enxadrista_clube_id").val());
-				
-				$.ajax({
-					type: "post",
-					url: "{{url("/evento/inscricao/".$evento->id."/enxadrista/novo")}}",
-					data: data,
-					dataType: "json",
-					success: function(data){
-						if(data.ok == 1){
+		$("#cadastrarEnxadrista").on("click",function(){
+			
+			$(this).attr("disabled","disabled");
+			var data = "name=".concat($("#name").val())
+					.concat("&born=").concat($("#born").val())
+					.concat("&sexos_id=").concat($("#sexos_id").val())
+					.concat("&cbx_id=").concat($("#cbx_id").val())
+					.concat("&fide_id=").concat($("#fide_id").val())
+					.concat("&email=").concat($("#email").val())
+					.concat("&celular=").concat($("#celular").val())
+					.concat("&cidade_id=").concat($("#enxadrista_cidade_id").val())
+					.concat("&clube_id=").concat($("#enxadrista_clube_id").val());
+			
+			$.ajax({
+				type: "post",
+				url: "{{url("/evento/inscricao/".$evento->id."/enxadrista/novo")}}",
+				data: data,
+				dataType: "json",
+				success: function(data){
+					if(data.ok == 1){
+						$('html,body').animate({
+							scrollTop: $("#inscricao").offset().top
+						}, 'slow');
+						$("#successMessage").html("<strong>O cadastro do enxadrista foi efetuado com sucesso!</strong>");
+						$("#success").modal();
+
+
+						setTimeout(function(){
+							var newOption = new Option($("#name").val().concat(" | ").concat($("#born").val()), data.enxadrista_id, false, false);
+							$('#enxadrista_id').append(newOption).trigger('change');
+							$("#enxadrista_id").val(data.enxadrista_id).change();
+							var newOptionCidade = new Option(data.cidade.name, data.cidade.id, false, false);
+							$('#cidade_id').append(newOptionCidade).trigger('change');
+							$("#cidade_id").val(data.cidade.id).change();
+							if(data.clube.id > 0){
+								var newOptionClube = new Option(data.clube.name, data.clube.id, false, false);
+								$('#clube_id').append(newOptionClube).trigger('change');
+								$("#clube_id").val(data.clube.id).change();
+							}else{
+								$("#clube_id").val(null).trigger('change');
+							}
+							setNullEnxadristaFields();
+						},"800");
+					}else{
+						if(data.registred == 1){
 							$('html,body').animate({
 								scrollTop: $("#inscricao").offset().top
 							}, 'slow');
-							$("#successMessage").html("<strong>O cadastro do enxadrista foi efetuado com sucesso!</strong>");
-							$("#success").modal();
-
-
 							setTimeout(function(){
-								var newOption = new Option($("#name").val().concat(" | ").concat($("#born").val()), data.enxadrista_id, false, false);
+								var newOption = new Option(data.enxadrista_name, data.enxadrista_id, false, false);
 								$('#enxadrista_id').append(newOption).trigger('change');
 								$("#enxadrista_id").val(data.enxadrista_id).change();
 								var newOptionCidade = new Option(data.cidade.name, data.cidade.id, false, false);
@@ -477,35 +497,13 @@
 								}
 								setNullEnxadristaFields();
 							},"800");
-						}else{
-							if(data.registred == 1){
-								$('html,body').animate({
-									scrollTop: $("#inscricao").offset().top
-								}, 'slow');
-								setTimeout(function(){
-									var newOption = new Option(data.enxadrista_name, data.enxadrista_id, false, false);
-									$('#enxadrista_id').append(newOption).trigger('change');
-									$("#enxadrista_id").val(data.enxadrista_id).change();
-									var newOptionCidade = new Option(data.cidade.name, data.cidade.id, false, false);
-									$('#cidade_id').append(newOptionCidade).trigger('change');
-									$("#cidade_id").val(data.cidade.id).change();
-									if(data.clube.id > 0){
-										var newOptionClube = new Option(data.clube.name, data.clube.id, false, false);
-										$('#clube_id').append(newOptionClube).trigger('change');
-										$("#clube_id").val(data.clube.id).change();
-									}else{
-										$("#clube_id").val(null).trigger('change');
-									}
-									setNullEnxadristaFields();
-								},"800");
-							}
-							$("#alertsMessage").html(data.message);
-							$("#alerts").modal();
 						}
-						
-						$("#cadastrarEnxadrista").removeAttr("disabled");
+						$("#alertsMessage").html(data.message);
+						$("#alerts").modal();
 					}
-				});
+					
+					$("#cadastrarEnxadrista").removeAttr("disabled");
+				}
 			});
 		});
 
