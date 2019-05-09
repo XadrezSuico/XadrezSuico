@@ -454,15 +454,6 @@
 					dataType: "json",
 					success: function(data){
 						if(data.ok == 1){
-							$("#name").val("");
-							$("#born").val("");
-							$("#sexos_id").val("").change();
-							$("#cbx_id").val("");
-							$("#fide_id").val("");
-							$("#email").val("");
-							$("#celular").val("");
-							$("#enxadrista_cidade_id").val("").change();
-							$("#enxadrista_clube_id").val("").change();
 							$('html,body').animate({
 								scrollTop: $("#inscricao").offset().top
 							}, 'slow');
@@ -484,6 +475,7 @@
 								}else{
 									$("#clube_id").val(null).trigger('change');
 								}
+								setNullEnxadristaFields();
 							},"800");
 						}else{
 							if(data.registred == 1){
@@ -504,6 +496,7 @@
 									}else{
 										$("#clube_id").val(null).trigger('change');
 									}
+									setNullEnxadristaFields();
 								},"800");
 							}
 							$("#alertsMessage").html(data.message);
@@ -515,6 +508,18 @@
 				});
 			});
 		});
+
+		function setNullEnxadristaFields(){
+			$("#name").val("");
+			$("#born").val("");
+			$("#sexos_id").val("").change();
+			$("#cbx_id").val("");
+			$("#fide_id").val("");
+			$("#email").val("");
+			$("#celular").val("");
+			$("#enxadrista_cidade_id").val("").change();
+			$("#enxadrista_clube_id").val("").change();
+		}
 
 
         $("#cidadeNaoCadastradaEnxadrista").on("click",function(){
