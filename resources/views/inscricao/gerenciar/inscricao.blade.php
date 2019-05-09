@@ -510,15 +510,18 @@
 		});
 
 		function setNullEnxadristaFields(){
-			$("#name").val("");
-			$("#born").val("");
-			$("#sexos_id").val("").change();
-			$("#cbx_id").val("");
-			$("#fide_id").val("");
-			$("#email").val("");
-			$("#celular").val("");
-			$("#enxadrista_cidade_id").val("").change();
-			$("#enxadrista_clube_id").val("").change();
+			setTimeout(function(){
+				$("#name").val("");
+				$("#born").val("");
+				$("#sexos_id").val("").change();
+				$("#cbx_id").val("");
+				$("#fide_id").val("");
+				$("#email").val("");
+				$("#celular").val("");
+				$("#enxadrista_cidade_id").val("").change();
+				$("#enxadrista_clube_id").val("").change();
+
+			}, 200);
 		}
 
 
