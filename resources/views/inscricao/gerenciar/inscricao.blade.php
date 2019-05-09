@@ -454,15 +454,15 @@
 					dataType: "json",
 					success: function(data){
 						if(data.ok == 1){
-							$("#name").val("")
-							$("#born").val("")
-							$("#sexos_id").val("")
-							$("#cbx_id").val("")
-							$("#fide_id").val("")
-							$("#email").val("")
-							$("#celular").val("")
-							$("#enxadrista_cidade_id").val("")
-							$("#enxadrista_clube_id").val("")
+							$("#name").val("");
+							$("#born").val("");
+							$("#sexos_id").val("");
+							$("#cbx_id").val("");
+							$("#fide_id").val("");
+							$("#email").val("");
+							$("#celular").val("");
+							$("#enxadrista_cidade_id").val("");
+							$("#enxadrista_clube_id").val("");
 							$('html,body').animate({
 								scrollTop: $("#inscricao").offset().top
 							}, 'slow');
