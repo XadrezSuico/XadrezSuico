@@ -471,6 +471,11 @@ class InscricaoGerenciarController extends Controller
                 $enxadrista->celular = $request->input("celular");
             }
         }
+        if($request->has("clube_id")){
+            if($request->input("clube_id") > 0){
+                $enxadrista->clube_id = $request->input("clube_id");
+            }
+        }
         $enxadrista->save();
         if($enxadrista->id > 0){
             if($enxadrista->clube){
