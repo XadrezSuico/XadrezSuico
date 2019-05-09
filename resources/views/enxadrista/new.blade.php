@@ -61,9 +61,19 @@
 							</div>
 						</div>
 					</div>
-					<div class="form-group">
-						<label for="email">E-mail</label>
-						<input name="email" id="email" class="form-control" type="text" />
+					<div class="row">
+						<div class="col-md-6">
+							<div class="form-group">
+								<label for="email">E-mail</label>
+								<input name="email" id="email" class="form-control" type="text" />
+							</div>
+						</div>
+						<div class="col-md-6">
+							<div class="form-group">
+								<label for="celular">Celular</label>
+								<input name="celular" id="celular" class="form-control" type="text" />
+							</div>
+						</div>
 					</div>
 					<div class="form-group">
 						<label for="cidade_id">Cidade *</label>
@@ -109,6 +119,7 @@
 		$("#clube_id").select2();
 		$("#sexos_id").select2();
 		$("#born").mask("00/00/0000");
+		$("#celular").mask("(00) 00000-0000");
   });
 </script>
 @endsection

@@ -29,6 +29,7 @@ class EnxadristaController extends Controller
         $enxadrista->setBorn($request->input("born"));
         $enxadrista->cidade_id = $request->input("cidade_id");
         $enxadrista->sexos_id = $request->input("sexos_id");
+        $enxadrista->celular = $request->input("celular");
         if($request->has("clube_id")) if($request->input("clube_id")) $enxadrista->clube_id = $request->input("clube_id");
         if($request->has("email")) if($request->input("email")) $enxadrista->email = $request->input("email");
         if($request->has("cbx_id")) if($request->input("cbx_id")) $enxadrista->cbx_id = $request->input("cbx_id");
@@ -49,6 +50,7 @@ class EnxadristaController extends Controller
         $enxadrista->setBorn($request->input("born"));
         $enxadrista->cidade_id = $request->input("cidade_id");
         $enxadrista->sexos_id = $request->input("sexos_id");
+        $enxadrista->celular = $request->input("celular");
         if($request->has("clube_id")){
             if($request->input("clube_id")){
                 $enxadrista->clube_id = $request->input("clube_id");
