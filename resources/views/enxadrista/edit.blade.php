@@ -51,6 +51,20 @@
 					<div class="row">
 						<div class="col-md-6">
 							<div class="form-group">
+								<label for="cbx_rating">Rating CBX</label>
+								<input name="cbx_rating" id="cbx_rating" class="form-control" type="text" value="{{$enxadrista->cbx_rating}}" />
+							</div>
+						</div>
+						<div class="col-md-6">
+							<div class="form-group">
+								<label for="fide_rating">Rating FIDE</label>
+								<input name="fide_rating" id="fide_rating" class="form-control" type="text" value="{{$enxadrista->fide_rating}}" />
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-md-6">
+							<div class="form-group">
 								<label for="cbx_id">ID CBX</label>
 								<input name="cbx_id" id="cbx_id" class="form-control" type="text" value="{{$enxadrista->cbx_id}}" />
 							</div>

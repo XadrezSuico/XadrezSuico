@@ -8,7 +8,9 @@
     <thead>
         <th>#</th>
         <th>Nome Completo</th>
-        <th>Rating</th>
+        @if($evento->tipo_rating) <th>Rating</th> @endif
+        @if($evento->usa_fide) <th>FIDE</th> @endif
+        @if($evento->usa_cbx) <th>CBX</th> @endif
         <th>Categoria</th>
         <th>Cidade</th>
         <th>Clube</th>
@@ -18,7 +20,9 @@
             <tr>
                 <td>{{$inscricao->enxadrista_id}}</td>
                 <td>{{$inscricao->enxadrista->getName()}}</td>
-                <td>{{$inscricao->enxadrista->ratingParaEvento($evento->id)}}</td>
+                @if($evento->tipo_rating) <td>{{$inscricao->enxadrista->ratingParaEvento($evento->id)}}</td> @endif
+                @if($evento->usa_fide) <td>{{$inscricao->enxadrista->fide_rating}}</td> @endif
+                @if($evento->usa_cbx) <td>{{$inscricao->enxadrista->cbx_rating}}</td> @endif
                 <td>{{$inscricao->categoria->name}}</td>
                 <td>{{$inscricao->cidade->name}}</td>
                 <td>@if($inscricao->clube) {{$inscricao->clube->name}} @else Sem Clube @endif</td>

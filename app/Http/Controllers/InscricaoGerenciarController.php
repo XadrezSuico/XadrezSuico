@@ -39,7 +39,21 @@ class InscricaoGerenciarController extends Controller
         $torneio = Torneio::find($torneio_id);
         $inscricao = Inscricao::find($inscricao_id);
 		if($inscricao){
-            $inscricao->categoria_id = $request->input("categoria_id");
+            if($inscricao->categoria_id != $request->input("categoria_id")){
+                $inscricao->categoria_id = $request->input("categoria_id");
+
+                $torneio = null;
+
+                foreach($inscricao->torneio->evento->torneios->all() as $Torneio){
+                    foreach($Torneio->categorias->all() as $categoria){
+                        if($categoria->categoria_id == $request->input("categoria_id")){
+                            $torneio = $Torneio;
+                        }
+                    }
+                }
+                $inscricao->torneio_id = $torneio->id;
+
+            }
             $inscricao->cidade_id = $request->input("cidade_id");
             if($request->has("clube_id")){
                 if($request->input("clube_id") > 0){
@@ -122,11 +136,18 @@ class InscricaoGerenciarController extends Controller
     }
 
     private function generateTxt($inscricoes,$evento,$torneio){
+        $texto = "No;Nome Completo;ID;";
         if($evento->tipo_rating){
-            $texto = "No;Nome Completo;ID;FIDE;DNasc;Cat;Gr;NoClube;Nome Clube;Sobrenome;Nome\r\n";
+            $texto .= "FIDE;";
         }else{
-            $texto = "No;Nome Completo;ID;DNasc;Cat;Gr;NoClube;Nome Clube;Sobrenome;Nome\r\n";
+            if($evento->usa_fide){
+                $texto .= "FIDE;";
+            }
+            if($evento->usa_cbx){
+                $texto .= "Elonac;";
+            }
         }
+        $texto .= "DNasc;Cat;Gr;NoClube;Nome Clube;Sobrenome;Nome\r\n";
     
         $i = 1;
         
@@ -173,6 +194,13 @@ class InscricaoGerenciarController extends Controller
                     $texto .= $rating_regra->inicial.";";
                     // $texto .= $rating_regra->k.";";
                 }
+            }else{
+                if($evento->usa_fide){
+                    $texto .= $inscricao->enxadrista->fide_rating.";";
+                }
+                if($evento->usa_cbx){
+                    $texto .= $inscricao->enxadrista->cbx_rating.";";
+                } 
             }
 
             $texto .= $inscricao->enxadrista->getBornToSM().";";
@@ -209,15 +237,39 @@ class InscricaoGerenciarController extends Controller
 
     static function cmp_obj($inscrito_a,$inscrito_b){
         $evento = $inscrito_a->torneio->evento;
-        $r_a = $inscrito_a->enxadrista->ratingParaEvento($evento->id);
-        $r_b = $inscrito_b->enxadrista->ratingParaEvento($evento->id);
-        if($r_a == $r_b || !$r_a || !$r_b){
-            return InscricaoGerenciarController::cmp_obj_alf($inscrito_a,$inscrito_b);
-        }else{
-            if($r_a > $r_b){
-                return -1;
+        if($evento->tipo_rating){
+            $r_a = $inscrito_a->enxadrista->ratingParaEvento($evento->id);
+            $r_b = $inscrito_b->enxadrista->ratingParaEvento($evento->id);
+            if($r_a == $r_b || !$r_a || !$r_b){
+                return InscricaoGerenciarController::cmp_obj_alf($inscrito_a,$inscrito_b);
+            }else{
+                if($r_a > $r_b){
+                    return -1;
+                }
+                return 1;
             }
-            return 1;
+        }else{
+            if($evento->usa_fide){
+                $r_a = $inscrito_a->enxadrista->fide_rating;
+                $r_b = $inscrito_b->enxadrista->fide_rating;
+                if(!($r_a == $r_b || !$r_a || !$r_b)){
+                    if($r_a > $r_b){
+                        return -1;
+                    }
+                    return 1;
+                }
+            }
+            if($evento->usa_cbx){
+                $r_a = $inscrito_a->enxadrista->cbx_rating;
+                $r_b = $inscrito_b->enxadrista->cbx_rating;
+                if(!($r_a == $r_b || !$r_a || !$r_b)){
+                    if($r_a > $r_b){
+                        return -1;
+                    }
+                    return 1;
+                }
+            }
+            return InscricaoGerenciarController::cmp_obj_alf($inscrito_a,$inscrito_b);
         }
     }
     static function cmp_obj_alf($inscrito_a,$inscrito_b){
@@ -462,12 +514,12 @@ class InscricaoGerenciarController extends Controller
             }
         }
         if($request->has("email")){
-            if($request->input("email") > 0){
+            if($request->input("email") != ""){
                 $enxadrista->email = $request->input("email");
             }
         }
         if($request->has("celular")){
-            if($request->input("celular") > 0){
+            if($request->input("celular") != ""){
                 $enxadrista->celular = $request->input("celular");
             }
         }
