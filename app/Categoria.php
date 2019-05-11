@@ -35,6 +35,23 @@ class Categoria extends Model
         return $this->hasMany("App\CategoriaEvento","categoria_id","id");
     }
 
+    public function getTorneioByEvento($evento){
+        $categoria = $this;
+        if($evento){
+            $torneio = Torneio::where([
+                ["evento_id","=",$evento->id],
+            ])
+            ->whereHas("categorias",function($q1) use ($categoria){
+                $q1->where([["categoria_id","=",$categoria->id]]);
+            })
+            ->first();
+            if($torneio){
+                return $torneio;
+            }
+        }
+        return false;
+    }
+
     public function isDeletavel(){
         if($this->id != null){
             if(

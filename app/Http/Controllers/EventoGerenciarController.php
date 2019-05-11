@@ -51,6 +51,7 @@ class EventoGerenciarController extends Controller
 	public function resultados($evento_id,$categoria_id){
 		$evento = Evento::find($evento_id);
 		$categoria = Categoria::find($categoria_id);
+		$torneio = $categoria->getTorneioByEvento($evento);
 		$inscricoes = Inscricao::where([
 				["categoria_id","=",$categoria->id],
 				["confirmado","=",true]
@@ -62,11 +63,7 @@ class EventoGerenciarController extends Controller
             })
 			->orderBy("posicao","ASC")
 		->get();
-		if($evento->criterios()->count() > 0){
-			$criterios = $evento->criterios()->orderBy("prioridade")->get();
-		}else{
-			$criterios = $evento->grupo_evento->criterios()->orderBy("prioridade")->get();
-		}
+		$criterios = $torneio->getCriterios();
 		return view("evento.publico.list",compact("evento","categoria","inscricoes","criterios"));
 	}
 }
