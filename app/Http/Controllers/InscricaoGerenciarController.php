@@ -55,6 +55,12 @@ class InscricaoGerenciarController extends Controller
 
             }
             $inscricao->cidade_id = $request->input("cidade_id");
+            
+            if($request->has("desconsiderar_pontuacao_geral")){
+                $inscricao->desconsiderar_pontuacao_geral = true;
+            }else{
+                $inscricao->desconsiderar_pontuacao_geral = false;
+            }
             if($request->has("clube_id")){
                 if($request->input("clube_id") > 0){
                     $inscricao->clube_id = $request->input("clube_id");

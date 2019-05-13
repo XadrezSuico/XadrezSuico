@@ -104,6 +104,9 @@
 				<div class="form-group">
 					<label><input type="checkbox" id="atualizar_cadastro" name="atualizar_cadastro"> Atualizar Cadastro</label>
 				</div>
+				<div class="form-group">
+					<label><input type="checkbox" id="desconsiderar_pontuacao_geral" name="desconsiderar_pontuacao_geral" @if($inscricao->desconsiderar_pontuacao_geral) checked="checked" @endif> Desconsiderar Inscrição para Pontuação Geral</label>
+				</div>
 			</div>
 			<!-- /.box-body -->
 

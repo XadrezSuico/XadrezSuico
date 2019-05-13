@@ -28,11 +28,13 @@ class AppServiceProvider extends ServiceProvider
     {
 		$events->listen(BuildingMenu::class, function (BuildingMenu $event) {
             $event->menu->add("ACESSO PÚBLICO");
-            $event->menu->add([
-                'text' => 'Ratings',
-                'url'  => '/rating',
-                'icon' => 'star'
-            ]);
+            if(env("SHOW_RATING",false)){
+                $event->menu->add([
+                    'text' => 'Ratings',
+                    'url'  => '/rating',
+                    'icon' => 'star'
+                ]);
+            }
             if(Auth::check()){
                 $event->menu->add("ACESSO RESTRITO");
                 $event->menu->add([
