@@ -108,11 +108,7 @@ class CategoriaController extends Controller
         }elseif($inscrito_a->pontos < $inscrito_b->pontos){
             return 1;
         }else{
-            if($inscrito_a->torneio->evento->criterios()->count() > 0){
-                $criterios = $inscrito_a->torneio->evento->criterios()->orderBy("prioridade")->get();
-            }else{
-                $criterios = $inscrito_a->torneio->evento->grupo_evento->criterios()->orderBy("prioridade")->get();
-            }
+            $criterios = $inscrito_a->torneio->getCriterios();
             foreach($criterios as $criterio){
                 $desempate = $criterio->criterio->sort_desempate($inscrito_a, $inscrito_b);
                 if($desempate != 0){
