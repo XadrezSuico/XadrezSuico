@@ -34,9 +34,10 @@ class CriterioDesempate extends Model
     public function sort_desempate($inscrito_a, $inscrito_b){
         $desempate_a = $this->valor_criterio($inscrito_a->id);
         $desempate_b = $this->valor_criterio($inscrito_b->id);
-        if($desempate_a > $desempate_b){
+        // echo $desempate_a, $desempate_b;
+        if($desempate_a->valor < $desempate_b->valor){
             return 1;
-        }elseif($desempate_a < $desempate_b){
+        }elseif($desempate_a->valor > $desempate_b->valor){
             return -1;
         }
         return 0;

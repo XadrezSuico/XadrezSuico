@@ -75,6 +75,7 @@ class CategoriaController extends Controller
     public static function classificar($evento_id, $categoria_id){
         $evento = Evento::find($evento_id);
         $categoria = Categoria::find($categoria_id);
+        echo '<br/><br/> Categoria: '.$categoria->name;
         $inscritos = array();
         $inscricoes = Inscricao::where([
                 ["categoria_id","=",$categoria->id]
@@ -109,9 +110,11 @@ class CategoriaController extends Controller
             return 1;
         }else{
             $criterios = $inscrito_a->torneio->getCriterios();
+            echo "[".count($criterios)."]";
             foreach($criterios as $criterio){
                 $desempate = $criterio->criterio->sort_desempate($inscrito_a, $inscrito_b);
                 if($desempate != 0){
+                    echo $criterio->criterio->name;
                     return $desempate;
                 }
             }
