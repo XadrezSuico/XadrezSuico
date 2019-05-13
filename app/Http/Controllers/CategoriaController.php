@@ -8,6 +8,7 @@ use App\Categoria;
 use App\Inscricao;
 use App\Sexo;
 use App\CategoriaSexo;
+use App\Pontuacao;
 
 class CategoriaController extends Controller
 {
