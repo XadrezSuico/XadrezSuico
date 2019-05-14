@@ -25,7 +25,7 @@ class EventoGerenciarController extends Controller
 			foreach($evento->categorias->all() as $categoria){
 				CategoriaController::classificar($evento->id,$categoria->categoria->id);
 			}
-			return redirect("/evento");
+			// return redirect("/evento");
 		}
     }
     
