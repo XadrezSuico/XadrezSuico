@@ -8,6 +8,7 @@ use App\Categoria;
 use App\Inscricao;
 use App\Sexo;
 use App\CategoriaSexo;
+use App\Pontuacao;
 
 class CategoriaController extends Controller
 {
@@ -95,12 +96,61 @@ class CategoriaController extends Controller
         }
         usort($inscritos, array("\App\Http\Controllers\CategoriaController","sort_classificacao_etapa"));
         $i = 1;
+        $j = 1;
         foreach($inscritos as $inscricao){
             $inscricao->posicao = $i;
             // echo $i;
+            if(!$inscricao->desconsiderar_pontuacao_geral){
+                $inscricao->posicao_geral = $j;
+                $inscricao->pontos_geral = Pontuacao::getPontuacaoByEvento($evento->id,$j);
+                $j++;
+            }else{
+                $inscricao->posicao_geral = NULL;
+            }
             $inscricao->save();
             $i++;
         }
+    }
+
+    
+    public static function classificar_geral($grupo_evento_id, $categoria_id){
+        $grupo_evento = GrupoEvento::find($grupo_evento_id);
+        $categoria = Categoria::find($categoria_id);
+        echo '<br/><br/> Categoria: '.$categoria->name;
+        $inscritos = array();
+        $evento = "";
+
+        // $inscricoes = Inscricao::where([
+        //         ["categoria_id","=",$categoria->id]
+        //     ])
+        //     ->whereHas("torneio",function($q1) use ($evento){
+        //         $q1->where([
+        //             ["evento_id","=",$evento->id]
+        //         ]);
+        //     })
+        //     ->orderBy("pontos","DESC")
+        // ->get();
+        // echo count($inscricoes);
+        // foreach($inscricoes as $inscricao){
+        //     if($inscricao->pontos != NULL && $inscricao->confirmado){
+        //         $inscritos[] = $inscricao;
+        //     }
+        // }
+        // usort($inscritos, array("\App\Http\Controllers\CategoriaController","sort_classificacao_etapa"));
+        // $i = 1;
+        // $j = 1;
+        // foreach($inscritos as $inscricao){
+        //     $inscricao->posicao = $i;
+        //     // echo $i;
+        //     if(!$inscricao->desconsiderar_pontuacao_geral){
+        //         $inscricao->posicao_geral = $j;
+        //         $j++;
+        //     }else{
+        //         $inscricao->posicao_geral = NULL;
+        //     }
+        //     $inscricao->save();
+        //     $i++;
+        // }
     }
 
     public static function sort_classificacao_etapa($inscrito_a,$inscrito_b){
