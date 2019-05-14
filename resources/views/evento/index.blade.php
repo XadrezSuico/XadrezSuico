@@ -12,10 +12,6 @@
             {{ session('status') }}
         </div>
     @endif
-    <ul class="nav nav-pills">
-        <li role="presentation"><a href="{{url("/evento/new")}}">Novo Evento</a></li>
-    </ul>
-
     <div class="box">
         <div class="box-body">
             <table id="tabela" class="table-responsive table-condensed table-striped" style="width: 100%">

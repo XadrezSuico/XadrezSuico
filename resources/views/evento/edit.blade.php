@@ -1,9 +1,9 @@
 @extends('adminlte::page')
 
-@section('title', 'Usuários - Editar')
+@section('title', 'Eventos - Dashboard: '.$evento->name)
 
 @section('content_header')
-    <h1>Usuários >> Editar</h1>
+    <h1>Eventos >> Dashboard: {{$evento->name}}</h1>
 @stop
 
 @section('content')

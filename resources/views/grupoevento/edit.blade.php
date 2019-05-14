@@ -119,6 +119,10 @@
 										<label for="evento_data_limite_inscricoes_abertas">Data e Hora Limite para Inscrições</label>
 										<input name="data_limite_inscricoes_abertas" id="evento_data_limite_inscricoes_abertas" class="form-control" type="text" />
 									</div>
+									<div class="form-group">
+										<label><input type="checkbox" id="usa_cbx" name="usa_cbx"> Utiliza Rating CBX?</label>
+										<label><input type="checkbox" id="usa_fide" name="usa_fide"> Utiliza Rating FIDE?</label>
+									</div>
 								</div>
 							</div>
 							<!-- /.box-body -->
