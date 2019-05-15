@@ -122,6 +122,8 @@
 									</div>
 									<div class="form-group">
 										<label><input type="checkbox" id="usa_cbx" name="usa_cbx"> Utiliza Rating CBX?</label>
+									</div>
+									<div class="form-group">
 										<label><input type="checkbox" id="usa_fide" name="usa_fide"> Utiliza Rating FIDE?</label>
 									</div>
 								</div>
@@ -427,6 +429,9 @@
 										@endforeach
 									</select>
 								</div>
+								<div class="form-group">
+									<label><input type="checkbox" id="nao_classificar" name="nao_classificar"> Não Classificar Categoria</label>
+								</div>
 							</div>
 							<!-- /.box-body -->
 
@@ -449,6 +454,7 @@
 										<tr>
 											<th>#</th>
 											<th>Nome</th>
+											<th>Classificar?</th>
 											<th width="20%">Opções</th>
 										</tr>
 									</thead>
@@ -457,6 +463,7 @@
 											<tr>
 												<td>{{$categoria->categoria->id}}</td>
 												<td>{{$categoria->categoria->name}}</td>
+												<td>@if(!$categoria->nao_classificar) Sim @else Não @endif</td>
 												<td>
 													<a class="btn btn-danger" href="{{url("/grupoevento/".$grupo_evento->id."/categoria/remove/".$categoria->id)}}" role="button"><i class="fa fa-times"></i></a>
 												</td>

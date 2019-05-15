@@ -115,6 +115,7 @@ class GrupoEventoController extends Controller
         $categoria_grupo_evento = new CategoriaGrupoEvento;
         $categoria_grupo_evento->grupo_evento_id = $id;
         $categoria_grupo_evento->categoria_id = $request->input("categoria_id");
+        if($request->has("nao_classificar")) $categoria_grupo_evento->nao_classificar = true;
         $categoria_grupo_evento->save();
         return redirect("/grupoevento/dashboard/".$id."?tab=categoria");
     }
