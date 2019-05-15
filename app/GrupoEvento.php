@@ -77,4 +77,13 @@ class GrupoEvento extends Model
         ->orderBy("prioridade","ASC")
         ->get();
     }
+
+    public function getEventosClassificacaoGeralPublica(){
+        return Evento::where([
+            ["grupo_evento_id","=",$this->id],
+            ["mostrar_resultados_final","=",true],
+        ])
+        ->orderBy("data_inicio","ASC")
+        ->get();
+    }
 }

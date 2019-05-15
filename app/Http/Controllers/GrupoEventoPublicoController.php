@@ -15,6 +15,7 @@ class GrupoEventoPublicoController extends Controller
 	}
 	public function resultados($grupo_evento_id,$categoria_id){
 		$grupo_evento = GrupoEvento::find($grupo_evento_id);
+		$eventos = $grupo_evento->getEventosClassificacaoGeralPublica();
 		$categoria = Categoria::find($categoria_id);
 		$pontuacoes = PontuacaoEnxadrista::where([
 				["grupo_evento_id","=",$grupo_evento->id],
@@ -23,6 +24,6 @@ class GrupoEventoPublicoController extends Controller
 			->orderBy("posicao","ASC")
 		->get();
 		$criterios = $grupo_evento->getCriteriosDesempateGerais();
-		return view("grupoevento.publico.list",compact("grupo_evento","categoria","pontuacoes","criterios"));
+		return view("grupoevento.publico.list",compact("grupo_evento","eventos","categoria","pontuacoes","criterios"));
 	}
 }

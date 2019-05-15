@@ -27,16 +27,25 @@
             <table id="tabela" class="table-responsive table-condensed table-striped" style="width: 100%">
                 <thead>
                     <tr>
-                        <th>#</th>
-                        <th>Nome</th>
-                        <th>Data de Nascimento</th>
-                        <th>Cidade</th>
-                        <th>Clube</th>
-                        <th>Pontuação</th>
+                        <th rowspan="2">#</th>
+                        <th rowspan="2">Nome</th>
+                        <th rowspan="2">Data de Nascimento</th>
+                        <th rowspan="2">Cidade</th>
+                        <th rowspan="2">Clube</th>
+                        @if(count($eventos) > 0)<th rowspan="1" colspan="{{count($eventos)}}">Etapas</th> @endif
+                        <th rowspan="2">Pontuação</th>
                         @foreach($criterios as $criterio)
-                            <th>{{$criterio->criterio->code}}</th>
+                            <th rowspan="2">{{$criterio->criterio->code}}</th>
                         @endforeach
                     </tr>
+                    @if(count($eventos) > 0)
+                        <tr>
+                            @php($i=1)
+                            @foreach($eventos as $evento)
+                                <th>E{{$i++}}</th>
+                            @endforeach
+                        </tr>
+                    @endif
                 </thead>
                 <tbody>
                     @foreach($pontuacoes as $pontuacao)
@@ -46,6 +55,18 @@
                             <td>{{$pontuacao->enxadrista->getBorn()}}</td>
                             <td>{{$pontuacao->enxadrista->cidade->name}}</td>
                             <td>@if($pontuacao->enxadrista->clube) {{$pontuacao->enxadrista->clube->name}} @else Sem Clube @endif</td>
+                            @foreach($eventos as $evento)
+                                @php($inscricao = $evento->enxadristaInscrito($pontuacao->enxadrista->id))
+                                @if($inscricao)
+                                    @if($inscricao->pontos_geral)
+                                        <td>{{$inscricao->pontos_geral}}</td>
+                                    @else
+                                        <td>-</td>
+                                    @endif
+                                @else
+                                    <td>-</td>
+                                @endif
+                            @endforeach
                             <td>{{$pontuacao->pontos}}</td>
                             @foreach($criterios as $criterio)
                                 <td>
@@ -61,11 +82,24 @@
                 </tbody>
             </table>
             <hr/>
-            <h4>Legenda dos Critérios de Desempate:</h4><br/>
-            @php($j=1)
-            @foreach($criterios as $criterio)
-                <strong>{{$j++}} - {{$criterio->criterio->code}}:</strong> {{$criterio->criterio->name}}<br/>
-            @endforeach
+            <div class="row">
+                <div class="col-md-6">
+                    <h4>Legenda dos Critérios de Desempate:</h4><br/>
+                    @php($j=1)
+                    @foreach($criterios as $criterio)
+                        <strong>{{$j++}} - {{$criterio->criterio->code}}:</strong> {{$criterio->criterio->name}}<br/>
+                    @endforeach
+                </div>
+                <div class="col-md-6">                    
+                    @if(count($eventos) > 0)
+                        <h4>Legenda dos Eventos:</h4><br/>
+                        @php($i=1)
+                        @foreach($eventos as $evento)
+                            <strong>E{{$i++}}</strong>: {{$evento->name}}<br/>
+                        @endforeach
+                    @endif
+                </div>
+            </div>
         </div>
     </div>
 @endsection
