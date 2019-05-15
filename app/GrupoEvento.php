@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use App\CriterioDesempateGrupoEventoGeral;
 
 class GrupoEvento extends Model
 {
@@ -61,5 +62,19 @@ class GrupoEvento extends Model
         }else{
             return false;
         }
+    }
+
+
+    public function getCriteriosDesempateGerais(){
+        return CriterioDesempateGrupoEventoGeral::where([
+            ["grupo_evento_id","=",$this->id]
+        ])
+        ->whereHas("criterio",function($q1){
+            $q1->where([
+                ["is_geral","=",true]
+            ]);
+        })
+        ->orderBy("prioridade","ASC")
+        ->get();
     }
 }

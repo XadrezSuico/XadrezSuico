@@ -182,6 +182,9 @@ Route::group(["prefix"=>"grupoevento"],function(){
 	Route::get('/dashboard/{id}', 'GrupoEventoController@edit')->name('grupoevento.dashboard');
 	Route::post('/dashboard/{id}', 'GrupoEventoController@edit_post')->name('grupoevento.dashboard.post');
 	Route::get('/delete/{id}', 'GrupoEventoController@delete')->name('grupoevento.delete');
+    Route::get('/classificar/{id}', 'GrupoEventoController@classificar')->name('grupoevento.classificar');
+    Route::get('/classificacao/{id}', 'GrupoEventoPublicoController@classificacao')->name('grupoevento.publico.classificacao');
+    Route::get('/{id}/resultados/{categoria_id}', 'GrupoEventoPublicoController@resultados')->name('grupoevento.publico.resultados');
     Route::group(["prefix"=>"{id}/categoria"],function(){
         Route::post('/add', 'GrupoEventoController@categoria_add')->name('grupoevento.categoria.add');
         Route::get('/remove/{categoria_grupo_evento_id}', 'GrupoEventoController@categoria_remove')->name('grupoevento.categoria.remove');

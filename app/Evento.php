@@ -117,6 +117,19 @@ class Evento extends Model
         }
         return $total;
     }
+    public function enxadristaInscrito($enxadrista_id){
+        $total = 0;
+        $evento = $this;
+        $inscricao = Inscricao::where([
+            ["enxadrista_id","=",$enxadrista_id],
+        ])
+        ->whereHas("torneio",function($q1) use ($evento){
+            $q1->where("evento_id","=",$evento->id);
+        })
+        ->first();
+        if($inscricao) return $inscricao;
+        return false;
+    }
 
     
     public function isDeletavel(){

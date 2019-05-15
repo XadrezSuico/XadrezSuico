@@ -27,6 +27,12 @@ class Enxadrista extends Model
     public function ratings() {
         return $this->hasMany("App\Rating","enxadrista_id","id");
     }
+    public function pontuacoes_gerais() {
+        return $this->hasMany("App\PontuacaoEnxadrista","enxadrista_id","id");
+    }
+    public function criterios_desempate_gerais() {
+        return $this->hasMany("App\EnxadristaCriterioDesempateGeral","enxadrista_id","id");
+    }
 
 
 
@@ -172,5 +178,38 @@ class Enxadrista extends Model
             return ["ok" => 0,"rating"=>$rating,"regra"=>$rating_regra];
         }
         return false;
+    }
+
+    public static function getComInscricaoConfirmada($grupo_evento_id,$categoria_id){
+        return Enxadrista::whereHas("inscricoes",function($q1) use ($grupo_evento_id,$categoria_id){
+            $q1->whereHas("torneio",function($q2) use ($grupo_evento_id,$categoria_id){
+                $q2->whereHas("evento",function($q3) use ($grupo_evento_id,$categoria_id){
+                    $q3->where([
+                        ["grupo_evento_id","=",$grupo_evento_id]
+                    ]);
+                });
+            });
+            $q1->where([
+                ["categoria_id","=",$categoria_id]
+            ]);
+        })
+        ->get();
+    }
+
+    public static function getComPontuacaoGeral($grupo_evento_id,$categoria_id){
+        return Enxadrista::whereHas("pontuacoes_gerais",function($q1) use ($grupo_evento_id,$categoria_id){
+            $q1->where([
+                ["categoria_id","=",$categoria_id],
+                ["grupo_evento_id","=",$grupo_evento_id],
+            ]);
+        })
+        ->get();
+    }
+
+    public function getPontuacaoGeral($grupo_evento_id,$categoria_id){
+        return $this->pontuacoes_gerais()->where([
+            ["categoria_id","=",$categoria_id],
+            ["grupo_evento_id","=",$grupo_evento_id],
+        ])->first();
     }
 }

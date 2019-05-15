@@ -23,6 +23,7 @@
 <ul class="nav nav-pills">
   <li role="presentation"><a href="/grupoevento">Voltar a Lista de Grupos de Evento</a></li>
   <li role="presentation"><a href="/grupoevento/new">Novo Grupo de Evento</a></li>
+  <li role="presentation"><a href="/grupoevento/classificar/{{$grupo_evento->id}}">Classificar Grupo de Evento</a></li>
 </ul>
 <div class="row">
   <!-- Left col -->

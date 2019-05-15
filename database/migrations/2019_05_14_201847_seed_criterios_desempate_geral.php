@@ -15,7 +15,7 @@ class SeedCriteriosDesempateGeral extends Migration
     {
         DB::Table('criterio_desempate')->insert(array('name' => "Maior Número de 1ºs Lugares", "code" => "1ºs", "is_geral" => 1, "internal_code" => "G1"));
         DB::Table('criterio_desempate')->insert(array('name' => "Maior Número de 2ºs Lugares", "code" => "2ºs", "is_geral" => 1, "internal_code" => "G2"));
-        DB::Table('criterio_desempate')->insert(array('name' => "Maior Número de 3ºs Lugares", "code" => "2ºs", "is_geral" => 1, "internal_code" => "G3"));
+        DB::Table('criterio_desempate')->insert(array('name' => "Maior Número de 3ºs Lugares", "code" => "3ºs", "is_geral" => 1, "internal_code" => "G3"));
         DB::Table('criterio_desempate')->insert(array('name' => "Maior Idade", "code" => "Idd", "is_geral" => 1, "internal_code" => "G4"));
         DB::Table('criterio_desempate')->insert(array('name' => "Pontuação Total", "code" => "PtsT", "is_geral" => 1, "internal_code" => "G5"));
         DB::Table('criterio_desempate')->insert(array('name' => "Pontuação Total (Com Corte do Pior Resultado)", "code" => "PtsCP", "is_geral" => 1, "internal_code" => "G6"));

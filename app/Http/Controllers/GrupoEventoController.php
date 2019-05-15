@@ -170,4 +170,16 @@ class GrupoEventoController extends Controller
         $pontuacao->delete();
         return redirect("/grupoevento/dashboard/".$id."?tab=pontuacao");
     }
+
+    
+
+	public function classificar($grupo_evento_id){
+		$grupo_evento = GrupoEvento::find($grupo_evento_id);
+		if($grupo_evento){
+			foreach($grupo_evento->categorias->all() as $categoria){
+				CategoriaController::classificar_geral($grupo_evento->id,$categoria->categoria->id);
+			}
+			// return redirect("/grupoevento/dashboard/".$grupo_evento_id);
+		}
+    }
 }

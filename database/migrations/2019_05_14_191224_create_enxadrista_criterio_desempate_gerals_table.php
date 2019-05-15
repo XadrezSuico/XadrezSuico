@@ -15,7 +15,7 @@ class CreateEnxadristaCriterioDesempateGeralsTable extends Migration
     {
         Schema::create('enxadrista_criterio_desempate_gerals', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->decimal('valor', 5, 2)->nullable();
+            $table->decimal('valor', 9, 2)->nullable();
             $table->integer('enxadrista_id')->unsigned();
             $table->foreign('enxadrista_id', 'fk_ecsg_enx_id')->references("id")->on("enxadrista");
             $table->integer('grupo_evento_id')->unsigned();
