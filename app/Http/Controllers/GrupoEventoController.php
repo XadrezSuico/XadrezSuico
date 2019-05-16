@@ -63,10 +63,10 @@ class GrupoEventoController extends Controller
         $cidades = Cidade::all();
         if($request->has("tab")){
             $tab = $request->input("tab");
-            return view('grupoevento.edit',compact("grupo_evento","torneio_templates","categorias","criterios_desempate","tipos_torneio","softwares","criterios_desempate_geral","tipos_rating","cidades", "tab"));
         }else{
-            return view('grupoevento.edit',compact("grupo_evento","torneio_templates","categorias","criterios_desempate","tipos_torneio","softwares","criterios_desempate_geral","tipos_rating","cidades"));
+            $tab = NULL;    
         }
+        return view('grupoevento.edit',compact("grupo_evento","torneio_templates","categorias","criterios_desempate","tipos_torneio","softwares","criterios_desempate_geral","tipos_rating","cidades", "tab"));
     }
     public function edit_post($id,Request $request){
         $grupo_evento = GrupoEvento::find($id);
