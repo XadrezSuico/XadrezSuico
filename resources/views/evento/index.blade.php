@@ -39,7 +39,7 @@
                                 Confirmados: {{$evento->quantosInscritosConfirmados()}}
                             </td>
                             <td>
-                                <a class="btn btn-default" href="{{url("/evento/edit/".$evento->id)}}" role="button">Editar</a>
+                                <a class="btn btn-default" href="{{url("/evento/dashboard/".$evento->id)}}" role="button">Dashboard</a>
                                 <a class="btn btn-default" href="{{url("/evento/".$evento->id."/torneios")}}" role="button">Torneios</a>
                                 <a class="btn btn-default" href="{{url("/evento/".$evento->id."/toggleresultados")}}" role="button">@if($evento->mostrar_resultados) Restringir @else Liberar @endif Classificação Pública</a>
                                 @if($evento->mostrar_resultados)

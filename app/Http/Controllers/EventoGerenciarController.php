@@ -6,6 +6,11 @@ use Illuminate\Http\Request;
 use App\Evento;
 use App\Categoria;
 use App\Inscricao;
+use App\CriterioDesempate;
+use App\TipoTorneio;
+use App\Software;
+use App\TipoRating;
+use App\Cidade;
 
 
 class EventoGerenciarController extends Controller
@@ -17,6 +22,22 @@ class EventoGerenciarController extends Controller
 	public function index(){
 		$eventos = Evento::all();
 		return view("evento.index",compact("eventos"));
+	}
+
+	public function edit($id,Request $request){
+        $evento = Evento::find($id);
+        $categorias = Categoria::all();
+        $criterios_desempate = CriterioDesempate::criterios_evento()->get();
+        $tipos_torneio = TipoTorneio::all();
+        $softwares = Software::all();
+        $tipos_rating = TipoRating::all();
+        $cidades = Cidade::all();
+        if($request->has("tab")){
+            $tab = $request->input("tab");
+        }else{
+            $tab = NULL;    
+        }
+        return view('evento.edit',compact("evento","categorias","criterios_desempate","tipos_torneio","softwares","tipos_rating","cidades", "tab"));
 	}
 
 	public function classificar($evento_id){
