@@ -31,13 +31,13 @@
 
 		<!-- Nav tabs -->
 		<ul class="nav nav-tabs" role="tablist">
-			<li role="presentation" class="active"><a href="#editar_evento" aria-controls="editar_evento" role="tab" data-toggle="tab">Editar Grupo de Evento</a></li>
-			<li role="presentation"><a href="#evento" aria-controls="evento" role="tab" data-toggle="tab">Eventos</a></li>
-			<li role="presentation"><a href="#template_torneio" aria-controls="template_torneio" role="tab" data-toggle="tab">Template de Torneio</a></li>
-			<li role="presentation"><a href="#criterio_desempate" aria-controls="criterio_desempate" role="tab" data-toggle="tab">Critério de Desempate</a></li>
-			<li role="presentation"><a href="#criterio_desempate_geral" aria-controls="criterio_desempate_geral" role="tab" data-toggle="tab">Critério de Desempate Geral</a></li>
-			<li role="presentation"><a href="#categoria" aria-controls="categoria" role="tab" data-toggle="tab">Categoria</a></li>
-			<li role="presentation"><a href="#pontuacao" aria-controls="pontuacao" role="tab" data-toggle="tab">Pontuação</a></li>
+			<li role="presentation" class="active"><a id="tab_editar_evento" href="#editar_evento" aria-controls="editar_evento" role="tab" data-toggle="tab">Editar Grupo de Evento</a></li>
+			<li role="presentation"><a id="tab_evento" href="#evento" aria-controls="evento" role="tab" data-toggle="tab">Eventos</a></li>
+			<li role="presentation"><a id="tab_template_torneio" href="#template_torneio" aria-controls="template_torneio" role="tab" data-toggle="tab">Template de Torneio</a></li>
+			<li role="presentation"><a id="tab_criterio_desempate" href="#criterio_desempate" aria-controls="criterio_desempate" role="tab" data-toggle="tab">Critério de Desempate</a></li>
+			<li role="presentation"><a id="tab_criterio_desempate_geral" href="#criterio_desempate_geral" aria-controls="criterio_desempate_geral" role="tab" data-toggle="tab">Critério de Desempate Geral</a></li>
+			<li role="presentation"><a id="tab_categoria" href="#categoria" aria-controls="categoria" role="tab" data-toggle="tab">Categoria</a></li>
+			<li role="presentation"><a id="tab_pontuacao" href="#pontuacao" aria-controls="pontuacao" role="tab" data-toggle="tab">Pontuação</a></li>
 		</ul>
 
 		<!-- Tab panes -->
@@ -584,6 +584,9 @@
 		setTimeout(function(){
 			$(".select2").css("width","100%");
 		},"1000");
+		@if($tab)
+			$("#tab_{{$tab}}").tab("show");
+		@endif
 		$("#evento_data_inicio").mask("00/00/0000");
 		$("#evento_data_fim").mask("00/00/0000");
 		$("#evento_data_limite_inscricoes_abertas").mask("00/00/0000 00:00");

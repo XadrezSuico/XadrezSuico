@@ -205,6 +205,9 @@ Route::group(["prefix"=>"grupoevento"],function(){
         Route::post('/add', 'GrupoEventoController@pontuacao_add')->name('grupoevento.pontuacao.add');
         Route::get('/remove/{pontuacao_id}', 'GrupoEventoController@pontuacao_remove')->name('grupoevento.pontuacao.remove');
     });
+    Route::group(["prefix"=>"{id}/evento"],function(){
+        Route::post('/new', 'GrupoEventoController@evento_new')->name('grupoevento.evento.new');
+    });
 });
 
 Route::group(["prefix"=>"torneiotemplate"],function(){
