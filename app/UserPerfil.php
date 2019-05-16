@@ -3,15 +3,17 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class UserPerfil extends Model
 {
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
-    protected $fillable = [
-        'users_id', 'perfils_id'
-    ];
+    use LogsActivity;
+
+    protected $fillable = ['*'];
+
+    protected static $logFillable = true;
+
+    protected static $logAttributes = ['*'];
+
+    
 }

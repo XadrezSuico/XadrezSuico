@@ -3,12 +3,22 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Activitylog\Traits\LogsActivity;
 use App\TipoRatingRegras;
 use App\Enxadrista;
 use DateTime;
 
 class Evento extends Model
 {
+    use LogsActivity;
+
+    protected $fillable = ['*'];
+
+    protected static $logFillable = true;
+
+    protected static $logAttributes = ['*'];
+    
+    
     public $timestamps = true;
     protected $primaryKey = 'id';
     protected $table = 'evento';
