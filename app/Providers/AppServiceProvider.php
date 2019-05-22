@@ -36,58 +36,65 @@ class AppServiceProvider extends ServiceProvider
                 ]);
             }
             if(Auth::check()){
+                $user = Auth::user();
                 $event->menu->add("ACESSO RESTRITO");
-                $event->menu->add([
-                    'text' => 'Grupo de Evento',
-                    'url'  => '/grupoevento',
-                    'icon' => 'calendar'
-                ]);
-                $event->menu->add([
-                    'text' => 'Eventos',
-                    'url'  => '/evento',
-                    'icon' => 'fort-awesome'
-                ]);
-                $event->menu->add([
-                    'text' => 'Enxadristas',
-                    'url'  => '/enxadrista',
-                    'icon' => 'user'
-                ]);
+                if($user->hasPermissionMain([1,2,3,4,5,6])){
+                    $event->menu->add([
+                        'text' => 'Eventos',
+                        'url'  => '/evento',
+                        'icon' => 'fort-awesome'
+                    ]);
+                }
+                if($user->hasPermissionMain([1,2,3,4])){
+                    $event->menu->add([
+                        'text' => 'Enxadristas',
+                        'url'  => '/enxadrista',
+                        'icon' => 'user'
+                    ]);
+                }
                 $event->menu->add("ADMINSTRAÇÃO");
-                $event->menu->add([
-                    'text' => 'Grupos de Evento',
-                    'url'  => '/grupoevento',
-                    'icon' => 'th-large'
-                ]);
-                $event->menu->add([
-                    'text' => 'Categorias',
-                    'url'  => '/categoria',
-                    'icon' => 'certificate'
-                ]);
-                $event->menu->add([
-                    'text' => 'Cidades',
-                    'url'  => '/cidade',
-                    'icon' => 'map-marker'
-                ]);
-                $event->menu->add([
-                    'text' => 'Clubes',
-                    'url'  => '/clube',
-                    'icon' => 'building'
-                ]);
-                $event->menu->add([
-                    'text' => 'Template de Torneio',
-                    'url'  => '/torneiotemplate',
-                    'icon' => 'file-text'
-                ]);
-                $event->menu->add([
-                    'text' => 'Sexos',
-                    'url'  => '/sexo',
-                    'icon' => 'user'
-                ]);
-                $event->menu->add([
-                    'text' => 'Usuários',
-                    'url'  => '/usuario',
-                    'icon' => 'users'
-                ]);
+                
+                if($user->hasPermissionMain([1,2,6])){
+                    $event->menu->add([
+                        'text' => 'Grupos de Evento',
+                        'url'  => '/grupoevento',
+                        'icon' => 'th-large'
+                    ]);
+                }
+                if($user->hasPermissionMain([1,2])){
+                    $event->menu->add([
+                        'text' => 'Categorias',
+                        'url'  => '/categoria',
+                        'icon' => 'certificate'
+                    ]);
+                    $event->menu->add([
+                        'text' => 'Cidades',
+                        'url'  => '/cidade',
+                        'icon' => 'map-marker'
+                    ]);
+                    $event->menu->add([
+                        'text' => 'Clubes',
+                        'url'  => '/clube',
+                        'icon' => 'building'
+                    ]);
+                    $event->menu->add([
+                        'text' => 'Template de Torneio',
+                        'url'  => '/torneiotemplate',
+                        'icon' => 'file-text'
+                    ]);
+                    $event->menu->add([
+                        'text' => 'Sexos',
+                        'url'  => '/sexo',
+                        'icon' => 'user'
+                    ]);
+                }
+                if($user->hasPermissionMain([1,2])){
+                    $event->menu->add([
+                        'text' => 'Usuários',
+                        'url'  => '/usuario',
+                        'icon' => 'users'
+                    ]);
+                };
             }
         });
     }

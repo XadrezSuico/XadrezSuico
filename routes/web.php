@@ -15,7 +15,7 @@ Route::get('/', function () {
     if(\Illuminate\Support\Facades\Auth::check()){
         return redirect("/home");
     }
-    return redirect("http://crx.xadrezsuico.info");
+    return redirect(env("REDIRECT_URL","http://crx.xadrezsuico.info"));
 });
 
 Auth::routes();
