@@ -57,6 +57,15 @@ class SeedPerfilTable extends Migration
         }
         $perfil_5->name = "Árbitro de Confirmação";
         $perfil_5->save();
+
+
+        $perfil_6 = Perfil::find(6);
+        if(!$perfil_6){
+            $perfil_6 = new Perfil;
+            $perfil_6->id = 6;
+        }
+        $perfil_6->name = "Diretor de Grupo de Torneio";
+        $perfil_6->save();
     }
 
     /**
