@@ -15,6 +15,15 @@ class CreatePerfilUsersTable extends Migration
     {
         Schema::create('perfil_users', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->bigInteger('users_id')->unsigned();
+            $table->foreign('users_id')->references("id")->on("users");
+            $table->bigInteger('perfils_id')->unsigned();
+            $table->foreign('perfils_id')->references("id")->on("perfils");
+            $table->integer('grupo_evento_id')->unsigned()->nullable();
+            $table->foreign('grupo_evento_id')->references("id")->on("grupo_evento");
+            $table->integer('evento_id')->unsigned()->nullable();
+            $table->foreign('evento_id')->references("id")->on("evento");
+            $table->boolean('ate_finalizar')->default(false);
             $table->timestamps();
         });
     }
