@@ -44,7 +44,7 @@ class User extends Authenticatable
     ];
 
     public function perfis(){
-        return $this->hasMany("App\UserPerfil","users_id","id");
+        return $this->hasMany("App\PerfilUser","users_id","id");
     }
 
     public function checkPassword(){
@@ -66,6 +66,36 @@ class User extends Authenticatable
 
     public static function canRegisterWithoutLogin(){
         if(count(User::all()) == 0){
+            return true;
+        }
+        return false;
+    }
+
+    public function hasPermission($perfis,$grupo_evento_id = NULL, $evento_id = NULL){
+        $perfil = $this
+            ->perfis()
+            ->where(function($q1) use ($perfis){
+                $q1->whereIn("perfils_id",$perfis)
+                ->where([["grupo_evento_id","=",NULL],["evento_id","=",NULL]]);
+            })
+            ->orWhere(function($q1) use ($grupo_evento_id, $perfis){
+                $q1->whereIn("perfils_id",$perfis)
+                ->where([["grupo_evento_id","=",$grupo_evento_id]]);
+            })
+            ->orWhere(function($q1) use ($evento_id, $perfis){
+                $q1->whereIn("perfils_id",$perfis)
+                ->where([["evento_id","=",$evento_id]]);
+            })
+            ->count();
+        if($perfil > 0){
+            return true;
+        }
+        return false;
+    }
+
+    public function hasPermissionMain($perfis){
+        echo $this->perfis()->count();
+        if($this->perfis()->whereIn("perfils_id",$perfis)->count() > 0){
             return true;
         }
         return false;
