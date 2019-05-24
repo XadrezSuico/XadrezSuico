@@ -94,9 +94,81 @@ class User extends Authenticatable
     }
 
     public function hasPermissionMain($perfis){
-        echo $this->perfis()->count();
         if($this->perfis()->whereIn("perfils_id",$perfis)->count() > 0){
             return true;
+        }
+        return false;
+    }
+
+    /*
+     *
+     * VERIFICA PERFIL GLOBAL (SUPER-ADMINISTRADOR E ADMINISTRADOR)
+     * 
+     */ 
+    public function hasPermissionGlobal(){
+        if($this->perfis()->whereNull("evento_id")->whereNull("grupo_evento_id")->whereIn("perfils_id",[1,2])->count() > 0){
+            return true;
+        }
+        return false;
+    }
+    public function hasPermissionGlobalbyPerfil($perfils){
+        if($this->perfis()->whereNull("evento_id")->whereNull("grupo_evento_id")->whereIn("perfils_id",[1,2])->count() > 0){
+            return true;
+        }
+        return false;
+    }
+
+
+
+    /*
+     *
+     * VERIFICA PERFIL DE EVENTO (DIRETOR DE TORNEIO, ÁRBITRO MESA E ÁRBITRO DE CONFIRMAÇÃO)
+     * 
+     */
+    public function hasPermissionEventsByPerfil($perfis){
+        if($this->perfis()->whereNotNull("evento_id")->whereIn("perfils_id",$perfis)->count() > 0){
+            return true;
+        }
+        return false;
+    }
+    public function hasPermissionEventByPerfil($evento_id,$perfis){
+        if($this->perfis()->where([["evento_id","=",$evento_id]])->whereIn("perfils_id",$perfis)->count() > 0){
+            return true;
+        }
+        return false;
+    }
+    public function getPerfilbyEvent($evento_id){
+        $perfil = $this->perfis()->where([["evento_id","=",$evento_id]])->first();
+        if($perfil){
+            return $perfil;
+        }
+        return false;
+    }
+
+
+    
+
+    /*
+     *
+     * VERIFICA PERFIL DE GRUPO DE EVENTO (DIRETOR DE GRUPO DE EVENTO)
+     * 
+     */
+    public function hasPermissionGroupEventsByPerfil($perfis){
+        if($this->perfis()->whereNotNull("grupo_evento_id")->whereIn("perfils_id",$perfis)->count() > 0){
+            return true;
+        }
+        return false;
+    }
+    public function hasPermissionGroupEventByPerfil($grupo_evento_id,$perfis){
+        if($this->perfis()->where([["grupo_evento_id","=",$grupo_evento_id]])->whereIn("perfils_id",$perfis)->count() > 0){
+            return true;
+        }
+        return false;
+    }
+    public function getPerfilbyGroupEvent($grupo_evento_id){
+        $perfil = $this->perfis()->where([["grupo_evento_id","=",$grupo_evento_id]])->first();
+        if($perfil){
+            return $perfil;
         }
         return false;
     }

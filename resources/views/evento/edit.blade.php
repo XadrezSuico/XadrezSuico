@@ -24,6 +24,11 @@
   <li role="presentation"><a href="/evento">Voltar a Lista de Eventos</a></li>
   <li role="presentation"><a href="/evento/new">Novo Evento</a></li>
   <li role="presentation"><a href="/evento/classificar/{{$evento->id}}">Classificar Evento</a></li>
+  <li role="presentation"><a href="{{url("/evento/".$evento->id."/toggleresultados")}}">@if($evento->mostrar_resultados) Restringir @else Liberar @endif Classificação Pública</a></li>
+  <li role="presentation"><a href="{{url("/evento/classificacao/".$evento->id)}}/interno">Visualizar Classificação (Interna)</li>
+	@if($evento->mostrar_resultados)
+  	<li role="presentation"><a href="{{url("/evento/classificacao/".$evento->id)}}">Visualizar Classificação (Pública)</li>
+	@endif
 </ul>
 <div class="row">
   <!-- Left col -->

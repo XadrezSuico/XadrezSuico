@@ -38,14 +38,21 @@ class AppServiceProvider extends ServiceProvider
             if(Auth::check()){
                 $user = Auth::user();
                 $event->menu->add("ACESSO RESTRITO");
-                if($user->hasPermissionMain([1,2,3,4,5,6])){
+                if(
+                    $user->hasPermissionGlobal() || 
+                    $user->hasPermissionEventsByPerfil([3,4,5]) || 
+                    $user->hasPermissionGroupEventsByPerfil([6])
+                ){
                     $event->menu->add([
                         'text' => 'Eventos',
                         'url'  => '/evento',
                         'icon' => 'fort-awesome'
                     ]);
                 }
-                if($user->hasPermissionMain([1,2,3,4])){
+                if(
+                    $user->hasPermissionGlobal() || 
+                    $user->hasPermissionEventsByPerfil([3,4])
+                ){
                     $event->menu->add([
                         'text' => 'Enxadristas',
                         'url'  => '/enxadrista',
@@ -54,14 +61,19 @@ class AppServiceProvider extends ServiceProvider
                 }
                 $event->menu->add("ADMINSTRAÇÃO");
                 
-                if($user->hasPermissionMain([1,2,6])){
+                if(
+                    $user->hasPermissionGlobal() || 
+                    $user->hasPermissionGroupEventsByPerfil([6])
+                ){
                     $event->menu->add([
                         'text' => 'Grupos de Evento',
                         'url'  => '/grupoevento',
                         'icon' => 'th-large'
                     ]);
                 }
-                if($user->hasPermissionMain([1,2])){
+                if(
+                    $user->hasPermissionGlobal()
+                ){
                     $event->menu->add([
                         'text' => 'Categorias',
                         'url'  => '/categoria',
@@ -88,7 +100,9 @@ class AppServiceProvider extends ServiceProvider
                         'icon' => 'user'
                     ]);
                 }
-                if($user->hasPermissionMain([1,2])){
+                if(
+                    $user->hasPermissionGlobalbyPerfil([1])
+                ){
                     $event->menu->add([
                         'text' => 'Usuários',
                         'url'  => '/usuario',

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use App\Evento;
 use App\Categoria;
 use App\Inscricao;
@@ -20,11 +21,27 @@ class EventoGerenciarController extends Controller
 	}
 	
 	public function index(){
+		$user = Auth::user();
+		if(
+			!$user->hasPermissionGlobal() && 
+			!$user->hasPermissionEventsByPerfil([3,4,5]) && 
+			!$user->hasPermissionGroupEventsByPerfil([6])
+		){
+			return redirect("/");
+		}
 		$eventos = Evento::all();
 		return view("evento.index",compact("eventos"));
 	}
 
 	public function edit($id,Request $request){
+		$user = Auth::user();
+		if(
+			!$user->hasPermissionGlobal() && 
+			!$user->hasPermissionEventsByPerfil([3,4]) && 
+			!$user->hasPermissionGroupEventsByPerfil([6])
+		){
+			return redirect("/");
+		}
         $evento = Evento::find($id);
         $categorias = Categoria::all();
         $criterios_desempate = CriterioDesempate::criterios_evento()->get();
@@ -41,6 +58,13 @@ class EventoGerenciarController extends Controller
 	}
 
 	public function classificar($evento_id){
+		$user = Auth::user();
+		if(
+			!$user->hasPermissionGlobal() && 
+			!$user->hasPermissionEventsByPerfil([4])
+		){
+			return redirect("/");
+		}
 		$evento = Evento::find($evento_id);
 		if($evento){
 			foreach($evento->categorias->all() as $categoria){
@@ -51,6 +75,13 @@ class EventoGerenciarController extends Controller
     }
     
     public function toggleMostrarClassificacao($evento_id){
+		$user = Auth::user();
+		if(
+			!$user->hasPermissionGlobal() && 
+			!$user->hasPermissionEventsByPerfil([4])
+		){
+			return redirect("/");
+		}
 		$evento = Evento::find($evento_id);
 		if($evento){
 			if($evento->mostrar_resultados){
@@ -66,10 +97,22 @@ class EventoGerenciarController extends Controller
 
 
 	public function classificacao($evento_id){
+		$user = Auth::user();
+		if(
+			!$user->hasPermissionGlobal() && 
+			!$user->hasPermissionEventsByPerfil([3,4,5]) && 
+			!$user->hasPermissionGroupEventsByPerfil([6])
+		){
+			return redirect("/");
+		}
 		$evento = Evento::find($evento_id);
 		return view("evento.publico.classificacao",compact("evento"));
 	}
 	public function resultados($evento_id,$categoria_id){
+		$user = Auth::user();
+		if(!$user->hasPermissionMain([1,2,3,4,5,6])){
+			return redirect("/");
+		}
 		$evento = Evento::find($evento_id);
 		$categoria = Categoria::find($categoria_id);
 		$torneio = $categoria->getTorneioByEvento($evento);
