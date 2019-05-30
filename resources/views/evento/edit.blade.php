@@ -22,13 +22,18 @@
 <!-- Main row -->
 <ul class="nav nav-pills">
   <li role="presentation"><a href="/evento">Voltar a Lista de Eventos</a></li>
-  <li role="presentation"><a href="/evento/new">Novo Evento</a></li>
-  <li role="presentation"><a href="/evento/classificar/{{$evento->id}}">Classificar Evento</a></li>
-  <li role="presentation"><a href="{{url("/evento/".$evento->id."/toggleresultados")}}">@if($evento->mostrar_resultados) Restringir @else Liberar @endif Classificação Pública</a></li>
-  <li role="presentation"><a href="{{url("/evento/classificacao/".$evento->id)}}/interno">Visualizar Classificação (Interna)</li>
-	@if($evento->mostrar_resultados)
-  	<li role="presentation"><a href="{{url("/evento/classificacao/".$evento->id)}}">Visualizar Classificação (Pública)</li>
+  @if(
+		\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
+		\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4])
+  )
+  	<li role="presentation"><a href="/evento/classificar/{{$evento->id}}">Classificar Evento</a></li>
+  	<li role="presentation"><a href="{{url("/evento/".$evento->id."/toggleresultados")}}">@if($evento->mostrar_resultados) Restringir @else Liberar @endif Classificação Pública</a></li>
+		@if($evento->mostrar_resultados)
+			<li role="presentation"><a href="{{url("/evento/classificacao/".$evento->id)}}">Visualizar Classificação (Pública)</a></li>
+		@endif
 	@endif
+  <li role="presentation"><a href="{{url("/evento/classificacao/".$evento->id)}}/interno">Visualizar Classificação (Interna)</a></li>
+
 </ul>
 <div class="row">
   <!-- Left col -->
@@ -52,7 +57,13 @@
 							<h3 class="box-title">Editar Evento</h3>
 						</div>
 						<!-- form start -->
+						
+					@if(
+						\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
+						\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4])
+					)
 						<form method="post">
+					@endif	
 							<div class="box-body">
 								<label for="tipo_ratings_id">Tipo de Rating</label>
 								<select name="tipo_ratings_id" id="tipo_ratings_id" class="form-control width-100">
@@ -68,7 +79,12 @@
 								<button type="submit" class="btn btn-success">Enviar</button>
 								<input type="hidden" name="_token" value="{{ csrf_token() }}">
 							</div>
+					@if(
+						\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
+						\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4])
+					)
 						</form>
+					@endif
 					</div>
 				</section>
 			</div>
@@ -79,6 +95,10 @@
 					Caso você escolha um ou mais critérios nesta tela, os critérios de desempate do Grupo de Evento <strong>serão desconsiderados!</strong>
 				</div>
 				<br/>
+				@if(
+					\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
+					\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4])
+				)
 				<section class="col-lg-6 connectedSortable">
 					<div class="box box-primary">
 						<div class="box-header">
@@ -128,6 +148,7 @@
 						</form>
 					</div>
 				</section>	
+			@endif
 				<section class="col-lg-6 connectedSortable">
 					<div class="box box-primary">
 						<div class="box-header">
@@ -168,6 +189,10 @@
 			</div>
 			<div role="tabpanel" class="tab-pane" id="categoria">
 				<br/>
+				@if(
+					\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
+					\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4])
+				)
 				<section class="col-lg-6 connectedSortable">
 					<div class="box box-primary">
 						<div class="box-header">
@@ -195,6 +220,7 @@
 						</form>
 					</div>
 				</section>	
+				@endif
 				<section class="col-lg-6 connectedSortable">
 					<div class="box box-primary">
 						<div class="box-header">
@@ -229,27 +255,32 @@
 			</div>
 			<div role="tabpanel" class="tab-pane" id="torneio">
 				<br/>
-				<section class="col-lg-12 connectedSortable">
-				
-					<!-- Torneio -->
-					<div class="box box-primary">
-						<div class="box-header">
-							<h3 class="box-title">Novo Torneio</h3>
-						</div>
-						<!-- form start -->
-						<form method="post" action="{{url("/evento/".$evento->id."/torneio/add")}}">
-							<div class="box-body">
-							
+				@if(
+					\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
+					\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4])
+				)
+					<section class="col-lg-12 connectedSortable">
+					
+						<!-- Torneio -->
+						<div class="box box-primary">
+							<div class="box-header">
+								<h3 class="box-title">Novo Torneio</h3>
 							</div>
-							<!-- /.box-body -->
+							<!-- form start -->
+							<form method="post" action="{{url("/evento/".$evento->id."/torneio/add")}}">
+								<div class="box-body">
+								
+								</div>
+								<!-- /.box-body -->
 
-							<div class="box-footer">
-								<button type="submit" class="btn btn-success">Enviar</button>
-								<input type="hidden" name="_token" value="{{ csrf_token() }}">
-							</div>
-						</form>
-					</div>
-				</section>	
+								<div class="box-footer">
+									<button type="submit" class="btn btn-success">Enviar</button>
+									<input type="hidden" name="_token" value="{{ csrf_token() }}">
+								</div>
+							</form>
+						</div>
+					</section>	
+				@endif
 				<section class="col-lg-12 connectedSortable">
 					<div class="box box-primary">
 						<div class="box-header">

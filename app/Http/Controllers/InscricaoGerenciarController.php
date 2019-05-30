@@ -90,6 +90,16 @@ class InscricaoGerenciarController extends Controller
         }
 	}
 	
+	public function delete($id,$torneio_id,$inscricao_id){
+        $evento = Evento::find($id);
+        $torneio = Torneio::find($torneio_id);
+        $inscricao = Inscricao::find($inscricao_id);
+        if($inscricao->isDeletavel()){
+            $inscricao->delete();
+        }
+        return redirect("/evento/".$evento->id."/torneios/".$torneio->id."/inscricoes");
+	}
+	
 	public function list_to_manager($id,$torneio_id){
         $evento = Evento::find($id);
         $torneio = Torneio::find($torneio_id);

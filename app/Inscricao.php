@@ -39,12 +39,17 @@ class Inscricao extends Model
     public function clube() {
         return $this->belongsTo("App\Clube","clube_id","id");
     }
+
+    public function criterios_desempate() {
+        return $this->hasMany("App\InscricaoCriterioDesempate","inscricao_id","id");
+    }
     
     public function isDeletavel(){
         if($this->id != null){
-            return true;
-        }else{
-            return false;
+            if($this->criterios_desempate()->count() == 0){
+                return true;
+            }
         }
+        return false;
     }
 }

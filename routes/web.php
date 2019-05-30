@@ -117,6 +117,7 @@ Route::group(["prefix"=>"evento"],function(){
 	        Route::get('/', 'InscricaoGerenciarController@index')->name('evento.torneios.inscricoes.index');
             Route::get('/edit/{inscricao_id}', 'InscricaoGerenciarController@edit')->name('evento.torneios.inscricao.edit');
             Route::post('/edit/{inscricao_id}', 'InscricaoGerenciarController@edit_post')->name('evento.torneios.inscricao.edit.post');
+            Route::get('/delete/{inscricao_id}', 'InscricaoGerenciarController@delete')->name('evento.torneios.inscricao.delete');
 	        Route::get('/sm', 'InscricaoGerenciarController@list_to_manager')->name('evento.torneios.inscricoes.sm');
 	        Route::get('/relatorio/inscricoes', 'InscricaoGerenciarController@report_list_subscriptions')->name('evento.torneios.inscricoes.relatorio.inscritos');
 	        Route::get('/relatorio/inscricoes/alfabetico', 'InscricaoGerenciarController@report_list_subscriptions_alf')->name('evento.torneios.inscricoes.relatorio.inscritos.alf');
