@@ -37,8 +37,8 @@ class EventoGerenciarController extends Controller
 		$user = Auth::user();
 		if(
 			!$user->hasPermissionGlobal() && 
-			!$user->hasPermissionEventsByPerfil([3,4]) && 
-			!$user->hasPermissionGroupEventsByPerfil([6])
+			!$user->hasPermissionEventByPerfil($id,[3,4]) && 
+			!$user->hasPermissionGroupEventByPerfil($id,[6])
 		){
 			return redirect("/");
 		}
@@ -61,7 +61,7 @@ class EventoGerenciarController extends Controller
 		$user = Auth::user();
 		if(
 			!$user->hasPermissionGlobal() && 
-			!$user->hasPermissionEventsByPerfil([4])
+			!$user->hasPermissionEventByPerfil($id,[4])
 		){
 			return redirect("/");
 		}
@@ -78,7 +78,7 @@ class EventoGerenciarController extends Controller
 		$user = Auth::user();
 		if(
 			!$user->hasPermissionGlobal() && 
-			!$user->hasPermissionEventsByPerfil([4])
+			!$user->hasPermissionEventByPerfil($id,[4])
 		){
 			return redirect("/");
 		}
