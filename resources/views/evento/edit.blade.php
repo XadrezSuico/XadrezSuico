@@ -297,6 +297,7 @@
 											<th>Inscritos</th>
 											<th>Confirmados</th>
 											<th>Não Confirmados</th>
+											<th>Resultados Importados?</th>
 											<th>Template de Torneio</th>
 											<th width="20%">Opções</th>
 										</tr>
@@ -314,6 +315,13 @@
 												<td>{{$torneio->getCountInscritos()}}</td>
 												<td>{{$torneio->getCountInscritosConfirmados()}}</td>
 												<td>{{$torneio->getCountInscritosNaoConfirmados()}}</td>
+												<td>
+													@if($torneio->hasCriteriosDesempateNasInscricoes())
+														Sim
+													@else
+														<strong>Não</strong>
+													@endif
+												</td>
 												<td>
 													@if($torneio->template)
 														{{$torneio->template->name}}

@@ -14,6 +14,7 @@ class CreateCampoPersonalizadoOpcaoInscricaosTable extends Migration
     public function up()
     {
         Schema::create('campo_personalizado_opcao_inscricaos', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->bigIncrements('id');
             $table->bigInteger('campo_personalizados_id')->unsigned();
             $table->foreign('campo_personalizados_id', 'fk_cpoi_cp_1')->references("id")->on("campo_personalizados");

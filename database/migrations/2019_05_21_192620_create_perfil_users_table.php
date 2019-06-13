@@ -14,6 +14,7 @@ class CreatePerfilUsersTable extends Migration
     public function up()
     {
         Schema::create('perfil_users', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->bigIncrements('id');
             $table->bigInteger('users_id')->unsigned();
             $table->foreign('users_id')->references("id")->on("users");

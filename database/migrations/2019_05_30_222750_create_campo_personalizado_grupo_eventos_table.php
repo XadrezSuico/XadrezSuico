@@ -14,6 +14,7 @@ class CreateCampoPersonalizadoGrupoEventosTable extends Migration
     public function up()
     {
         Schema::create('campo_personalizado_grupo_eventos', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->bigIncrements('id');
             $table->integer('grupo_evento_id')->unsigned();
             $table->foreign('grupo_evento_id', 'fk_cpge_ge_1')->references("id")->on("grupo_evento");

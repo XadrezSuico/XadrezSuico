@@ -14,6 +14,7 @@ class CreateCampoPersonalizadoEventosTable extends Migration
     public function up()
     {
         Schema::create('campo_personalizado_eventos', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->bigIncrements('id');
             $table->integer('evento_id')->unsigned();
             $table->foreign('evento_id')->references("id")->on("evento");

@@ -14,6 +14,7 @@ class CreateOpcaosTable extends Migration
     public function up()
     {
         Schema::create('opcaos', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->bigIncrements('id');
             $table->string('name');
             $table->string('response')->nullable();

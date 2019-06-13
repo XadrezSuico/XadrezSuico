@@ -74,6 +74,9 @@ class GrupoEvento extends Model
         }
     }
 
+    public function getCriteriosGerais(){
+        return $this->getCriteriosDesempateGerais();
+    }
 
     public function getCriteriosDesempateGerais(){
         return CriterioDesempateGrupoEventoGeral::where([

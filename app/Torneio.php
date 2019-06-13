@@ -49,8 +49,8 @@ class Torneio extends Model
         return $this->evento->grupo_evento->criterios()->count();
     }
     public function getCriterios(){
-        if($this->evento->criterios()->count() > 0) return $this->evento->criterios()->where([["tipo_torneio_id","=",$this->tipo_torneio_id]])->orderBy("prioridade","ASC")->get();
-        return $this->evento->grupo_evento->criterios()->where([["tipo_torneio_id","=",$this->tipo_torneio_id]])->orderBy("prioridade","ASC")->get();
+        if($this->evento->criterios()->count() > 0) return $this->evento->criterios()->where([["tipo_torneio_id","=",$this->tipo_torneio_id]])->orderBy("prioridade","ASC")->whereHas("criterio",function($q1){ $q1->where([["is_manual","=",false]]); })->get();
+        return $this->evento->grupo_evento->criterios()->where([["tipo_torneio_id","=",$this->tipo_torneio_id]])->whereHas("criterio",function($q1){ $q1->where([["is_manual","=",false]]); })->orderBy("prioridade","ASC")->get();
     }
     public function findByTagCategoria($tag){
         return Torneio::whereHas("categorias",function ($q0) use ($tag){
@@ -58,6 +58,15 @@ class Torneio extends Model
                 $q1->where([["code","=",$tag]]);
             });
         })->first();
+    }
+    public function hasCriteriosDesempateNasInscricoes(){
+        if($this->inscricoes()
+            ->whereNotNull("pontos")
+            ->whereHas("criterios_desempate")
+            ->count() > 0){
+            return true;
+        }
+        return false;
     }
     
     public function isDeletavel(){

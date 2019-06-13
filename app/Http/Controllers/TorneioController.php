@@ -10,6 +10,7 @@ use App\Enxadrista;
 use App\InscricaoCriterioDesempate;
 use App\MovimentacaoRating;
 use App\Rating;
+use App\Categoria;
 
 class TorneioController extends Controller
 {
@@ -85,19 +86,30 @@ class TorneioController extends Controller
 				])
 				->first();
 				$enxadrista = Enxadrista::find($line[($fields["ID"])]);
-				if($enxadrista) $retornos[] = date("d/m/Y H:i:s")." - Enxadrista de Código #".$enxadrista->id." - ".$enxadrista->name;
+				if($enxadrista){
+					$retornos[] = date("d/m/Y H:i:s")." - Enxadrista de Código #".$enxadrista->id." - ".$enxadrista->name;
+				}else{
+					$retornos[] = date("d/m/Y H:i:s")." - Enxadrista com o Código #".$line[($fields["ID"])]." não encontrado.";
+				}
 				if(!$inscricao){
 					$retornos[] = date("d/m/Y H:i:s")." - Não há inscrição deste enxadrista";
 					if($enxadrista){
-						$retornos[] = date("d/m/Y H:i:s")." - Efetuando inscrição...";
-						$inscricao = new Inscricao;
-						$inscricao->enxadrista_id = $enxadrista->id;
-						$inscricao->cidade_id = $enxadrista->cidade_id;
-						$inscricao->clube_id = $enxadrista->clube_id;
-						$inscricao->torneio_id = $torneio->id;
-						$inscricao->regulamento_aceito = true;
-						$inscricao->confirmado = true;
-						$retornos[] = date("d/m/Y H:i:s")." - Inscrição efetuada.";
+						$categoria = Categoria::where([["code","=",$line[($fields["Gr"])]]])->first();
+						if($categoria){
+							$retornos[] = date("d/m/Y H:i:s")." - Efetuando inscrição...";
+							$inscricao = new Inscricao;
+							$inscricao->enxadrista_id = $enxadrista->id;
+							$inscricao->cidade_id = $enxadrista->cidade_id;
+							$inscricao->clube_id = $enxadrista->clube_id;
+							$inscricao->torneio_id = $torneio->id;
+							$inscricao->categoria_id = $categoria->id;
+							$inscricao->regulamento_aceito = true;
+							$inscricao->confirmado = true;
+							$retornos[] = date("d/m/Y H:i:s")." - Inscrição efetuada.";
+						}else{
+							$retornos[] = date("d/m/Y H:i:s")." - ERRO: Não há categoria cadastrada com o código de grupo '".$line[($fields["Gr"])]."'. A inscrição será ignorada.";
+							$inscricao = NULL;
+						}
 					}
 				}	
 				if($enxadrista && $inscricao){
@@ -106,6 +118,7 @@ class TorneioController extends Controller
 					$exp_meio = explode("½",$line[($fields["Pts"])]);
 					$exp_virgula = explode(",",$line[($fields["Pts"])]);
 
+					$inscricao->confirmado = true;
 					$inscricao->pontos = (count($exp_meio) > 1) ? $exp_meio[0].".5" : ((count($exp_virgula) > 1) ? $exp_virgula[0].".".$exp_virgula[1] : $exp_virgula[0]);
 					$inscricao->save();
 
@@ -128,6 +141,7 @@ class TorneioController extends Controller
 							$desempate->inscricao_id = $inscricao->id;
 							$desempate->criterio_desempate_id = $criterio->criterio->id;
 							$desempate->valor = (count($exp_meio) > 1) ? $exp_meio[0].".5" : ((count($exp_virgula) > 1) ? $exp_virgula[0].".".$exp_virgula[1] : $exp_virgula[0]);
+							// echo $desempate->valor."\n";
 							$desempate->save();
 							$retornos[] = date("d/m/Y H:i:s")." - Desempate inserido";
 							$j++;
