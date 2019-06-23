@@ -43,6 +43,16 @@ class Inscricao extends Model
     public function criterios_desempate() {
         return $this->hasMany("App\InscricaoCriterioDesempate","inscricao_id","id");
     }
+
+    public function opcoes(){
+        return $this->hasMany("App\CampoPersonalizadoOpcaoInscricao","inscricao_id", "id");
+    }
+
+
+    public function getOpcao($campo_personalizados_id){
+        $opcao = $this->opcoes()->where([["campo_personalizados_id","=",$campo_personalizados_id]])->first();
+        return $opcao;
+    }
     
     public function isDeletavel(){
         if($this->id != null){

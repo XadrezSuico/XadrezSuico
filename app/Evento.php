@@ -47,6 +47,13 @@ class Evento extends Model
         return $this->hasOne("App\TipoRatingEvento","evento_id","id");
     }
 
+    public function campos() {
+        if($this->hasMany("App\CampoPersonalizadoEvento","evento_id","id")->count() > 0){
+            return $this->hasMany("App\CampoPersonalizadoEvento","evento_id","id");
+        }
+        return $this->grupo_evento->campos();
+    }
+
     public function tipo_rating() {
         if($this->tipo_rating_interno()->count() > 0){
             return $this->tipo_rating_interno();

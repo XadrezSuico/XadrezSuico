@@ -22,8 +22,9 @@
 <!-- Main row -->
 <ul class="nav nav-pills">
   <li role="presentation"><a href="/grupoevento">Voltar a Lista de Grupos de Evento</a></li>
-  <li role="presentation"><a href="/grupoevento/new">Novo Grupo de Evento</a></li>
-  <li role="presentation"><a href="/grupoevento/classificar/{{$grupo_evento->id}}">Classificar Grupo de Evento</a></li>
+  @if(\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal()) <li role="presentation"><a href="/grupoevento/new">Novo Grupo de Evento</a></li>
+  <li role="presentation"><a href="/grupoevento/classificar/{{$grupo_evento->id}}">Classificar Grupo de Evento</a></li>@endif
+  <li role="presentation"><a href="/grupoevento/classificacao/{{$grupo_evento->id}}">Visualizar Classificação Pública</a></li>
 </ul>
 <div class="row">
   <!-- Left col -->
@@ -76,9 +77,9 @@
 			</div>
 			<div role="tabpanel" class="tab-pane" id="evento">
 				<br/>
-				<section class="col-lg-6 connectedSortable">
+				<section class="col-md-6 col-lg-4 connectedSortable">
 				
-					<!-- Template de Torneio -->
+					<!-- Evento -->
 					<div class="box box-primary">
 						<div class="box-header">
 							<h3 class="box-title">Criar Evento</h3>
@@ -137,7 +138,7 @@
 						</form>
 					</div>
 				</section>	
-				<section class="col-lg-6 connectedSortable">
+				<section class="col-md-6 col-lg-8 connectedSortable">
 					<div class="box box-primary">
 						<div class="box-header">
 							<h3 class="box-title">Eventos</h3>
@@ -151,7 +152,6 @@
 											<th>Nome</th>
 											<th>Período</th>
 											<th>Local</th>
-											<th>Grupo de Evento</th>
 											<th>Inscritos</th>
 											<th width="20%">Opções</th>
 										</tr>
@@ -163,23 +163,12 @@
 												<td>{{$evento->name}}</td>
 												<td>{{$evento->getDataInicio()}}<br/>{{$evento->getDataFim()}}</td>
 												<td>{{$evento->cidade->name}} - {{$evento->local}}</td>
-												<td>{{$evento->grupo_evento->name}}</td>
 												<td>
 													Total: {{$evento->quantosInscritos()}}<br/>
 													Confirmados: {{$evento->quantosInscritosConfirmados()}}
 												</td>
 												<td>
-													<a class="btn btn-default" href="{{url("/evento/edit/".$evento->id)}}" role="button">Editar</a>
-													<a class="btn btn-default" href="{{url("/evento/".$evento->id."/torneios")}}" role="button">Torneios</a>
-													<a class="btn btn-default" href="{{url("/evento/".$evento->id."/toggleresultados")}}" role="button">@if($evento->mostrar_resultados) Restringir @else Liberar @endif Classificação Pública</a>
-													@if($evento->mostrar_resultados)
-														<a class="btn btn-default" href="{{url("/evento/classificacao/".$evento->id)}}" role="button" target="_blank">Lista Classificação Pública</a>
-													@endif
-													<a class="btn btn-default" href="{{url("/evento/classificar/".$evento->id)}}" role="button">Classificar Evento</a>
-													<a class="btn btn-default" href="{{url("/evento/classificacao/".$evento->id."/interno")}}" role="button">Visualizar Classificação (Interna)</a>
-													@if($evento->mostrar_resultados)<a class="btn btn-default" href="{{url("/evento/classificacao/".$evento->id)}}" role="button">Visualizar Classificação (Pública)</a>@endif
-													<a class="btn btn-success" href="{{url("/evento/inscricao/".$evento->id)}}" role="button">Nova Inscrição</a>
-													<a class="btn btn-success" href="{{url("/evento/inscricao/".$evento->id."/confirmacao")}}" role="button">Confirmar Inscrição</a>
+													<a class="btn btn-default" href="{{url("/evento/dashboard/".$evento->id)}}" role="button">Dashboard</a>
 													@if($evento->isDeletavel()) <a class="btn btn-danger" href="{{url("/evento/delete/".$evento->id)}}" role="button">Apagar</a> @endif
 												</td>
 											</tr>

@@ -12,6 +12,7 @@ use App\TipoTorneio;
 use App\Software;
 use App\TipoRating;
 use App\Cidade;
+use DateTime;
 
 
 class EventoGerenciarController extends Controller
@@ -55,6 +56,42 @@ class EventoGerenciarController extends Controller
             $tab = NULL;    
         }
         return view('evento.edit',compact("evento","categorias","criterios_desempate","tipos_torneio","softwares","tipos_rating","cidades", "tab"));
+	}
+
+	public function edit_post($id,Request $request){
+		$user = Auth::user();
+		if(
+			!$user->hasPermissionGlobal() && 
+			!$user->hasPermissionEventByPerfil($id,[4])
+		){
+			return redirect("/evento/dashboard/".$id);
+		}
+		$evento = Evento::find($id);
+		
+        $datetime_data_inicio = DateTime::createFromFormat('d/m/Y', $request->input("data_inicio"));
+        $datetime_data_fim = DateTime::createFromFormat('d/m/Y', $request->input("data_fim"));
+        $datetime_data_limite_inscricoes_abertas = DateTime::createFromFormat('d/m/Y H:i', $request->input("data_limite_inscricoes_abertas"));
+
+        // CADASTRO DO EVENTO
+        $evento->name = $request->input("name");
+        $evento->data_inicio = $datetime_data_inicio->format('Y-m-d');
+        $evento->data_fim = $datetime_data_fim->format('Y-m-d');
+        $evento->local = $request->input("local");
+        $evento->cidade_id = $request->input("cidade_id");
+        if($request->has("link")){
+			$evento->link = $request->input("link");
+		}else{
+			$evento->link = NULL;
+		}
+        if($request->has("data_limite_inscricoes_abertas") && $datetime_data_limite_inscricoes_abertas){
+			$evento->data_limite_inscricoes_abertas = $datetime_data_limite_inscricoes_abertas->format('Y-m-d H:i');
+		}else{
+			$evento->data_limite_inscricoes_abertas = NULL;
+		}
+		if($request->has("usa_fide")) $evento->usa_fide = true; else $evento->usa_fide = false;
+        if($request->has("usa_cbx")) $evento->usa_cbx = true; else $evento->usa_cbx = false;
+        $evento->save();
+		return redirect("/evento/dashboard/".$id);
 	}
 
 	public function classificar($evento_id){

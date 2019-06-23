@@ -162,30 +162,32 @@ class Enxadrista extends Model
     public function temRating($evento_id){
         $enxadrista = $this;
         $evento = Evento::find($evento_id);
-        $rating_regra = TipoRatingRegras::where([
-                ["tipo_ratings_id","=",$evento->tipo_rating->tipo_ratings_id],
-            ])
-            ->where(function($q1) use ($evento,$enxadrista){
-                $q1->where([
-                    ["idade_minima","<=",$enxadrista->howOld()],
-                    ["idade_maxima","=",NULL]
-                ]);
-                $q1->orWhere([
-                    ["idade_minima","=",NULL],
-                    ["idade_maxima",">=",$enxadrista->howOld()]
-                ]);
-                $q1->orWhere([
-                    ["idade_minima","<=",$enxadrista->howOld()],
-                    ["idade_maxima",">=",$enxadrista->howOld()]
-                ]);
-            })
-            ->first();
-        $rating = $this->ratings()->where([["tipo_ratings_id","=",$evento->tipo_rating->tipo_ratings_id]])->first();
-        if($rating){
-            if($rating->valor > 0){
-                return ["ok"=>1,"rating"=>$rating,"regra"=>$rating_regra];
+        if($evento->tipo_rating){
+            $rating_regra = TipoRatingRegras::where([
+                    ["tipo_ratings_id","=",$evento->tipo_rating->tipo_ratings_id],
+                ])
+                ->where(function($q1) use ($evento,$enxadrista){
+                    $q1->where([
+                        ["idade_minima","<=",$enxadrista->howOld()],
+                        ["idade_maxima","=",NULL]
+                    ]);
+                    $q1->orWhere([
+                        ["idade_minima","=",NULL],
+                        ["idade_maxima",">=",$enxadrista->howOld()]
+                    ]);
+                    $q1->orWhere([
+                        ["idade_minima","<=",$enxadrista->howOld()],
+                        ["idade_maxima",">=",$enxadrista->howOld()]
+                    ]);
+                })
+                ->first();
+            $rating = $this->ratings()->where([["tipo_ratings_id","=",$evento->tipo_rating->tipo_ratings_id]])->first();
+            if($rating){
+                if($rating->valor > 0){
+                    return ["ok"=>1,"rating"=>$rating,"regra"=>$rating_regra];
+                }
+                return ["ok" => 0,"rating"=>$rating,"regra"=>$rating_regra];
             }
-            return ["ok" => 0,"rating"=>$rating,"regra"=>$rating_regra];
         }
         return false;
     }

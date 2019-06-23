@@ -65,13 +65,54 @@
 						<form method="post">
 					@endif	
 							<div class="box-body">
-								<label for="tipo_ratings_id">Tipo de Rating</label>
-								<select name="tipo_ratings_id" id="tipo_ratings_id" class="form-control width-100">
-									<option value="">--- Você pode selecionar um tipo de rating ---</option>
-									@foreach($tipos_rating as $tipo_rating)
-										<option value="{{$tipo_rating->id}}">{{$tipo_rating->id}} - {{$tipo_rating->name}}</option>
-									@endforeach
-								</select>
+								<div class="form-group">
+									<label for="evento_name">Nome *</label>
+									<input name="name" id="evento_name" class="form-control" type="text" value="{{$evento->name}}" />
+								</div>
+								<div class="form-group">
+									<label for="evento_data_inicio">Data de Início *</label>
+									<input name="data_inicio" id="evento_data_inicio" class="form-control" type="text" value="{{$evento->getDataInicio()}}" />
+								</div>
+								<div class="form-group">
+									<label for="evento_data_fim">Data de Fim *</label>
+									<input name="data_fim" id="evento_data_fim" class="form-control" type="text" value="{{$evento->getDataFim()}}" />
+								</div>
+								<div class="form-group">
+									<label for="cidade_id">Cidade *</label>
+									<select name="cidade_id" id="cidade_id" class="form-control width-100">
+										<option value="">--- Selecione ---</option>
+										@foreach($cidades as $cidade)
+											<option value="{{$cidade->id}}">{{$cidade->id}} - {{$cidade->name}}</option>
+										@endforeach
+									</select>
+								</div>
+								<div class="form-group">
+									<label for="evento_local">Local *</label>
+									<input name="local" id="evento_local" class="form-control" type="text" value="{{$evento->local}}" />
+								</div>
+								<div class="form-group">
+									<label for="evento_link">Link</label>
+									<input name="link" id="evento_link" class="form-control" type="text" value="{{$evento->link}}" />
+								</div>
+								<div class="form-group">
+									<label for="evento_data_limite_inscricoes_abertas">Data e Hora Limite para Inscrições</label>
+									<input name="data_limite_inscricoes_abertas" id="evento_data_limite_inscricoes_abertas" class="form-control" type="text" value="{{$evento->getDataFimInscricoesOnline()}}" />
+								</div>
+								<div class="form-group">
+									<label><input type="checkbox" id="usa_cbx" name="usa_cbx" @if($evento->usa_cbx) checked="checked" @endif > Utiliza Rating CBX?</label>
+								</div>
+								<div class="form-group">
+									<label><input type="checkbox" id="usa_fide" name="usa_fide" @if($evento->usa_fide) checked="checked" @endif > Utiliza Rating FIDE?</label>
+								</div>
+								<div class="form-group">
+									<label for="tipo_ratings_id">Tipo de Rating</label>
+									<select name="tipo_ratings_id" id="tipo_ratings_id" class="form-control width-100">
+										<option value="">--- Você pode selecionar um tipo de rating ---</option>
+										@foreach($tipos_rating as $tipo_rating)
+											<option value="{{$tipo_rating->id}}">{{$tipo_rating->id}} - {{$tipo_rating->name}}</option>
+										@endforeach
+									</select>
+								</div>
 							</div>
 							<!-- /.box-body -->
 
@@ -256,8 +297,9 @@
 			<div role="tabpanel" class="tab-pane" id="torneio">
 				<br/>
 				@if(
-					\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
-					\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4])
+					(\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
+					\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4]))
+					&& env("NOVO_TORNEIO",false)
 				)
 					<section class="col-lg-12 connectedSortable">
 					
@@ -370,7 +412,8 @@
 		$("#tipo_torneio_id").select2();
 		$("#softwares_id").select2();
 		$("#tipo_ratings_id").select2();
-		$("#evento_cidade_id").select2();
+		$("#cidade_id").select2();
+		$("#cidade_id").val([{{$evento->cidade_id}}]).change();
 		@if($evento->tipo_rating)
 			$("#tipo_ratings_id").val([{{$evento->tipo_rating->tipo_ratings_id}}]).change();
 		@endif

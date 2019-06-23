@@ -212,6 +212,17 @@
 					</select>
                     <button id="clubeNaoCadastradoInscricao" class="btn btn-success">O meu clube não está cadastrado</button>
 				</div>
+				@foreach($evento->campos->all() as $campo)
+					<div class="form-group">
+						<label for="campo_personalizado_{{$campo->campo->id}}">{{$campo->campo->question}} *</label>
+						<select id="campo_personalizado_{{$campo->campo->id}}" class="campo_personalizado form-control">
+							<option value="">--- Selecione uma opção ---</option>
+							@foreach($campo->campo->opcoes->all() as $opcao)
+								<option value="{{$opcao->id}}">{{$opcao->response}}</option>
+							@endforeach
+						</select>
+					</div>
+				@endforeach
 				<div class="form-group">
 					<label><input type="checkbox" id="regulamento_aceito"> Eu aceito o regulamento do {{$evento->grupo_evento->name}} integralmente.</label>
 				</div>
@@ -288,11 +299,16 @@
 				}
 			});
 
+			$(".campo_personalizado").select2();
+
 			$("#enviarInscricao").on("click",function(){
 					var data = "evento_id={{$evento->id}}&enxadrista_id=".concat($("#enxadrista_id").val()).concat("&categoria_id=").concat($("#categoria_id").val()).concat("&cidade_id=").concat($("#cidade_id").val()).concat("&clube_id=").concat($("#clube_id").val());
 					if($("#regulamento_aceito").is(":checked")){
 						data = data.concat("&regulamento_aceito=true");
 					}
+					@foreach($evento->campos->all() as $campo)
+						data = data.concat("&campo_personalizado_{{$campo->campo->id}}=").concat($("#campo_personalizado_{{$campo->campo->id}}").val());
+					@endforeach
 					$.ajax({
 						type: "post",
 						url: "{{url("/inscricao/".$evento->id."/inscricao")}}",

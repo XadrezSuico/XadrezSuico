@@ -200,7 +200,7 @@ class GrupoEventoController extends Controller
         
         $datetime_data_inicio = DateTime::createFromFormat('d/m/Y', $request->input("data_inicio"));
         $datetime_data_fim = DateTime::createFromFormat('d/m/Y', $request->input("data_fim"));
-        $datetime_data_limite_inscricoes_abertas = DateTime::createFromFormat('d/m/Y H:i', $request->input("data_fim"));
+        $datetime_data_limite_inscricoes_abertas = DateTime::createFromFormat('d/m/Y H:i', $request->input("data_limite_inscricoes_abertas"));
 
         // CADASTRO DO EVENTO
         $evento = new Evento;

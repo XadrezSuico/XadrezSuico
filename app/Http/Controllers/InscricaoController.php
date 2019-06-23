@@ -11,6 +11,7 @@ use App\Clube;
 use App\Enxadrista;
 use App\Categoria;
 use App\Sexo;
+use App\CampoPersonalizadoOpcaoInscricao;
 
 class InscricaoController extends Controller
 {
@@ -58,6 +59,18 @@ class InscricaoController extends Controller
             return response()->json(["ok"=>0,"error"=>1,"message" => "O prazo de inscrições antecipadas se esgotou. As inscrições poderão ser feitas no local do evento conforme regulamento."]);
         }
 
+        foreach($evento->campos()->whereHas("campo",function($q1){$q1->where([["is_required","=",true]]);})->get() as $campo){
+            if(
+                !$request->has("campo_personalizado_".$campo->campo->id)
+            ){
+                return response()->json(["ok"=>0,"error"=>1,"message" => "Um dos campos obrigatórios não está preenchido. Por favor, verifique e envie novamente!<br/><br/><strong>Observação</strong>: TODOS os Campos com <strong>*</strong> SÃO OBRIGATÓRIOS!","registred"=>0]);
+            }elseif(
+                $request->input("campo_personalizado_".$campo->campo->id) == NULL || $request->input("campo_personalizado_".$campo->campo->id) == ""
+            ){
+                return response()->json(["ok"=>0,"error"=>1,"message" => "Um dos campos obrigatórios não está preenchido. Por favor, verifique e envie novamente!<br/><br/><strong>Observação</strong>: TODOS os Campos com <strong>*</strong> SÃO OBRIGATÓRIOS!","registred"=>0]);
+            }
+        }
+
         foreach($evento->torneios->all() as $Torneio){
             foreach($Torneio->categorias->all() as $categoria){
                 if($categoria->categoria_id == $request->input("categoria_id")){
@@ -102,6 +115,15 @@ class InscricaoController extends Controller
         }
         $inscricao->regulamento_aceito = true;
         $inscricao->save();
+
+        foreach($evento->campos->all() as $campo){
+            $opcao_inscricao = new CampoPersonalizadoOpcaoInscricao;
+            $opcao_inscricao->inscricao_id = $inscricao->id;
+            $opcao_inscricao->opcaos_id = $request->input("campo_personalizado_".$campo->campo->id);
+            $opcao_inscricao->campo_personalizados_id = $campo->campo->id;
+            $opcao_inscricao->save();
+        }
+
         if($inscricao->id > 0){
             return response()->json(["ok"=>1,"error"=>0]);
         }else{
@@ -247,15 +269,15 @@ class InscricaoController extends Controller
         $evento = Evento::find($request->input("evento_id"));
         $enxadristas = Enxadrista::where([
             ["name","like","%".$request->input("q")."%"],
-        ])->orderBy("name","ASC")->get();
+        ])->orderBy("name","ASC")->limit(30)->get();
         $results = array();
         foreach($enxadristas as $enxadrista){
-            if($enxadrista->ratings()->where([["tipo_ratings_id","=",$evento->tipo_rating->tipo_ratings_id]])->count() > 0){
-                $rating = $enxadrista->ratings()->where([["tipo_ratings_id","=",$evento->tipo_rating->tipo_ratings_id]])->first();
+            $rating = $enxadrista->ratingParaEvento($evento->id);
+            if($rating){
                 if($enxadrista->estaInscrito($request->input("evento_id"))){
-                    $results[] = array("id" => $enxadrista->id, "text" => $enxadrista->name." | ".$enxadrista->getBorn()." | Rating: ".$rating->valor." - Já Está Inscrito neste Evento");
+                    $results[] = array("id" => $enxadrista->id, "text" => $enxadrista->name." | ".$enxadrista->getBorn()." | Rating: ".$rating." - Já Está Inscrito neste Evento");
                 }else 
-                    $results[] = array("id" => $enxadrista->id, "text" => $enxadrista->name." | ".$enxadrista->getBorn()." | Rating: ".$rating->valor);
+                    $results[] = array("id" => $enxadrista->id, "text" => $enxadrista->name." | ".$enxadrista->getBorn()." | Rating: ".$rating);
             }else{
                 if($enxadrista->estaInscrito($request->input("evento_id"))){
                     $results[] = array("id" => $enxadrista->id, "text" => $enxadrista->name." | ".$enxadrista->getBorn()." - Já Está Inscrito neste Evento");
@@ -282,30 +304,47 @@ class InscricaoController extends Controller
     public function buscaCategoria(Request $request){
         $evento = Evento::find($request->input("evento_id"));
         $enxadrista = Enxadrista::find($request->input("enxadrista_id"));
-        $categorias = $evento->categorias()->whereHas("categoria", function($QUERY) use ($request,$enxadrista){
-            $QUERY->where([
+        $categorias = $evento->categorias()->whereHas("categoria", function($q1) use ($request,$enxadrista){
+            $q1->where([
                 ["name","like","%".$request->input("q")."%"],
             ])
-            ->where(function($query) use ($enxadrista){
-                $query->where(function($q) use ($enxadrista){
-                    $q->where([["idade_minima","<=",$enxadrista->howOld()]]);
-                    $q->where([["idade_maxima",">=",$enxadrista->howOld()]]);
+            ->where(function($q2) use ($enxadrista){
+                $q2->where(function($q3) use ($enxadrista){
+                    $q3->where([["idade_minima","<=",$enxadrista->howOld()]]);
+                    $q3->where([["idade_maxima",">=",$enxadrista->howOld()]]);
                 })
-                ->orWhere(function($q) use ($enxadrista){
-                    $q->where([["idade_minima","<=",$enxadrista->howOld()]]);
-                    $q->where([["idade_maxima","=",NULL]]);
+                ->orWhere(function($q3) use ($enxadrista){
+                    $q3->where([["idade_minima","<=",$enxadrista->howOld()]]);
+                    $q3->where([["idade_maxima","=",NULL]]);
                 })
-                ->orWhere(function($q) use ($enxadrista){
-                    $q->where([["idade_minima","=",NULL]]);
-                    $q->where([["idade_maxima",">=",$enxadrista->howOld()]]);
+                ->orWhere(function($q3) use ($enxadrista){
+                    $q3->where([["idade_minima","=",NULL]]);
+                    $q3->where([["idade_maxima",">=",$enxadrista->howOld()]]);
                 })
-                ->orWhere(function($q){
-                    $q->where([["idade_minima","=",NULL]]);
-                    $q->where([["idade_maxima","=",NULL]]);
+                ->orWhere(function($q3){
+                    $q3->where([["idade_minima","=",NULL]]);
+                    $q3->where([["idade_maxima","=",NULL]]);
+                });
+            })
+            ->where(function($q2) use ($enxadrista){
+                $q2->where(function($q3) use ($enxadrista){
+                    if($enxadrista->sexos_id){
+                        $q3->where(function($q4) use ($enxadrista){
+                            $q4->whereHas("sexos",function($q5) use ($enxadrista){
+                                $q5->where([["sexos_id","=",$enxadrista->sexos_id]]);
+                            });
+                        });
+                        $q3->orWhere(function($q4){
+                            $q4->doesntHave("sexos");
+                        });
+                    }else{
+                        $q3->whereDoesntHave("sexos");
+                    }
                 });
             });
         })
         ->get();
+        // echo ($categorias); exit();
         $results = array();
         foreach($categorias as $categoria){
             $results[] = array("id" => $categoria->categoria->id, "text" => $categoria->categoria->name);

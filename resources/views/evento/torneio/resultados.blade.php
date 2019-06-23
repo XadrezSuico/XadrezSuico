@@ -13,7 +13,7 @@
 		</div>
 	@endif
 	<ul class="nav nav-pills">
-		<li role="presentation"><a href="{{url("/evento/".$evento->id."/torneios")}}">Listar Todos os Torneios</a></li>
+		<li role="presentation"><a href="{{url("/evento/dashboard/".$evento->id."?tab=torneio")}}">Listar Todos os Torneios</a></li>
 	</ul>
 
     <div class="box">

@@ -13,6 +13,7 @@ use App\Enxadrista;
 use App\Categoria;
 use App\Sexo;
 use App\TipoRatingRegras;
+use App\CampoPersonalizadoOpcaoInscricao;
 
 class InscricaoGerenciarController extends Controller
 {
@@ -391,6 +392,18 @@ class InscricaoGerenciarController extends Controller
         $torneio = NULL;
         $evento = Evento::find($request->input("evento_id"));
 
+        foreach($evento->campos()->whereHas("campo",function($q1){$q1->where([["is_required","=",true]]);})->get() as $campo){
+            if(
+                !$request->has("campo_personalizado_".$campo->campo->id)
+            ){
+                return response()->json(["ok"=>0,"error"=>1,"message" => "Um dos campos obrigatórios não está preenchido. Por favor, verifique e envie novamente!<br/><br/><strong>Observação</strong>: TODOS os Campos com <strong>*</strong> SÃO OBRIGATÓRIOS!","registred"=>0]);
+            }elseif(
+                $request->input("campo_personalizado_".$campo->campo->id) == NULL || $request->input("campo_personalizado_".$campo->campo->id) == ""
+            ){
+                return response()->json(["ok"=>0,"error"=>1,"message" => "Um dos campos obrigatórios não está preenchido. Por favor, verifique e envie novamente!<br/><br/><strong>Observação</strong>: TODOS os Campos com <strong>*</strong> SÃO OBRIGATÓRIOS!","registred"=>0]);
+            }
+        }
+
         foreach($evento->torneios->all() as $Torneio){
             foreach($Torneio->categorias->all() as $categoria){
                 if($categoria->categoria_id == $request->input("categoria_id")){
@@ -438,6 +451,15 @@ class InscricaoGerenciarController extends Controller
         }
         $inscricao->regulamento_aceito = true;
         $inscricao->save();
+
+        
+        foreach($evento->campos->all() as $campo){
+            $opcao_inscricao = new CampoPersonalizadoOpcaoInscricao;
+            $opcao_inscricao->inscricao_id = $inscricao->id;
+            $opcao_inscricao->opcaos_id = $request->input("campo_personalizado_".$campo->campo->id);
+            $opcao_inscricao->campo_personalizados_id = $campo->campo->id;
+            $opcao_inscricao->save();
+        }
 
         if($request->has("atualizar_cadastro")){
             $enxadrista->cidade_id = $inscricao->cidade_id;
@@ -663,6 +685,22 @@ class InscricaoGerenciarController extends Controller
                 ->orWhere(function($q){
                     $q->where([["idade_minima","=",NULL]]);
                     $q->where([["idade_maxima","=",NULL]]);
+                });
+            })
+            ->where(function($q2) use ($enxadrista){
+                $q2->where(function($q3) use ($enxadrista){
+                    if($enxadrista->sexos_id){
+                        $q3->where(function($q4) use ($enxadrista){
+                            $q4->whereHas("sexos",function($q5) use ($enxadrista){
+                                $q5->where([["sexos_id","=",$enxadrista->sexos_id]]);
+                            });
+                        });
+                        $q3->orWhere(function($q4){
+                            $q4->doesntHave("sexos");
+                        });
+                    }else{
+                        $q3->whereDoesntHave("sexos");
+                    }
                 });
             });
         })
