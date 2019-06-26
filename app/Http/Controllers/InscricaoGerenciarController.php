@@ -96,6 +96,9 @@ class InscricaoGerenciarController extends Controller
         $torneio = Torneio::find($torneio_id);
         $inscricao = Inscricao::find($inscricao_id);
         if($inscricao->isDeletavel()){
+            foreach($inscricao->opcoes->all() as $campo){
+                $campo->delete();
+            }
             $inscricao->delete();
         }
         return redirect("/evento/".$evento->id."/torneios/".$torneio->id."/inscricoes");
