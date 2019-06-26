@@ -131,7 +131,7 @@ class InscricaoController extends Controller
             $text .= "Você está recebendo este email para confirmar a inscrição no Evento '".$evento->name."'.<br/>";
             $text .= "Informações:<br/>";
             $text .= "Cidade: ".$inscricao->cidade->name."<br/>";
-            $text .= "Clube: ".$inscricao->clube->name."<br/>";
+            $text .= "Clube: ".(($inscricao->clube) ? $inscricao->clube->name : "Sem Clube")."<br/>";
             $text .= "Categoria: ".$inscricao->categoria->name."<br/>";
             EmailController::scheduleEmail(
                 $enxadrista->email,
