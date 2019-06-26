@@ -4,6 +4,7 @@
 
 @section('content_header')
   <h1>Editar Enxadrista</h1>
+  <h3>Código: {{$enxadrista->id}}</h3>
 @stop
 
 
