@@ -52,6 +52,10 @@ class Torneio extends Model
         if($this->evento->criterios()->count() > 0) return $this->evento->criterios()->where([["tipo_torneio_id","=",$this->tipo_torneio_id]])->orderBy("prioridade","ASC")->whereHas("criterio",function($q1){ $q1->where([["is_manual","=",false]]); })->get();
         return $this->evento->grupo_evento->criterios()->where([["tipo_torneio_id","=",$this->tipo_torneio_id]])->whereHas("criterio",function($q1){ $q1->where([["is_manual","=",false]]); })->orderBy("prioridade","ASC")->get();
     }
+    public function getCriteriosTotal(){
+        if($this->evento->criterios()->count() > 0) return $this->evento->criterios()->where([["tipo_torneio_id","=",$this->tipo_torneio_id]])->orderBy("prioridade","ASC")->get();
+        return $this->evento->grupo_evento->criterios()->where([["tipo_torneio_id","=",$this->tipo_torneio_id]])->orderBy("prioridade","ASC")->get();
+    }
     public function findByTagCategoria($tag){
         return Torneio::whereHas("categorias",function ($q0) use ($tag){
             $q0->whereHas("categoria",function($q1) use ($tag){

@@ -164,7 +164,7 @@ class EventoGerenciarController extends Controller
             })
 			->orderBy("posicao","ASC")
 		->get();
-		$criterios = $torneio->getCriterios();
+		$criterios = $torneio->getCriteriosTotal();
 		return view("evento.publico.list",compact("evento","categoria","inscricoes","criterios"));
 	}
 }
