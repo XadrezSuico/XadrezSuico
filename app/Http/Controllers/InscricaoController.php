@@ -12,6 +12,7 @@ use App\Enxadrista;
 use App\Categoria;
 use App\Sexo;
 use App\CampoPersonalizadoOpcaoInscricao;
+use App\Email;
 
 class InscricaoController extends Controller
 {
@@ -123,6 +124,23 @@ class InscricaoController extends Controller
             $opcao_inscricao->campo_personalizados_id = $campo->campo->id;
             $opcao_inscricao->save();
         }
+        
+        if($enxadrista->email){
+            // EMAIL PARA O ENXADRISTA SOLICITANTE
+            $text = "Olá ".$enxadrista->name."!<br/>";
+            $text .= "Você está recebendo este email para confirmar a inscrição no Evento '".$evento->name."'.<br/>";
+            $text .= "Informações:<br/>";
+            $text .= "Cidade: ".$inscricao->cidade->name."<br/>";
+            $text .= "Clube: ".$inscricao->clube->name."<br/>";
+            $text .= "Categoria: ".$inscricao->categoria->name."<br/>";
+            EmailController::scheduleEmail(
+                $enxadrista->email,
+                $evento->name." - Inscrição Recebida - Enxadrista: ".$enxadrista->name,
+                $text,
+                $enxadrista
+            );
+        }
+
 
         if($inscricao->id > 0){
             return response()->json(["ok"=>1,"error"=>0]);
