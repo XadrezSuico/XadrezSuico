@@ -14,7 +14,7 @@ class UpdatePontuacaoEnxadristaTableAddCountInscricoes extends Migration
     public function up()
     {
         Schema::table('pontuacao_enxadristas', function (Blueprint $table) {
-            $table->integer("inscricoes_calculadas")->nullable();
+            $table->integer("inscricoes_calculadas")->default(0);
         });
     }
 

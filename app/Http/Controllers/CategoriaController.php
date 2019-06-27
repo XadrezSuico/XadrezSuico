@@ -159,6 +159,7 @@ class CategoriaController extends Controller
                     ["categoria_id","=",$categoria->id],
                 ])->get() as $pontuacao){
             $pontuacao->pontos = 0;
+            $pontuacao->inscricoes_calculadas = 0;
             $pontuacao->save();
         }
         foreach($grupo_evento->eventos->all() as $evento){
@@ -173,9 +174,10 @@ class CategoriaController extends Controller
                     ["evento_id","=",$evento->id]
                 ]);
             })
-            ->orderBy("pontos","DESC");
-            echo "Total de inscrições encontradas: ".count($inscricoes->count())."<br/>";
-            foreach($inscricoes->get() as $inscricao){
+            ->orderBy("pontos","DESC")
+            ->get();
+            echo "Total de inscrições encontradas: ".count($inscricoes)."<br/>";
+            foreach($inscricoes as $inscricao){
                 echo 'inscricao';
                 $pontos_geral = PontuacaoEnxadrista::where([
                     ["enxadrista_id","=",$inscricao->enxadrista->id],
@@ -188,11 +190,12 @@ class CategoriaController extends Controller
                     $pontos_geral->grupo_evento_id = $inscricao->torneio->evento->grupo_evento->id;
                     $pontos_geral->categoria_id = $inscricao->categoria->id;
                     $pontos_geral->pontos = 0;
-                    $pontos_geral->inscricoes_calculadas = 0;
                 }
                 
                 if($grupo_evento->limite_calculo_geral){
-                    if($grupo_evento->limite_calculo_geral < $pontos_geral->inscricoes_calculadas){
+                    echo "Enxadrista: ".$inscricao->enxadrista->name." - ";
+                    echo "Limite: ".$grupo_evento->limite_calculo_geral.", Calculadas: ".$pontos_geral->inscricoes_calculadas."<br/>";
+                    if($grupo_evento->limite_calculo_geral > $pontos_geral->inscricoes_calculadas){
                         $pontos_geral->pontos += $inscricao->pontos_geral;
                         $pontos_geral->inscricoes_calculadas++;
                     }
@@ -200,7 +203,6 @@ class CategoriaController extends Controller
                     $pontos_geral->pontos += $inscricao->pontos_geral;
                     $pontos_geral->inscricoes_calculadas++;
                 }
-                $pontos_geral->pontos += $inscricao->pontos_geral;
                 $pontos_geral->save();
             }
         }
