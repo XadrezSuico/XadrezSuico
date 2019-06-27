@@ -71,6 +71,15 @@ class GrupoEventoController extends Controller
     public function edit_post($id,Request $request){
         $grupo_evento = GrupoEvento::find($id);
         $grupo_evento->name = $request->input("name");
+        if($request->has("limite_calculo_geral")){
+            if($request->input("limite_calculo_geral") != ""){
+                $grupo_evento->limite_calculo_geral = $request->input("limite_calculo_geral");
+            }else{
+                $grupo_evento->limite_calculo_geral = NULL;
+            }
+        }else{
+            $grupo_evento->limite_calculo_geral = NULL;
+        }
         $grupo_evento->save();
 
         if($request->has("tipo_ratings_id")){

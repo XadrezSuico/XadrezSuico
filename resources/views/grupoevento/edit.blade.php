@@ -57,6 +57,11 @@
 									<label for="name">Nome</label>
 									<input name="name" id="name" class="form-control" type="text" value="{{$grupo_evento->name}}" />
 								</div>
+								<div class="form-group">
+									<label for="limite_calculo_geral">Limite de Valores para Cálculo de Pontuação Geral</label>
+									<input name="limite_calculo_geral" id="limite_calculo_geral" class="form-control" type="text" value="{{$grupo_evento->limite_calculo_geral}}" />
+								</div>
+								<div class="form-group">
 									<label for="tipo_ratings_id">Tipo de Rating</label>
 									<select name="tipo_ratings_id" id="tipo_ratings_id" class="form-control width-100">
 										<option value="">--- Você pode selecionar um tipo de rating ---</option>
@@ -64,6 +69,7 @@
 											<option value="{{$tipo_rating->id}}">{{$tipo_rating->id}} - {{$tipo_rating->name}}</option>
 										@endforeach
 									</select>
+								</div>
 							</div>
 							<!-- /.box-body -->
 

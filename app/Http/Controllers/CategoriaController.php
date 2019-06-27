@@ -173,10 +173,12 @@ class CategoriaController extends Controller
                     ["evento_id","=",$evento->id]
                 ]);
             })
-            ->orderBy("pontos","DESC")
-            ->get();
-            echo "Total de inscrições encontradas: ".count($inscricoes)."<br/>";
-            foreach($inscricoes as $inscricao){
+            ->orderBy("pontos","DESC");
+            if($grupo_evento->limite_calculo_geral){
+                $inscricoes = $inscricoes->limit($grupo_evento->limite_calculo_geral);
+            }
+            echo "Total de inscrições encontradas: ".count($inscricoes->count())."<br/>";
+            foreach($inscricoes->get() as $inscricao){
                 echo 'inscricao';
                 $pontos_geral = PontuacaoEnxadrista::where([
                     ["enxadrista_id","=",$inscricao->enxadrista->id],
