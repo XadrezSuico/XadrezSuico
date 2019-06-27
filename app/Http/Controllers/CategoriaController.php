@@ -174,9 +174,6 @@ class CategoriaController extends Controller
                 ]);
             })
             ->orderBy("pontos","DESC");
-            if($grupo_evento->limite_calculo_geral){
-                $inscricoes = $inscricoes->limit($grupo_evento->limite_calculo_geral);
-            }
             echo "Total de inscrições encontradas: ".count($inscricoes->count())."<br/>";
             foreach($inscricoes->get() as $inscricao){
                 echo 'inscricao';
@@ -191,6 +188,17 @@ class CategoriaController extends Controller
                     $pontos_geral->grupo_evento_id = $inscricao->torneio->evento->grupo_evento->id;
                     $pontos_geral->categoria_id = $inscricao->categoria->id;
                     $pontos_geral->pontos = 0;
+                    $pontos_geral->inscricoes_calculadas = 0;
+                }
+                
+                if($grupo_evento->limite_calculo_geral){
+                    if($grupo_evento->limite_calculo_geral < $pontos_geral->inscricoes_calculadas){
+                        $pontos_geral->pontos += $inscricao->pontos_geral;
+                        $pontos_geral->inscricoes_calculadas++;
+                    }
+                }else{
+                    $pontos_geral->pontos += $inscricao->pontos_geral;
+                    $pontos_geral->inscricoes_calculadas++;
                 }
                 $pontos_geral->pontos += $inscricao->pontos_geral;
                 $pontos_geral->save();
