@@ -22,22 +22,39 @@
 <!-- Main row -->
 <ul class="nav nav-pills">
   <li role="presentation"><a href="/evento">Voltar a Lista de Eventos</a></li>
-  @if(
-		\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
-		\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4])
-  )
-  	<li role="presentation"><a href="/evento/classificar/{{$evento->id}}">Classificar Evento</a></li>
-  	<li role="presentation"><a href="{{url("/evento/".$evento->id."/toggleresultados")}}">@if($evento->mostrar_resultados) Restringir @else Liberar @endif Classificação Pública</a></li>
-		@if($evento->mostrar_resultados)
-			<li role="presentation"><a href="{{url("/evento/classificacao/".$evento->id)}}">Visualizar Classificação (Pública)</a></li>
-		@endif
-	@endif
-  <li role="presentation"><a href="{{url("/evento/classificacao/".$evento->id)}}/interno">Visualizar Classificação (Interna)</a></li>
-
 </ul>
 <div class="row">
   <!-- Left col -->
 	<div>
+
+	<section class="col-lg-12 connectedSortable">
+		<div class="box box-primary" id="inscricao">
+			<div class="box-header">
+				<h3 class="box-title">Funções</h3>
+			</div>
+			
+			<div class="box-body">
+				@if(
+					\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
+					\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4])
+				)
+					<a href="/evento/classificar/{{$evento->id}}" class="btn btn-success">Classificar Evento</a><br/><br/>
+					<a href="{{url("/evento/".$evento->id."/toggleresultados")}}" class="btn btn-warning">@if($evento->mostrar_resultados) Restringir @else Liberar @endif Classificação Pública</a>
+					@if($evento->mostrar_resultados)
+						<a href="{{url("/evento/classificacao/".$evento->id)}}" class="btn btn-default">Visualizar Classificação (Pública)</a>
+					@endif
+				@endif
+				<a href="{{url("/evento/classificacao/".$evento->id)}}/interno" class="btn btn-default">Visualizar Classificação (Interna)</a><br/><br/>
+
+				@if(
+					\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal()
+				)
+					<a href="{{url("/evento/".$evento->id."/toggleclassificavel")}}" class="btn btn-warning">@if($evento->classificavel) Não Permitir @else Permitir @endif Classificação Geral deste Evento</a>
+				@endif
+			</div>
+			<!-- /.box-body -->
+		</div>
+	</section>
 
 		<!-- Nav tabs -->
 		<ul class="nav nav-tabs" role="tablist">

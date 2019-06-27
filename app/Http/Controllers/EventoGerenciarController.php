@@ -127,7 +127,27 @@ class EventoGerenciarController extends Controller
                 $evento->mostrar_resultados = true;
             }
             $evento->save();
-		    return redirect("/evento");
+		    return redirect("/evento/dashboard/".$evento->id);
+		}
+	}
+    
+    public function toggleEventoClassificavel($evento_id){
+		$user = Auth::user();
+		if(
+			!$user->hasPermissionGlobal() && 
+			!$user->hasPermissionEventByPerfil($id,[4])
+		){
+			return redirect("/");
+		}
+		$evento = Evento::find($evento_id);
+		if($evento){
+			if($evento->classificavel){
+                $evento->classificavel = false;
+            }else{
+                $evento->classificavel = true;
+            }
+            $evento->save();
+		    return redirect("/evento/dashboard/".$evento->id);
 		}
 	}
 	

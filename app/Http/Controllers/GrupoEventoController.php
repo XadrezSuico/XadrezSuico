@@ -194,12 +194,13 @@ class GrupoEventoController extends Controller
     
 
 	public function classificar($grupo_evento_id){
+        $retornos = array();
 		$grupo_evento = GrupoEvento::find($grupo_evento_id);
 		if($grupo_evento){
 			foreach($grupo_evento->categorias->all() as $categoria){
-				CategoriaController::classificar_geral($grupo_evento->id,$categoria->categoria->id);
+				$retornos = array_merge($retornos,CategoriaController::classificar_geral($grupo_evento->id,$categoria->categoria->id));
 			}
-			// return redirect("/grupoevento/dashboard/".$grupo_evento_id);
+			return view("grupoevento.retornos",compact("grupo_evento","retornos"));
 		}
     }
 
