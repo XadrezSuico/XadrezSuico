@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\GrupoEvento;
 use App\Categoria;
 use App\PontuacaoEnxadrista;
+use App\Enxadrista;
 
 class GrupoEventoPublicoController extends Controller
 {
@@ -25,5 +26,13 @@ class GrupoEventoPublicoController extends Controller
 		->get();
 		$criterios = $grupo_evento->getCriteriosDesempateGerais();
 		return view("grupoevento.publico.list",compact("grupo_evento","eventos","categoria","pontuacoes","criterios"));
+	}
+	public function verPontuacaoEnxadrista($grupo_evento_id,$enxadrista_id){
+		$grupo_evento = GrupoEvento::find($grupo_evento_id);
+		$enxadrista = Enxadrista::find($enxadrista_id);
+		if($grupo_evento && $enxadrista){
+			return view("grupoevento.publico.enxadrista",compact("grupo_evento","enxadrista"));
+		}
+		return redirect()->back();
 	}
 }

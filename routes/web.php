@@ -185,6 +185,7 @@ Route::group(["prefix"=>"grupoevento"],function(){
 	Route::get('/delete/{id}', 'GrupoEventoController@delete')->name('grupoevento.delete');
     Route::get('/classificar/{id}', 'GrupoEventoController@classificar')->name('grupoevento.classificar');
     Route::get('/classificacao/{id}', 'GrupoEventoPublicoController@classificacao')->name('grupoevento.publico.classificacao');
+    Route::get('/{id}/resultados/enxadrista/{enxadrista_id}', 'GrupoEventoPublicoController@verPontuacaoEnxadrista')->name('grupoevento.publico.verPontuacaoEnxadrista');
     Route::get('/{id}/resultados/{categoria_id}', 'GrupoEventoPublicoController@resultados')->name('grupoevento.publico.resultados');
     Route::group(["prefix"=>"{id}/categoria"],function(){
         Route::post('/add', 'GrupoEventoController@categoria_add')->name('grupoevento.categoria.add');

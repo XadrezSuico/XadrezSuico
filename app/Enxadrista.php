@@ -224,4 +224,39 @@ class Enxadrista extends Model
             ["grupo_evento_id","=",$grupo_evento_id],
         ])->first();
     }
+
+    public function getInscricoesByGrupoEventoECategoria($grupo_evento_id,$categoria_id){
+        return $this->inscricoes()->where([
+            ["categoria_id","=",$categoria_id],
+        ])
+        ->whereHas("torneio",function($q1) use ($grupo_evento_id){
+            $q1->whereHas("evento",function($q2) use ($grupo_evento_id){
+                $q2->where([
+                    ["grupo_evento_id","=",$grupo_evento_id]
+                ]);
+            });
+        })
+        ->get();
+    }
+
+    public function getCategoriasParticipantesbyGrupoEvento($grupo_evento_id){
+        $inscricoes = $this->inscricoes()
+        ->where([
+            ["posicao","!=",NULL]
+        ])
+        ->whereHas("torneio",function($q1) use ($grupo_evento_id){
+            $q1->whereHas("evento",function($q2) use ($grupo_evento_id){
+                $q2->where([
+                    ["grupo_evento_id","=",$grupo_evento_id]
+                ]);
+            });
+        })->get();
+        $categorias = array();
+        foreach($inscricoes as $inscricao){
+            if(!in_array($inscricao->categoria_id,$categorias)){
+                $categorias[] = $inscricao->categoria_id;
+            }
+        }
+        return Categoria::whereIn("id",$categorias)->get();
+    }
 }

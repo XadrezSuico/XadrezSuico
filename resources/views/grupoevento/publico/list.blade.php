@@ -51,7 +51,7 @@
                     @foreach($pontuacoes as $pontuacao)
                         <tr>
                             <td>{{$pontuacao->posicao}}</td>
-                            <td>#{{$pontuacao->enxadrista->id}} - {{$pontuacao->enxadrista->name}}</td>
+                            <td><a href="{{url("/grupoevento/".$grupo_evento->id."/resultados/enxadrista/".$pontuacao->enxadrista->id)}}">#{{$pontuacao->enxadrista->id}} - {{$pontuacao->enxadrista->name}}</a></td>
                             <td>{{$pontuacao->enxadrista->getBorn()}}</td>
                             <td>{{$pontuacao->enxadrista->cidade->name}}</td>
                             <td>@if($pontuacao->enxadrista->clube) {{$pontuacao->enxadrista->clube->name}} @else Sem Clube @endif</td>
