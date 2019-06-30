@@ -224,3 +224,6 @@ Route::group(["prefix"=>"torneiotemplate"],function(){
         Route::get('/remove/{categoria_torneio_id}', 'TorneioTemplateController@categoria_remove')->name('torneiotemplate.categoria.remove');
     });
 });
+Route::group(["prefix"=>"update"],function(){
+    Route::get('/cbx/rating', 'CBXRatingController@updateRatings')->name('update.cbx.rating');
+});

@@ -42,7 +42,7 @@
             <div class="box-body">
                 <strong>Pontuação Atual:</strong> @if($pontuacao_enxadrista) {{$pontuacao_enxadrista->pontos}} @else - @endif<br/>
                 <strong>Quantidade de Etapas Consideradas para a Pontuação:</strong> @if($pontuacao_enxadrista) {{$pontuacao_enxadrista->inscricoes_calculadas}} @else - @endif<br/>
-                @if($pontuacao_enxadrista->grupo_evento->limite_calculo_geral) <strong>Limite de Etapas Consideradas para a Pontuação neste Grupo de Evento:</strong> {{$pontuacao_enxadrista->grupo_evento->limite_calculo_geral}} @endif
+                @if($grupo_evento->limite_calculo_geral) <strong>Limite de Etapas Consideradas para a Pontuação neste Grupo de Evento:</strong> {{$grupo_evento->limite_calculo_geral}} @endif
         
                 <table class="table-responsive table-condensed table-striped tabela" style="width: 100%">
                     <thead>
@@ -63,7 +63,7 @@
                                 <td>{{$inscricao->torneio->name}}</td>
                                 <td>{{$inscricao->categoria->name}}</td>
                                 <td>{{$inscricao->posicao}}</td>
-                                <td>{{$inscricao->pontos_geral}}</td>
+                                <td>@if($inscricao->pontos_geral) {{$inscricao->pontos_geral}} @else - @endif</td>
                             </tr>
                         @endforeach
                     </tbody>
