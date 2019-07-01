@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Enxadrista;
+use GuzzleHttp\Client;
 
 class CBXRatingController extends Controller
 {
@@ -21,7 +22,12 @@ class CBXRatingController extends Controller
         echo count($enxadristas);
         foreach($enxadristas as $enxadrista){
             echo "Enxadrista #".$enxadrista->id." - ".$enxadrista->name;
-            $html = file_get_contents("http://cbx.com.br/jogador/".$enxadrista->cbx_id);
+            // $html = file_get_contents("http://cbx.com.br/jogador/".$enxadrista->cbx_id);
+
+            $client = new Client;
+            $response = $client->get("http://cbx.com.br/jogador/".$enxadrista->cbx_id);
+            $html = (string) $response->getBody();
+
             $explode_table_1 = explode("Evolução Rating",$html);
             if(count($explode_table_1) == 2){
                 $explode_table_2 = explode("</caption>",$explode_table_1[1]);
