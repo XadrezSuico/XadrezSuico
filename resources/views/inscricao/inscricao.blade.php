@@ -104,7 +104,7 @@
 		</div>
 
 		<div class="box-body">
-			Se você já jogou alguma etapa dos Circuitos Regionais de Xadrez de 2017 e 2018, você já possui cadastro.
+			{{env("MESSAGE_INSCRICAO","Se você já jogou alguma etapa dos Circuitos Regionais de Xadrez de 2017 e 2018, você já possui cadastro.")}}
 		</div>
 		<div class="box-footer">
 			<button id="tenhoCadastro" class="btn btn-success btn-lg">Tenho Cadastro</button>
