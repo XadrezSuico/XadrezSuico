@@ -12,11 +12,19 @@
 				{{ session('status') }}
 		</div>
 	@endif
-	<ul class="nav nav-pills">
-		<li role="presentation"><a href="{{url("/usuario/new")}}">Novo Usuario</a></li>
-		<li role="presentation"><a href="{{url("/usuario")}}">Listar Todos</a></li>
-	</ul>
 
+	@if ($ok)
+		<div class="alert alert-success">
+			<strong>Tudo certo!</strong><br/>
+			Sua senha foi alterada com sucesso!
+		</div>
+	@endif
+	@if($USER->hasPermissionGlobalbyPerfil([1]))
+		<ul class="nav nav-pills">
+			<li role="presentation"><a href="{{url("/usuario/new")}}">Novo Usuario</a></li>
+			<li role="presentation"><a href="{{url("/usuario")}}">Listar Todos</a></li>
+		</ul>
+	@endif
     <div class="box">
         <div class="box-body">
 			<form method="post">
