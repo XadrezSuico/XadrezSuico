@@ -13,6 +13,11 @@
 		.display-none, .displayNone{
 			display: none;
 		}
+
+		.box-title.evento{
+			font-size: 2.5rem;
+			font-weight: bold;
+		}
 	</style>
 @endsection
 
@@ -74,7 +79,7 @@
 	<!-- general form elements -->
 	<div class="box box-primary">
 		<div class="box-header">
-			<h3 class="box-title">Evento: {{$evento->name}}</h3>
+			<h3 class="box-title evento">Evento: {{$evento->name}}</h3>
 			<div class="pull-right box-tools">
 			</div>
 		</div>
@@ -93,7 +98,7 @@
 	</div>
 	<div class="box box-primary" id="vocePossuiCadastro">
 		<div class="box-header">
-			<h3 class="box-title">Você já possui cadastro?</h3>
+			<h3 class="box-title">1º Passo - Você já possui cadastro?</h3>
 			<div class="pull-right box-tools">
 			</div>
 		</div>
