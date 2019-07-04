@@ -86,19 +86,19 @@
 							<div class="box-body">
 								<div class="form-group">
 									<label for="evento_name">Nome *</label>
-									<input name="name" id="evento_name" class="form-control" type="text" value="{{$evento->name}}" />
+									<input name="name" id="evento_name" class="form-control" type="text" value="{{$evento->name}}" @if(!\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() && !\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4])) disabled="disabled" @endif />
 								</div>
 								<div class="form-group">
 									<label for="evento_data_inicio">Data de Início *</label>
-									<input name="data_inicio" id="evento_data_inicio" class="form-control" type="text" value="{{$evento->getDataInicio()}}" />
+									<input name="data_inicio" id="evento_data_inicio" class="form-control" type="text" value="{{$evento->getDataInicio()}}" @if(!\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() && !\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4])) disabled="disabled" @endif />
 								</div>
 								<div class="form-group">
 									<label for="evento_data_fim">Data de Fim *</label>
-									<input name="data_fim" id="evento_data_fim" class="form-control" type="text" value="{{$evento->getDataFim()}}" />
+									<input name="data_fim" id="evento_data_fim" class="form-control" type="text" value="{{$evento->getDataFim()}}" @if(!\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() && !\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4])) disabled="disabled" @endif />
 								</div>
 								<div class="form-group">
 									<label for="cidade_id">Cidade *</label>
-									<select name="cidade_id" id="cidade_id" class="form-control width-100">
+									<select name="cidade_id" id="cidade_id" class="form-control width-100" @if(!\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() && !\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4])) disabled="disabled" @endif>
 										<option value="">--- Selecione ---</option>
 										@foreach($cidades as $cidade)
 											<option value="{{$cidade->id}}">{{$cidade->id}} - {{$cidade->name}}</option>
@@ -107,25 +107,25 @@
 								</div>
 								<div class="form-group">
 									<label for="evento_local">Local *</label>
-									<input name="local" id="evento_local" class="form-control" type="text" value="{{$evento->local}}" />
+									<input name="local" id="evento_local" class="form-control" type="text" value="{{$evento->local}}" @if(!\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() && !\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4])) disabled="disabled" @endif />
 								</div>
 								<div class="form-group">
 									<label for="evento_link">Link</label>
-									<input name="link" id="evento_link" class="form-control" type="text" value="{{$evento->link}}" />
+									<input name="link" id="evento_link" class="form-control" type="text" value="{{$evento->link}}" @if(!\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() && !\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4])) disabled="disabled" @endif />
 								</div>
 								<div class="form-group">
 									<label for="evento_data_limite_inscricoes_abertas">Data e Hora Limite para Inscrições</label>
-									<input name="data_limite_inscricoes_abertas" id="evento_data_limite_inscricoes_abertas" class="form-control" type="text" value="{{$evento->getDataFimInscricoesOnline()}}" />
+									<input name="data_limite_inscricoes_abertas" id="evento_data_limite_inscricoes_abertas" class="form-control" type="text" value="{{$evento->getDataFimInscricoesOnline()}}" @if(!\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() && !\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4])) disabled="disabled" @endif />
 								</div>
 								<div class="form-group">
-									<label><input type="checkbox" id="usa_cbx" name="usa_cbx" @if($evento->usa_cbx) checked="checked" @endif > Utiliza Rating CBX?</label>
+									<label><input type="checkbox" id="usa_cbx" name="usa_cbx" @if($evento->usa_cbx) checked="checked" @endif @if(!\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() && !\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4])) disabled="disabled" @endif > Utiliza Rating CBX?</label>
 								</div>
 								<div class="form-group">
-									<label><input type="checkbox" id="usa_fide" name="usa_fide" @if($evento->usa_fide) checked="checked" @endif > Utiliza Rating FIDE?</label>
+									<label><input type="checkbox" id="usa_fide" name="usa_fide" @if($evento->usa_fide) checked="checked" @endif @if(!\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() && !\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4])) disabled="disabled" @endif > Utiliza Rating FIDE?</label>
 								</div>
 								<div class="form-group">
 									<label for="tipo_ratings_id">Tipo de Rating</label>
-									<select name="tipo_ratings_id" id="tipo_ratings_id" class="form-control width-100">
+									<select name="tipo_ratings_id" id="tipo_ratings_id" class="form-control width-100" @if(!\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() && !\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4])) disabled="disabled" @endif>
 										<option value="">--- Você pode selecionar um tipo de rating ---</option>
 										@foreach($tipos_rating as $tipo_rating)
 											<option value="{{$tipo_rating->id}}">{{$tipo_rating->id}} - {{$tipo_rating->name}}</option>
@@ -159,56 +159,56 @@
 					\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
 					\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4])
 				)
-				<section class="col-lg-6 connectedSortable">
-					<div class="box box-primary">
-						<div class="box-header">
-							<h3 class="box-title">Relacionar Critério de Desempate</h3>
-						</div>
-						<!-- form start -->
-						<form method="post" action="{{url("/evento/".$evento->id."/criteriodesempate/add")}}">
-							<div class="box-body">
-								<div class="form-group">
-									<label for="criterio_desempate_id">Critério de Desempate</label>
-									<select name="criterio_desempate_id" id="criterio_desempate_id" class="form-control width-100">
-										<option value="">--- Selecione ---</option>
-										@foreach($criterios_desempate as $criterio_desempate)
-											<option value="{{$criterio_desempate->id}}">{{$criterio_desempate->id}} - {{$criterio_desempate->name}}</option>
-										@endforeach
-									</select>
-								</div>
-								<div class="form-group">
-									<label for="tipo_torneio_id">Tipo de Torneio</label>
-									<select name="tipo_torneio_id" id="tipo_torneio_id" class="form-control width-100">
-										<option value="">--- Selecione ---</option>
-										@foreach($tipos_torneio as $tipo_torneio)
-											<option value="{{$tipo_torneio->id}}">{{$tipo_torneio->id}} - {{$tipo_torneio->name}}</option>
-										@endforeach
-									</select>
-								</div>
-								<div class="form-group">
-									<label for="softwares_id">Software</label>
-									<select name="softwares_id" id="softwares_id" class="form-control width-100">
-										<option value="">--- Selecione ---</option>
-										@foreach($softwares as $software)
-											<option value="{{$software->id}}">{{$software->id}} - {{$software->name}}</option>
-										@endforeach
-									</select>
-								</div>
-								<div class="form-group">
-									<label for="prioridade">Prioridade</label>
-									<input name="prioridade" id="prioridade" class="form-control" type="number" />						
-								</div>
+					<section class="col-lg-6 connectedSortable">
+						<div class="box box-primary">
+							<div class="box-header">
+								<h3 class="box-title">Relacionar Critério de Desempate</h3>
 							</div>
-							<!-- /.box-body -->
+							<!-- form start -->
+							<form method="post" action="{{url("/evento/".$evento->id."/criteriodesempate/add")}}">
+								<div class="box-body">
+									<div class="form-group">
+										<label for="criterio_desempate_id">Critério de Desempate</label>
+										<select name="criterio_desempate_id" id="criterio_desempate_id" class="form-control width-100">
+											<option value="">--- Selecione ---</option>
+											@foreach($criterios_desempate as $criterio_desempate)
+												<option value="{{$criterio_desempate->id}}">{{$criterio_desempate->id}} - {{$criterio_desempate->name}}</option>
+											@endforeach
+										</select>
+									</div>
+									<div class="form-group">
+										<label for="tipo_torneio_id">Tipo de Torneio</label>
+										<select name="tipo_torneio_id" id="tipo_torneio_id" class="form-control width-100">
+											<option value="">--- Selecione ---</option>
+											@foreach($tipos_torneio as $tipo_torneio)
+												<option value="{{$tipo_torneio->id}}">{{$tipo_torneio->id}} - {{$tipo_torneio->name}}</option>
+											@endforeach
+										</select>
+									</div>
+									<div class="form-group">
+										<label for="softwares_id">Software</label>
+										<select name="softwares_id" id="softwares_id" class="form-control width-100">
+											<option value="">--- Selecione ---</option>
+											@foreach($softwares as $software)
+												<option value="{{$software->id}}">{{$software->id}} - {{$software->name}}</option>
+											@endforeach
+										</select>
+									</div>
+									<div class="form-group">
+										<label for="prioridade">Prioridade</label>
+										<input name="prioridade" id="prioridade" class="form-control" type="number" />						
+									</div>
+								</div>
+								<!-- /.box-body -->
 
-							<div class="box-footer">
-								<button type="submit" class="btn btn-success">Enviar</button>
-								<input type="hidden" name="_token" value="{{ csrf_token() }}">
-							</div>
-						</form>
-					</div>
-				</section>	
-			@endif
+								<div class="box-footer">
+									<button type="submit" class="btn btn-success">Enviar</button>
+									<input type="hidden" name="_token" value="{{ csrf_token() }}">
+								</div>
+							</form>
+						</div>
+					</section>	
+				@endif
 				<section class="col-lg-6 connectedSortable">
 					<div class="box box-primary">
 						<div class="box-header">
@@ -391,11 +391,22 @@
 													@endif
 												</td>
 												<td>
-													<a class="btn btn-default" href="{{url("/evento/".$evento->id."/torneios/edit/".$torneio->id)}}" role="button">Editar</a>
+												
+													@if(
+														\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
+														\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4])
+													)
+														<a class="btn btn-default" href="{{url("/evento/".$evento->id."/torneios/edit/".$torneio->id)}}" role="button">Editar</a>
+													@endif
 													<a class="btn btn-default" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/inscricoes")}}" role="button">Inscrições</a>
-													<a class="btn btn-default" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/resultados")}}" role="button">Resultados</a>
-													<a class="btn btn-success" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/inscricoes/sm")}}" role="button" target="_blank">Baixar Inscrições Confirmadas</a>
-													<a class="btn btn-warning" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/inscricoes/sm/all")}}" role="button" target="_blank">Baixar Todas as Inscrições</a>
+													@if(
+														\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
+														\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4])
+													)
+														<a class="btn btn-default" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/resultados")}}" role="button">Resultados</a>
+														<a class="btn btn-success" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/inscricoes/sm")}}" role="button" target="_blank">Baixar Inscrições Confirmadas</a>
+														<a class="btn btn-warning" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/inscricoes/sm/all")}}" role="button" target="_blank">Baixar Todas as Inscrições</a>
+													@endif
 													<a class="btn btn-success" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/inscricoes/relatorio/inscricoes")}}" role="button" target="_blank">Imprimir Inscrições</a>
 													<a class="btn btn-success" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/inscricoes/relatorio/inscricoes/alfabetico")}}" role="button" target="_blank">Imprimir Inscrições (Alfabético)</a>
 													<a class="btn btn-success" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/inscricoes/relatorio/inscricoes/alfabetico/cidade")}}" role="button" target="_blank">Imprimir Inscrições (Alfabético por Cidade/Clube)</a>
