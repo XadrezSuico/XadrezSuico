@@ -107,13 +107,13 @@
 			{{env("MESSAGE_INSCRICAO","Se você já jogou alguma etapa dos Circuitos Regionais de Xadrez de 2017 e 2018, você já possui cadastro.")}}
 		</div>
 		<div class="box-footer">
-			<button id="tenhoCadastro" class="btn btn-success btn-lg">Tenho Cadastro</button>
-			<button id="naoTenhoCadastro" class="btn btn-warning btn-lg">Não Tenho Cadastro</button>
+			<button id="tenhoCadastro" class="btn btn-success btn-lg">Tenho Cadastro - Segue para o 3º Passo</button>
+			<button id="naoTenhoCadastro" class="btn btn-warning btn-lg">Não Tenho Cadastro - Segue para o 2º Passo</button>
 		</div>
 	</div>
 	<div class="box box-primary collapsed-box" id="naoPossuiCadastro">
 		<div class="box-header">
-			<h3 class="box-title">Cadastro de Novo Enxadrista</h3>
+			<h3 class="box-title">2º Passo - Cadastro de Novo Enxadrista</h3>
 		</div>
 	  <!-- form start -->
 			<div class="box-body">
@@ -187,7 +187,7 @@
 
 	<div class="box box-primary collapsed-box" id="inscricao">
 		<div class="box-header">
-			<h3 class="box-title">Inscrição</h3>
+			<h3 class="box-title">3º Passo - Inscrição</h3>
 		</div>
 	  <!-- form start -->
 			<div class="box-body">
