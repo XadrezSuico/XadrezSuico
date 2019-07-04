@@ -50,7 +50,9 @@
 					\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal()
 				)
 					<a href="{{url("/evento/".$evento->id."/toggleclassificavel")}}" class="btn btn-warning">@if($evento->classificavel) Não Permitir @else Permitir @endif Classificação Geral deste Evento</a>
-				@endif
+				@endif<br/><br/>
+				<a href="{{url("/inscricao/".$evento->id)}}" class="btn btn-default">Link para Inscrição Pública</a><br/><br/>
+
 			</div>
 			<!-- /.box-body -->
 		</div>
