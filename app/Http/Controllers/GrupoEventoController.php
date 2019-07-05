@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use App\GrupoEvento;
 use App\Categoria;
 use App\TorneioTemplate;
@@ -52,6 +53,7 @@ class GrupoEventoController extends Controller
         return redirect("/grupoevento/dashboard/".$grupo_evento->id);
     }
     public function edit($id,Request $request){
+        $user = Auth::user();
         $grupo_evento = GrupoEvento::find($id);
         $torneio_templates = TorneioTemplate::all();
         $categorias = Categoria::all();
@@ -66,7 +68,7 @@ class GrupoEventoController extends Controller
         }else{
             $tab = NULL;    
         }
-        return view('grupoevento.edit',compact("grupo_evento","torneio_templates","categorias","criterios_desempate","tipos_torneio","softwares","criterios_desempate_geral","tipos_rating","cidades", "tab"));
+        return view('grupoevento.edit',compact("grupo_evento","torneio_templates","categorias","criterios_desempate","tipos_torneio","softwares","criterios_desempate_geral","tipos_rating","cidades", "tab", "user"));
     }
     public function edit_post($id,Request $request){
         $grupo_evento = GrupoEvento::find($id);

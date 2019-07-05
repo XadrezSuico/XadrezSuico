@@ -57,6 +57,12 @@
                 <div class="navbar-custom-menu">
 
                     <ul class="nav navbar-nav">
+                        @if(\Illuminate\Support\Facades\Auth::check())
+                            @php($USER_USER = \Illuminate\Support\Facades\Auth::user())
+                            <li>
+                                <a href="{{url("/usuario/password/".$USER_USER->id)}}" title="Alterar Senha"> <i class="fa fa-fw fa-lock"></i></a>
+                            </li>
+                        @endif
                         <li>
                             @if(!\Illuminate\Support\Facades\Auth::check())
                                 <a href="{{url("/login")}}"> <i class="fa fa-fw fa-sign-in"></i> Login</a>

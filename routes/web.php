@@ -226,6 +226,7 @@ Route::group(["prefix"=>"torneiotemplate"],function(){
 });
 Route::group(["prefix"=>"update"],function(){
     Route::get('/cbx/rating', 'CBXRatingController@updateRatings')->name('update.cbx.rating');
+    Route::get('/fide/rating', 'FIDERatingController@updateRatings')->name('update.fide.rating');
 });
 
 

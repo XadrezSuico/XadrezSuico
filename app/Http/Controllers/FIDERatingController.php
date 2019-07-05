@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Http\Util\Util;
 use App\Enxadrista;
 use GuzzleHttp\Client;
 
@@ -24,63 +25,61 @@ class FIDERatingController extends Controller
             echo "Enxadrista #".$enxadrista->id." - ".$enxadrista->name;
 
             $client = new Client;
-            $response = $client->get("http://ratings.fide.com/card.phtml?event=".$enxadrista->cbx_id);
+            $response = $client->get("http://ratings.fide.com/card.phtml?event=".$enxadrista->fide_id);
             $html = (string) $response->getBody();
+            // echo $html;
 
             $explode_not_found = explode("Player not found",$html);
             if(count($explode_not_found) == 1){
                 // continuar o desenvolvimento a partir daqui
-                $explode_table_1 = explode("Evolução Rating",$html);
+                $explode_table_1 = explode("<table width=100% cellpadding=0 cellspacing=0 align=ceter broder=0>",$html);
                 if(count($explode_table_1) == 2){
-                    $explode_table_2 = explode("</caption>",$explode_table_1[1]);
-                    if(count($explode_table_2) == 2){
-                        $explode_table_3 = explode("</table>",$explode_table_2[1]);
-                        if(count($explode_table_3) >= 2){
-                            $explode_lines = explode("<tr>",$explode_table_3[0]);
+                    $explode_table_2 = explode("</table>",$explode_table_1[1]);
+                    if(count($explode_table_2) >= 2){
+                        $explode_table_3 = explode("<tr>",$explode_table_2[0]);
+                        if(count($explode_table_3) == 2){
+                            $explode_table_4 = explode("</tr>",$explode_table_3[1]);
+                            if(count($explode_table_4) == 2){
+                                $explode_columns = explode("align=center>",$explode_table_4[0]);
 
-                            $i = 0;
-                            foreach($explode_lines as $line_brute){
-                                if($i == 2){
-                                    echo 1;
-                                    $line = explode("</tr>",$line_brute);
-                                    $columns = explode('<td align="center">',$line[0]);
-                                    echo $i."<br>";
-                                    print_r($columns);
-                                    if(count($columns) == 5){
-                                        $j = 0;
-
-                                        $std = 1;
-                                        $rpd = 2;
-                                        $btz = 3;
-
-                                        foreach($columns as $column_brute){
-                                            $column = explode("</td>",$column_brute);
-                                            if(count($column) == 2){
-                                                $rating = $column[0];
-                                                switch($j){
-                                                    case $std:
-
-                                                        break;
-
-                                                    case $rpd:
-                                                        echo "Rating: ".$rating;
-                                                        $enxadrista->cbx_rating = $rating;
-                                                        break;
-
-                                                    case $btz:
-
-                                                        break;
+                                $std = "<small>std.</small><br>";
+                                $rpd = "<small>rapid</small><br>";
+                                $btz = "<small>blitz</small><br>";
+                                foreach($explode_columns as $column_brute){
+                                    $column = explode("</td>",$column_brute);
+                                    if(count($column) == 2){
+                                        $exp_std = explode($std,$column[0]);
+                                        $exp_rpd = explode($rpd,$column[0]);
+                                        $exp_btz = explode($btz,$column[0]);
+                                        $rating = Util::numeros($column[0]);
+                                        echo "Rating: ".$rating;
+                                        if(count($exp_std) == 2){
+                                            if(is_int(intval($rating))){
+                                                if(intval($rating) > 0){
+                                                    $enxadrista->fide_rating = intval($rating);
                                                 }
                                             }else{
-                                                echo "Erro column";
+                                                echo "Erro Rating não é inteiro!";
                                             }
-                                            $j++;
+                                        }elseif(count($exp_rpd) == 2){
+                                            if(is_int(intval($rating))){
+                                                if(intval($rating) > 0){
+                                                    $enxadrista->fide_rating = intval($rating);
+                                                }
+                                            }else{
+                                                echo "Erro Rating não é inteiro!";
+                                            }
+                                        }elseif(count($exp_rpd) == 2){
+                                            
+                                        }else{
+                                            echo "Erro Nenhum tipo de rating encontrado";
                                         }
                                     }else{
-                                        echo "Erro columns ".count($columns);
+                                        echo "Erro column";
                                     }
                                 }
-                                $i++;
+                            }else{
+                                echo "Erro explode_table_4";
                             }
                         }else{
                             echo "Erro explode_table_3";
@@ -92,9 +91,11 @@ class FIDERatingController extends Controller
                     echo "Erro explode_table_1";
                 }
             }
-            $enxadrista->cbx_last_update = date("Y-m-d H:i:s");
+            $enxadrista->fide_last_update = date("Y-m-d H:i:s");
             $enxadrista->save();
             echo "<hr/>";
         }
     }
+
+
 }
