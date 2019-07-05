@@ -24,7 +24,12 @@ class EnxadristaController extends Controller
         return view('enxadrista.new',compact("cidades","clubes","sexos"));
     }
     public function new_post(Request $request){
-        $temEnxadrista = Enxadrista::where([["name","=",mb_strtoupper($request->input("name"))],["born","=",$enxadrista->born]])->first();
+        $enx = new Enxadrista;
+        $enx->setBorn($request->input("born"));
+        $temEnxadrista = Enxadrista::where([
+            ["name","=",mb_strtoupper($request->input("name"))],
+            ["born","=",$enx->born]
+        ])->first();
         if(count($temEnxadrista) > 0){
             return redirect()->back();
         }
