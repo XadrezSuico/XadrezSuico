@@ -1,5 +1,15 @@
 @extends('adminlte::page')
 
+@php
+        $permitido_edicao = false;
+        if(
+            \Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
+            \Illuminate\Support\Facades\Auth::user()->hasPermissionEventsByPerfil([4])
+        ){
+            $permitido_edicao = true;
+        }
+@endphp
+
 @section('title', 'Enxadristas')
 
 @section('content_header')
@@ -12,10 +22,11 @@
             {{ session('status') }}
         </div>
     @endif
-
-    <ul class="nav nav-pills">
-        <li role="presentation"><a href="{{url("/enxadrista/new")}}">Novo Enxadrista</a></li>
-    </ul>
+    @if($permitido_edicao)
+        <ul class="nav nav-pills">
+            <li role="presentation"><a href="{{url("/enxadrista/new")}}">Novo Enxadrista</a></li>
+        </ul>
+    @endif
     <div class="box">
         <div class="box-body">
             <table id="tabela" class="table-responsive table-condensed table-striped" style="width: 100%">
@@ -45,8 +56,12 @@
                             <td>{{$enxadrista->cidade->name}}</td>
                             <td>@if($enxadrista->clube) {{$enxadrista->clube->name}} @else Não possui clube @endif</td>
                             <td>
-                                <a class="btn btn-default" href="{{url("/enxadrista/edit/".$enxadrista->id)}}" role="button">Editar</a>
-                                @if($enxadrista->isDeletavel()) <a class="btn btn-danger" href="{{url("/enxadrista/delete/".$enxadrista->id)}}" role="button">Apagar</a> @endif
+                                @if($permitido_edicao)
+                                    <a class="btn btn-default" href="{{url("/enxadrista/edit/".$enxadrista->id)}}" role="button">Editar</a>
+                                @else
+                                    <a class="btn btn-default" href="{{url("/enxadrista/edit/".$enxadrista->id)}}" role="button">Visualizar</a>
+                                @endif
+                                @if($enxadrista->isDeletavel() && $permitido_edicao) <a class="btn btn-danger" href="{{url("/enxadrista/delete/".$enxadrista->id)}}" role="button">Apagar</a> @endif
                             </td>
                         </tr>
                     @endforeach

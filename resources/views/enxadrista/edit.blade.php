@@ -1,5 +1,15 @@
 @extends('adminlte::page')
 
+@php
+        $permitido_edicao = false;
+        if(
+            \Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
+            \Illuminate\Support\Facades\Auth::user()->hasPermissionEventsByPerfil([4])
+        ){
+            $permitido_edicao = true;
+        }
+@endphp
+
 @section("title", "Editar Enxadrista")
 
 @section('content_header')
@@ -29,20 +39,20 @@
 		<div class="box-header">
 			<h3 class="box-title">Editar Clube</h3>
 		</div>
-	  <!-- form start -->
-      <form method="post">
+			<!-- form start -->
+			@if($permitido_edicao) <form method="post"> @endif
 				<div class="box-body">
 					<div class="form-group">
 						<label for="name">Nome Completo *</label>
-						<input name="name" id="name" class="form-control" type="text" value="{{$enxadrista->name}}" />
+						<input name="name" id="name" class="form-control" type="text" value="{{$enxadrista->name}}" @if(!$permitido_edicao) disabled="disabled" @endif />
 					</div>
 					<div class="form-group">
 						<label for="born">Data de Nascimento *</label>
-						<input name="born" id="born" class="form-control" type="text" value="{{$enxadrista->getBorn()}}" />
+						<input name="born" id="born" class="form-control" type="text" value="{{$enxadrista->getBorn()}}" @if(!$permitido_edicao) disabled="disabled" @endif />
 					</div>
 					<div class="form-group">
 						<label for="sexos_id">Sexo *</label>
-						<select id="sexos_id" name="sexos_id" class="form-control">
+						<select id="sexos_id" name="sexos_id" class="form-control" @if(!$permitido_edicao) disabled="disabled" @endif>
 							<option value="">--- Selecione ---</option>
 							@foreach($sexos as $sexo)
 								<option value="{{$sexo->id}}">{{$sexo->name}}</option>
@@ -53,13 +63,13 @@
 						<div class="col-md-6">
 							<div class="form-group">
 								<label for="cbx_rating">Rating CBX</label>
-								<input name="cbx_rating" id="cbx_rating" class="form-control" type="text" value="{{$enxadrista->cbx_rating}}" />
+								<input name="cbx_rating" id="cbx_rating" class="form-control" type="text" value="{{$enxadrista->cbx_rating}}" @if(!$permitido_edicao) disabled="disabled" @endif />
 							</div>
 						</div>
 						<div class="col-md-6">
 							<div class="form-group">
 								<label for="fide_rating">Rating FIDE</label>
-								<input name="fide_rating" id="fide_rating" class="form-control" type="text" value="{{$enxadrista->fide_rating}}" />
+								<input name="fide_rating" id="fide_rating" class="form-control" type="text" value="{{$enxadrista->fide_rating}}" @if(!$permitido_edicao) disabled="disabled" @endif />
 							</div>
 						</div>
 					</div>
@@ -67,13 +77,13 @@
 						<div class="col-md-6">
 							<div class="form-group">
 								<label for="cbx_id">ID CBX</label>
-								<input name="cbx_id" id="cbx_id" class="form-control" type="text" value="{{$enxadrista->cbx_id}}" />
+								<input name="cbx_id" id="cbx_id" class="form-control" type="text" value="{{$enxadrista->cbx_id}}" @if(!$permitido_edicao) disabled="disabled" @endif />
 							</div>
 						</div>
 						<div class="col-md-6">
 							<div class="form-group">
 								<label for="fide_id">ID FIDE</label>
-								<input name="fide_id" id="fide_id" class="form-control" type="text" value="{{$enxadrista->fide_id}}" />
+								<input name="fide_id" id="fide_id" class="form-control" type="text" value="{{$enxadrista->fide_id}}" @if(!$permitido_edicao) disabled="disabled" @endif />
 							</div>
 						</div>
 					</div>
@@ -81,19 +91,19 @@
 						<div class="col-md-6">
 							<div class="form-group">
 								<label for="email">E-mail</label>
-								<input name="email" id="email" class="form-control" type="text" value="{{$enxadrista->email}}" />
+								<input name="email" id="email" class="form-control" type="text" value="{{$enxadrista->email}}" @if(!$permitido_edicao) disabled="disabled" @endif />
 							</div>
 						</div>
 						<div class="col-md-6">
 							<div class="form-group">
 								<label for="celular">Celular</label>
-								<input name="celular" id="celular" class="form-control" type="text" value="{{$enxadrista->celular}}" />
+								<input name="celular" id="celular" class="form-control" type="text" value="{{$enxadrista->celular}}" @if(!$permitido_edicao) disabled="disabled" @endif />
 							</div>
 						</div>
 					</div>
 					<div class="form-group">
 						<label for="cidade_id">Cidade *</label>
-						<select id="cidade_id" name="cidade_id" class="form-control">
+						<select id="cidade_id" name="cidade_id" class="form-control" @if(!$permitido_edicao) disabled="disabled" @endif>
 							<option value="">--- Selecione uma cidade ---</option>
 							@foreach($cidades as $cidade)
 								<option value="{{$cidade->id}}">{{$cidade->id}} - {{$cidade->name}}</option>
@@ -102,7 +112,7 @@
 					</div>
 					<div class="form-group">
 						<label for="clube_id">Clube</label>
-						<select id="clube_id" name="clube_id" class="form-control">
+						<select id="clube_id" name="clube_id" class="form-control" @if(!$permitido_edicao) disabled="disabled" @endif>
 							<option value="">--- Você pode selecionar um clube ---</option>
 							@foreach($clubes as $clube)
 								<option value="{{$clube->id}}">{{$clube->cidade->name}} - {{$clube->name}}</option>
@@ -112,11 +122,13 @@
 				</div>
 			<!-- /.box-body -->
 
+			@if($permitido_edicao)
 				<div class="box-footer">
 					<button type="submit" class="btn btn-success">Enviar</button>
 					<input type="hidden" name="_token" value="{{ csrf_token() }}">
 				</div>
-      </form>
+      		 </form> 
+			@endif
 	</div>
 
   </section>

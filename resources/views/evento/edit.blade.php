@@ -302,7 +302,12 @@
 												<td>{{$categoria->categoria->id}}</td>
 												<td>{{$categoria->categoria->name}}</td>
 												<td>
-													<a class="btn btn-danger" href="{{url("/evento/".$evento->id."/categoria/remove/".$categoria->id)}}" role="button"><i class="fa fa-times"></i></a>
+													@if(
+														\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
+														\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4])
+													)
+														<a class="btn btn-danger" href="{{url("/evento/".$evento->id."/categoria/remove/".$categoria->id)}}" role="button"><i class="fa fa-times"></i></a>
+													@endif
 												</td>
 											</tr>
 										@endforeach
