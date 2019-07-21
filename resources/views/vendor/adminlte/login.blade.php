@@ -1,5 +1,7 @@
 @extends('adminlte::master')
 
+@section('title', 'Login')
+
 @section('adminlte_css')
     <link rel="stylesheet" href="{{ asset('vendor/adminlte/plugins/iCheck/square/blue.css') }}">
     <link rel="stylesheet" href="{{ asset('vendor/adminlte/css/auth.css') }}">
