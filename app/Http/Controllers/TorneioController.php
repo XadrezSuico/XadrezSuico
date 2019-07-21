@@ -49,8 +49,8 @@ class TorneioController extends Controller
 				$j = 0;
 				$retornos[] = date("d/m/Y H:i:s")." - Capturando as informações de campos no cabeçalho:";
 				foreach($columns as $column){
-					if($k >= 0 && $k < $torneio->getCountCriterios()){
-						$retornos[] = date("d/m/Y H:i:s")." - ".($k+1)."º Critério de Desempate [".$j."]";
+					if($k >= 0 && $k < $torneio->getCountCriteriosNaoManuais()){
+						$retornos[] = date("d/m/Y H:i:s")." - ".($k+1)."º Critério de Desempate [".$j."] - Total: ".$torneio->getCountCriteriosNaoManuais();
 						$fields ["C".($k+1)] = $j;
 						$k++;
 					}else
