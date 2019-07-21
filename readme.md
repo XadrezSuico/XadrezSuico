@@ -8,6 +8,10 @@ Sejam bem-vindos ao repositório do sistema XadrezSuíço! Aqui está o código-
 ### Eu posso usar o XadrezSuíço?
 Claro que sim! O código está neste repositório, porém, o mesmo está ainda em desenvolvimento, com algumas funções ainda não funcionando, mas já é possível começar a trabalhar com o mesmo. 
 
+### O XadrezSuíço é um software proprietário?
+Não, se trata de um software livre licenciado por uma licença reciproca total, ou seja, se trata de uma licença que caso faça um fork (garfo em inglês, que tem o significado de fazer uma cópia do projeto para você poder trabalhar) do projeto e efetue alterações no mesmo, não seja possível alterar a licença a ser disponibilizada, ou seja, a licença da versão modificada deverá ser a mesma que aqui está.
+No caso foi escolhida a licença GPL de versão 3, por se tratar da versão mais atualizada da licença e também para garantir que este software continue livre para todo o sempre.
+
 ### Com quais tecnologias o XadrezSuíço trabalha?
 O XadrezSuíço é desenvolvido em PHP com o framework Laravel, podendo ser utilizados vários tipos de bancos de dados, mas o que mais foi focado para o sistema foi o MySQL/MariaDB, que inclusive é o que recomendamos para uso.
 
