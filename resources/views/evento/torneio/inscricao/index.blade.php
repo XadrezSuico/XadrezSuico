@@ -14,8 +14,13 @@
     @endif
     <ul class="nav nav-pills">
         <li role="presentation"><a href="{{url("/evento/dashboard/".$evento->id."?tab=torneio")}}">Voltar à Lista de Torneios</a></li>
-        <li role="presentation"><a href="{{url("/evento/inscricao/".$evento->id)}}">Nova Inscrição</a></li>
-        <li role="presentation"><a href="{{url("/evento/inscricao/".$evento->id."/confirmacao")}}">Confirmar Inscrições</a></li>
+        @if(
+            \Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
+            \Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4])
+        )
+            <li role="presentation"><a href="{{url("/evento/inscricao/".$evento->id)}}">Nova Inscrição</a></li>
+            <li role="presentation"><a href="{{url("/evento/inscricao/".$evento->id."/confirmacao")}}">Confirmar Inscrições</a></li>
+        @endif
     </ul>
 
     <div class="box">
@@ -48,8 +53,17 @@
                             <td>@if($inscricao->clube) {{$inscricao->clube->name}} @else Sem Clube @endif</td>
                             <td>@if($inscricao->confirmado) Sim @else Não @endif</td>
                             <td>
-                                <a class="btn btn-default" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/inscricoes/edit/".$inscricao->id)}}" role="button">Editar</a>
-                                @if($inscricao->isDeletavel()) <a class="btn btn-danger" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/inscricoes/delete/".$inscricao->id)}}" role="button">Apagar</a> @endif
+                            
+                                @if(
+                                    \Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
+                                    \Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4])
+                                )
+                                    @if($inscricao->confirmado) <a class="btn btn-default" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/inscricoes/unconfirm/".$inscricao->id)}}" role="button">Desconfirmar</a> @endif
+                                    <a class="btn btn-default" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/inscricoes/edit/".$inscricao->id)}}" role="button">Editar</a>
+                                    @if($inscricao->isDeletavel()) <a class="btn btn-danger" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/inscricoes/delete/".$inscricao->id)}}" role="button">Apagar</a> @endif
+                                @else
+                                    <a class="btn btn-default" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/inscricoes/edit/".$inscricao->id)}}" role="button">Visualizar</a>
+                                @endif
                             </td>
                         </tr>
                     @endforeach

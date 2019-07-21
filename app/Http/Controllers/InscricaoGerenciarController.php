@@ -91,6 +91,17 @@ class InscricaoGerenciarController extends Controller
         }
 	}
 	
+	public function unconfirm($id,$torneio_id,$inscricao_id){
+        $evento = Evento::find($id);
+        $torneio = Torneio::find($torneio_id);
+        $inscricao = Inscricao::find($inscricao_id);
+        if($inscricao->confirmado){
+            $inscricao->confirmado = false;
+            $inscricao->save();
+        }
+        return redirect("/evento/".$evento->id."/torneios/".$torneio->id."/inscricoes");
+	}
+	
 	public function delete($id,$torneio_id,$inscricao_id){
         $evento = Evento::find($id);
         $torneio = Torneio::find($torneio_id);
