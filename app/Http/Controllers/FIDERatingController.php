@@ -12,7 +12,7 @@ class FIDERatingController extends Controller
     public function updateRatings(){
         $enxadristas = Enxadrista::where([
             ["fide_id", "!=", NULL],
-            ["fide_last_update","<",date("d/m/Y")." 00:00:00"]
+            ["fide_last_update","<",date("Y-m-d")." 00:00:00"]
         ])
         ->orWhere([
             ["fide_id", "!=", NULL],

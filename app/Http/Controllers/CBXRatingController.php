@@ -11,7 +11,7 @@ class CBXRatingController extends Controller
     public function updateRatings(){
         $enxadristas = Enxadrista::where([
             ["cbx_id", "!=", NULL],
-            ["cbx_last_update","<",date("d/m/Y")." 00:00:00"]
+            ["cbx_last_update","<",date("Y-m-d")." 00:00:00"]
         ])
         ->orWhere([
             ["cbx_id", "!=", NULL],
