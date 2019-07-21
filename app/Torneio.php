@@ -48,12 +48,25 @@ class Torneio extends Model
         if($this->evento->criterios()->count() > 0) return $this->evento->criterios()->count();
         return $this->evento->grupo_evento->criterios()->count();
     }
+    public function getCountCriteriosNaoManuais(){
+        $torneio = $this;
+        if($this->evento->criterios()->where([["tipo_torneio_id","=",$this->tipo_torneio_id]])->count() > 0) return $this->evento->criterios()->where([["tipo_torneio_id","=",$this->tipo_torneio_id]])->whereDoesntHave("criterio",function($q1) use ($torneio){
+            $q1->where([
+                ["is_manual","=",true]    
+            ]); 
+        })->count();
+        return $this->evento->grupo_evento->criterios()->where([["tipo_torneio_id","=",$this->tipo_torneio_id]])->whereDoesntHave("criterio",function($q1) use ($torneio){
+            $q1->where([
+                ["is_manual","=",true]    
+            ]); 
+        })->count();
+    }
     public function getCriterios(){
-        if($this->evento->criterios()->count() > 0) return $this->evento->criterios()->where([["tipo_torneio_id","=",$this->tipo_torneio_id]])->orderBy("prioridade","ASC")->whereHas("criterio",function($q1){ $q1->where([["is_manual","=",false]]); })->get();
-        return $this->evento->grupo_evento->criterios()->where([["tipo_torneio_id","=",$this->tipo_torneio_id]])->whereHas("criterio",function($q1){ $q1->where([["is_manual","=",false]]); })->orderBy("prioridade","ASC")->get();
+        if($this->evento->criterios()->where([["tipo_torneio_id","=",$this->tipo_torneio_id]])->count() > 0) return $this->evento->criterios()->where([["tipo_torneio_id","=",$this->tipo_torneio_id]])->orderBy("prioridade","ASC")->whereHas("criterio",function($q1){ $q1->where([["is_manual","=",false]]); })->get();
+        return $this->evento->grupo_evento->criterios()->where([["tipo_torneio_id","=",$this->tipo_torneio_id]])->where([["tipo_torneio_id","=",$this->tipo_torneio_id]])->whereHas("criterio",function($q1){ $q1->where([["is_manual","=",false]]); })->orderBy("prioridade","ASC")->get();
     }
     public function getCriteriosTotal(){
-        if($this->evento->criterios()->count() > 0) return $this->evento->criterios()->where([["tipo_torneio_id","=",$this->tipo_torneio_id]])->orderBy("prioridade","ASC")->get();
+        if($this->evento->criterios()->where([["tipo_torneio_id","=",$this->tipo_torneio_id]])->count() > 0) return $this->evento->criterios()->where([["tipo_torneio_id","=",$this->tipo_torneio_id]])->orderBy("prioridade","ASC")->get();
         return $this->evento->grupo_evento->criterios()->where([["tipo_torneio_id","=",$this->tipo_torneio_id]])->orderBy("prioridade","ASC")->get();
     }
     public function findByTagCategoria($tag){
