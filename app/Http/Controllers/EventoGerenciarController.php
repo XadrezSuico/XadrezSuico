@@ -36,14 +36,14 @@ class EventoGerenciarController extends Controller
 
 	public function edit($id,Request $request){
 		$user = Auth::user();
+        $evento = Evento::find($id);
 		if(
 			!$user->hasPermissionGlobal() && 
 			!$user->hasPermissionEventByPerfil($id,[3,4]) && 
-			!$user->hasPermissionGroupEventByPerfil($id,[6])
+			!$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[6])
 		){
 			return redirect("/");
 		}
-        $evento = Evento::find($id);
         $categorias = Categoria::all();
         $criterios_desempate = CriterioDesempate::criterios_evento()->get();
         $tipos_torneio = TipoTorneio::all();
