@@ -361,9 +361,8 @@
 											<th>Nome</th>
 											<th>Categorias</th>
 											<th>Inscritos</th>
-											<th>Confirmados</th>
-											<th>Não Confirmados</th>
 											<th>Resultados Importados?</th>
+											<th>Tipo de Torneio</th>
 											<th>Template de Torneio</th>
 											<th width="20%">Opções</th>
 										</tr>
@@ -378,15 +377,20 @@
 														{{$categoria->categoria->name}},
 													@endforeach
 												</td>
-												<td>{{$torneio->getCountInscritos()}}</td>
-												<td>{{$torneio->getCountInscritosConfirmados()}}</td>
-												<td>{{$torneio->getCountInscritosNaoConfirmados()}}</td>
+												<td>
+													Total: {{$torneio->getCountInscritos()}}<br/>
+													Confirmados: {{$torneio->getCountInscritosConfirmados()}}<br/>
+													Não Confirmados: {{$torneio->getCountInscritosNaoConfirmados()}}
+												</td>
 												<td>
 													@if($torneio->hasCriteriosDesempateNasInscricoes())
 														Sim
 													@else
 														<strong>Não</strong>
 													@endif
+												</td>
+												<td>
+													{{$torneio->tipo_torneio->name}}
 												</td>
 												<td>
 													@if($torneio->template)
@@ -409,12 +413,12 @@
 														\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4])
 													)
 														<a class="btn btn-default" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/resultados")}}" role="button">Resultados</a>
-														<a class="btn btn-success" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/inscricoes/sm")}}" role="button" target="_blank">Baixar Inscrições Confirmadas</a>
-														<a class="btn btn-warning" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/inscricoes/sm/all")}}" role="button" target="_blank">Baixar Todas as Inscrições</a>
+														<a class="btn btn-success" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/inscricoes/sm")}}" role="button" target="_blank">Baixar Inscrições Confirmadas</a><br/>
+														<a class="btn btn-warning" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/inscricoes/sm/all")}}" role="button" target="_blank">Baixar Todas as Inscrições</a><br/>
 													@endif
-													<a class="btn btn-success" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/inscricoes/relatorio/inscricoes")}}" role="button" target="_blank">Imprimir Inscrições</a>
-													<a class="btn btn-success" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/inscricoes/relatorio/inscricoes/alfabetico")}}" role="button" target="_blank">Imprimir Inscrições (Alfabético)</a>
-													<a class="btn btn-success" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/inscricoes/relatorio/inscricoes/alfabetico/cidade")}}" role="button" target="_blank">Imprimir Inscrições (Alfabético por Cidade/Clube)</a>
+													<a class="btn btn-success" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/inscricoes/relatorio/inscricoes")}}" role="button" target="_blank">Imprimir Inscrições</a><br/>
+													<a class="btn btn-success" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/inscricoes/relatorio/inscricoes/alfabetico")}}" role="button" target="_blank">Imprimir Inscrições (Alfabético)</a><br/>
+													<a class="btn btn-success" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/inscricoes/relatorio/inscricoes/alfabetico/cidade")}}" role="button" target="_blank">Imprimir Inscrições (Alfabético por Cidade/Clube)</a><br/>
 													@if($torneio->isDeletavel()) <a class="btn btn-danger" href="{{url("/evento/".$evento->id."/torneios/delete/".$torneio->id)}}" role="button">Apagar</a> @endif
 												</td>
 											</tr>

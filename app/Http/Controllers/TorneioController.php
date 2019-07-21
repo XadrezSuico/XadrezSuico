@@ -11,6 +11,8 @@ use App\InscricaoCriterioDesempate;
 use App\MovimentacaoRating;
 use App\Rating;
 use App\Categoria;
+use App\CategoriaTorneio;
+use App\TipoTorneio;
 
 class TorneioController extends Controller
 {
@@ -23,6 +25,70 @@ class TorneioController extends Controller
         $torneios = $evento->torneios->all();
 		return view("evento.torneio.index",compact("evento","torneios"));
 	}
+
+	
+    public function new($id){
+		$evento = Evento::find($id);
+		$tipos_torneio = TipoTorneio::all();
+        return view('evento.torneio.new',compact("evento","tipos_torneio"));
+    }
+    public function new_post($id,Request $request){
+		$evento = Evento::find($id);
+        $torneio = new Torneio;
+        $torneio->name = $request->input("name");
+        $torneio->tipo_torneio_id = $request->input("tipo_torneio_id");
+        $torneio->evento_id = $evento->id;
+        $torneio->save();
+        return redirect("/evento/".$evento->id."/torneios/edit/".$torneio->id);
+    }
+    public function edit($id,$torneio_id){
+		$evento = Evento::find($id);
+        $torneio = Torneio::find($torneio_id);
+		$tipos_torneio = TipoTorneio::all();
+        $categorias = Categoria::all();
+        return view('evento.torneio.edit',compact("torneio","tipos_torneio","categorias"));
+    }
+    public function edit_post($id,$torneio_id,Request $request){
+		$evento = Evento::find($id);
+        $torneio = Torneio::find($torneio_id);
+        $torneio->name = $request->input("name");
+        $torneio->tipo_torneio_id = $request->input("tipo_torneio_id");
+        $torneio->save();
+        return redirect("/evento/".$evento->id."/torneios/edit/".$torneio->id);
+    }
+    public function delete($id,$torneio_id){
+		$evento = Evento::find($id);
+        $torneio = Torneio::find($torneio_id);
+        
+        if($torneio->isDeletavel()){
+            $torneio->delete();
+        }
+        return redirect("/evento/edit/".$evento->id."/?tab=torneio");
+    }
+    public function categoria_add($id,$torneio_id,Request $request){
+		$evento = Evento::find($id);
+        $torneio = Torneio::find($torneio_id);
+        $categoria_torneio = new CategoriaTorneio;
+        $categoria_torneio->torneio_id = $torneio_id;
+        $categoria_torneio->categoria_id = $request->input("categoria_id");
+		$categoria_torneio->save();
+		
+		$torneio->torneio_template_id = NULL;
+		$torneio->save();
+
+        return redirect("/evento/".$evento->id."/torneios/edit/".$torneio->id);
+    }
+    public function categoria_remove($id,$torneio_id,$categoria_torneio_id){
+		$evento = Evento::find($id);
+        $torneio = Torneio::find($torneio_id);
+        $categoria_torneio = CategoriaTorneio::find($categoria_torneio_id);
+        $categoria_torneio->delete();
+		
+		$torneio->torneio_template_id = NULL;
+		$torneio->save();
+		
+        return redirect("/evento/".$evento->id."/torneios/edit/".$torneio->id);
+    }
 
 	public function formResults($id,$torneio_id){
         $torneio = Torneio::find($torneio_id);

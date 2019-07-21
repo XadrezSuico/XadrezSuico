@@ -111,8 +111,17 @@ Route::group(["prefix"=>"evento"],function(){
 
     Route::group(["prefix"=>"{id}/torneios"],function(){
 	    Route::get('/', 'TorneioController@index')->name('evento.torneios.index');
+	    Route::get('/new', 'TorneioController@new')->name('evento.torneios.new');
+	    Route::post('/new', 'TorneioController@new_post')->name('evento.torneios.new.post');
+	    Route::get('/edit/{torneio_id}', 'TorneioController@edit')->name('evento.torneios.edit');
+	    Route::post('/edit/{torneio_id}', 'TorneioController@edit_post')->name('evento.torneios.edit.post');
 	    Route::get('/{torneio_id}/resultados', 'TorneioController@formResults')->name('evento.torneios.resultados');
 	    Route::post('/{torneio_id}/resultados', 'TorneioController@sendResultsTxt')->name('evento.torneios.resultados.post');
+        
+        Route::group(["prefix"=>"{torneio_id}/categoria"],function(){
+            Route::post('/add', 'TorneioController@categoria_add')->name('evento.torneios.categoria.add');
+            Route::get('/remove/{categoria_torneio_id}', 'TorneioController@categoria_remove')->name('evento.torneios.categoria.remove');
+        });
         Route::group(["prefix"=>"{torneio_id}/inscricoes"],function(){
 	        Route::get('/', 'InscricaoGerenciarController@index')->name('evento.torneios.inscricoes.index');
             Route::get('/edit/{inscricao_id}', 'InscricaoGerenciarController@edit')->name('evento.torneios.inscricao.edit');
