@@ -80,151 +80,156 @@ class TorneioController extends Controller
 			}else{
 				$line = explode(";",$line);
 				// print_r($line);echo "<br/>";
-				$inscricao = Inscricao::where([
-					["enxadrista_id","=",$line[($fields["ID"])]],
-					["torneio_id","=",$torneio->id],
-				])
-				->first();
-				$enxadrista = Enxadrista::find($line[($fields["ID"])]);
-				if($enxadrista){
-					$retornos[] = date("d/m/Y H:i:s")." - Enxadrista de Código #".$enxadrista->id." - ".$enxadrista->name;
-				}else{
-					$retornos[] = date("d/m/Y H:i:s")." - Enxadrista com o Código #".$line[($fields["ID"])]." não encontrado.";
-				}
-				if(!$inscricao){
-					$retornos[] = date("d/m/Y H:i:s")." - Não há inscrição deste enxadrista";
+				if(isset($fields["ID"])){
+					$inscricao = Inscricao::where([
+						["enxadrista_id","=",$line[($fields["ID"])]],
+						["torneio_id","=",$torneio->id],
+					])
+					->first();
+					$enxadrista = Enxadrista::find($line[($fields["ID"])]);
 					if($enxadrista){
-						$categoria = Categoria::where([["code","=",$line[($fields["Gr"])]]])->first();
-						if($categoria){
-							$retornos[] = date("d/m/Y H:i:s")." - Efetuando inscrição...";
-							$inscricao = new Inscricao;
-							$inscricao->enxadrista_id = $enxadrista->id;
-							$inscricao->cidade_id = $enxadrista->cidade_id;
-							$inscricao->clube_id = $enxadrista->clube_id;
-							$inscricao->torneio_id = $torneio->id;
-							$inscricao->categoria_id = $categoria->id;
-							$inscricao->regulamento_aceito = true;
-							$inscricao->confirmado = true;
-							$retornos[] = date("d/m/Y H:i:s")." - Inscrição efetuada.";
-						}else{
-							$retornos[] = date("d/m/Y H:i:s")." - ERRO: Não há categoria cadastrada com o código de grupo '".$line[($fields["Gr"])]."'. A inscrição será ignorada.";
-							$inscricao = NULL;
-						}
+						$retornos[] = date("d/m/Y H:i:s")." - Enxadrista de Código #".$enxadrista->id." - ".$enxadrista->name;
+					}else{
+						$retornos[] = date("d/m/Y H:i:s")." - Enxadrista com o Código #".$line[($fields["ID"])]." não encontrado.";
 					}
-				}	
-				if($enxadrista && $inscricao){
-					$retornos[] = date("d/m/Y H:i:s")." - Há inscrição deste enxadrista.";
-					$retornos[] = date("d/m/Y H:i:s")." - Pontos: ".$line[($fields["Pts"])];
-					$exp_meio = explode("½",$line[($fields["Pts"])]);
-					$exp_virgula = explode(",",$line[($fields["Pts"])]);
-
-					$inscricao->confirmado = true;
-					$inscricao->pontos = (count($exp_meio) > 1) ? $exp_meio[0].".5" : ((count($exp_virgula) > 1) ? $exp_virgula[0].".".$exp_virgula[1] : $exp_virgula[0]);
-					$inscricao->save();
-
-
-					$j = 1;
-					$desempates = InscricaoCriterioDesempate::where([["inscricao_id","=",$inscricao->id]])->get();
-					foreach($desempates as $desempate){
-						$retornos[] = date("d/m/Y H:i:s")." - Apagando desempates antigos.";
-						$desempate->delete();
-					}
-					
-					foreach($torneio->getCriterios() as $criterio){
-						if($criterio->softwares_id){
-							// echo "Inserindo critério de desempate '".$criterio->criterio->name."' <br/>";
-							$retornos[] = date("d/m/Y H:i:s")." - Inserindo critério de desempate '".$criterio->criterio->name."' - Valor: ".$line[($fields["C".$j])];
-							$exp_meio = explode("½",$line[($fields["C".$j])]);
-							$exp_virgula = explode(",",$line[($fields["C".$j])]);
-
-							$desempate = new InscricaoCriterioDesempate;
-							$desempate->inscricao_id = $inscricao->id;
-							$desempate->criterio_desempate_id = $criterio->criterio->id;
-							$desempate->valor = (count($exp_meio) > 1) ? $exp_meio[0].".5" : ((count($exp_virgula) > 1) ? $exp_virgula[0].".".$exp_virgula[1] : $exp_virgula[0]);
-							// echo $desempate->valor."\n";
-							$desempate->save();
-							$retornos[] = date("d/m/Y H:i:s")." - Desempate inserido";
-							$j++;
-						}
-					}
-					if($torneio->evento->tipo_rating){
-						$retornos[] = date("d/m/Y H:i:s")." - O evento calcula rating. Iniciando processamento do rating do enxadrista.";
-						$temRating = $enxadrista->temRating($torneio->evento->id);
-						if($temRating){
-							$retornos[] = date("d/m/Y H:i:s")." - O enxadrista possui rating deste tipo. Rating #".$temRating["rating"]->id.".";
-							$rating = $temRating["rating"];
-							$movimentacao = MovimentacaoRating::where([
-								["ratings_id","=",$rating->id],
-								["torneio_id","=",$torneio->id],
-							])->first();
-							if($movimentacao){
-								// echo "Apagando movimentação de rating deste torneio. <br/>";
-								$retornos[] = date("d/m/Y H:i:s")." - Apagando movimentação de rating deste torneio.";
-								$movimentacao->delete();
+					if(!$inscricao){
+						$retornos[] = date("d/m/Y H:i:s")." - Não há inscrição deste enxadrista";
+						if($enxadrista){
+							$categoria = Categoria::where([["code","=",$line[($fields["Gr"])]]])->first();
+							if($categoria){
+								$retornos[] = date("d/m/Y H:i:s")." - Efetuando inscrição...";
+								$inscricao = new Inscricao;
+								$inscricao->enxadrista_id = $enxadrista->id;
+								$inscricao->cidade_id = $enxadrista->cidade_id;
+								$inscricao->clube_id = $enxadrista->clube_id;
+								$inscricao->torneio_id = $torneio->id;
+								$inscricao->categoria_id = $categoria->id;
+								$inscricao->regulamento_aceito = true;
+								$inscricao->confirmado = true;
+								$retornos[] = date("d/m/Y H:i:s")." - Inscrição efetuada.";
+							}else{
+								$retornos[] = date("d/m/Y H:i:s")." - ERRO: Não há categoria cadastrada com o código de grupo '".$line[($fields["Gr"])]."'. A inscrição será ignorada.";
+								$inscricao = NULL;
 							}
-							if($temRating["ok"] == 0){
-								$retornos[] = date("d/m/Y H:i:s")." - O rating está como 0. Colocando rating como o inicial.";
-								if($rating->movimentacoes()->count() == 0){
-									$movimentacao = new MovimentacaoRating;
-									$movimentacao->tipo_ratings_id = $rating->tipo_ratings_id;
-									$movimentacao->ratings_id = $rating->id;
-									$movimentacao->valor = $temRating["regra"]->inicial;
-									$movimentacao->is_inicial = true;
-									$movimentacao->save();
+						}
+					}	
+					if($enxadrista && $inscricao){
+						$retornos[] = date("d/m/Y H:i:s")." - Há inscrição deste enxadrista.";
+						$retornos[] = date("d/m/Y H:i:s")." - Pontos: ".$line[($fields["Pts"])];
+						$exp_meio = explode("½",$line[($fields["Pts"])]);
+						$exp_virgula = explode(",",$line[($fields["Pts"])]);
+
+						$inscricao->confirmado = true;
+						$inscricao->pontos = (count($exp_meio) > 1) ? $exp_meio[0].".5" : ((count($exp_virgula) > 1) ? $exp_virgula[0].".".$exp_virgula[1] : $exp_virgula[0]);
+						$inscricao->save();
+
+
+						$j = 1;
+						$desempates = InscricaoCriterioDesempate::where([["inscricao_id","=",$inscricao->id]])->get();
+						foreach($desempates as $desempate){
+							$retornos[] = date("d/m/Y H:i:s")." - Apagando desempates antigos.";
+							$desempate->delete();
+						}
+						
+						foreach($torneio->getCriterios() as $criterio){
+							if($criterio->softwares_id){
+								// echo "Inserindo critério de desempate '".$criterio->criterio->name."' <br/>";
+								$retornos[] = date("d/m/Y H:i:s")." - Inserindo critério de desempate '".$criterio->criterio->name."' - Valor: ".$line[($fields["C".$j])];
+								$exp_meio = explode("½",$line[($fields["C".$j])]);
+								$exp_virgula = explode(",",$line[($fields["C".$j])]);
+
+								$desempate = new InscricaoCriterioDesempate;
+								$desempate->inscricao_id = $inscricao->id;
+								$desempate->criterio_desempate_id = $criterio->criterio->id;
+								$desempate->valor = (count($exp_meio) > 1) ? $exp_meio[0].".5" : ((count($exp_virgula) > 1) ? $exp_virgula[0].".".$exp_virgula[1] : $exp_virgula[0]);
+								// echo $desempate->valor."\n";
+								$desempate->save();
+								$retornos[] = date("d/m/Y H:i:s")." - Desempate inserido";
+								$j++;
+							}
+						}
+						if($torneio->evento->tipo_rating){
+							$retornos[] = date("d/m/Y H:i:s")." - O evento calcula rating. Iniciando processamento do rating do enxadrista.";
+							$temRating = $enxadrista->temRating($torneio->evento->id);
+							if($temRating){
+								$retornos[] = date("d/m/Y H:i:s")." - O enxadrista possui rating deste tipo. Rating #".$temRating["rating"]->id.".";
+								$rating = $temRating["rating"];
+								$movimentacao = MovimentacaoRating::where([
+									["ratings_id","=",$rating->id],
+									["torneio_id","=",$torneio->id],
+								])->first();
+								if($movimentacao){
+									// echo "Apagando movimentação de rating deste torneio. <br/>";
+									$retornos[] = date("d/m/Y H:i:s")." - Apagando movimentação de rating deste torneio.";
+									$movimentacao->delete();
 								}
-							}
-							
-							$exp_meio = explode("½",$line[($fields["Val+/-"])]);
-							$exp_virgula = explode(",",$line[($fields["Val+/-"])]);
+								if($temRating["ok"] == 0){
+									$retornos[] = date("d/m/Y H:i:s")." - O rating está como 0. Colocando rating como o inicial.";
+									if($rating->movimentacoes()->count() == 0){
+										$movimentacao = new MovimentacaoRating;
+										$movimentacao->tipo_ratings_id = $rating->tipo_ratings_id;
+										$movimentacao->ratings_id = $rating->id;
+										$movimentacao->valor = $temRating["regra"]->inicial;
+										$movimentacao->is_inicial = true;
+										$movimentacao->save();
+									}
+								}
+								
+								$exp_meio = explode("½",$line[($fields["Val+/-"])]);
+								$exp_virgula = explode(",",$line[($fields["Val+/-"])]);
 
-							$retornos[] = date("d/m/Y H:i:s")." - Criando a movimentação do rating desta etapa. Modificação:".((count($exp_meio) > 1) ? $exp_meio[0].".5" : (count($exp_virgula) > 1) ? $exp_virgula[0].".".$exp_virgula[1] : $exp_virgula[0]).".";
+								$retornos[] = date("d/m/Y H:i:s")." - Criando a movimentação do rating desta etapa. Modificação:".((count($exp_meio) > 1) ? $exp_meio[0].".5" : (count($exp_virgula) > 1) ? $exp_virgula[0].".".$exp_virgula[1] : $exp_virgula[0]).".";
 
-							$movimentacao = new MovimentacaoRating;
-							$movimentacao->tipo_ratings_id = $rating->tipo_ratings_id;
-							$movimentacao->ratings_id = $rating->id;
-							$movimentacao->torneio_id = $torneio->id;
-							$movimentacao->inscricao_id = $inscricao->id;
-							$movimentacao->valor = (count($exp_meio) > 1) ? $exp_meio[0].".5" : (count($exp_virgula) > 1) ? $exp_virgula[0].".".$exp_virgula[1] : $exp_virgula[0];
-							$movimentacao->is_inicial = false;
-							$movimentacao->save();
-							$retornos[] = date("d/m/Y H:i:s")." - Movimentação salva. Calculando e atualizando rating do enxadrista.";
-							$rating->calcular();
-						}else{
-							$retornos[] = date("d/m/Y H:i:s")." - O Enxadrista não possui rating deste tipo. Criando o rating.";
-							$rating = new Rating;
-							$rating->enxadrista_id = $enxadrista->id;
-							$rating->tipo_ratings_id = $inscricao->torneio->evento->tipo_rating->tipo_ratings_id;
-							$rating->valor = 0;
-							$rating->save();
+								$movimentacao = new MovimentacaoRating;
+								$movimentacao->tipo_ratings_id = $rating->tipo_ratings_id;
+								$movimentacao->ratings_id = $rating->id;
+								$movimentacao->torneio_id = $torneio->id;
+								$movimentacao->inscricao_id = $inscricao->id;
+								$movimentacao->valor = (count($exp_meio) > 1) ? $exp_meio[0].".5" : (count($exp_virgula) > 1) ? $exp_virgula[0].".".$exp_virgula[1] : $exp_virgula[0];
+								$movimentacao->is_inicial = false;
+								$movimentacao->save();
+								$retornos[] = date("d/m/Y H:i:s")." - Movimentação salva. Calculando e atualizando rating do enxadrista.";
+								$rating->calcular();
+							}else{
+								$retornos[] = date("d/m/Y H:i:s")." - O Enxadrista não possui rating deste tipo. Criando o rating.";
+								$rating = new Rating;
+								$rating->enxadrista_id = $enxadrista->id;
+								$rating->tipo_ratings_id = $inscricao->torneio->evento->tipo_rating->tipo_ratings_id;
+								$rating->valor = 0;
+								$rating->save();
 
-							$movimentacao = new MovimentacaoRating;
-							$movimentacao->tipo_ratings_id = $rating->tipo_ratings_id;
-							$movimentacao->ratings_id = $rating->id;
-							$movimentacao->valor = $inscricao->torneio->evento->getRegraRating($enxadrista->id)->inicial;
-							$movimentacao->is_inicial = true;
-							$movimentacao->save();
-							$retornos[] = date("d/m/Y H:i:s")." - Rating #".$rating->id.".";
-									
-							$exp_meio = explode("½",$line[($fields["Val+/-"])]);
-							$exp_virgula = explode(",",$line[($fields["Val+/-"])]);
+								$movimentacao = new MovimentacaoRating;
+								$movimentacao->tipo_ratings_id = $rating->tipo_ratings_id;
+								$movimentacao->ratings_id = $rating->id;
+								$movimentacao->valor = $inscricao->torneio->evento->getRegraRating($enxadrista->id)->inicial;
+								$movimentacao->is_inicial = true;
+								$movimentacao->save();
+								$retornos[] = date("d/m/Y H:i:s")." - Rating #".$rating->id.".";
+										
+								$exp_meio = explode("½",$line[($fields["Val+/-"])]);
+								$exp_virgula = explode(",",$line[($fields["Val+/-"])]);
 
-							$retornos[] = date("d/m/Y H:i:s")." - Criando a movimentação do rating desta etapa. Modificação:".((count($exp_meio) > 1) ? $exp_meio[0].".5" : (count($exp_virgula) > 1) ? $exp_virgula[0].".".$exp_virgula[1] : $exp_virgula[0]).".";
-							$movimentacao = new MovimentacaoRating;
-							$movimentacao->tipo_ratings_id = $rating->tipo_ratings_id;
-							$movimentacao->ratings_id = $rating->id;
-							$movimentacao->torneio_id = $torneio->id;
-							$movimentacao->inscricao_id = $inscricao->id;
-							$movimentacao->valor = (count($exp_meio) > 1) ? $exp_meio[0].".5" : (count($exp_virgula) > 1) ? $exp_virgula[0].".".$exp_virgula[1] : $exp_virgula[0];
-							$movimentacao->is_inicial = false;
-							$movimentacao->save();
-							$rating->calcular();
-						}	
+								$retornos[] = date("d/m/Y H:i:s")." - Criando a movimentação do rating desta etapa. Modificação:".((count($exp_meio) > 1) ? $exp_meio[0].".5" : (count($exp_virgula) > 1) ? $exp_virgula[0].".".$exp_virgula[1] : $exp_virgula[0]).".";
+								$movimentacao = new MovimentacaoRating;
+								$movimentacao->tipo_ratings_id = $rating->tipo_ratings_id;
+								$movimentacao->ratings_id = $rating->id;
+								$movimentacao->torneio_id = $torneio->id;
+								$movimentacao->inscricao_id = $inscricao->id;
+								$movimentacao->valor = (count($exp_meio) > 1) ? $exp_meio[0].".5" : (count($exp_virgula) > 1) ? $exp_virgula[0].".".$exp_virgula[1] : $exp_virgula[0];
+								$movimentacao->is_inicial = false;
+								$movimentacao->save();
+								$rating->calcular();
+							}	
+						}
+						$retornos[] = date("d/m/Y H:i:s")." - Fim do processamento do resultado da inscrição do enxadrista #".$enxadrista->id." - ".$enxadrista->name." .";
+						// echo "Enxadrista: ".$enxadrista->name."<br/>";
+					}else{
+						// echo "DEU PROBLEMAAAAA AQUIIIII!";
+						$retornos[] = date("d/m/Y H:i:s")." - Durante o processamento da inscrição com o ID #".$line[($fields["ID"])]." ocorreu um erro: não foi possível encontrar o enxadrista cadastrado.";
 					}
-					$retornos[] = date("d/m/Y H:i:s")." - Fim do processamento do resultado da inscrição do enxadrista #".$enxadrista->id." - ".$enxadrista->name." .";
-					// echo "Enxadrista: ".$enxadrista->name."<br/>";
 				}else{
 					// echo "DEU PROBLEMAAAAA AQUIIIII!";
-					$retornos[] = date("d/m/Y H:i:s")." - Durante o processamento da inscrição com o ID #".$line[($fields["ID"])]." ocorreu um erro: não foi possível encontrar o enxadrista cadastrado.";
+					$retornos[] = date("d/m/Y H:i:s")." - Durante o processamento da inscrição: inscrição sem ID.";
 				}
 			}
 			$retornos[] = date("d/m/Y H:i:s")." - <hr/>";
