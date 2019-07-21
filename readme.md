@@ -25,7 +25,7 @@ Então surgiu a ideia de tentar modernizar um pouco o uso de softwares pelos ár
 O Swiss Perfect 98 até é competente, mas peca em vários quesitos:
 - O software por ser muito antigo, não atende diversos tipos de critérios de desempate atuais, como por exemplo o Confronto Direto;
 - O software não aceita importação de dados de outras fontes;
-- E o principal de todos: até hoje não conheço um árbitro que tenha a licença deste software (SIM! Este software É PAGO!)
+- E o principal de todos: até hoje não conheço um árbitro que tenha a licença deste software (SIM! O Swiss Perfect 98 é PAGO!)
 
 Com isso, veio a ideia de desenvolver um software open-source para gerenciamento de torneios de xadrez, porém a tentativa da execução do mesmo se deu já na Faculdade, mais precisamente na Disciplina de "Projeto Experimental II" do curso de Tecnologia em Análise e Desenvolvimento de Sistemas do Centro Universitário UNIVEL, e tive ajuda de alguns colegas que estavam em meu grupo.
 
