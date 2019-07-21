@@ -54,6 +54,7 @@ class UserController extends Controller
 		return redirect("/usuario/edit/".$user->id);
 	}
 	public function edit($id){
+		$user = Auth::user();
 		if(!$user->hasPermissionGlobalbyPerfil([1])){
 			return redirect("/");
 		}
