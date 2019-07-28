@@ -562,7 +562,8 @@
                                 results: data.results
                             };
                         }
-                    }
+                    },
+        			dropdownParent: $('#novoClube')
                 });
             },300);
 
@@ -595,7 +596,8 @@
                                 results: data.results
                             };
                         }
-                    }
+                    },
+        			dropdownParent: $('#novoClube')
                 });
             },300);
 

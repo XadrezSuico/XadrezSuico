@@ -373,7 +373,8 @@
                                 results: data.results
                             };
                         }
-                    }
+                    },
+        			dropdownParent: $('#novoClube')
                 });
             },300);
 
