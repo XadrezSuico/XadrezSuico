@@ -88,8 +88,9 @@ class EventoGerenciarController extends Controller
 		}else{
 			$evento->data_limite_inscricoes_abertas = NULL;
 		}
-		if($request->has("usa_fide")) $evento->usa_fide = true; else $evento->usa_fide = false;
+		if($request->has("usa_fide") && !$request->has("usa_lbx")) $evento->usa_fide = true; else $evento->usa_fide = false;
         if($request->has("usa_cbx")) $evento->usa_cbx = true; else $evento->usa_cbx = false;
+        if($request->has("usa_lbx")) $evento->usa_lbx = true; else $evento->usa_lbx = false;
         $evento->save();
 		return redirect("/evento/dashboard/".$id);
 	}

@@ -33,6 +33,7 @@
                         @if($evento->tipo_rating) <th>Rating</th> @endif
                         @if($evento->usa_fide) <th>FIDE</th> @endif
                         @if($evento->usa_cbx) <th>CBX</th> @endif
+                        @if($evento->usa_lbx) <th>LBX</th> @endif
                         <th>Categoria</th>
                         <th>Cidade</th>
                         <th>Clube</th>
@@ -48,6 +49,7 @@
                             @if($evento->tipo_rating) <td>@if($inscricao->enxadrista->ratings()->where([["tipo_ratings_id","=",$evento->tipo_rating->tipo_ratings_id]])->count() > 0) {{$inscricao->enxadrista->ratings()->where([["tipo_ratings_id","=",$evento->tipo_rating->tipo_ratings_id]])->first()->valor}} @else Não Há @endif</td> @endif
                             @if($evento->usa_fide) <td>{{$inscricao->enxadrista->fide_rating}}</td> @endif
                             @if($evento->usa_cbx) <td>{{$inscricao->enxadrista->cbx_rating}}</td> @endif
+                            @if($evento->usa_lbx) <td>{{$inscricao->enxadrista->lbx_rating}}</td> @endif
                             <td>{{$inscricao->categoria->name}}</td>
                             <td>{{$inscricao->cidade->name}}</td>
                             <td>@if($inscricao->clube) {{$inscricao->clube->name}} @else Sem Clube @endif</td>

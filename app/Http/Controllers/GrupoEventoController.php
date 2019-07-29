@@ -225,6 +225,7 @@ class GrupoEventoController extends Controller
         if($request->has("data_limite_inscricoes_abertas") && $datetime_data_limite_inscricoes_abertas) $evento->data_limite_inscricoes_abertas = $datetime_data_limite_inscricoes_abertas->format('Y-m-d H:i');
         if($request->has("usa_fide")) $evento->usa_fide = true;
         if($request->has("usa_cbx")) $evento->usa_cbx = true;
+        if($request->has("usa_lbx")) $evento->usa_lbx = true;
         $evento->grupo_evento_id = $grupo_evento->id;
         $evento->save();
 

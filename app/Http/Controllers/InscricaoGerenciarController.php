@@ -173,6 +173,9 @@ class InscricaoGerenciarController extends Controller
         }else{
             if($evento->usa_fide){
                 $texto .= "FIDE;";
+            }elseif($evento->usa_lbx){
+                $texto .= "FIDE;";
+                $texto .= "id FIDE;";
             }
             if($evento->usa_cbx){
                 $texto .= "Elonac;";
@@ -228,6 +231,9 @@ class InscricaoGerenciarController extends Controller
             }else{
                 if($evento->usa_fide){
                     $texto .= $inscricao->enxadrista->fide_rating.";";
+                }elseif($evento->usa_lbx){
+                    $texto .= $inscricao->enxadrista->lbx_rating.";";
+                    $texto .= $inscricao->enxadrista->lbx_id.";";
                 }
                 if($evento->usa_cbx){
                     $texto .= $inscricao->enxadrista->cbx_rating.";";

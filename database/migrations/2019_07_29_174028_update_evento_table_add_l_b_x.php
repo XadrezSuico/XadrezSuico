@@ -13,7 +13,7 @@ class UpdateEventoTableAddLBX extends Migration
      */
     public function up()
     {
-        Schema::table('enxadrista', function (Blueprint $table) {
+        Schema::table('evento', function (Blueprint $table) {
             $table->boolean("usa_lbx")->default(false);
         });
     }
