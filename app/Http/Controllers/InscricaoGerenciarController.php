@@ -565,6 +565,11 @@ class InscricaoGerenciarController extends Controller
                 $enxadrista->fide_id = $request->input("fide_id");
             }
         }
+        if($request->has("lbx_id")){
+            if($request->input("lbx_id") > 0){
+                $enxadrista->lbx_id = $request->input("lbx_id");
+            }
+        }
         if($request->has("email")){
             if($request->input("email") != ""){
                 $enxadrista->email = $request->input("email");

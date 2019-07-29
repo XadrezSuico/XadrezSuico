@@ -14,7 +14,8 @@ class UpdateEnxadristaTableAddLBXAndLastUpdate extends Migration
     public function up()
     {
         Schema::table('enxadrista', function (Blueprint $table) {
-            $table->boolean("lbx_id")->nullable();
+            $table->integer("lbx_id")->nullable();
+            $table->integer("lbx_rating")->nullable();
             $table->datetime("fide_last_update")->nullable();
             $table->datetime("cbx_last_update")->nullable();
             $table->datetime("lbx_last_update")->nullable();

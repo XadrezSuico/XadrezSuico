@@ -44,6 +44,7 @@ class EnxadristaController extends Controller
         if($request->has("email")) if($request->input("email")) $enxadrista->email = $request->input("email");
         if($request->has("cbx_id")) if($request->input("cbx_id")) $enxadrista->cbx_id = $request->input("cbx_id");
         if($request->has("fide_id")) if($request->input("fide_id")) $enxadrista->fide_id = $request->input("fide_id");
+        if($request->has("lbx_id")) if($request->input("lbx_id")) $enxadrista->lbx_id = $request->input("lbx_id");
         $enxadrista->save();
         return redirect("/enxadrista/edit/".$enxadrista->id);
     }
@@ -97,6 +98,15 @@ class EnxadristaController extends Controller
         }else{
             $enxadrista->fide_id = NULL;
         }
+        if($request->has("lbx_id")){
+            if($request->input("lbx_id")){
+                $enxadrista->lbx_id = $request->input("lbx_id");
+            }else{
+                $enxadrista->lbx_id = NULL;
+            }
+        }else{
+            $enxadrista->lbx_id = NULL;
+        }
         if($request->has("fide_rating")){
             if($request->input("fide_rating")){
                 $enxadrista->fide_rating = $request->input("fide_rating");
@@ -114,6 +124,15 @@ class EnxadristaController extends Controller
             }
         }else{
             $enxadrista->cbx_rating = NULL;
+        }
+        if($request->has("lbx_rating")){
+            if($request->input("lbx_rating")){
+                $enxadrista->lbx_rating = $request->input("lbx_rating");
+            }else{
+                $enxadrista->lbx_rating = NULL;
+            }
+        }else{
+            $enxadrista->lbx_rating = NULL;
         }
         $enxadrista->save();
         return redirect("/enxadrista/edit/".$enxadrista->id);

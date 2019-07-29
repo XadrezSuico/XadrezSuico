@@ -52,6 +52,7 @@
                             <td>
                                 @if($enxadrista->cbx_id) CBX: {{$enxadrista->cbx_id}} <br/>@endif
                                 @if($enxadrista->fide_id) FIDE: {{$enxadrista->fide_id}} <br/>@endif
+                                @if($enxadrista->lbx_id) LBX: {{$enxadrista->lbx_id}} <br/>@endif
                             </td>
                             <td>{{$enxadrista->cidade->name}}</td>
                             <td>@if($enxadrista->clube) {{$enxadrista->clube->name}} @else Não possui clube @endif</td>

@@ -60,30 +60,42 @@
 						</select>
 					</div>
 					<div class="row">
-						<div class="col-md-6">
+						<div class="col-md-4">
 							<div class="form-group">
 								<label for="cbx_rating">Rating CBX</label>
 								<input name="cbx_rating" id="cbx_rating" class="form-control" type="text" value="{{$enxadrista->cbx_rating}}" @if(!$permitido_edicao) disabled="disabled" @endif />
 							</div>
 						</div>
-						<div class="col-md-6">
+						<div class="col-md-4">
 							<div class="form-group">
 								<label for="fide_rating">Rating FIDE</label>
 								<input name="fide_rating" id="fide_rating" class="form-control" type="text" value="{{$enxadrista->fide_rating}}" @if(!$permitido_edicao) disabled="disabled" @endif />
 							</div>
 						</div>
+						<div class="col-md-4">
+							<div class="form-group">
+								<label for="lbx_rating">Rating LBX</label>
+								<input name="lbx_rating" id="lbx_rating" class="form-control" type="text" value="{{$enxadrista->lbx_rating}}" @if(!$permitido_edicao) disabled="disabled" @endif />
+							</div>
+						</div>
 					</div>
 					<div class="row">
-						<div class="col-md-6">
+						<div class="col-md-4">
 							<div class="form-group">
 								<label for="cbx_id">ID CBX</label>
 								<input name="cbx_id" id="cbx_id" class="form-control" type="text" value="{{$enxadrista->cbx_id}}" @if(!$permitido_edicao) disabled="disabled" @endif />
 							</div>
 						</div>
-						<div class="col-md-6">
+						<div class="col-md-4">
 							<div class="form-group">
 								<label for="fide_id">ID FIDE</label>
 								<input name="fide_id" id="fide_id" class="form-control" type="text" value="{{$enxadrista->fide_id}}" @if(!$permitido_edicao) disabled="disabled" @endif />
+							</div>
+						</div>
+						<div class="col-md-4">
+							<div class="form-group">
+								<label for="lbx_id">ID LBX</label>
+								<input name="lbx_id" id="lbx_id" class="form-control" type="text" value="{{$enxadrista->lbx_id}}" @if(!$permitido_edicao) disabled="disabled" @endif />
 							</div>
 						</div>
 					</div>

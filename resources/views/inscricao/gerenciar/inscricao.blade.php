@@ -116,16 +116,22 @@
 					</select>
 				</div>
 				<div class="row">
-					<div class="col-md-6">
+					<div class="col-md-4">
 						<div class="form-group">
 							<label for="cbx_id">ID CBX</label>
 							<input name="cbx_id" id="cbx_id" class="form-control" type="text" />
 						</div>
 					</div>
-					<div class="col-md-6">
+					<div class="col-md-4">
 						<div class="form-group">
 							<label for="fide_id">ID FIDE</label>
 							<input name="fide_id" id="fide_id" class="form-control" type="text" />
+						</div>
+					</div>
+					<div class="col-md-4">
+						<div class="form-group">
+							<label for="lbx_id">ID LBX</label>
+							<input name="lbx_id" id="lbx_id" class="form-control" type="text" />
 						</div>
 					</div>
 				</div>
@@ -457,7 +463,8 @@
 					.concat("&born=").concat($("#born").val())
 					.concat("&sexos_id=").concat($("#sexos_id").val())
 					.concat("&cbx_id=").concat($("#cbx_id").val())
-					.concat("&fide_id=").concat($("#fide_id").val())
+					.concat("&fide_id=").concat($("#fide_id").val())	
+					.concat("&lbx_id=").concat($("#lbx_id").val())
 					.concat("&email=").concat($("#email").val())
 					.concat("&celular=").concat($("#celular").val())
 					.concat("&cidade_id=").concat($("#enxadrista_cidade_id").val())

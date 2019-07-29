@@ -135,16 +135,22 @@
 					</select>
 				</div>
 				<div class="row">
-					<div class="col-md-6">
+					<div class="col-md-4">
 						<div class="form-group">
 							<label for="cbx_id">ID CBX</label>
 							<input name="cbx_id" id="cbx_id" class="form-control" type="text" />
 						</div>
 					</div>
-					<div class="col-md-6">
+					<div class="col-md-4">
 						<div class="form-group">
 							<label for="fide_id">ID FIDE</label>
 							<input name="fide_id" id="fide_id" class="form-control" type="text" />
+						</div>
+					</div>
+					<div class="col-md-4">
+						<div class="form-group">
+							<label for="lbx_id">ID LBX</label>
+							<input name="lbx_id" id="lbx_id" class="form-control" type="text" />
 						</div>
 					</div>
 				</div>
@@ -250,7 +256,7 @@
 <!-- Morris.js charts -->
 <script type="text/javascript" src="{{url("/js/jquery.mask.min.js")}}"></script>
 <script type="text/javascript">
-  $(document).ready(function(){
+  	$(document).ready(function(){
 		function setInscricaoSelects(){
 			$("#enxadrista_id").select2({
 				ajax: {
@@ -307,29 +313,29 @@
 			$(".campo_personalizado").select2();
 
 			$("#enviarInscricao").on("click",function(){
-					var data = "evento_id={{$evento->id}}&enxadrista_id=".concat($("#enxadrista_id").val()).concat("&categoria_id=").concat($("#categoria_id").val()).concat("&cidade_id=").concat($("#cidade_id").val()).concat("&clube_id=").concat($("#clube_id").val());
-					if($("#regulamento_aceito").is(":checked")){
-						data = data.concat("&regulamento_aceito=true");
-					}
-					@foreach($evento->campos->all() as $campo)
-						data = data.concat("&campo_personalizado_{{$campo->campo->id}}=").concat($("#campo_personalizado_{{$campo->campo->id}}").val());
-					@endforeach
-					$.ajax({
-						type: "post",
-						url: "{{url("/inscricao/".$evento->id."/inscricao")}}",
-						data: data,
-						dataType: "json",
-						success: function(data){
-							if(data.ok == 1){
-								$("#inscricao").boxWidget('collapse');
-								$("#successMessage").html("<strong>Sua inscrição foi efetuada com sucesso!</strong>");
-								$("#success").modal();
-							}else{
-								$("#alertsMessage").html(data.message);
-								$("#alerts").modal();
-							}
+				var data = "evento_id={{$evento->id}}&enxadrista_id=".concat($("#enxadrista_id").val()).concat("&categoria_id=").concat($("#categoria_id").val()).concat("&cidade_id=").concat($("#cidade_id").val()).concat("&clube_id=").concat($("#clube_id").val());
+				if($("#regulamento_aceito").is(":checked")){
+					data = data.concat("&regulamento_aceito=true");
+				}
+				@foreach($evento->campos->all() as $campo)
+					data = data.concat("&campo_personalizado_{{$campo->campo->id}}=").concat($("#campo_personalizado_{{$campo->campo->id}}").val());
+				@endforeach
+				$.ajax({
+					type: "post",
+					url: "{{url("/inscricao/".$evento->id."/inscricao")}}",
+					data: data,
+					dataType: "json",
+					success: function(data){
+						if(data.ok == 1){
+							$("#inscricao").boxWidget('collapse');
+							$("#successMessage").html("<strong>Sua inscrição foi efetuada com sucesso!</strong>");
+							$("#success").modal();
+						}else{
+							$("#alertsMessage").html(data.message);
+							$("#alerts").modal();
 						}
-					});
+					}
+				});
 			});
 			setCidadeClubeFromEnxadrista();
 		}
@@ -458,6 +464,7 @@
 						.concat("&sexos_id=").concat($("#sexos_id").val())
 						.concat("&cbx_id=").concat($("#cbx_id").val())
 						.concat("&fide_id=").concat($("#fide_id").val())
+						.concat("&lbx_id=").concat($("#lbx_id").val())
 						.concat("&email=").concat($("#email").val())
 						.concat("&celular=").concat($("#celular").val())
 						.concat("&cidade_id=").concat($("#enxadrista_cidade_id").val())
@@ -588,6 +595,6 @@
                 sendNovoClube("clube_id","name=".concat($("#clube_nome").val()).concat("&cidade_id=").concat($("#clube_cidade_id").val()));
             });
         });
-  });
+  	});
 </script>
 @endsection

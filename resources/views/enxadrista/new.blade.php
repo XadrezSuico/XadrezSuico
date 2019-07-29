@@ -48,16 +48,22 @@
 						</select>
 					</div>
 					<div class="row">
-						<div class="col-md-6">
+						<div class="col-md-4">
 							<div class="form-group">
 								<label for="cbx_id">ID CBX</label>
 								<input name="cbx_id" id="cbx_id" class="form-control" type="text" />
 							</div>
 						</div>
-						<div class="col-md-6">
+						<div class="col-md-4">
 							<div class="form-group">
 								<label for="fide_id">ID FIDE</label>
 								<input name="fide_id" id="fide_id" class="form-control" type="text" />
+							</div>
+						</div>
+						<div class="col-md-4">
+							<div class="form-group">
+								<label for="lbx_id">ID LBX</label>
+								<input name="lbx_id" id="lbx_id" class="form-control" type="text" />
 							</div>
 						</div>
 					</div>

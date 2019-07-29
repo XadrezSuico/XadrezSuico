@@ -208,6 +208,11 @@ class InscricaoController extends Controller
                 $enxadrista->fide_id = $request->input("fide_id");
             }
         }
+        if($request->has("lbx_id")){
+            if($request->input("lbx_id") > 0){
+                $enxadrista->lbx_id = $request->input("lbx_id");
+            }
+        }
         $enxadrista->cidade_id = $request->input("cidade_id");
         if($request->has("clube_id")){
             if($request->input("clube_id") > 0){
