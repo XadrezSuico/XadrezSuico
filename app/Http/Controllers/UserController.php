@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\PerfilUser;
 use App\User;
 
 class UserController extends Controller
@@ -136,4 +137,27 @@ class UserController extends Controller
 		$user->delete();
 		return redirect("/usuario");
 	}
+
+	
+	public function perfil_add($id,Request $request){
+        $perfil_user = new PerfilUser;
+        $perfil_user->users_id = $id;
+		$perfil_user->perfils_id = $request->input("perfils_id");
+		if(
+			$request->input("perfils_id") == 3 ||
+			$request->input("perfils_id") == 4 ||
+			$request->input("perfils_id") == 5
+		){
+        	$perfil_user->evento_id = $request->input("evento_id");
+		}elseif($request->input("perfils_id") == 6){
+        	$perfil_user->grupo_evento_id = $request->input("grupo_evento_id");
+		}
+        $perfil_user->save();
+        return redirect("/usuario/edit/".$id);
+    }
+    public function perfil_remove($id,$perfil_users_id){
+        $perfil_user = PerfilUser::find($perfil_users_id);
+        $perfil_user->delete();
+        return redirect("/usuario/edit/".$id);
+    }
 }
