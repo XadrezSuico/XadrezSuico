@@ -298,7 +298,7 @@ class CategoriaController extends Controller
             foreach($criterios as $criterio){
                 $desempate = $criterio->criterio->sort_desempate_geral($pontuacao_a, $pontuacao_b);
                 if($desempate != 0){
-                    echo $criterio->criterio->name;
+                    // echo $criterio->criterio->name;
                     return $desempate;
                 }
             }
