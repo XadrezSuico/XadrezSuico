@@ -19,6 +19,13 @@ Route::get('/', function () {
 });
 
 Auth::routes();
+Route::get('/register', function(){
+    return redirect("/login");
+})->name('register');
+Route::post('/register', function(){
+    return redirect("/login");
+})->name('register.post');
+
 // if(!\App\User::canRegisterWithoutLogin()){
 //     Route::get('/register', function(){
 //         return redirect("/login");
@@ -73,6 +80,10 @@ Route::group(["prefix"=>"usuario"],function(){
 	Route::get('/password/{id}', 'UserController@password')->name('usuario.password');
 	Route::post('/password/{id}', 'UserController@passwordPost')->name('usuario.password.post');
 	Route::get('/delete/{id}', 'UserController@delete')->name('usuario.delete');
+    Route::group(["prefix"=>"{id}/perfis"],function(){
+        Route::post('/add', 'UserController@perfil_add')->name('usuario.perfil.add');
+        Route::get('/remove/{perfil_users_id}', 'UserController@perfil_remove')->name('usuario.perfil.remove');
+    });
 });
 
 Route::group(["prefix"=>"evento"],function(){
