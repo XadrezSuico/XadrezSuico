@@ -47,9 +47,9 @@ class CBXRatingController extends Controller
                                 if(count($columns) == 5){
                                     $j = 0;
 
-                                    $std = 1;
-                                    $rpd = 2;
-                                    $btz = 3;
+                                    $std = 2;
+                                    $rpd = 3;
+                                    $btz = 4;
 
                                     foreach($columns as $column_brute){
                                         $column = explode("</td>",$column_brute);
