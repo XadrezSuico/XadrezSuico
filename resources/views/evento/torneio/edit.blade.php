@@ -26,7 +26,7 @@
   <section class="col-lg-6 connectedSortable">
 		<div class="box box-primary" id="inscricao">
 			<div class="box-header">
-				<h3 class="box-title">Editar Grupo de Evento</h3>
+				<h3 class="box-title">Editar Torneio</h3>
 			</div>
 			<!-- form start -->
 					<form method="post">
