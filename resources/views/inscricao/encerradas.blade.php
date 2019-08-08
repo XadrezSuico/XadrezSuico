@@ -24,7 +24,7 @@
         <h4 class="modal-title">INSCRIÇÕES ANTECIPADAS FINALIZADAS!</h4>
         </div>
         <div class="modal-body">
-        <span id="alertsMessage">O prazo para Inscrições Antecipadas para este evento se encerrou. As mesmas podem ser feitas no local conforme regulamento.</span>
+        <span id="alertsMessage">{{env("MENSAGEM_FIM_INSCRICOES","O prazo para Inscrições Antecipadas para este evento se encerrou. As mesmas podem ser feitas no local conforme regulamento.")}}</span>
         </div>
         <div class="modal-footer">
         <button type="button" class="btn btn-success" data-dismiss="modal">OK</button>

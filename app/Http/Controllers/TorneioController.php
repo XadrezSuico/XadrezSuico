@@ -63,7 +63,50 @@ class TorneioController extends Controller
         if($torneio->isDeletavel()){
             $torneio->delete();
         }
-        return redirect("/evento/edit/".$evento->id."/?tab=torneio");
+        return redirect("/evento/dashboard/".$evento->id."/?tab=torneio");
+    }
+    public function union($id,$torneio_id){
+		$evento = Evento::find($id);
+        $torneio = Torneio::find($torneio_id);
+        $torneios = $torneio->evento->torneios()->where([["id","!=",$torneio->id]])->get();
+        return view('evento.torneio.union',compact("torneio","torneios","evento"));
+    }
+    public function union_post($id,$torneio_id,Request $request){
+		if(!$request->has("torneio_a_ser_unido")){
+			return redirect()->back();
+		}elseif($request->input("torneio_a_ser_unido") == ""){
+			return redirect()->back();
+		}
+
+		$evento = Evento::find($id);
+        $torneio_base = Torneio::find($torneio_id);
+		$torneio_a_ser_unido = Torneio::find($request->input("torneio_a_ser_unido"));
+
+		if($torneio_base && $torneio_a_ser_unido){
+			if($torneio_base->evento->id == $torneio_a_ser_unido->evento->id){
+				foreach($torneio_a_ser_unido->inscricoes->all() as $inscricao){
+					$inscricao->torneio_id = $torneio_base->id;
+					$inscricao->save();
+				}
+				foreach($torneio_a_ser_unido->categorias->all() as $categoria){
+					$categoria_torneio = new CategoriaTorneio;
+					$categoria_torneio->torneio_id = $torneio_base->id;
+					$categoria_torneio->categoria_id = $categoria->categoria->id;
+					$categoria_torneio->save();
+
+					$categoria->delete();
+				}
+
+				$torneio_base->torneio_template_id = NULL;
+				$torneio_base->save();
+
+				$torneio_a_ser_unido->delete();
+
+        		return redirect("/evento/dashboard/".$evento->id."/?tab=torneio");
+			}
+		}
+		
+		return redirect()->back();
     }
     public function categoria_add($id,$torneio_id,Request $request){
 		$evento = Evento::find($id);

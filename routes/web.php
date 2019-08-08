@@ -126,6 +126,9 @@ Route::group(["prefix"=>"evento"],function(){
 	    Route::post('/new', 'TorneioController@new_post')->name('evento.torneios.new.post');
 	    Route::get('/edit/{torneio_id}', 'TorneioController@edit')->name('evento.torneios.edit');
 	    Route::post('/edit/{torneio_id}', 'TorneioController@edit_post')->name('evento.torneios.edit.post');
+	    Route::get('/union/{torneio_id}', 'TorneioController@union')->name('evento.torneios.union');
+	    Route::post('/union/{torneio_id}', 'TorneioController@union_post')->name('evento.torneios.union.post');
+	    Route::get('/delete/{torneio_id}', 'TorneioController@delete')->name('evento.torneios.delete');
 	    Route::get('/{torneio_id}/resultados', 'TorneioController@formResults')->name('evento.torneios.resultados');
 	    Route::post('/{torneio_id}/resultados', 'TorneioController@sendResultsTxt')->name('evento.torneios.resultados.post');
         
