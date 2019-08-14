@@ -144,7 +144,7 @@
                     </div>
                 @endif
 				<div class="form-group">
-					<label><input type="checkbox" id="desconsiderar_pontuacao_geral" name="desconsiderar_pontuacao_geral" @if(!$permitido_edicao) disabled="disabled" @endif @if(!$inscricao->desconsiderar_pontuacao_geral) checked="checked" @endif> Desconsiderar Inscrição para Pontuação Geral</label>
+					<label><input type="checkbox" id="desconsiderar_pontuacao_geral" name="desconsiderar_pontuacao_geral" @if(!$permitido_edicao) disabled="disabled" @endif @if($inscricao->desconsiderar_pontuacao_geral) checked="checked" @endif> Desconsiderar Inscrição para Pontuação Geral</label>
 				</div>
 			</div>
 			<!-- /.box-body -->
