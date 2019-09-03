@@ -163,7 +163,7 @@
 		$("#sexos_id").select2().val([{{$enxadrista->sexos_id}}]).change();
 		
 		$("#celular").mask("+00 (00) 00000-0000");
-		$("#celular").val("+55");
+		// $("#celular").val("+55");
 
 		$("#celular_brasileiro").on("click",function(){
 			$("#celular_paraguaio").removeAttr("disabled");
