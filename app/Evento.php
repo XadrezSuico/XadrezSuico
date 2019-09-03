@@ -142,6 +142,17 @@ class Evento extends Model
         }
         return $total;
     }
+    public function quantosInscritosConfirmadosWOs(){
+        $total = 0;
+        foreach($this->torneios->all() as $torneio){
+            $total += $torneio->inscricoes()->where([["confirmado","=",true],["desconsiderar_pontuacao_geral","=",true]])->count();
+        }
+        return $total;
+    }
+    public function quantosInscritosPresentes(){
+        return $this->quantosInscritosConfirmados() - $this->quantosInscritosConfirmadosWOs();
+    }
+    
     public function enxadristaInscrito($enxadrista_id){
         $total = 0;
         $evento = $this;

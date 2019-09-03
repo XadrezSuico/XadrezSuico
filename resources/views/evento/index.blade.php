@@ -41,7 +41,8 @@
                                 <td>{{$evento->grupo_evento->name}}</td>
                                 <td>
                                     Total: {{$evento->quantosInscritos()}}<br/>
-                                    Confirmados: {{$evento->quantosInscritosConfirmados()}}
+                                    Confirmados: {{$evento->quantosInscritosConfirmados()}}<br/>
+                                    Presentes: {{$evento->quantosInscritosPresentes()}}
                                 </td>
                                 <td>
                                     @if(

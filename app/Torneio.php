@@ -44,6 +44,12 @@ class Torneio extends Model
     public function getCountInscritosConfirmados(){
         return $this->inscricoes()->where([["confirmado","=",true]])->count();
     }
+    public function getCountInscritosConfirmadosWOs(){
+        return $this->inscricoes()->where([["confirmado","=",true],["desconsiderar_pontuacao_geral","=",true]])->count();
+    }
+    public function quantosInscritosPresentes(){
+        return $this->getCountInscritosConfirmados() - $this->getCountInscritosConfirmadosWOs();
+    }
     public function getCountInscritosNaoConfirmados(){
         return $this->inscricoes()->where([["confirmado","=",false]])->count();
     }

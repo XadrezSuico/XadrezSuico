@@ -390,7 +390,8 @@
 												<td>
 													Total: {{$torneio->getCountInscritos()}}<br/>
 													Confirmados: {{$torneio->getCountInscritosConfirmados()}}<br/>
-													Não Confirmados: {{$torneio->getCountInscritosNaoConfirmados()}}
+													Não Confirmados: {{$torneio->getCountInscritosNaoConfirmados()}}<br/>
+													Presentes: <strong>{{$torneio->quantosInscritosPresentes()}}</strong>
 												</td>
 												<td>
 													@if($torneio->hasCriteriosDesempateNasInscricoes())
