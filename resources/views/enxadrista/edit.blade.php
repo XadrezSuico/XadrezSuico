@@ -110,6 +110,9 @@
 							<div class="form-group">
 								<label for="celular">Celular</label>
 								<input name="celular" id="celular" class="form-control" type="text" value="{{$enxadrista->celular}}" @if(!$permitido_edicao) disabled="disabled" @endif />
+								<button type="button" id="celular_brasileiro" disabled="disabled" class="btn btn-success">Celular Brasileiro</button>
+								<button type="button" id="celular_paraguaio" class="btn btn-success">Celular Paraguaio</button>
+								<button type="button" id="celular_argentino" class="btn btn-success">Celular Argentino</button>
 							</div>
 						</div>
 					</div>
@@ -158,7 +161,31 @@
 		$("#cidade_id").select2().val([{{$enxadrista->cidade_id}}]).change();
 		$("#clube_id").select2().val([{{$enxadrista->clube_id}}]).change();
 		$("#sexos_id").select2().val([{{$enxadrista->sexos_id}}]).change();
-		$("#celular").mask("(00) 00000-0000");
+		
+		$("#celular").mask("+00 (00) 00000-0000");
+		$("#celular").val("+55");
+
+		$("#celular_brasileiro").on("click",function(){
+			$("#celular_paraguaio").removeAttr("disabled");
+			$("#celular_argentino").removeAttr("disabled");
+			$("#celular_brasileiro").attr("disabled","disabled");
+			$("#celular").mask('+00 (00) 00000-0000');
+			$("#celular").val('+55');
+		});
+		$("#celular_paraguaio").on("click",function(){
+			$("#celular_brasileiro").removeAttr("disabled");
+			$("#celular_argentino").removeAttr("disabled");
+			$("#celular_paraguaio").attr("disabled","disabled");
+			$("#celular").mask('+000 (000) 000-000');
+			$("#celular").val('+595');
+		});
+		$("#celular_argentino").on("click",function(){
+			$("#celular_brasileiro").removeAttr("disabled");
+			$("#celular_paraguaio").removeAttr("disabled");
+			$("#celular_argentino").attr("disabled","disabled");
+			$("#celular").mask('+00 (0000) 00-0000');
+			$("#celular").val('+54');
+		});
   });
 </script>
 @endsection
