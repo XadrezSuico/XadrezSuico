@@ -38,6 +38,7 @@
                         <th>Cidade</th>
                         <th>Clube</th>
                         <th>Confirmado?</th>
+                        <th>Data e Hora</th>
                         <th width="20%">Opções</th>
                     </tr>
                 </thead>
@@ -54,6 +55,7 @@
                             <td>{{$inscricao->cidade->name}}</td>
                             <td>@if($inscricao->clube) {{$inscricao->clube->name}} @else Sem Clube @endif</td>
                             <td>@if($inscricao->confirmado) Sim @else Não @endif</td>
+                            <td>{{$inscricao->getCreatedAt()}}</td>
                             <td>
                             
                                 @if(
