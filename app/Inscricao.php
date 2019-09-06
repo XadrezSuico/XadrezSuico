@@ -4,6 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use Spatie\Activitylog\Traits\LogsActivity;
+use DateTime;
 
 class Inscricao extends Model
 {
@@ -61,5 +62,13 @@ class Inscricao extends Model
             }
         }
         return false;
+    }
+
+    public function getCreatedAt(){
+		$datetime = DateTime::createFromFormat('Y-m-d H:i:s', $this->created_at);
+		if($datetime){
+            return $datetime->format("d/m/Y H:i:s");
+		}
+		return false;
     }
 }
