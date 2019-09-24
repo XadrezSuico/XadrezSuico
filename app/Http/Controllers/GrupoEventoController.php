@@ -206,6 +206,35 @@ class GrupoEventoController extends Controller
 		}
     }
 
+    public function classificar_page($grupo_evento_id){
+        $retornos = array();
+		$grupo_evento = GrupoEvento::find($grupo_evento_id);
+        return view("grupoevento.classificar",compact("grupo_evento"));
+    }
+
+    public function classificar_call($grupo_evento_id,$categoria_id,$action){
+        $retornos = array();
+		$grupo_evento = GrupoEvento::find($grupo_evento_id);
+        $categoria = Categoria::find($categoria_id);
+		if($grupo_evento && $categoria){
+            try{
+                switch($action){
+                    case 1:
+                        CategoriaController::somar_pontos_geral($grupo_evento,$categoria);
+                        break;
+                    case 2:
+                        CategoriaController::gerar_criterios_desempate($grupo_evento,$categoria);
+                        break;
+                    case 3:
+                        CategoriaController::classificar_enxadristas_geral($grupo_evento,$categoria);
+                }
+                return response()->json(["ok"=>1,"error"=>0]);
+            }catch(Exception $e){
+                return response()->json(["ok"=>0,"error"=>1]);
+            }
+		}
+    }
+
     public function evento_new($id,Request $request){
         $grupo_evento = GrupoEvento::find($id);
 

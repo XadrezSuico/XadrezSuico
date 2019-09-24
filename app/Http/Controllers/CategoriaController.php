@@ -163,7 +163,7 @@ class CategoriaController extends Controller
         return $retornos;
     }
 
-    private static function somar_pontos_geral($grupo_evento, $categoria){
+    public static function somar_pontos_geral($grupo_evento, $categoria){
 		$retornos = array();
 		$retornos[] = date("d/m/Y H:i:s")." - Função de Soma de Pontos";
 		$retornos[] = date("d/m/Y H:i:s")." - Zerando pontuações existentes";
@@ -227,7 +227,7 @@ class CategoriaController extends Controller
         return $retornos;
     }
 
-    private static function gerar_criterios_desempate($grupo_evento, $categoria){
+    public static function gerar_criterios_desempate($grupo_evento, $categoria){
         $retornos = array();
 		$retornos[] = date("d/m/Y H:i:s")." - Função de geração de Critérios de Desempate";
         $criterios = $grupo_evento->getCriteriosDesempateGerais();
@@ -260,7 +260,7 @@ class CategoriaController extends Controller
         return $retornos;
     }
 
-    private static function classificar_enxadristas_geral($grupo_evento, $categoria){
+    public static function classificar_enxadristas_geral($grupo_evento, $categoria){
         $retornos = array();
 		$retornos[] = date("d/m/Y H:i:s")." - Função de classificação dos enxadristas";
         $criterios = $grupo_evento->getCriteriosDesempateGerais();
