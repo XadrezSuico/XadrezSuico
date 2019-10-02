@@ -90,13 +90,13 @@ class Evento extends Model
         $datetime = DateTime::createFromFormat('Y-m-d H:i:s', $this->data_limite_inscricoes_abertas);
         if($datetime){
             if($api){
-                if($datetime->getTimestamp()+(60*5) >= time()){
+                if($datetime->getTimestamp()+(60*5) >= time() && !$this->estaLotado()){
                     return false;
                 }else{
                     return true;
                 }
             }
-            if($datetime->getTimestamp() >= time()){
+            if($datetime->getTimestamp() >= time() && !$this->estaLotado()){
                 return false;
             }else{
                 return true;
@@ -151,6 +151,17 @@ class Evento extends Model
     }
     public function quantosInscritosPresentes(){
         return $this->quantosInscritosConfirmados() - $this->quantosInscritosConfirmadosWOs();
+    }
+    public function estaLotado(){
+        if($this->maximo_inscricoes_evento){
+            if($this->maximo_inscricoes_evento > 0){
+                if($this->maximo_inscricoes_evento <= $this->quantosInscritos()){
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
     
     public function enxadristaInscrito($enxadrista_id){

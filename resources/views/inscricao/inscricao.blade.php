@@ -93,6 +93,12 @@
 			<strong>Local:</strong> {{$evento->local}}<br/>
 			<strong>Data:</strong> {{$evento->getDataInicio()}}<br/>
 			<strong>Maiores informações em:</strong> <a href="{{$evento->link}}" target="_blank">{{$evento->link}}</a><br/>
+			@if($evento->maximo_inscricoes_evento) 
+				<hr/>
+				<strong>Total de Inscritos até o presente momento:</strong> {{$evento->quantosInscritos()}}.<br/>
+				<strong>Limite de Inscritos:</strong> {{$evento->maximo_inscricoes_evento}}.<br/>
+				<hr/>
+			@endif
 			@if($evento->getDataFimInscricoesOnline()) <h3><strong>Inscrições antecipadas até:</strong> {{$evento->getDataFimInscricoesOnline()}}.</h3>@endif
 		</div>
 	</div>

@@ -57,7 +57,7 @@ class InscricaoController extends Controller
         $evento = Evento::find($request->input("evento_id"));
 
         if($evento->inscricoes_encerradas(true)){
-            return response()->json(["ok"=>0,"error"=>1,"message" => "O prazo de inscrições antecipadas se esgotou. As inscrições poderão ser feitas no local do evento conforme regulamento."]);
+            return response()->json(["ok"=>0,"error"=>1,"message" => env("MENSAGEM_FIM_INSCRICOES","O prazo de inscrições antecipadas se esgotou ou então o limite de inscritos se completou. As inscrições poderão ser feitas no local do evento conforme regulamento.")]);
         }
 
         foreach($evento->campos()->whereHas("campo",function($q1){$q1->where([["is_required","=",true]]);})->get() as $campo){

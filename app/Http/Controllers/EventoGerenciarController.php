@@ -83,6 +83,15 @@ class EventoGerenciarController extends Controller
 		}else{
 			$evento->link = NULL;
 		}
+        if($request->has("maximo_inscricoes_evento")){
+			if(is_numeric($request->input("maximo_inscricoes_evento"))){
+				$evento->maximo_inscricoes_evento = intval($request->input("maximo_inscricoes_evento"));
+			}else{
+				$evento->maximo_inscricoes_evento = NULL;
+			}
+		}else{
+			$evento->maximo_inscricoes_evento = NULL;
+		}
         if($request->has("data_limite_inscricoes_abertas") && $datetime_data_limite_inscricoes_abertas){
 			$evento->data_limite_inscricoes_abertas = $datetime_data_limite_inscricoes_abertas->format('Y-m-d H:i');
 		}else{
