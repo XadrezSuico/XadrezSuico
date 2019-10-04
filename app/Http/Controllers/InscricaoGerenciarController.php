@@ -14,6 +14,7 @@ use App\Categoria;
 use App\Sexo;
 use App\TipoRatingRegras;
 use App\CampoPersonalizadoOpcaoInscricao;
+use App\InscricaoCriterioDesempate;
 
 class InscricaoGerenciarController extends Controller
 {
@@ -32,7 +33,12 @@ class InscricaoGerenciarController extends Controller
         $evento = Evento::find($id);
         $torneio = Torneio::find($torneio_id);
         $inscricao = Inscricao::find($inscricao_id);
-		return view("evento.torneio.inscricao.edit",compact("evento","torneio","inscricao"));
+        if($evento->e_resultados_manuais){
+		    $criterios = $torneio->getCriteriosTotal();
+        }else{
+		    $criterios = $torneio->getCriteriosManuais();
+        }
+		return view("evento.torneio.inscricao.edit",compact("evento","torneio","inscricao","criterios"));
 	}
 	
 	public function edit_post($id,$torneio_id,$inscricao_id,Request $request){
@@ -85,6 +91,48 @@ class InscricaoGerenciarController extends Controller
                 }
                 $inscricao->enxadrista->save();
             }
+
+            if($evento->e_resultados_manuais && $inscricao->confirmado){
+                if($request->has("posicao")){
+                    $inscricao->posicao = $request->input("posicao");
+                }else{
+                    $inscricao->posicao = NULL;
+                }
+
+                if($request->has("pontos")){
+                    $inscricao->pontos = $request->input("pontos");
+                }else{
+                    $inscricao->pontos = NULL;
+                }
+
+                if($request->has("pontos_geral")){
+                    $inscricao->pontos_geral = $request->input("pontos_geral");
+                }else{
+                    $inscricao->pontos_geral = NULL;
+                }
+
+                foreach($torneio->getCriteriosTotal() as $criterio){
+                    $criterio_salvar = $criterio->criterio->valor_criterio($inscricao->id);
+                    if($request->has("criterio_".$criterio->criterio->id)){
+                        if(is_numeric($request->input("criterio_".$criterio->criterio->id))){
+                            if(!$criterio_salvar){
+                                $criterio_salvar = new InscricaoCriterioDesempate;
+                                $criterio_salvar->criterio_desempate_id = $criterio->criterio->id;
+                                $criterio_salvar->inscricao_id = $inscricao->id;
+                            }
+                            $criterio_salvar->valor = $request->input("criterio_".$criterio->criterio->id);
+                            $criterio_salvar->save();
+                        }else{
+                            if($criterio_salvar) $criterio_salvar->delete();
+                        }
+                    }else{
+                        if($criterio_salvar) $criterio_salvar->delete();
+                    }
+                }
+
+
+            }
+
             return redirect("/evento/".$evento->id."/torneios/".$torneio->id."/inscricoes/edit/".$inscricao->id);
 
 

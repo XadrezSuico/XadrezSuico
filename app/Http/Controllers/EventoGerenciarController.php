@@ -160,6 +160,25 @@ class EventoGerenciarController extends Controller
 		    return redirect("/evento/dashboard/".$evento->id);
 		}
 	}
+    public function toggleClassificacaoManual($evento_id){
+		$user = Auth::user();
+		if(
+			!$user->hasPermissionGlobal() && 
+			!$user->hasPermissionEventByPerfil($evento_id,[4])
+		){
+			return redirect("/");
+		}
+		$evento = Evento::find($evento_id);
+		if($evento){
+			if($evento->e_resultados_manuais){
+                $evento->e_resultados_manuais = false;
+            }else{
+                $evento->e_resultados_manuais = true;
+            }
+            $evento->save();
+		    return redirect("/evento/dashboard/".$evento->id);
+		}
+	}
 	
 
 

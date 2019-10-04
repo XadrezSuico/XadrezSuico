@@ -138,6 +138,43 @@
 						</select>
 					</div>
 				@endforeach
+                @if($evento->e_resultados_manuais && $inscricao->confirmado)
+                    <hr/>
+                    <h3>Resultados</h3>
+                        <div class="form-group">
+                            <label for="posicao">Posição *</label>
+                            <input type="text" name="posicao" id="posicao" class="form-control" value="{{$inscricao->posicao}}" />
+                        </div>
+                        <div class="form-group">
+                            <label for="pontos">Pontuação *</label>
+                            <input type="text" name="pontos" id="pontos" class="form-control" value="{{$inscricao->pontos}}" />
+                        </div>
+                        <div class="form-group">
+                            <label for="pontos_geral">Pontuação Geral *</label>
+                            <input type="text" name="pontos_geral" id="pontos_geral" class="form-control" value="{{$inscricao->pontos_geral}}" />
+                        </div>
+                    <h4>Critérios de Desempate</h4>
+                        @foreach($criterios as $criterio)
+                            <div class="form-group">
+                                <label for="criterio_{{$criterio->criterio->id}}">{{$criterio->criterio->name}} *</label>
+                                <input type="text" name="criterio_{{$criterio->criterio->id}}" id="criterio_{{$criterio->criterio->id}}" class="form-control" value="@if($criterio->criterio->valor_criterio($inscricao->id)){{$criterio->criterio->valor_criterio($inscricao->id)->valor}}@endif" />
+                            </div>
+                        @endforeach
+                    <hr/>
+                @else
+                    @if($inscricao->confirmado)
+                        <hr/>
+                        <h4>Critérios de Desempate Manuais</h4>
+                            @foreach($criterios as $criterio)
+                                <div class="form-group">
+                                    <label for="criterio_{{$criterio->criterio->id}}">{{$criterio->criterio->name}} *</label>
+                                    <input type="text" name="criterio_{{$criterio->criterio->id}}" id="criterio_{{$criterio->criterio->id}}" class="form-control" value="@if($criterio->criterio->valor_criterio($inscricao->id)){{$criterio->criterio->valor_criterio($inscricao->id)->valor}}@endif" />
+                                </div>
+                            @endforeach
+                        <hr/>
+
+                    @endif
+                @endif
                 @if($permitido_edicao)
                     <div class="form-group">
                         <label><input type="checkbox" id="atualizar_cadastro" name="atualizar_cadastro"> Atualizar Cadastro</label>
