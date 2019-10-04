@@ -131,6 +131,25 @@ class InscricaoGerenciarController extends Controller
                 }
 
 
+            }else{
+                foreach($torneio->getCriteriosManuais() as $criterio){
+                    $criterio_salvar = $criterio->criterio->valor_criterio($inscricao->id);
+                    if($request->has("criterio_".$criterio->criterio->id)){
+                        if(is_numeric($request->input("criterio_".$criterio->criterio->id))){
+                            if(!$criterio_salvar){
+                                $criterio_salvar = new InscricaoCriterioDesempate;
+                                $criterio_salvar->criterio_desempate_id = $criterio->criterio->id;
+                                $criterio_salvar->inscricao_id = $inscricao->id;
+                            }
+                            $criterio_salvar->valor = $request->input("criterio_".$criterio->criterio->id);
+                            $criterio_salvar->save();
+                        }else{
+                            if($criterio_salvar) $criterio_salvar->delete();
+                        }
+                    }else{
+                        if($criterio_salvar) $criterio_salvar->delete();
+                    }
+                }
             }
 
             return redirect("/evento/".$evento->id."/torneios/".$torneio->id."/inscricoes/edit/".$inscricao->id);
