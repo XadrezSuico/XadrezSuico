@@ -111,6 +111,12 @@ class InscricaoGerenciarController extends Controller
                     $inscricao->pontos_geral = NULL;
                 }
 
+                if($request->has("posicao_geral")){
+                    $inscricao->posicao_geral = $request->input("posicao_geral");
+                }else{
+                    $inscricao->posicao_geral = NULL;
+                }
+
                 foreach($torneio->getCriteriosTotal() as $criterio){
                     $criterio_salvar = $criterio->criterio->valor_criterio($inscricao->id);
                     if($request->has("criterio_".$criterio->criterio->id)){

@@ -150,6 +150,10 @@
                             <input type="text" name="pontos" id="pontos" class="form-control" value="{{$inscricao->pontos}}" />
                         </div>
                         <div class="form-group">
+                            <label for="posicao_geral">Posição Geral *</label>
+                            <input type="text" name="posicao_geral" id="posicao_geral" class="form-control" value="{{$inscricao->posicao_geral}}" />
+                        </div>
+                        <div class="form-group">
                             <label for="pontos_geral">Pontuação Geral *</label>
                             <input type="text" name="pontos_geral" id="pontos_geral" class="form-control" value="{{$inscricao->pontos_geral}}" />
                         </div>
