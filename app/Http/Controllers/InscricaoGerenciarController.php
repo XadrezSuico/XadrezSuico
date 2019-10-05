@@ -116,6 +116,7 @@ class InscricaoGerenciarController extends Controller
                 }else{
                     $inscricao->posicao_geral = NULL;
                 }
+                $inscricao->save();
 
                 foreach($torneio->getCriteriosTotal() as $criterio){
                     $criterio_salvar = $criterio->criterio->valor_criterio($inscricao->id);
