@@ -77,7 +77,8 @@
 <script type="text/javascript">
     $(document).ready(function(){
         $(".tabela").DataTable({
-            responsive: true,
+            responsive: true, 
+            "ordering": false,
         });
     });
 </script>

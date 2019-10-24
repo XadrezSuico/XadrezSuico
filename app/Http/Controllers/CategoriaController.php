@@ -171,9 +171,10 @@ class CategoriaController extends Controller
                     ["grupo_evento_id","=",$grupo_evento->id],
                     ["categoria_id","=",$categoria->id],
                 ])->get() as $pontuacao){
-            $pontuacao->pontos = 0;
-            $pontuacao->inscricoes_calculadas = 0;
-            $pontuacao->save();
+            // $pontuacao->pontos = 0;
+            // $pontuacao->inscricoes_calculadas = 0;
+            // $pontuacao->save();
+            $pontuacao->delete();
         }
 		$retornos[] = date("d/m/Y H:i:s")." - Listando Eventos do Grupo de Evento";
 		$retornos[] = "<hr/>";

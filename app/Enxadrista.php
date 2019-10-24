@@ -232,10 +232,12 @@ class Enxadrista extends Model
         ->whereHas("torneio",function($q1) use ($grupo_evento_id){
             $q1->whereHas("evento",function($q2) use ($grupo_evento_id){
                 $q2->where([
-                    ["grupo_evento_id","=",$grupo_evento_id]
+                    ["grupo_evento_id","=",$grupo_evento_id],
+                    ["classificavel","=",true]
                 ]);
             });
         })
+        ->orderBy("torneio_id","ASC")
         ->get();
     }
 
@@ -247,7 +249,8 @@ class Enxadrista extends Model
         ->whereHas("torneio",function($q1) use ($grupo_evento_id){
             $q1->whereHas("evento",function($q2) use ($grupo_evento_id){
                 $q2->where([
-                    ["grupo_evento_id","=",$grupo_evento_id]
+                    ["grupo_evento_id","=",$grupo_evento_id],
+                    ["classificavel","=",true]
                 ]);
             });
         })->get();
