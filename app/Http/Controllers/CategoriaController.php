@@ -106,7 +106,11 @@ class CategoriaController extends Controller
             // echo $i;
             if(!$inscricao->desconsiderar_pontuacao_geral){
                 $inscricao->posicao_geral = $j;
-                $inscricao->pontos_geral = Pontuacao::getPontuacaoByEvento($evento->id,$j);
+                if($evento->grupo_evento->e_pontuacao_resultado_para_geral){
+                    $inscricao->pontos_geral = $inscricao->pontos;
+                }else{
+                    $inscricao->pontos_geral = Pontuacao::getPontuacaoByEvento($evento->id,$j);
+                }
                 $j++;
             }else{
                 $inscricao->posicao_geral = NULL;

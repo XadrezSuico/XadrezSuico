@@ -109,6 +109,12 @@ class AppServiceProvider extends ServiceProvider
                         'icon' => 'users'
                     ]);
                 };
+                $event->menu->add("XADREZSUÍÇO");
+                $event->menu->add([
+                    'text' => 'O que há de novo?',
+                    'url'  => '/whatsnew',
+                    'icon' => 'certificate'
+                ]);
             }
         });
     }

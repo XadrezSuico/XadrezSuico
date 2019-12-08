@@ -82,6 +82,11 @@ class GrupoEventoController extends Controller
         }else{
             $grupo_evento->limite_calculo_geral = NULL;
         }
+        if($request->has("e_pontuacao_resultado_para_geral")){
+            $grupo_evento->e_pontuacao_resultado_para_geral = true;
+        }else{
+            $grupo_evento->e_pontuacao_resultado_para_geral = false;
+        }
         $grupo_evento->save();
 
         if($request->has("tipo_ratings_id")){
