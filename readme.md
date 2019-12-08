@@ -54,3 +54,15 @@ Você pode sugerir alterações através das issues! Estaremos "escutando", diga
 
 ## Posso ajudar no desenvolvimento do XadrezSuíço?
 CLARO! Faça um fork do projeto e nos ajude a deixar esse projeto ainda com ainda mais funcionalidades!
+
+-----
+
+## O que há de novo?
+### Versão 0.0.1.0 Beta
+ - Versão inicial do sistema em beta.
+ 
+### Versão 0.0.1.1 Beta
+ - A página de 'O que há de novo?' agora possui link no menu para usuários logados.
+ - Grupo de Evento - Agora é possível definir que a pontuação geral do enxadrista é a sua pontuação adquirida durante as etapas que participou.
+   Para isso, é necessário configurar o Grupo de Evento, selecionando a opção _'A pontuação do enxadrista será composta pelos seus resultados?'_ e salvando a edição do Grupo de Evento.
+   Após isso, caso já existam eventos classificados, *será necessário reclassificá-los*, antes de classificar o Grupo de Evento.
