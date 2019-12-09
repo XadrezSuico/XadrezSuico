@@ -608,12 +608,35 @@ class InscricaoGerenciarController extends Controller
         ){
             return response()->json(["ok"=>0,"error"=>1,"message" => "Um dos campos obrigatórios não está preenchido. Por favor, verifique e envie novamente!<br/><br/><strong>Observação</strong>: TODOS os Campos com <strong>*</strong> SÃO OBRIGATÓRIOS!","registred"=>0]);
         }
+        
+		$validator = \Validator::make($request->all(), [
+			'email' => 'required|string|email|max:255',
+		]);
+		if($validator->fails()){
+            return response()->json(["ok"=>0,"error"=>1,"message" => "O e-mail é inválido. Por favor, verifique e tente novamente.","registred"=>0]);
+        }
+        
+        // Algoritmo para eliminar os problemas com espaçamentos duplos ou até triplos.
+        $nome_corrigido = "";
+
+        $part_names = explode(" ",mb_strtoupper($request->input("name")));
+        foreach($part_names as $part_name){
+            if($part_name != ' '){
+                $trim = trim($part_name);
+                if(strlen($trim) > 0){
+                    $nome_corrigido .= $trim;
+                    $nome_corrigido .= " ";
+                }
+            }
+        }
+        $nome_corrigido = trim($nome_corrigido);
+
         $enxadrista = new Enxadrista;
         if(!$enxadrista->setBorn($request->input("born"))){
             return response()->json(["ok"=>0,"error"=>1,"message" => "A data de nascimento é inválida.","registred"=>0]);
         }
 
-        $temEnxadrista = Enxadrista::where([["name","=",mb_strtoupper($request->input("name"))],["born","=",$enxadrista->born]])->first();
+        $temEnxadrista = Enxadrista::where([["name","=",$nome_corrigido],["born","=",$enxadrista->born]])->first();
         if(count($temEnxadrista) > 0){
             if($temEnxadrista->clube){
                 return response()->json(["ok"=>0,"error"=>1,"message" => "Você já possui cadastro! Você será direcionado(a) à próxima etapa da inscrição!","registred"=>1,"enxadrista_id"=>$temEnxadrista->id,"enxadrista_name"=>$temEnxadrista->name." | ".$temEnxadrista->getBorn(),"cidade"=>["id"=>$temEnxadrista->cidade->id,"name"=>$temEnxadrista->cidade->name],"clube"=>["id"=>$temEnxadrista->clube->id,"name"=>$temEnxadrista->clube->name]]);
@@ -632,7 +655,7 @@ class InscricaoGerenciarController extends Controller
             }
         }
 
-        $enxadrista->name = mb_strtoupper($request->input("name"));
+        $enxadrista->name = $nome_corrigido;
         $enxadrista->cidade_id = $request->input("cidade_id");
         $enxadrista->sexos_id = $request->input("sexos_id");
         if($request->has("cbx_id")){

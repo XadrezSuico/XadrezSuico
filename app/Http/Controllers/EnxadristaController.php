@@ -26,27 +26,53 @@ class EnxadristaController extends Controller
     public function new_post(Request $request){
         $enx = new Enxadrista;
         $enx->setBorn($request->input("born"));
+        
+        // Algoritmo para eliminar os problemas com espaçamentos duplos ou até triplos.
+        $nome_corrigido = "";
+
+        $part_names = explode(" ",mb_strtoupper($request->input("name")));
+        foreach($part_names as $part_name){
+            if($part_name != ' '){
+                $trim = trim($part_name);
+                if(strlen($trim) > 0){
+                    $nome_corrigido .= $trim;
+                    $nome_corrigido .= " ";
+                }
+            }
+        }
+        $nome_corrigido = trim($nome_corrigido);
+
+        if($request->has("email")){
+            $validator = \Validator::make($request->all(), [
+                'email' => 'required|string|email|max:255',
+            ]);
+            if($validator->fails()){
+                return redirect()->back();
+            }
+        }
+
         $temEnxadrista = Enxadrista::where([
-            ["name","=",mb_strtoupper($request->input("name"))],
+            ["name","=",$nome_corrigido],
             ["born","=",$enx->born]
-        ])->first();
+        ])->get();
         if(count($temEnxadrista) > 0){
             return redirect()->back();
+            exit();
+        }else{
+            $enxadrista = new Enxadrista;
+            $enxadrista->name = $nome_corrigido;
+            $enxadrista->setBorn($request->input("born"));
+            $enxadrista->cidade_id = $request->input("cidade_id");
+            $enxadrista->sexos_id = $request->input("sexos_id");
+            $enxadrista->celular = $request->input("celular");
+            if($request->has("clube_id")) if($request->input("clube_id")) $enxadrista->clube_id = $request->input("clube_id");
+            if($request->has("email")) if($request->input("email")) $enxadrista->email = $request->input("email");
+            if($request->has("cbx_id")) if($request->input("cbx_id")) $enxadrista->cbx_id = $request->input("cbx_id");
+            if($request->has("fide_id")) if($request->input("fide_id")) $enxadrista->fide_id = $request->input("fide_id");
+            if($request->has("lbx_id")) if($request->input("lbx_id")) $enxadrista->lbx_id = $request->input("lbx_id");
+            $enxadrista->save();
+            return redirect("/enxadrista/edit/".$enxadrista->id);
         }
-        
-        $enxadrista = new Enxadrista;
-        $enxadrista->name = $request->input("name");
-        $enxadrista->setBorn($request->input("born"));
-        $enxadrista->cidade_id = $request->input("cidade_id");
-        $enxadrista->sexos_id = $request->input("sexos_id");
-        $enxadrista->celular = $request->input("celular");
-        if($request->has("clube_id")) if($request->input("clube_id")) $enxadrista->clube_id = $request->input("clube_id");
-        if($request->has("email")) if($request->input("email")) $enxadrista->email = $request->input("email");
-        if($request->has("cbx_id")) if($request->input("cbx_id")) $enxadrista->cbx_id = $request->input("cbx_id");
-        if($request->has("fide_id")) if($request->input("fide_id")) $enxadrista->fide_id = $request->input("fide_id");
-        if($request->has("lbx_id")) if($request->input("lbx_id")) $enxadrista->lbx_id = $request->input("lbx_id");
-        $enxadrista->save();
-        return redirect("/enxadrista/edit/".$enxadrista->id);
     }
     public function edit($id){
         $enxadrista = Enxadrista::find($id);
@@ -56,8 +82,35 @@ class EnxadristaController extends Controller
         return view('enxadrista.edit',compact("enxadrista","cidades","clubes","sexos"));
     }
     public function edit_post($id,Request $request){
+
+        if($request->has("email")){
+            $validator = \Validator::make($request->all(), [
+                'email' => 'required|string|email|max:255',
+            ]);
+            if($validator->fails()){
+                return redirect()->back();
+            }
+        }
+
+        
+        // Algoritmo para eliminar os problemas com espaçamentos duplos ou até triplos.
+        $nome_corrigido = "";
+
+        $part_names = explode(" ",mb_strtoupper($request->input("name")));
+        foreach($part_names as $part_name){
+            if($part_name != ' '){
+                $trim = trim($part_name);
+                if(strlen($trim) > 0){
+                    $nome_corrigido .= $trim;
+                    $nome_corrigido .= " ";
+                }
+            }
+        }
+        $nome_corrigido = trim($nome_corrigido);
+
+        
         $enxadrista = Enxadrista::find($id);
-        $enxadrista->name = $request->input("name");
+        $enxadrista->name = $nome_corrigido;
         $enxadrista->setBorn($request->input("born"));
         $enxadrista->cidade_id = $request->input("cidade_id");
         $enxadrista->sexos_id = $request->input("sexos_id");
