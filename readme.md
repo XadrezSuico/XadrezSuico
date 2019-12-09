@@ -58,11 +58,16 @@ CLARO! Faça um fork do projeto e nos ajude a deixar esse projeto ainda com aind
 -----
 
 ## O que há de novo?
-### Versão 0.0.1.0 Beta
- - Versão inicial do sistema em beta.
- 
+### Versão 0.0.1.2 Beta
+ - Agora o email é validado quando é inserido em um cadastro de enxadrista a fim de garantir que o email é válido. Em breve apresentará uma mensagem de erro. - Issue #21
+ - Corrigido bug que permitia que um enxadrista se recadastrasse caso utilizasse mais espaços entre os nomes.
+
 ### Versão 0.0.1.1 Beta
  - A página de 'O que há de novo?' agora possui link no menu para usuários logados.
  - Grupo de Evento - Agora é possível definir que a pontuação geral do enxadrista é a sua pontuação adquirida durante as etapas que participou.
    Para isso, é necessário configurar o Grupo de Evento, selecionando a opção _'A pontuação do enxadrista será composta pelos seus resultados?'_ e salvando a edição do Grupo de Evento.
    Após isso, caso já existam eventos classificados, *será necessário reclassificá-los*, antes de classificar o Grupo de Evento.
+   
+### Versão 0.0.1.0 Beta
+ - Versão inicial do sistema em beta.
+ 
