@@ -14,6 +14,7 @@ class WhatsNewController extends Controller
         $new_0012_betha["news"] = array();
         $new_0012_betha["news"][] = "Agora o email é validado quando é inserido em um cadastro de enxadrista a fim de garantir que o email é válido. Em breve apresentará uma mensagem de erro. - Issue #21";
         $new_0012_betha["news"][] = "Corrigido bug que permitia que um enxadrista se recadastrasse caso utilizasse mais espaços entre os nomes.";
+        $new_0012_betha["news"][] = "Corrigido bug na visualização da classificação do Grupo de Evento, onde não aparecia os campos para Download da lista e também de pesquisa.";
         $news[] = $new_0012_betha;
 
         // Novidades versão 0.0.1.1
