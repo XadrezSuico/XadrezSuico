@@ -42,13 +42,16 @@ class EnxadristaController extends Controller
         }
         $nome_corrigido = trim($nome_corrigido);
 
-        if($request->has("email")){
-            $validator = \Validator::make($request->all(), [
-                'email' => 'required|string|email|max:255',
-            ]);
-            if($validator->fails()){
-                return redirect()->back();
-            }
+        $validator = \Validator::make($request->all(), [
+            'name' => 'required|string',
+            'email' => 'required|string|email|max:255',
+            'born' => 'required|string',
+            'cidade_id' => 'required|string',
+            'sexos_id' => 'required|string',
+            'celular' => 'required|string',
+        ]);
+        if($validator->fails()){
+            return redirect()->back()->withErrors($validator->errors());
         }
 
         $temEnxadrista = Enxadrista::where([
@@ -65,8 +68,8 @@ class EnxadristaController extends Controller
             $enxadrista->cidade_id = $request->input("cidade_id");
             $enxadrista->sexos_id = $request->input("sexos_id");
             $enxadrista->celular = $request->input("celular");
+            $enxadrista->email = $request->input("email");
             if($request->has("clube_id")) if($request->input("clube_id")) $enxadrista->clube_id = $request->input("clube_id");
-            if($request->has("email")) if($request->input("email")) $enxadrista->email = $request->input("email");
             if($request->has("cbx_id")) if($request->input("cbx_id")) $enxadrista->cbx_id = $request->input("cbx_id");
             if($request->has("fide_id")) if($request->input("fide_id")) $enxadrista->fide_id = $request->input("fide_id");
             if($request->has("lbx_id")) if($request->input("lbx_id")) $enxadrista->lbx_id = $request->input("lbx_id");
@@ -83,13 +86,16 @@ class EnxadristaController extends Controller
     }
     public function edit_post($id,Request $request){
 
-        if($request->has("email")){
-            $validator = \Validator::make($request->all(), [
-                'email' => 'required|string|email|max:255',
-            ]);
-            if($validator->fails()){
-                return redirect()->back();
-            }
+        $validator = \Validator::make($request->all(), [
+            'name' => 'required|string',
+            'email' => 'required|string|email|max:255',
+            'born' => 'required|string',
+            'cidade_id' => 'required|string',
+            'sexos_id' => 'required|string',
+            'celular' => 'required|string',
+        ]);
+        if($validator->fails()){
+            return redirect()->back()->withErrors($validator->errors());
         }
 
         
@@ -124,15 +130,7 @@ class EnxadristaController extends Controller
         }else{
             $enxadrista->clube_id = NULL;
         }
-        if($request->has("email")){
-            if($request->input("email")){
-                $enxadrista->email = $request->input("email");
-            }else{
-                $enxadrista->email = NULL;
-            }
-        }else{
-            $enxadrista->email = NULL;
-        }
+        $enxadrista->email = $request->input("email");
         if($request->has("cbx_id")){
             if($request->input("cbx_id")){
                 $enxadrista->cbx_id = $request->input("cbx_id");
