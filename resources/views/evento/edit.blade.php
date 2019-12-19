@@ -69,6 +69,7 @@
 		<!-- Nav tabs -->
 		<ul class="nav nav-tabs" role="tablist">
 			<li role="presentation" class="active"><a id="tab_editar_evento" href="#editar_evento" aria-controls="editar_evento" role="tab" data-toggle="tab">Editar Evento</a></li>
+			<li role="presentation"><a id="tab_pagina" href="#pagina" aria-controls="pagina" role="tab" data-toggle="tab">Página</a></li>
 			<li role="presentation"><a id="tab_criterio_desempate" href="#criterio_desempate" aria-controls="criterio_desempate" role="tab" data-toggle="tab">Critério de Desempate</a></li>
 			<li role="presentation"><a id="tab_categoria" href="#categoria" aria-controls="categoria" role="tab" data-toggle="tab">Categoria</a></li>
 			<li role="presentation"><a id="tab_torneio" href="#torneio" aria-controls="torneio" role="tab" data-toggle="tab">Torneios</a></li>
@@ -146,6 +147,60 @@
 											<option value="{{$tipo_rating->id}}">{{$tipo_rating->id}} - {{$tipo_rating->name}}</option>
 										@endforeach
 									</select>
+								</div>
+							</div>
+							<!-- /.box-body -->
+
+							<div class="box-footer">
+								<button type="submit" class="btn btn-success">Enviar</button>
+								<input type="hidden" name="_token" value="{{ csrf_token() }}">
+							</div>
+					@if(
+						\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
+						\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4])
+					)
+						</form>
+					@endif
+					</div>
+				</section>
+			</div>
+			<div role="tabpanel" class="tab-pane active" id="pagina">
+				<br/>
+				<section class="col-lg-12 connectedSortable">
+					<div class="alert alert-warning alert-dismissible" role="alert">
+						<strong>Aviso!</strong><br/>
+						Caso queira personalizar a página de inscrição do evento, será possível adicionar um texto e também uma imagem, não sendo itens obrigatórios.
+					</div>
+					<div class="box box-primary" id="inscricao">
+						<div class="box-header">
+							<h3 class="box-title">Página</h3>
+						</div>
+						<!-- form start -->
+						
+					@if(
+						\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
+						\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4])
+					)
+						<form method="post" action="{{url("/evento/".$evento->id."/pagina")}}" enctype="multipart/form-data">
+					@endif	
+							<div class="box-body">
+								<div class="form-group">
+									<label for="imagem">Imagem</label>
+									@if($evento->imagem)
+										<br/><img src="data:image/png;base64, {!!$evento->imagem!!}" width="100%" style="max-width: 400px"/>
+										<label><input type="checkbox" name="remover_imagem" /> Remover Imagem?</label>
+									@endif
+									<input type="file" id="imagem" name="imagem">
+									@if ($errors->has('imagem'))
+										<span class="help-block">
+											<strong>{{ $errors->first('imagem') }}</strong>
+										</span>
+									@endif
+								</div>
+								
+								<div class="form-group">
+									<label for="texto">Texto</label>
+									<textarea class="form-control" id="texto" name="texto" placeholder="Texto sobre o Evento">{{$evento->texto}}</textarea>				
 								</div>
 							</div>
 							<!-- /.box-body -->

@@ -104,6 +104,35 @@ class EventoGerenciarController extends Controller
 		return redirect("/evento/dashboard/".$id);
 	}
 
+	public function edit_pagina_post($id,Request $request){
+		$user = Auth::user();
+		if(
+			!$user->hasPermissionGlobal() && 
+			!$user->hasPermissionEventByPerfil($id,[4])
+		){
+			return redirect("/evento/dashboard/".$id);
+		}
+		$evento = Evento::find($id);
+		
+        // CADASTRO DO EVENTO
+		if($request->hasFile('imagem')) {
+			if($request->file('imagem')->isValid()) {
+				$evento->imagem = base64_encode(file_get_contents($request->file('imagem')));
+			}
+		}
+        if($request->has("texto")){
+			$evento->texto = $request->input("texto");
+		}else{
+			$evento->texto = NULL;
+		}
+		if($request->has('remover_imagem')) {
+			$evento->imagem = NULL;
+		}  
+		$evento->disableLogging();
+        $evento->save();
+		return redirect("/evento/dashboard/".$id."?tab=pagina");
+	}
+
 	public function classificar($evento_id){
 		$user = Auth::user();
 		if(

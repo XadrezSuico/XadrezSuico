@@ -9,6 +9,12 @@ class WhatsNewController extends Controller
     public function index(){
         $news = array();
 
+        // Novidades versão 0.0.2.0
+        $new_0020_betha["name"] = "0.0.2.0 Beta";
+        $new_0020_betha["news"] = array();
+        $new_0020_betha["news"][] = "Agora é possível definir uma imagem e um texto de apresentação do evento. - Issue #3";
+        $news[] = $new_0020_betha;
+
         // Novidades versão 0.0.1.2
         $new_0012_betha["name"] = "0.0.1.2 Beta";
         $new_0012_betha["news"] = array();
