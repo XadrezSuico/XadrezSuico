@@ -58,6 +58,9 @@ CLARO! Faça um fork do projeto e nos ajude a deixar esse projeto ainda com aind
 -----
 
 ## O que há de novo?
+### Versão 0.0.2.0 Beta
+ - Agora é possível definir uma imagem e um texto de apresentação do evento. - Issue #3
+
 ### Versão 0.0.1.2 Beta
  - Agora o email é validado quando é inserido em um cadastro de enxadrista a fim de garantir que o email é válido. Em breve apresentará uma mensagem de erro. - Issue #21
  - Corrigido bug que permitia que um enxadrista se recadastrasse caso utilizasse mais espaços entre os nomes.
