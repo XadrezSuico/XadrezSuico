@@ -12,6 +12,7 @@ use App\TipoTorneio;
 use App\Software;
 use App\TipoRating;
 use App\Cidade;
+use App\Pagina;
 use DateTime;
 
 
@@ -97,6 +98,7 @@ class EventoGerenciarController extends Controller
 		}else{
 			$evento->data_limite_inscricoes_abertas = NULL;
 		}
+		if($request->has("e_permite_visualizar_lista_inscritos_publica")) $evento->e_permite_visualizar_lista_inscritos_publica = true; else $evento->e_permite_visualizar_lista_inscritos_publica = false;
 		if($request->has("usa_fide") && !$request->has("usa_lbx")) $evento->usa_fide = true; else $evento->usa_fide = false;
         if($request->has("usa_cbx")) $evento->usa_cbx = true; else $evento->usa_cbx = false;
         if($request->has("usa_lbx")) $evento->usa_lbx = true; else $evento->usa_lbx = false;
@@ -113,23 +115,30 @@ class EventoGerenciarController extends Controller
 			return redirect("/evento/dashboard/".$id);
 		}
 		$evento = Evento::find($id);
+
+		if(!$evento->pagina){
+			$pagina = new Pagina;
+			$pagina->evento_id = $id;
+			$pagina->save();
+
+			$evento = Evento::find($id);
+		}
 		
         // CADASTRO DO EVENTO
 		if($request->hasFile('imagem')) {
 			if($request->file('imagem')->isValid()) {
-				$evento->imagem = base64_encode(file_get_contents($request->file('imagem')));
+				$evento->pagina->imagem = base64_encode(file_get_contents($request->file('imagem')));
 			}
 		}
         if($request->has("texto")){
-			$evento->texto = $request->input("texto");
+			$evento->pagina->texto = $request->input("texto");
 		}else{
-			$evento->texto = NULL;
+			$evento->pagina->texto = NULL;
 		}
 		if($request->has('remover_imagem')) {
-			$evento->imagem = NULL;
+			$evento->pagina->imagem = NULL;
 		}  
-		$evento->disableLogging();
-        $evento->save();
+        $evento->pagina->save();
 		return redirect("/evento/dashboard/".$id."?tab=pagina");
 	}
 

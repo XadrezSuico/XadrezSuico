@@ -43,9 +43,11 @@
 		</div>
 
 		<div class="box-body">
-			@if($evento->imagem) <img src="data:image/png;base64, {!!$evento->imagem!!}" width="100%" style="max-width: 800px"/> <br/> @endif
-			@if($evento->texto) {!!$evento->texto!!} <br/> @endif
-			@if($evento->imagem || $evento->texto) <hr/> @endif
+			@if($evento->pagina)
+				@if($evento->imagem) <img src="data:image/png;base64, {!!$evento->imagem!!}" width="100%" style="max-width: 800px"/> <br/> @endif
+				@if($evento->pagina->texto) {!!$evento->pagina->texto!!} <br/> @endif
+				@if($evento->pagina->imagem || $evento->pagina->texto) <hr/> @endif
+			@endif
 			<strong>Categorias:</strong><br/>
 			@foreach($evento->categorias->all() as $categoria)
 				{{$categoria->categoria->name}}, 

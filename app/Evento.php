@@ -47,6 +47,10 @@ class Evento extends Model
         return $this->hasOne("App\TipoRatingEvento","evento_id","id");
     }
 
+    public function pagina() {
+        return $this->hasOne("App\Pagina","evento_id","id");
+    }
+
     public function campos() {
         if($this->hasMany("App\CampoPersonalizadoEvento","evento_id","id")->count() > 0){
             return $this->hasMany("App\CampoPersonalizadoEvento","evento_id","id");

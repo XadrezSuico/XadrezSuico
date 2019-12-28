@@ -131,6 +131,9 @@
 									<input name="maximo_inscricoes_evento" id="maximo_inscricoes_evento" class="form-control" type="text" value="{{$evento->maximo_inscricoes_evento}}" @if(!\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() && !\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4])) disabled="disabled" @endif />
 								</div>
 								<div class="form-group">
+									<label><input type="checkbox" id="e_permite_visualizar_lista_inscritos_publica" name="e_permite_visualizar_lista_inscritos_publica" @if($evento->e_permite_visualizar_lista_inscritos_publica) checked="checked" @endif @if(!\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() && !\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4])) disabled="disabled" @endif > Permite a visualização da lista de inscrições de forma pública?</label>
+								</div>
+								<div class="form-group">
 									<label><input type="checkbox" id="usa_cbx" name="usa_cbx" @if($evento->usa_cbx) checked="checked" @endif @if(!\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() && !\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4])) disabled="disabled" @endif > Utiliza Rating CBX?</label>
 								</div>
 								<div class="form-group">
@@ -164,7 +167,7 @@
 					</div>
 				</section>
 			</div>
-			<div role="tabpanel" class="tab-pane active" id="pagina">
+			<div role="tabpanel" class="tab-pane" id="pagina">
 				<br/>
 				<section class="col-lg-12 connectedSortable">
 					<div class="alert alert-warning alert-dismissible" role="alert">
@@ -186,9 +189,11 @@
 							<div class="box-body">
 								<div class="form-group">
 									<label for="imagem">Imagem</label>
-									@if($evento->imagem)
-										<br/><img src="data:image/png;base64, {!!$evento->imagem!!}" width="100%" style="max-width: 400px"/>
-										<label><input type="checkbox" name="remover_imagem" /> Remover Imagem?</label>
+									@if($evento->pagina)
+										@if($evento->pagina->imagem)
+											<br/><img src="data:image/png;base64, {!!$evento->imagem!!}" width="100%" style="max-width: 400px"/>
+											<label><input type="checkbox" name="remover_imagem" /> Remover Imagem?</label>
+										@endif
 									@endif
 									<input type="file" id="imagem" name="imagem">
 									@if ($errors->has('imagem'))
@@ -200,7 +205,7 @@
 								
 								<div class="form-group">
 									<label for="texto">Texto</label>
-									<textarea class="form-control" id="texto" name="texto" placeholder="Texto sobre o Evento">{{$evento->texto}}</textarea>				
+									<textarea class="form-control" id="texto" name="texto" placeholder="Texto sobre o Evento">@if($evento->pagina){{$evento->pagina->texto}}@endif</textarea>				
 								</div>
 							</div>
 							<!-- /.box-body -->
