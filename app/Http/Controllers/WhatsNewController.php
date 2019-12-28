@@ -9,6 +9,13 @@ class WhatsNewController extends Controller
     public function index(){
         $news = array();
 
+        // Novidades versão 0.0.2.1
+        $new_0020_betha["name"] = "0.0.2.1 Beta";
+        $new_0020_betha["news"] = array();
+        $new_0020_betha["news"][] = "Correção em bug relativo a forma de armazenamento da imagem e descrição do evento.";
+        $new_0020_betha["news"][] = "Agora é possível visualizar a lista de inscrições do evento de forma pública, porém, é necessário que a opção 'Permite a visualização da lista de inscrições de forma pública?' esteja selecionada - Issue #12";
+        $news[] = $new_0020_betha;
+
         // Novidades versão 0.0.2.0
         $new_0020_betha["name"] = "0.0.2.0 Beta";
         $new_0020_betha["news"] = array();

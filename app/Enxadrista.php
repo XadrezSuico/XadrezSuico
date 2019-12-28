@@ -262,4 +262,12 @@ class Enxadrista extends Model
         }
         return Categoria::whereIn("id",$categorias)->get();
     }
+
+    public function getNomePublico(){
+        return $this->name;
+    }
+
+    public function getNascimentoPublico(){
+        return $this->getBorn();
+    }
 }

@@ -182,6 +182,18 @@ class Evento extends Model
         return false;
     }
 
+    public function getInscricoes(){
+        $evento = $this;
+        $inscricoes = Inscricao::whereHas("torneio",function($q1) use ($evento){
+            $q1->where([["evento_id","=",$evento->id]]);
+        })
+        ->join('enxadrista', 'enxadrista.id', '=', 'inscricao.enxadrista_id')
+        ->orderBy("categoria_id","ASC")
+        ->orderBy("enxadrista.name","ASC")
+        ->get();
+        return $inscricoes;
+    }
+
     
     public function isDeletavel(){
         if($this->id != null){

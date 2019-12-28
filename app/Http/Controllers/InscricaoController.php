@@ -30,6 +30,16 @@ class InscricaoController extends Controller
         }
     }
 
+    public function visualizar_inscricoes($id){
+        $evento = Evento::find($id);
+        if($evento){
+            if($evento->e_permite_visualizar_lista_inscritos_publica){
+                return view("inscricao.inscricoes",compact("evento"));
+            }
+        }
+        return redirect("/inscricao/".$id);
+    }
+
 
     public function adicionarNovaInscricao(Request $request){
         if(

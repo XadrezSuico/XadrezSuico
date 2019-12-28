@@ -72,6 +72,7 @@
 <!-- Main row -->
 <ul class="nav nav-pills">
   <li role="presentation"><a href="/inscricao/{{$evento->id}}">Nova Inscrição</a></li>
+  @if($evento->e_permite_visualizar_lista_inscritos_publica) <li role="presentation"><a href="/inscricao/visualizar/{{$evento->id}}">Visualizar Lista de Inscrições</a></li> @endif
 </ul>
 <div class="row">
   <!-- Left col -->
