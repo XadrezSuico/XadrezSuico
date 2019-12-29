@@ -337,4 +337,21 @@ class Enxadrista extends Model
         }
         return $retorno;
     }
+    public function getRatingInterno($tipo_ratings_id){
+        $rating = Rating::where([
+            ["tipo_ratings_id","=",$tipo_ratings_id],
+            ["enxadrista_id","=",$this->id],
+        ])
+        ->first();
+        if($rating) return $rating;
+        return false;
+    }
+
+    public function showRatingInterno($tipo_ratings_id){
+        $rating = $this->getRatingInterno($tipo_ratings_id);
+        if($rating){
+            return $rating->valor;
+        }
+        return false;
+    }
 }

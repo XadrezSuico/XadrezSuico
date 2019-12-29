@@ -271,36 +271,10 @@ class InscricaoGerenciarController extends Controller
             $texto .= $inscricao->enxadrista->id.";";
 
             if($evento->tipo_rating){
-                $rating_regra = TipoRatingRegras::where([
-                        ["tipo_ratings_id","=",$evento->tipo_rating->tipo_ratings_id],
-                    ])
-                    ->where(function($q1) use ($evento,$inscricao){
-                        $q1->where([
-                            ["idade_minima","<=",$inscricao->enxadrista->howOld()],
-                            ["idade_maxima","=",NULL]
-                        ]);
-                        $q1->orWhere([
-                            ["idade_minima","=",NULL],
-                            ["idade_maxima",">=",$inscricao->enxadrista->howOld()]
-                        ]);
-                        $q1->orWhere([
-                            ["idade_minima","<=",$inscricao->enxadrista->howOld()],
-                            ["idade_maxima",">=",$inscricao->enxadrista->howOld()]
-                        ]);
-                    })
-                    ->first();
-                if($inscricao->enxadrista->ratings()->where([["tipo_ratings_id","=",$evento->tipo_rating->tipo_ratings_id]])->count() > 0){
-                    $rating = $inscricao->enxadrista->ratings()->where([["tipo_ratings_id","=",$evento->tipo_rating->tipo_ratings_id]])->first();
-                    
-                    if($rating->valor > 0){
-                        $texto .= $rating->valor.";";
-                    }else{
-                        $texto .= $rating_regra->inicial.";";
-                    }
-                    // $texto .= $rating_regra->k.";";
+                if($inscricao->enxadrista->showRatingInterno($evento->tipo_rating->id)){
+                    $texto .= $inscricao->enxadrista->showRatingInterno($evento->tipo_rating->id).";";
                 }else{
-                    $texto .= $rating_regra->inicial.";";
-                    // $texto .= $rating_regra->k.";";
+                    $texto .= $evento->tipo_rating->tipo_rating->showRatingRegraIdade($inscricao->enxadrista->howOld(),$evento).";";
                 }
             }else{
                 if($evento->usa_fide){
