@@ -10,12 +10,12 @@ class WhatsNewController extends Controller
         $news = array();
 
         // Novidades versão 0.0.2.1
-        $new_0020_betha["name"] = "0.0.2.1 Beta";
-        $new_0020_betha["news"] = array();
-        $new_0020_betha["news"][] = "Correção em bug relativo a forma de armazenamento da imagem e descrição do evento.";
-        $new_0020_betha["news"][] = "Agora é possível visualizar a lista de inscrições do evento de forma pública, porém, é necessário que a opção 'Permite a visualização da lista de inscrições de forma pública?' esteja selecionada - Issue #12";
-        $new_0020_betha["news"][] = "A lista de Enxadristas agora é carregada de acordo com a demanda, assim deixando a lista mais rápida para ser acessada. - Issue #5";
-        $news[] = $new_0020_betha;
+        $new_0021_betha["name"] = "0.0.2.1 Beta";
+        $new_0021_betha["news"] = array();
+        $new_0021_betha["news"][] = "Correção em bug relativo a forma de armazenamento da imagem e descrição do evento.";
+        $new_0021_betha["news"][] = "Agora é possível visualizar a lista de inscrições do evento de forma pública, porém, é necessário que a opção 'Permite a visualização da lista de inscrições de forma pública?' esteja selecionada - Issue #12";
+        $new_0021_betha["news"][] = "A lista de Enxadristas agora é carregada de acordo com a demanda, assim deixando a lista mais rápida para ser acessada. - Issue #5";
+        $news[] = $new_0021_betha;
 
         // Novidades versão 0.0.2.0
         $new_0020_betha["name"] = "0.0.2.0 Beta";
