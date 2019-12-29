@@ -18,6 +18,7 @@ class WhatsNewController extends Controller
         $new_0021_betha["news"][] = "Agora é possível definir que um evento só é permitido a realização de inscrições pelo link (Inscrições Privadas). No caso, há uma informação a mais no link que libera ou não a inscrição para este evento. - Issue #22";
         $new_0021_betha["news"][] = "Agora é possível gerar lista de Enxadristas inscritos em determinado evento. - Issue #17";
         $new_0021_betha["news"][] = "Os ratings FIDE, CBX e LBX agora são divididos pelos seus tipos: Relâmpago, Rápido e Convencional. De acordo com a seleção do tipo de modalidade escolhido no cadastro de evento será apresentado o rating de acordo com o tipo de modalidade escolhida. - Issue #8";
+        $new_0021_betha["news"][] = "A classificação de evento está corrigida, agora quando é finalizada a mesma retorna ao Dashboard de Evento - Já a classificação geral, a mesma já está com a classificação sendo realizada através de solicitações AJAX - Issue #11";
         $news[] = $new_0021_betha;
 
         // Novidades versão 0.0.2.0
