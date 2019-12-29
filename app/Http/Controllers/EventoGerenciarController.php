@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\MessageBag;
 use App\Evento;
 use App\Categoria;
 use App\Inscricao;
@@ -189,7 +190,12 @@ class EventoGerenciarController extends Controller
 			foreach($evento->categorias->all() as $categoria){
 				CategoriaController::classificar($evento->id,$categoria->categoria->id);
 			}
-			// return redirect("/evento");
+
+			$messageBag = new MessageBag;
+			$messageBag->add("alerta","O evento foi classificado com sucesso!");
+			$messageBag->add("type","success");
+
+			return redirect("/evento/dashboard/".$evento->id)->withErrors($messageBag);
 		}
     }
     
