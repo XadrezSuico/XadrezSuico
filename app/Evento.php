@@ -194,6 +194,24 @@ class Evento extends Model
         return $inscricoes;
     }
 
+    public function gerarToken(){
+        if($this->token == null){
+            $this->token = hash("sha1","xadrezSuico".time().$this->id.$this->created_at.rand(0,2345).rand(25,rand(852,658714)));
+        }
+    }
+
+    public function inscricaoLiberada($token){
+        if($this->e_inscricao_apenas_com_link){
+            if($this->token == $token){
+                return true;
+            }else{
+                return false;
+            }
+        }else{
+            return true;
+        }
+    }
+
     
     public function isDeletavel(){
         if($this->id != null){

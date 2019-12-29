@@ -40,7 +40,7 @@
 
 		<div class="box-body">
 			@if($evento->pagina)
-				@if($evento->imagem) <img src="data:image/png;base64, {!!$evento->imagem!!}" width="100%" style="max-width: 800px"/> <br/> @endif
+				@if($evento->pagina->imagem) <img src="data:image/png;base64, {!!$evento->pagina->imagem!!}" width="100%" style="max-width: 800px"/> <br/> @endif
 				@if($evento->pagina->texto) {!!$evento->pagina->texto!!} <br/> @endif
 				@if($evento->pagina->imagem || $evento->pagina->texto) <hr/> @endif
 			@endif

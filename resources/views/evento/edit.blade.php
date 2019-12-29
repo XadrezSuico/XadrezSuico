@@ -59,8 +59,11 @@
 					<a href="{{url("/evento/".$evento->id."/toggleclassificavel")}}" class="btn btn-warning">Atual: @if($evento->classificavel) Permitir @else Não Permitir @endif Classificação Geral deste Evento</a>
 					<a href="{{url("/evento/".$evento->id."/togglemanual")}}" class="btn btn-warning">Atual: Resultados @if($evento->e_resultados_manuais) Manuais @else Automáticos @endif</a>
 				@endif<br/><br/>
-				<a href="{{url("/inscricao/".$evento->id)}}" class="btn btn-default">Link para Inscrição Pública</a><br/><br/>
-
+				@if($evento->e_inscricao_apenas_com_link)
+					<a href="{{url("/inscricao/".$evento->id."?token=".$evento->token)}}" class="btn btn-default">Link para Inscrição Pública (Inscrições Privadas - Apenas via Link)</a><br/><br/>
+				@else
+					<a href="{{url("/inscricao/".$evento->id)}}" class="btn btn-default">Link para Inscrição Pública</a><br/><br/>
+				@endif
 			</div>
 			<!-- /.box-body -->
 		</div>
@@ -134,6 +137,9 @@
 									<label><input type="checkbox" id="e_permite_visualizar_lista_inscritos_publica" name="e_permite_visualizar_lista_inscritos_publica" @if($evento->e_permite_visualizar_lista_inscritos_publica) checked="checked" @endif @if(!\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() && !\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4])) disabled="disabled" @endif > Permite a visualização da lista de inscrições de forma pública?</label>
 								</div>
 								<div class="form-group">
+									<label><input type="checkbox" id="e_inscricao_apenas_com_link" name="e_inscricao_apenas_com_link" @if($evento->e_inscricao_apenas_com_link) checked="checked" @endif @if(!\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() && !\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4])) disabled="disabled" @endif > As inscrições deste evento deverão ser feitas apenas pelo link divulgado (Inscrição Privada)</label>
+								</div>
+								<div class="form-group">
 									<label><input type="checkbox" id="usa_cbx" name="usa_cbx" @if($evento->usa_cbx) checked="checked" @endif @if(!\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() && !\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4])) disabled="disabled" @endif > Utiliza Rating CBX?</label>
 								</div>
 								<div class="form-group">
@@ -191,7 +197,7 @@
 									<label for="imagem">Imagem</label>
 									@if($evento->pagina)
 										@if($evento->pagina->imagem)
-											<br/><img src="data:image/png;base64, {!!$evento->imagem!!}" width="100%" style="max-width: 400px"/>
+											<br/><img src="data:image/png;base64, {!!$evento->pagina->imagem!!}" width="100%" style="max-width: 400px"/>
 											<label><input type="checkbox" name="remover_imagem" /> Remover Imagem?</label>
 										@endif
 									@endif

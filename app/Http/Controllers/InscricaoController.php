@@ -16,14 +16,28 @@ use App\Email;
 
 class InscricaoController extends Controller
 {
-    public function inscricao($id){
+    public function inscricao($id,Request $request){
         $evento = Evento::find($id);
         $sexos = Sexo::all();
+        $token = "";
         if($evento){
-            if($evento->inscricoes_encerradas()){
-                return view("inscricao.encerradas",compact("evento"));
+            if($evento->e_inscricao_apenas_com_link){
+                if($evento->inscricaoLiberada($request->input("token"))){
+                    if($evento->inscricoes_encerradas()){
+                        return view("inscricao.encerradas",compact("evento"));
+                    }else{
+                        $token = $request->input("token");
+                        return view("inscricao.inscricao",compact("evento","sexos","token"));
+                    }
+                }else{
+                    return view("inscricao.naopermitida");
+                }
             }else{
-                return view("inscricao.inscricao",compact("evento","sexos"));
+                if($evento->inscricoes_encerradas()){
+                    return view("inscricao.encerradas",compact("evento"));
+                }else{
+                    return view("inscricao.inscricao",compact("evento","sexos"));
+                }
             }
         }else{
             return view("inscricao.naoha");
@@ -69,7 +83,12 @@ class InscricaoController extends Controller
         if($evento->inscricoes_encerradas(true)){
             return response()->json(["ok"=>0,"error"=>1,"message" => env("MENSAGEM_FIM_INSCRICOES","O prazo de inscrições antecipadas se esgotou ou então o limite de inscritos se completou. As inscrições poderão ser feitas no local do evento conforme regulamento.")]);
         }
-
+        
+        if($evento->e_inscricao_apenas_com_link){
+            if(!$evento->inscricaoLiberada($request->input("token"))){
+                return response()->json(["ok"=>0,"error"=>1,"message" => "A inscrição para este evento deve ser feita com o link de inscrições enviado (Inscrições Privadas)."]);
+            }
+        }
         foreach($evento->campos()->whereHas("campo",function($q1){$q1->where([["is_required","=",true]]);})->get() as $campo){
             if(
                 !$request->has("campo_personalizado_".$campo->campo->id)

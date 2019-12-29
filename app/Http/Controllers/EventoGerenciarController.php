@@ -99,6 +99,14 @@ class EventoGerenciarController extends Controller
 			$evento->data_limite_inscricoes_abertas = NULL;
 		}
 		if($request->has("e_permite_visualizar_lista_inscritos_publica")) $evento->e_permite_visualizar_lista_inscritos_publica = true; else $evento->e_permite_visualizar_lista_inscritos_publica = false;
+		if($request->has("e_inscricao_apenas_com_link")){
+			$evento->e_inscricao_apenas_com_link = true;
+			if($evento->token == null){
+				$evento->gerarToken();
+			}
+		}else{
+			$evento->e_inscricao_apenas_com_link = false;
+		}
 		if($request->has("usa_fide") && !$request->has("usa_lbx")) $evento->usa_fide = true; else $evento->usa_fide = false;
         if($request->has("usa_cbx")) $evento->usa_cbx = true; else $evento->usa_cbx = false;
         if($request->has("usa_lbx")) $evento->usa_lbx = true; else $evento->usa_lbx = false;
