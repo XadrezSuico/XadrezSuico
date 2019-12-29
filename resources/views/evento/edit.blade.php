@@ -111,6 +111,15 @@
 									<input name="data_fim" id="evento_data_fim" class="form-control" type="text" value="{{$evento->getDataFim()}}" @if(!\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() && !\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4])) disabled="disabled" @endif />
 								</div>
 								<div class="form-group">
+									<label for="tipo_modalidade">Tipo de Modalidade *</label>
+									<select name="tipo_modalidade" id="tipo_modalidade" class="form-control width-100" @if(!\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() && !\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4])) disabled="disabled" @endif>
+										<option value="">--- Você pode selecionar um tipo de modalidade ---</option>
+										<option value="0">Convencional</option>
+										<option value="1">Rápido</option>
+										<option value="2">Relâmpago</option>
+									</select>
+								</div>
+								<div class="form-group">
 									<label for="cidade_id">Cidade *</label>
 									<select name="cidade_id" id="cidade_id" class="form-control width-100" @if(!\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() && !\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4])) disabled="disabled" @endif>
 										<option value="">--- Selecione ---</option>
@@ -150,6 +159,7 @@
 								<div class="form-group">
 									<label><input type="checkbox" id="usa_lbx" name="usa_lbx" @if($evento->usa_lbx) checked="checked" @endif @if(!\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() && !\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4])) disabled="disabled" @endif > Utiliza Rating LBX?</label>
 								</div>
+								<hr/>
 								<div class="form-group">
 									<label for="tipo_ratings_id">Tipo de Rating</label>
 									<select name="tipo_ratings_id" id="tipo_ratings_id" class="form-control width-100" @if(!\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() && !\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4])) disabled="disabled" @endif>
@@ -530,6 +540,7 @@
 <script type="text/javascript">
   $(document).ready(function(){
 		$("#torneio_template_id").select2();
+		$("#tipo_modalidade").select2();
 		$("#categoria_id").select2();
 		$("#criterio_desempate_id").select2();
 		$("#criterio_desempate_geral_id").select2();
@@ -538,6 +549,7 @@
 		$("#tipo_ratings_id").select2();
 		$("#cidade_id").select2();
 		$("#cidade_id").val([{{$evento->cidade_id}}]).change();
+		$("#tipo_modalidade").val([{{$evento->tipo_modalidade}}]).change();
 		@if($evento->tipo_rating)
 			$("#tipo_ratings_id").val([{{$evento->tipo_rating->tipo_ratings_id}}]).change();
 		@endif

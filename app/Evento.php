@@ -43,7 +43,7 @@ class Evento extends Model
         return $this->hasMany("App\CriterioDesempateEvento","evento_id","id");
     }
 
-    private function tipo_rating_interno() {
+    public function tipo_rating_interno() {
         return $this->hasOne("App\TipoRatingEvento","evento_id","id");
     }
 

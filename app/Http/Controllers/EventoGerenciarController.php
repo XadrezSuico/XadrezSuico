@@ -11,6 +11,7 @@ use App\CriterioDesempate;
 use App\TipoTorneio;
 use App\Software;
 use App\TipoRating;
+use App\TipoRatingEvento;
 use App\Cidade;
 use App\Pagina;
 use DateTime;
@@ -79,6 +80,7 @@ class EventoGerenciarController extends Controller
         $evento->data_fim = $datetime_data_fim->format('Y-m-d');
         $evento->local = $request->input("local");
         $evento->cidade_id = $request->input("cidade_id");
+        $evento->tipo_modalidade = $request->input("tipo_modalidade");
         if($request->has("link")){
 			$evento->link = $request->input("link");
 		}else{
@@ -109,8 +111,32 @@ class EventoGerenciarController extends Controller
 		}
 		if($request->has("usa_fide") && !$request->has("usa_lbx")) $evento->usa_fide = true; else $evento->usa_fide = false;
         if($request->has("usa_cbx")) $evento->usa_cbx = true; else $evento->usa_cbx = false;
-        if($request->has("usa_lbx")) $evento->usa_lbx = true; else $evento->usa_lbx = false;
-        $evento->save();
+		if($request->has("usa_lbx")) $evento->usa_lbx = true; else $evento->usa_lbx = false;
+		$evento->save();
+		
+		if($request->has("tipo_ratings_id")){
+			if(
+				($evento->tipo_rating_interno && $evento->tipo_rating) || 
+				(!$evento->tipo_rating_interno && !$evento->tipo_rating)
+			){
+				if($request->input("tipo_ratings_id") != ""){
+					if(!$evento->tipo_rating_interno){
+						$tipo_rating = new TipoRatingEvento;
+						$tipo_rating->evento_id = $evento->id;
+						$tipo_rating->tipo_ratings_id = $request->input("tipo_ratings_id");
+						$tipo_rating->save();
+					}else{
+						$evento->tipo_rating_interno->tipo_ratings_id = $request->input("tipo_ratings_id");
+						$evento->tipo_rating_interno->save();
+					}
+				}else{
+					if($evento->tipo_rating_interno){
+						$evento->tipo_rating_interno->delete();
+					}
+				}
+			}
+		}
+
 		return redirect("/evento/dashboard/".$id);
 	}
 

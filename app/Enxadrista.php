@@ -154,6 +154,15 @@ class Enxadrista extends Model
                     }
                     return $rating_regra->inicial;
                 }
+            }else{
+                if($evento->usa_fide){
+                    return $this->showRating(0,$evento->tipo_modalidade)->valor;
+                }elseif($evento->usa_lbx){
+                   return $this->showRating(2,$evento->tipo_modalidade)->valor;
+                }
+                if($evento->usa_cbx){
+                   return $this->showRating(1,$evento->tipo_modalidade)->valor;
+                } 
             }
         }
         return false;
@@ -277,5 +286,37 @@ class Enxadrista extends Model
 
     public function getNascimentoPrivado(){
         return $this->getBorn();
+    }
+
+    public function getRating($entidade,$tipo_modalidade){
+        $rating = Rating::where([
+            ["tipo_modalidade","=",$tipo_modalidade],
+            ["entidade","=",$entidade],
+            ["enxadrista_id","=",$this->id],
+        ])
+        ->whereNull("tipo_ratings_id")
+        ->first();
+        if($rating) return $rating;
+        return false;
+    }
+
+    public function setRating($entidade,$tipo_modalidade,$valor){
+        $rating = $this->getRating($entidade,$tipo_modalidade);
+        if(!$rating){
+            $rating = new Rating;
+            $rating->enxadrista_id = $this->id;
+            $rating->entidade = $entidade;
+            $rating->tipo_modalidade = $tipo_modalidade;
+        }
+        $rating->valor = $valor;
+        $rating->save();
+    }
+
+    public function showRating($entidade,$tipo_modalidade){
+        $rating = $this->getRating($entidade,$tipo_modalidade);
+        if($rating){
+            return $rating->valor;
+        }
+        return false;
     }
 }

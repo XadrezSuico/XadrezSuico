@@ -57,16 +57,18 @@ class CBXRatingController extends Controller
                                             $rating = $column[0];
                                             switch($j){
                                                 case $std:
-
+                                                    echo "Rating STD: ".$rating;
+                                                    $enxadrista->setRating(1,0,$rating);
                                                     break;
 
                                                 case $rpd:
-                                                    echo "Rating: ".$rating;
-                                                    $enxadrista->cbx_rating = $rating;
+                                                    echo "Rating RPD: ".$rating;
+                                                    $enxadrista->setRating(1,1,$rating);
                                                     break;
 
                                                 case $btz:
-
+                                                    echo "Rating BTZ: ".$rating;
+                                                    $enxadrista->setRating(1,2,$rating);
                                                     break;
                                             }
                                         }else{

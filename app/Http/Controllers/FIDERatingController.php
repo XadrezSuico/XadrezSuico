@@ -52,11 +52,12 @@ class FIDERatingController extends Controller
                                         $exp_rpd = explode($rpd,$column[0]);
                                         $exp_btz = explode($btz,$column[0]);
                                         $rating = Util::numeros($column[0]);
+                                        
                                         echo "Rating: ".$rating;
                                         if(count($exp_std) == 2){
                                             if(is_int(intval($rating))){
                                                 if(intval($rating) > 0){
-                                                    $enxadrista->fide_rating = intval($rating);
+                                                    $enxadrista->setRating(0,0,intval($rating));
                                                 }
                                             }else{
                                                 echo "Erro Rating não é inteiro!";
@@ -64,13 +65,19 @@ class FIDERatingController extends Controller
                                         }elseif(count($exp_rpd) == 2){
                                             if(is_int(intval($rating))){
                                                 if(intval($rating) > 0){
-                                                    $enxadrista->fide_rating = intval($rating);
+                                                    $enxadrista->setRating(0,1,intval($rating));
                                                 }
                                             }else{
                                                 echo "Erro Rating não é inteiro!";
                                             }
-                                        }elseif(count($exp_rpd) == 2){
-                                            
+                                        }elseif(count($exp_btz) == 2){
+                                            if(is_int(intval($rating))){
+                                                if(intval($rating) > 0){
+                                                    $enxadrista->setRating(0,2,intval($rating));
+                                                }
+                                            }else{
+                                                echo "Erro Rating não é inteiro!";
+                                            }
                                         }else{
                                             echo "Erro Nenhum tipo de rating encontrado";
                                         }

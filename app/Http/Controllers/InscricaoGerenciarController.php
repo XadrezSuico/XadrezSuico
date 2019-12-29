@@ -304,13 +304,13 @@ class InscricaoGerenciarController extends Controller
                 }
             }else{
                 if($evento->usa_fide){
-                    $texto .= $inscricao->enxadrista->fide_rating.";";
+                    $texto .= $inscricao->enxadrista->showRating(0,$evento->tipo_modalidade)->valor.";";
                 }elseif($evento->usa_lbx){
-                    $texto .= $inscricao->enxadrista->lbx_rating.";";
+                    $texto .= $inscricao->enxadrista->showRating(2,$evento->tipo_modalidade)->valor.";";
                     $texto .= $inscricao->enxadrista->lbx_id.";";
                 }
                 if($evento->usa_cbx){
-                    $texto .= $inscricao->enxadrista->cbx_rating.";";
+                    $texto .= $inscricao->enxadrista->showRating(1,$evento->tipo_modalidade)->valor.";";
                 } 
             }
 

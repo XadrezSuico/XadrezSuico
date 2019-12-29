@@ -48,9 +48,9 @@
                             <td>{{$inscricao->id}}</td>
                             <td>#{{$inscricao->enxadrista->id}} - {{$inscricao->enxadrista->name}}</td>
                             @if($evento->tipo_rating) <td>@if($inscricao->enxadrista->ratings()->where([["tipo_ratings_id","=",$evento->tipo_rating->tipo_ratings_id]])->count() > 0) {{$inscricao->enxadrista->ratings()->where([["tipo_ratings_id","=",$evento->tipo_rating->tipo_ratings_id]])->first()->valor}} @else Não Há @endif</td> @endif
-                            @if($evento->usa_fide) <td>{{$inscricao->enxadrista->fide_rating}}</td> @endif
-                            @if($evento->usa_cbx) <td>{{$inscricao->enxadrista->cbx_rating}}</td> @endif
-                            @if($evento->usa_lbx) <td>{{$inscricao->enxadrista->lbx_rating}}</td> @endif
+                            @if($evento->usa_fide) <td>{{$inscricao->enxadrista->showRating(0,$evento->tipo_modalidade)}}</td> @endif
+                            @if($evento->usa_cbx) <td>{{$inscricao->enxadrista->showRating(1,$evento->tipo_modalidade)}}</td> @endif
+                            @if($evento->usa_lbx) <td>{{$inscricao->enxadrista->showRating(2,$evento->tipo_modalidade)}}</td> @endif
                             <td>{{$inscricao->categoria->name}}</td>
                             <td>{{$inscricao->cidade->name}}</td>
                             <td>@if($inscricao->clube) {{$inscricao->clube->name}} @else Sem Clube @endif</td>
