@@ -16,6 +16,8 @@ use App\TipoRatingEvento;
 use App\Cidade;
 use App\Pagina;
 use DateTime;
+use App\Exports\EnxadristasFromView;
+use Maatwebsite\Excel\Facades\Excel;
 
 
 class EventoGerenciarController extends Controller
@@ -303,5 +305,11 @@ class EventoGerenciarController extends Controller
             return view("evento.inscricoes",compact("evento"));
         }
         return redirect("/evento");
-    }
+	}
+	
+	public function downloadListaManagerParaEvento($id){
+		$enxadristasView = new EnxadristasFromView();
+		$enxadristasView->setEvento($id);
+		return Excel::download($enxadristasView, 'xadresSuico_evento_'.$id.'_lista_enxadristas_'.date('d-m-Y--H-i-s').'.xlsx');
+	}
 }

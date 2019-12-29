@@ -56,6 +56,13 @@
 				<a href="{{url("/evento/".$evento->id)}}/inscricoes/list" class="btn btn-default">Visualizar Lista de Inscritos (Completa)</a><br/><br/>
 
 				@if(
+					\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
+					\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4])
+				)
+					<a href="{{url("/evento/".$evento->id)}}/enxadristas/sm" class="btn btn-success" target="_blank">Baixar Lista de Rating para Uso neste Evento (Para Swiss-Manager)</a><br/><br/>
+				@endif
+
+				@if(
 					\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal()
 				)
 					<a href="{{url("/evento/".$evento->id."/toggleclassificavel")}}" class="btn btn-warning">Atual: @if($evento->classificavel) Permitir @else Não Permitir @endif Classificação Geral deste Evento</a>

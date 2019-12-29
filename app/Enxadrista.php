@@ -319,4 +319,22 @@ class Enxadrista extends Model
         }
         return false;
     }
+
+    public function getNameToSM(){
+        $nome = $this->getName();
+        $explode = explode(" ",$nome);
+        $count = count($explode);
+        $i = 1;
+        $retorno = "";
+        foreach($explode as $part_nome){
+            $retorno .= $part_nome;
+            if($i == ($count - 1)){
+                $retorno .= ",";
+            }elseif($i != $count){
+                $retorno .= " ";
+            }
+            $i++;
+        }
+        return $retorno;
+    }
 }
