@@ -192,6 +192,7 @@ Route::group(["prefix"=>"enxadrista"],function(){
 	Route::get('/edit/{id}', 'EnxadristaController@edit')->name('enxadrista.edit');
 	Route::post('/edit/{id}', 'EnxadristaController@edit_post')->name('enxadrista.edit.post');
 	Route::get('/delete/{id}', 'EnxadristaController@delete')->name('enxadrista.delete');
+	Route::get('/api/searchList', 'EnxadristaController@searchEnxadristasList')->name('enxadrista.api.list');
 });
 
 Route::group(["prefix"=>"sexo"],function(){

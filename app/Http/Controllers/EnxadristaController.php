@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use App\Enxadrista;
 use App\Cidade;
 use App\Clube;
@@ -14,7 +15,8 @@ class EnxadristaController extends Controller
 		return $this->middleware("auth");
 	}
     public function index(){
-        $enxadristas = Enxadrista::all();
+        // $enxadristas = Enxadrista::all();
+        $enxadristas = Enxadrista::where([["id","=",1]])->get();
         return view('enxadrista.index',compact("enxadristas"));
     }
     public function new(){
@@ -195,5 +197,144 @@ class EnxadristaController extends Controller
             $enxadrista->delete();
         }
         return redirect("/enxadrista");
+    }
+
+
+    /*
+     *
+     * 
+     * API
+     * 
+     * 
+     */ 
+    public function searchEnxadristasList($type = 0,Request $request){
+        $permitido_edicao = false;
+        if(
+            Auth::user()->hasPermissionGlobal() ||
+            Auth::user()->hasPermissionEventsByPerfil([4])
+        ){
+            $permitido_edicao = true;
+        }
+
+
+        $requisicao = $request->all();
+
+        $enxadristaBorn = new Enxadrista();
+
+        $recordsTotal = Enxadrista::count();
+        $enxadristas = Enxadrista::where([["name","like","%".$requisicao["search"]["value"]."%"]]);
+        $enxadristas->orWhere([["id","=",$requisicao["search"]["value"]]]);
+        $enxadristas->orWhere(function($q1) use ($requisicao){
+            $q1->whereHas("sexo",function($q2) use ($requisicao){
+                $q2->where([["name","like","%".$requisicao["search"]["value"]."%"]]);
+                $q2->orWhere([["abbr","like","%".$requisicao["search"]["value"]."%"]]);
+            });
+        });
+
+        $enxadristaBorn->setBorn($requisicao["search"]["value"]);
+        if($enxadristaBorn->getBorn()){
+            $enxadristas->orWhere([["born","=",$enxadristaBorn->getBorn()]]);
+        }
+
+        $enxadristas->orWhere([["fide_id","=",$requisicao["search"]["value"]]]);
+        $enxadristas->orWhere([["cbx_id","=",$requisicao["search"]["value"]]]);
+        $enxadristas->orWhere([["lbx_id","=",$requisicao["search"]["value"]]]);
+        $enxadristas->orWhere(function($q1) use ($requisicao){
+            $q1->whereHas("cidade",function($q2) use ($requisicao){
+                $q2->where([["name","like","%".$requisicao["search"]["value"]."%"]]);
+            });
+        });
+        $enxadristas->orWhere(function($q1) use ($requisicao){
+            $q1->whereHas("clube",function($q2) use ($requisicao){
+                $q2->where([["name","like","%".$requisicao["search"]["value"]."%"]]);
+            });
+        });
+
+        switch($requisicao["order"][0]["column"]){
+        case 1:
+            $enxadristas->orderBy("name",mb_strtoupper($requisicao["order"][0]["dir"]));
+            break;
+        case 2:
+            $enxadristas->orderBy("born",mb_strtoupper($requisicao["order"][0]["dir"]));
+            break;
+        case 3:
+            $enxadristas->orderBy("sexos_id",mb_strtoupper($requisicao["order"][0]["dir"]));
+            break;
+        case 4:
+            $enxadristas->orderBy("fide_id",mb_strtoupper($requisicao["order"][0]["dir"]));
+            $enxadristas->orderBy("cbx_id",mb_strtoupper($requisicao["order"][0]["dir"]));
+            $enxadristas->orderBy("lbx_id",mb_strtoupper($requisicao["order"][0]["dir"]));
+            break;
+        case 5:
+            $enxadristas->orderBy("cidade_id",mb_strtoupper($requisicao["order"][0]["dir"]));
+            break;
+        case 6:
+            $enxadristas->orderBy("clube_id",mb_strtoupper($requisicao["order"][0]["dir"]));
+            break;
+        default:
+            $enxadristas->orderBy("id",mb_strtoupper($requisicao["order"][0]["dir"]));
+        }
+        $total = count($enxadristas->get());
+        $enxadristas->limit($requisicao["length"]);
+        $enxadristas->skip($requisicao["start"]);
+
+        $retorno = array("draw"=>$requisicao["draw"],"recordsTotal"=>$recordsTotal,"recordsFiltered"=>$total,"data"=>array(),"requisicao"=>$requisicao);
+        foreach($enxadristas->get() as $enxadrista){
+        $p = array();
+        $p[0] = $enxadrista->id;
+        $p[1] = $enxadrista->name;
+
+        $p[2] = $enxadrista->getBorn();
+
+        $p[3] = $enxadrista->sexo->name;
+
+        $p[4] = "";
+        if($enxadrista->cbx_id){
+            $p[4] .= "CBX: ".$enxadrista->cbx_id."<br/>";
+        }
+        if($enxadrista->fide_id){
+            $p[4] .= "FIDE: ".$enxadrista->fide_id."<br/>";
+        }
+        if($enxadrista->lbx_id){
+            $p[4] .= "LBX: ".$enxadrista->lbx_id."<br/>";
+        }
+
+        $p[5] = $enxadrista->cidade->id;
+
+        if($enxadrista->clube){
+            $p[6] = $enxadrista->clube->name;
+        }else{
+            $p[6] = "Não possui clube";
+        }
+        
+        $p[7] = "";
+        if($permitido_edicao) $p[7] .= '<a href="'.url("/enxadrista/edit/".$enxadrista->id).'" title="Editar Enxadrista: '.$enxadrista->id.' '.$enxadrista->name.'" class="btn btn-success btn-sm" data-toggle="tooltip" data-original-title="Editar Enxadrista"><i class="fa fa-edit"></i></a>';
+        if($enxadrista->isDeletavel() && $permitido_edicao){
+             $p[7] .= '<button type="button" class="btn btn-danger btn-sm" data-toggle="modal" title="Deletar Enxadrista: '.$enxadrista->id.' '.$enxadrista->name.'" data-target="#modalDelete_'.$enxadrista->id.'"><i class="fa fa-times"></i></button>
+                    <!-- Modal Exclusão -->
+                    <div class="modal fade modal-danger" id="modalDelete_'.$enxadrista->id.'" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                        <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title" id="myModalLabel">Efetuar Exclusão - Enxadrista #'.$enxadrista->id.': '.$enxadrista->nome.'</h4>
+                            </div>
+                            <div class="modal-body">
+                            <h2>Você tem certeza que pretende fazer isso?</h2><br>
+                            A viagem será deletada e não será possível recuperá-la.
+                            <h4>Você deseja ainda assim efetuar a exclusão?</h4>
+                            </div>
+                            <div class="modal-footer">
+                            <button type="button" class="btn btn-success" data-dismiss="modal">Não quero mais</button>
+                            <a class="btn btn-danger" href="'.url("/enxadrista/delete/".$enxadrista->id).'">Efetuar a exclusão</a>
+                            </div>
+                        </div>
+                        </div>
+                    </div>';
+        }
+
+        $retorno["data"][] = $p;
+        }
+        return response()->json($retorno);
     }
 }
