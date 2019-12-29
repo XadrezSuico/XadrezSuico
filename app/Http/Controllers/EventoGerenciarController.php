@@ -262,4 +262,14 @@ class EventoGerenciarController extends Controller
 		$criterios = $torneio->getCriteriosTotal();
 		return view("evento.publico.list",compact("evento","categoria","inscricoes","criterios"));
 	}
+
+	
+
+    public function visualizar_inscricoes($id){
+        $evento = Evento::find($id);
+        if($evento){
+            return view("evento.inscricoes",compact("evento"));
+        }
+        return redirect("/evento");
+    }
 }

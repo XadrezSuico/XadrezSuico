@@ -270,4 +270,12 @@ class Enxadrista extends Model
     public function getNascimentoPublico(){
         return $this->getBorn();
     }
+
+    public function getNomePrivado(){
+        return $this->name;
+    }
+
+    public function getNascimentoPrivado(){
+        return $this->getBorn();
+    }
 }

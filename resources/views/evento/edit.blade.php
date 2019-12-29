@@ -53,6 +53,8 @@
 				@endif
 				<a href="{{url("/evento/classificacao/".$evento->id)}}/interno" class="btn btn-default">Visualizar Classificação (Interna)</a><br/><br/>
 
+				<a href="{{url("/evento/".$evento->id)}}/inscricoes/list" class="btn btn-default">Visualizar Lista de Inscritos (Completa)</a><br/><br/>
+
 				@if(
 					\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal()
 				)
