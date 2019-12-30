@@ -49,4 +49,18 @@ class TipoRating extends Model
         }
         return 0;
     }
+
+    public function isDeletavel(){
+        if($this->id != null){
+            if(
+                $this->ratings()->count() > 0 ||
+                $this->regras()->count() > 0
+            ){
+                return false;
+            }
+            return true;
+        }else{
+            return false;
+        }
+    }
 }

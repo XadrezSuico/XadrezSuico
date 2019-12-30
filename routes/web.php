@@ -255,6 +255,19 @@ Route::group(["prefix"=>"torneiotemplate"],function(){
         Route::get('/remove/{categoria_torneio_id}', 'TorneioTemplateController@categoria_remove')->name('torneiotemplate.categoria.remove');
     });
 });
+
+Route::group(["prefix"=>"tiporating"],function(){
+	Route::get('/', 'TipoRatingController@index')->name('tiporating.index');
+	Route::get('/new', 'TipoRatingController@new')->name('tiporating.new');
+	Route::post('/new', 'TipoRatingController@new_post')->name('tiporating.new.post');
+	Route::get('/dashboard/{id}', 'TipoRatingController@dashboard')->name('tiporating.dashboard');
+	Route::post('/dashboard/{id}', 'TipoRatingController@dashboard_post')->name('tiporating.dashboard.post');
+	Route::get('/delete/{id}', 'TipoRatingController@delete')->name('tiporating.delete');
+    Route::group(["prefix"=>"{id}/regra"],function(){
+        Route::post('/add', 'TipoRatingController@regra_add')->name('tiporating.regra.add');
+        Route::get('/remove/{tipo_rating_regra_id}', 'TipoRatingController@regra_remove')->name('tiporating.regra.remove');
+    });
+});
 Route::group(["prefix"=>"update"],function(){
     Route::get('/cbx/rating', 'CBXRatingController@updateRatings')->name('update.cbx.rating');
     Route::get('/fide/rating', 'FIDERatingController@updateRatings')->name('update.fide.rating');

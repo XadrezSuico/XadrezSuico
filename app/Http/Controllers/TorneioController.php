@@ -284,23 +284,28 @@ class TorneioController extends Controller
 									}
 								}
 								
-								$exp_meio = explode("½",$line[($fields["Val+/-"])]);
-								$exp_virgula = explode(",",$line[($fields["Val+/-"])]);
 
-								if(!is_null($line[($fields["Val+/-"])])){
-									if($line[($fields["Val+/-"])] != ''){
-										$retornos[] = date("d/m/Y H:i:s")." - Criando a movimentação do rating desta etapa. Modificação:".((count($exp_meio) > 1) ? $exp_meio[0].".5" : (count($exp_virgula) > 1) ? $exp_virgula[0].".".$exp_virgula[1] : $exp_virgula[0]).".";
+								if(isset($fields["Val+/-"])){
+									if(!is_null($line[($fields["Val+/-"])])){
+										if($line[($fields["Val+/-"])] != ''){
+											$exp_meio = explode("½",$line[($fields["Val+/-"])]);
+											$exp_virgula = explode(",",$line[($fields["Val+/-"])]);
 
-										$movimentacao = new MovimentacaoRating;
-										$movimentacao->tipo_ratings_id = $rating->tipo_ratings_id;
-										$movimentacao->ratings_id = $rating->id;
-										$movimentacao->torneio_id = $torneio->id;
-										$movimentacao->inscricao_id = $inscricao->id;
-										$movimentacao->valor = (count($exp_meio) > 1) ? $exp_meio[0].".5" : (count($exp_virgula) > 1) ? $exp_virgula[0].".".$exp_virgula[1] : $exp_virgula[0];
-										$movimentacao->is_inicial = false;
-										$movimentacao->save();
-										$retornos[] = date("d/m/Y H:i:s")." - Movimentação salva. Calculando e atualizando rating do enxadrista.";
-										$rating->calcular();
+											$retornos[] = date("d/m/Y H:i:s")." - Criando a movimentação do rating desta etapa. Modificação:".((count($exp_meio) > 1) ? $exp_meio[0].".5" : (count($exp_virgula) > 1) ? $exp_virgula[0].".".$exp_virgula[1] : $exp_virgula[0]).".";
+
+											$movimentacao = new MovimentacaoRating;
+											$movimentacao->tipo_ratings_id = $rating->tipo_ratings_id;
+											$movimentacao->ratings_id = $rating->id;
+											$movimentacao->torneio_id = $torneio->id;
+											$movimentacao->inscricao_id = $inscricao->id;
+											$movimentacao->valor = (count($exp_meio) > 1) ? $exp_meio[0].".5" : (count($exp_virgula) > 1) ? $exp_virgula[0].".".$exp_virgula[1] : $exp_virgula[0];
+											$movimentacao->is_inicial = false;
+											$movimentacao->save();
+											$retornos[] = date("d/m/Y H:i:s")." - Movimentação salva. Calculando e atualizando rating do enxadrista.";
+											$rating->calcular();
+										}else{
+											$retornos[] = date("d/m/Y H:i:s")." - O rating veio nulo. Ignorando alteração.";
+										}
 									}else{
 										$retornos[] = date("d/m/Y H:i:s")." - O rating veio nulo. Ignorando alteração.";
 									}
@@ -308,36 +313,40 @@ class TorneioController extends Controller
 									$retornos[] = date("d/m/Y H:i:s")." - O rating veio nulo. Ignorando alteração.";
 								}
 							}else{
-								if(!is_null($line[($fields["Val+/-"])])){
-									if($line[($fields["Val+/-"])] != ''){
-										$retornos[] = date("d/m/Y H:i:s")." - O Enxadrista não possui rating deste tipo. Criando o rating.";
-										$rating = new Rating;
-										$rating->enxadrista_id = $enxadrista->id;
-										$rating->tipo_ratings_id = $inscricao->torneio->evento->tipo_rating->tipo_ratings_id;
-										$rating->valor = 0;
-										$rating->save();
+								if(isset($fields["Val+/-"])){
+									if(!is_null($line[($fields["Val+/-"])])){
+										if($line[($fields["Val+/-"])] != ''){
+											$retornos[] = date("d/m/Y H:i:s")." - O Enxadrista não possui rating deste tipo. Criando o rating.";
+											$rating = new Rating;
+											$rating->enxadrista_id = $enxadrista->id;
+											$rating->tipo_ratings_id = $inscricao->torneio->evento->tipo_rating->tipo_ratings_id;
+											$rating->valor = 0;
+											$rating->save();
 
-										$movimentacao = new MovimentacaoRating;
-										$movimentacao->tipo_ratings_id = $rating->tipo_ratings_id;
-										$movimentacao->ratings_id = $rating->id;
-										$movimentacao->valor = $inscricao->torneio->evento->getRegraRating($enxadrista->id)->inicial;
-										$movimentacao->is_inicial = true;
-										$movimentacao->save();
-										$retornos[] = date("d/m/Y H:i:s")." - Rating #".$rating->id.".";
-												
-										$exp_meio = explode("½",$line[($fields["Val+/-"])]);
-										$exp_virgula = explode(",",$line[($fields["Val+/-"])]);
+											$movimentacao = new MovimentacaoRating;
+											$movimentacao->tipo_ratings_id = $rating->tipo_ratings_id;
+											$movimentacao->ratings_id = $rating->id;
+											$movimentacao->valor = $inscricao->torneio->evento->tipo_rating->tipo_rating->showRatingRegraIdade($inscricao->enxadrista->howOld(),$inscricao->torneio->evento);
+											$movimentacao->is_inicial = true;
+											$movimentacao->save();
+											$retornos[] = date("d/m/Y H:i:s")." - Rating #".$rating->id.".";
+													
+											$exp_meio = explode("½",$line[($fields["Val+/-"])]);
+											$exp_virgula = explode(",",$line[($fields["Val+/-"])]);
 
-										$retornos[] = date("d/m/Y H:i:s")." - Criando a movimentação do rating desta etapa. Modificação:".((count($exp_meio) > 1) ? $exp_meio[0].".5" : (count($exp_virgula) > 1) ? $exp_virgula[0].".".$exp_virgula[1] : $exp_virgula[0]).".";
-										$movimentacao = new MovimentacaoRating;
-										$movimentacao->tipo_ratings_id = $rating->tipo_ratings_id;
-										$movimentacao->ratings_id = $rating->id;
-										$movimentacao->torneio_id = $torneio->id;
-										$movimentacao->inscricao_id = $inscricao->id;
-										$movimentacao->valor = (count($exp_meio) > 1) ? $exp_meio[0].".5" : (count($exp_virgula) > 1) ? $exp_virgula[0].".".$exp_virgula[1] : $exp_virgula[0];
-										$movimentacao->is_inicial = false;
-										$movimentacao->save();
-										$rating->calcular();
+											$retornos[] = date("d/m/Y H:i:s")." - Criando a movimentação do rating desta etapa. Modificação:".((count($exp_meio) > 1) ? $exp_meio[0].".5" : (count($exp_virgula) > 1) ? $exp_virgula[0].".".$exp_virgula[1] : $exp_virgula[0]).".";
+											$movimentacao = new MovimentacaoRating;
+											$movimentacao->tipo_ratings_id = $rating->tipo_ratings_id;
+											$movimentacao->ratings_id = $rating->id;
+											$movimentacao->torneio_id = $torneio->id;
+											$movimentacao->inscricao_id = $inscricao->id;
+											$movimentacao->valor = (count($exp_meio) > 1) ? $exp_meio[0].".5" : (count($exp_virgula) > 1) ? $exp_virgula[0].".".$exp_virgula[1] : $exp_virgula[0];
+											$movimentacao->is_inicial = false;
+											$movimentacao->save();
+											$rating->calcular();
+										}else{
+											$retornos[] = date("d/m/Y H:i:s")." - O rating veio nulo. Ignorando alteração.";
+										}
 									}else{
 										$retornos[] = date("d/m/Y H:i:s")." - O rating veio nulo. Ignorando alteração.";
 									}

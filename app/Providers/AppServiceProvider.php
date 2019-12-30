@@ -99,6 +99,11 @@ class AppServiceProvider extends ServiceProvider
                         'url'  => '/sexo',
                         'icon' => 'user'
                     ]);
+                    $event->menu->add([
+                        'text' => 'Tipo de Rating',
+                        'url'  => '/tiporating',
+                        'icon' => 'star'
+                    ]);
                 }
                 if(
                     $user->hasPermissionGlobalbyPerfil([1])
