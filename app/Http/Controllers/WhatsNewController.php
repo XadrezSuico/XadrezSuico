@@ -20,6 +20,7 @@ class WhatsNewController extends Controller
         $new_0021_betha["news"][] = "Os ratings FIDE, CBX e LBX agora são divididos pelos seus tipos: Relâmpago, Rápido e Convencional. De acordo com a seleção do tipo de modalidade escolhido no cadastro de evento será apresentado o rating de acordo com o tipo de modalidade escolhida. - Issue #8";
         $new_0021_betha["news"][] = "A classificação de evento está corrigida, agora quando é finalizada a mesma retorna ao Dashboard de Evento - Já a classificação geral, a mesma já está com a classificação sendo realizada através de solicitações AJAX - Issue #11";
         $new_0021_betha["news"][] = "Agora é possível criar Tipos de Rating dentro do sistema e suas regras. - Issue #2";
+        $new_0021_betha["news"][] = "Agora há a integração do sistema com o LBXRatingServer para importação 'automática' do Rating LBX. - Issue #9";
         $news[] = $new_0021_betha;
 
         // Novidades versão 0.0.2.0
