@@ -58,6 +58,18 @@ CLARO! Faça um fork do projeto e nos ajude a deixar esse projeto ainda com aind
 -----
 
 ## O que há de novo?
+### Versão 0.0.2.1 Beta
+ - Correção em bug relativo a forma de armazenamento da imagem e descrição do evento.
+ - Agora é possível visualizar a lista de inscrições do evento de forma pública, porém, é necessário que a opção 'Permite a visualização da lista de inscrições de forma pública?' esteja selecionada - Issue #12
+ - A lista de Enxadristas agora é carregada de acordo com a demanda, assim deixando a lista mais rápida para ser acessada. - Issue #5
+ - Agora é possível definir que um evento só é permitido a realização de inscrições pelo link (Inscrições Privadas). No caso, há uma informação a mais no link que libera ou não a inscrição para este evento. - Issue #22
+ - Agora é possível gerar lista de Enxadristas inscritos em determinado evento. - Issue #17
+ - Os ratings FIDE, CBX e LBX agora são divididos pelos seus tipos: Relâmpago, Rápido e Convencional. De acordo com a seleção do tipo de modalidade escolhido no cadastro de evento será apresentado o rating de acordo com o tipo de modalidade escolhida. - Issue #8
+ - A classificação de evento está corrigida, agora quando é finalizada a mesma retorna ao Dashboard de Evento - Já a classificação geral, a mesma já está com a classificação sendo realizada através de solicitações AJAX - Issue #11
+ - Agora é possível criar Tipos de Rating dentro do sistema e suas regras. - Issue #2
+ - Agora há a integração do sistema com o LBXRatingServer para importação 'automática' do Rating LBX. - Issue #9
+
+
 ### Versão 0.0.2.0 Beta
  - Agora é possível definir uma imagem e um texto de apresentação do evento. - Issue #3
 
