@@ -160,33 +160,6 @@ class EnxadristaController extends Controller
         }else{
             $enxadrista->lbx_id = NULL;
         }
-        if($request->has("fide_rating")){
-            if($request->input("fide_rating")){
-                $enxadrista->fide_rating = $request->input("fide_rating");
-            }else{
-                $enxadrista->fide_rating = NULL;
-            }
-        }else{
-            $enxadrista->fide_rating = NULL;
-        }
-        if($request->has("cbx_rating")){
-            if($request->input("cbx_rating")){
-                $enxadrista->cbx_rating = $request->input("cbx_rating");
-            }else{
-                $enxadrista->cbx_rating = NULL;
-            }
-        }else{
-            $enxadrista->cbx_rating = NULL;
-        }
-        if($request->has("lbx_rating")){
-            if($request->input("lbx_rating")){
-                $enxadrista->lbx_rating = $request->input("lbx_rating");
-            }else{
-                $enxadrista->lbx_rating = NULL;
-            }
-        }else{
-            $enxadrista->lbx_rating = NULL;
-        }
         $enxadrista->save();
         return redirect("/enxadrista/edit/".$enxadrista->id);
     }
