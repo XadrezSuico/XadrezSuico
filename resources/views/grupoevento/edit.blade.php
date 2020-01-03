@@ -170,20 +170,40 @@
 									</thead>
 									<tbody>
 										@foreach($grupo_evento->eventos->all() as $evento)
-											<tr>
-												<td>{{$evento->id}}</td>
-												<td>{{$evento->name}}</td>
-												<td>{{$evento->getDataInicio()}}<br/>{{$evento->getDataFim()}}</td>
-												<td>{{$evento->cidade->name}} - {{$evento->local}}</td>
-												<td>
-													Total: {{$evento->quantosInscritos()}}<br/>
-													Confirmados: {{$evento->quantosInscritosConfirmados()}}
-												</td>
-												<td>
-													<a class="btn btn-default" href="{{url("/evento/dashboard/".$evento->id)}}" role="button">Dashboard</a>
-													@if($evento->isDeletavel()) <a class="btn btn-danger" href="{{url("/evento/delete/".$evento->id)}}" role="button">Apagar</a> @endif
-												</td>
-											</tr>
+											@if(
+												\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
+												\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[3,4,5]) ||
+												\Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[6])
+											)
+												<tr>
+													<td>{{$evento->id}}</td>
+													<td>{{$evento->name}}</td>
+													<td>{{$evento->getDataInicio()}}<br/>{{$evento->getDataFim()}}</td>
+													<td>{{$evento->cidade->name}} - {{$evento->local}}</td>
+													<td>
+														Total: {{$evento->quantosInscritos()}}<br/>
+														Confirmados: {{$evento->quantosInscritosConfirmados()}}
+                                    					Presentes: {{$evento->quantosInscritosPresentes()}}
+													</td>
+													<td>
+													    @if(
+															\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
+															\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[3,4]) ||
+															\Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[6])
+														)
+															<a class="btn btn-default" href="{{url("/evento/dashboard/".$evento->id)}}" role="button">Dashboard</a>
+														@endif
+														@if(
+															\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
+															\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4,5])
+														)
+															<a class="btn btn-success" href="{{url("/evento/inscricao/".$evento->id)}}" role="button">Nova Inscrição</a>
+															<a class="btn btn-success" href="{{url("/evento/inscricao/".$evento->id."/confirmacao")}}" role="button">Confirmar Inscrição</a>
+														@endif
+														@if($evento->isDeletavel() && \Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal()) <a class="btn btn-danger" href="{{url("/evento/delete/".$evento->id)}}" role="button">Apagar</a> @endif
+													</td>
+												</tr>
+											@endif
 										@endforeach
 									</tbody>
 								</table>

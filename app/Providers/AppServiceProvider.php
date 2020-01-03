@@ -40,17 +40,6 @@ class AppServiceProvider extends ServiceProvider
                 $event->menu->add("ACESSO RESTRITO");
                 if(
                     $user->hasPermissionGlobal() || 
-                    $user->hasPermissionEventsByPerfil([3,4,5]) || 
-                    $user->hasPermissionGroupEventsByPerfil([6])
-                ){
-                    $event->menu->add([
-                        'text' => 'Eventos',
-                        'url'  => '/evento',
-                        'icon' => 'fort-awesome'
-                    ]);
-                }
-                if(
-                    $user->hasPermissionGlobal() || 
                     $user->hasPermissionEventsByPerfil([3,4])
                 ){
                     $event->menu->add([
@@ -59,10 +48,10 @@ class AppServiceProvider extends ServiceProvider
                         'icon' => 'user'
                     ]);
                 }
-                $event->menu->add("ADMINSTRAÇÃO");
                 
                 if(
                     $user->hasPermissionGlobal() || 
+                    $user->hasPermissionEventsByPerfil([3,4,5]) || 
                     $user->hasPermissionGroupEventsByPerfil([6])
                 ){
                     $event->menu->add([
@@ -71,6 +60,7 @@ class AppServiceProvider extends ServiceProvider
                         'icon' => 'th-large'
                     ]);
                 }
+                $event->menu->add("ADMINSTRAÇÃO");
                 if(
                     $user->hasPermissionGlobal()
                 ){

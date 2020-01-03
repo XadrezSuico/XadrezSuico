@@ -21,7 +21,7 @@
 @section("content")
 <!-- Main row -->
 <ul class="nav nav-pills">
-  <li role="presentation"><a href="/evento">Voltar a Lista de Eventos</a></li>
+  <li role="presentation"><a href="/grupoevento/dashboard/{{$evento->grupo_evento->id}}">Voltar a Dashboard de Grupo de Evento</a></li>
 </ul>
 <div class="row">
   <!-- Left col -->
