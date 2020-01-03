@@ -31,6 +31,10 @@ class Evento extends Model
         return $this->belongsTo("App\Cidade","cidade_id","id");
     }
 
+    public function categorias_cadastradas() {
+        return $this->hasMany("App\Categoria","evento_id","id");
+    }
+
     public function categorias() {
         return $this->hasMany("App\CategoriaEvento","evento_id","id");
     }

@@ -24,7 +24,7 @@
                 <select id="categoria_id" name="categoria_id" class="form-control">
                     <option value=""> -- Selecione uma Categoria antes de acessar a Lista de Resultados Gerais --</option>
                     @foreach($grupo_evento->categorias->all() as $categoria)
-                        @if(!$categoria->nao_classificar) <option value="{{$categoria->categoria->id}}">{{$categoria->categoria->name}}</option> @endif
+                        @if(!$categoria->nao_classificar) <option value="{{$categoria->id}}">{{$categoria->name}}</option> @endif
                     @endforeach
                 </select>
             </div>

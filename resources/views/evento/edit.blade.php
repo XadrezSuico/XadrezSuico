@@ -83,7 +83,8 @@
 			<li role="presentation" class="active"><a id="tab_editar_evento" href="#editar_evento" aria-controls="editar_evento" role="tab" data-toggle="tab">Editar Evento</a></li>
 			<li role="presentation"><a id="tab_pagina" href="#pagina" aria-controls="pagina" role="tab" data-toggle="tab">Página</a></li>
 			<li role="presentation"><a id="tab_criterio_desempate" href="#criterio_desempate" aria-controls="criterio_desempate" role="tab" data-toggle="tab">Critério de Desempate</a></li>
-			<li role="presentation"><a id="tab_categoria" href="#categoria" aria-controls="categoria" role="tab" data-toggle="tab">Categoria</a></li>
+			<li role="presentation"><a id="tab_categoria" href="#categoria" aria-controls="categoria" role="tab" data-toggle="tab">Categoria: Cadastro</a></li>
+			<li role="presentation"><a id="tab_categorias_relacionadas" href="#categorias_relacionadas" aria-controls="categorias_relacionadas" role="tab" data-toggle="tab">Categorias Relacionadas</a></li>
 			<li role="presentation"><a id="tab_torneio" href="#torneio" aria-controls="torneio" role="tab" data-toggle="tab">Torneios</a></li>
 		</ul>
 
@@ -249,11 +250,14 @@
 				</section>
 			</div>
 			<div role="tabpanel" class="tab-pane" id="criterio_desempate">
-				<div class="alert alert-warning alert-dismissible" role="alert">
-					<strong>Alerta!</strong><br/>
-					Lembre-se que, o <b>Grupo de Evento</b> poderá possuir critérios de desempate também.<br/>
-					Caso você escolha um ou mais critérios nesta tela, os critérios de desempate do Grupo de Evento <strong>serão desconsiderados!</strong>
-				</div>
+				<br/>
+				<section class="col-lg-12 connectedSortable">
+					<div class="alert alert-warning alert-dismissible" role="alert">
+						<strong>Alerta!</strong><br/>
+						Lembre-se que, o <b>Grupo de Evento</b> poderá possuir critérios de desempate também.<br/>
+						Caso você escolha um ou mais critérios nesta tela, os critérios de desempate do Grupo de Evento <strong>serão desconsiderados!</strong>
+					</div>
+				</section>
 				<br/>
 				@if(
 					\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
@@ -347,16 +351,111 @@
 					</div>
 				</section>	
 			</div>
+			
 			<div role="tabpanel" class="tab-pane" id="categoria">
+				<br/>
+				<section class="col-lg-12 connectedSortable">
+					<div class="alert alert-danger alert-dismissible" role="alert">
+						<strong>Alerta!</strong><br/>
+						Esta aba se destina apenas ao <strong>caso de necessitar de uma categoria específica para este evento</strong>. As categorias aqui cadastradas <strong>não serão replicadas</strong> a qualquer outro Evento ou então Grupo de Evento.<br/>
+						Obs: O cadastro da categoria aqui <strong>não retira a necessidade de efetuar a relação</strong> da mesma na aba "Categorias Relacionadas".
+					</div>
+				</section>
+				<br/>
+				<section class="col-lg-12 connectedSortable">
+					<div class="box box-primary collapsed-box">
+						<div class="box-header">
+							<h3 class="box-title">Nova Categoria</h3>
+							<div class="pull-right box-tools">
+								<button type="button" class="btn btn-primary btn-sm pull-right" data-widget="collapse" data-toggle="tooltip" title="" style="margin-right: 5px;" data-original-title="Collapse">
+									<i class="fa fa-plus"></i></button>
+							</div>
+						</div>
+						<!-- form start -->
+						<form method="post" action="{{url("/evento/".$evento->id."/categorias/new")}}">
+							<div class="box-body">
+								<div class="form-group">
+									<label for="name">Nome</label>
+									<input name="name" id="name" class="form-control" type="text" />
+								</div>
+								<div class="form-group">
+									<label for="name">Idade Mínima (Em anos)</label>
+									<input name="idade_minima" id="idade_minima" class="form-control" type="text" />
+								</div>
+								<div class="form-group">
+									<label for="name">Idade Máxima (Em anos)</label>
+									<input name="idade_maxima" id="idade_maxima" class="form-control" type="text" />
+								</div>
+								<div class="form-group">
+									<label for="name">Código Categoria (Padrão Swiss-Manager)</label>
+									<input name="cat_code" id="cat_code" class="form-control" type="text" />
+									<small>Exemplo: Para Sub-08, utilizar <strong>U08</strong>.</small>
+								</div>
+								<div class="form-group">
+									<label for="name">Código Grupo (Deve ser único em cada evento, para evitar problemas de processamento do resultado)</label>
+									<input name="code" id="code" class="form-control" type="text" />
+									<small>Este código pode ser diferente de acordo com a sua forma de controle. Mas vale saber: é esta a informação que será utilizada para identificação da categoria quando ocorrer o processamento do resultado, e por isso é importante que esteja preenchida no Swiss-Manager e também que seja única para cada categoria.</small>
+								</div>
+								<div class="form-group">
+									<label><input type="checkbox" id="nao_classificar" name="nao_classificar"> Não Classificar Categoria</label>
+								</div>
+							</div>
+							<!-- /.box-body -->
+
+							<div class="box-footer">
+								<button type="submit" class="btn btn-success">Enviar</button>
+								<input type="hidden" name="_token" value="{{ csrf_token() }}">
+							</div>
+						</form>
+					</div>
+					<div class="box box-primary">
+						<div class="box-header">
+							<h3 class="box-title">Categorias</h3>
+						</div>
+						<!-- form start -->
+							<div class="box-body">
+								<table id="tabela_categoria" class="table-responsive table-condensed table-striped" style="width: 100%">
+									<thead>
+										<tr>
+											<th>#</th>
+											<th>Nome</th>
+											<th>Classificar?</th>
+											<th width="20%">Opções</th>
+										</tr>
+									</thead>
+									<tbody>
+										@foreach($evento->categorias_cadastradas->all() as $categoria)
+											<tr>
+												<td>{{$categoria->id}}</td>
+												<td>{{$categoria->name}}</td>
+												<td>@if(!$categoria->nao_classificar) Sim @else Não @endif</td>
+												<td>
+													<a class="btn btn-success" href="{{url("/evento/".$evento->id."/categorias/dashboard/".$categoria->id)}}" role="button"><i class="fa fa-dashboard"></i></a>
+													@if($categoria->isDeletavel()) <a class="btn btn-danger" href="{{url("/evento/".$evento->id."/categorias/delete/".$categoria->id)}}" role="button"><i class="fa fa-times"></i></a> @endif
+												</td>
+											</tr>
+										@endforeach
+									</tbody>
+								</table>
+							</div>
+							<!-- /.box-body -->
+					</div>
+				</section>	
+			</div>
+			<div role="tabpanel" class="tab-pane" id="categorias_relacionadas">
+				<section class="col-lg-12 connectedSortable">
 				<br/>
 				@if(
 					\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
 					\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4])
 				)
-				<section class="col-lg-6 connectedSortable">
-					<div class="box box-primary">
+					<div class="box box-primary collapsed-box">
 						<div class="box-header">
 							<h3 class="box-title">Nova Relação de Categoria</h3>
+								<div class="pull-right box-tools">
+									<button type="button" class="btn btn-primary btn-sm pull-right" data-widget="collapse" data-toggle="tooltip" title="" style="margin-right: 5px;" data-original-title="Collapse">
+										<i class="fa fa-plus"></i></button>
+								</div>
 						</div>
 						<!-- form start -->
 						<form method="post" action="{{url("/evento/".$evento->id."/categoria/add")}}">
@@ -379,12 +478,10 @@
 							</div>
 						</form>
 					</div>
-				</section>	
 				@endif
-				<section class="col-lg-6 connectedSortable">
 					<div class="box box-primary">
 						<div class="box-header">
-							<h3 class="box-title">Categorias</h3>
+							<h3 class="box-title">Categorias Relacionadas</h3>
 						</div>
 						<!-- form start -->
 							<div class="box-body">
@@ -393,6 +490,7 @@
 										<tr>
 											<th>#</th>
 											<th>Nome</th>
+											<th>Vínculo Principal</th>
 											<th width="20%">Opções</th>
 										</tr>
 									</thead>
@@ -401,6 +499,17 @@
 											<tr>
 												<td>{{$categoria->categoria->id}}</td>
 												<td>{{$categoria->categoria->name}}</td>
+												<td>
+													@if($categoria->categoria->grupo_evento_id)
+														Grupo de Evento: #{{$categoria->categoria->grupo_evento->id}} - {{$categoria->categoria->grupo_evento->name}}
+													@else
+														@if($categoria->categoria->evento_id)
+															Evento: #{{$categoria->categoria->evento->id}} - {{$categoria->categoria->evento->name}}
+														@else
+															Estou Confuso. Não há vinculo.
+														@endif
+													@endif
+												</td>
 												<td>
 													@if(
 														\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||

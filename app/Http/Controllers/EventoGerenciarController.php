@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\MessageBag;
 use App\Evento;
 use App\Categoria;
+use App\CategoriaEvento;
 use App\Inscricao;
 use App\CriterioDesempate;
 use App\TipoTorneio;
@@ -49,7 +50,13 @@ class EventoGerenciarController extends Controller
 		){
 			return redirect("/");
 		}
-        $categorias = Categoria::all();
+        $categorias = Categoria::where([
+			["evento_id","=",$evento->id],
+		])
+		->orWhere([
+			["grupo_evento_id","=",$evento->grupo_evento->id],
+		])
+		->get();
         $criterios_desempate = CriterioDesempate::criterios_evento()->get();
         $tipos_torneio = TipoTorneio::all();
         $softwares = Software::all();
@@ -178,6 +185,25 @@ class EventoGerenciarController extends Controller
         $evento->pagina->save();
 		return redirect("/evento/dashboard/".$id."?tab=pagina");
 	}
+
+
+
+	
+
+
+    
+    public function categoria_add($id,Request $request){
+        $categoria_evento = new CategoriaEvento;
+        $categoria_evento->evento_id = $id;
+        $categoria_evento->categoria_id = $request->input("categoria_id");
+        $categoria_evento->save();
+        return redirect("/evento/dashboard/".$id."?tab=categorias_relacionadas");
+    }
+    public function categoria_remove($id,$categoria_evento_id){
+        $categoria_evento = CategoriaEvento::find($categoria_evento_id);
+        $categoria_evento->delete();
+        return redirect("/evento/dashboard/".$id."?tab=categorias_relacionadas");
+    }
 
 	public function classificar($evento_id){
 		$user = Auth::user();
@@ -310,6 +336,6 @@ class EventoGerenciarController extends Controller
 	public function downloadListaManagerParaEvento($id){
 		$enxadristasView = new EnxadristasFromView();
 		$enxadristasView->setEvento($id);
-		return Excel::download($enxadristasView, 'xadresSuico_evento_'.$id.'_lista_enxadristas_'.date('d-m-Y--H-i-s').'.xlsx');
+		return Excel::download($enxadristasView, 'xadrezSuico_evento_'.$id.'_lista_enxadristas_'.date('d-m-Y--H-i-s').'.xlsx');
 	}
 }

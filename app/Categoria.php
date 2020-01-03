@@ -21,6 +21,16 @@ class Categoria extends Model
     protected $table = 'categoria';
 
 
+    public function grupo_evento(){
+        return $this->belongsTo("App\GrupoEvento","grupo_evento_id","id");
+    }
+    public function evento(){
+        return $this->belongsTo("App\Evento","evento_id","id");
+    }
+
+
+
+
     public function grupos_evento(){
         return $this->hasMany("App\CategoriaGrupoEvento","categoria_id","id");
     }

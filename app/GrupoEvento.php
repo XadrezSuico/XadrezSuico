@@ -34,7 +34,7 @@ class GrupoEvento extends Model
     }
 
     public function categorias() {
-        return $this->hasMany("App\CategoriaGrupoEvento","grupo_evento_id","id");
+        return $this->hasMany("App\Categoria","grupo_evento_id","id");
     }
 
     public function criterios() {

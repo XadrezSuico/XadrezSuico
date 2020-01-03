@@ -45,7 +45,13 @@ class TorneioController extends Controller
 		$evento = Evento::find($id);
         $torneio = Torneio::find($torneio_id);
 		$tipos_torneio = TipoTorneio::all();
-        $categorias = Categoria::all();
+        $categorias = Categoria::where([
+			["evento_id","=",$evento->id],
+		])
+		->orWhere([
+			["grupo_evento_id","=",$evento->grupo_evento->id],
+		])
+		->get();
         return view('evento.torneio.edit',compact("torneio","tipos_torneio","categorias"));
     }
     public function edit_post($id,$torneio_id,Request $request){
@@ -204,7 +210,9 @@ class TorneioController extends Controller
 					if(!$inscricao){
 						$retornos[] = date("d/m/Y H:i:s")." - Não há inscrição deste enxadrista";
 						if($enxadrista){
-							$categoria = Categoria::where([["code","=",$line[($fields["Gr"])]]])->first();
+							$categoria = Categoria::where([["code","=",$line[($fields["Gr"])]]])->whereHas("eventos",function($q1) use ($torneio){
+								$q1->where([["evento_id","=",$torneio->evento->id]]);
+							})->first();
 							if($categoria){
 								$retornos[] = date("d/m/Y H:i:s")." - Efetuando inscrição...";
 								$inscricao = new Inscricao;

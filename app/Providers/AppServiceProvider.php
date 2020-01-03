@@ -65,11 +65,6 @@ class AppServiceProvider extends ServiceProvider
                     $user->hasPermissionGlobal()
                 ){
                     $event->menu->add([
-                        'text' => 'Categorias',
-                        'url'  => '/categoria',
-                        'icon' => 'certificate'
-                    ]);
-                    $event->menu->add([
                         'text' => 'Cidades',
                         'url'  => '/cidade',
                         'icon' => 'map-marker'

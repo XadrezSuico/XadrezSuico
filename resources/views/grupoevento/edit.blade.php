@@ -182,7 +182,7 @@
 													<td>{{$evento->cidade->name}} - {{$evento->local}}</td>
 													<td>
 														Total: {{$evento->quantosInscritos()}}<br/>
-														Confirmados: {{$evento->quantosInscritosConfirmados()}}
+														Confirmados: {{$evento->quantosInscritosConfirmados()}}<br/>
                                     					Presentes: {{$evento->quantosInscritosPresentes()}}
 													</td>
 													<td>
@@ -434,22 +434,39 @@
 				</div>
 				<div role="tabpanel" class="tab-pane" id="categoria">
 					<br/>
-					<section class="col-lg-6 connectedSortable">
-						<div class="box box-primary">
+					<section class="col-lg-12 connectedSortable">
+						<div class="box box-primary collapsed-box">
 							<div class="box-header">
-								<h3 class="box-title">Nova Relação de Categoria</h3>
+								<h3 class="box-title">Nova Categoria</h3>
+								<div class="pull-right box-tools">
+									<button type="button" class="btn btn-primary btn-sm pull-right" data-widget="collapse" data-toggle="tooltip" title="" style="margin-right: 5px;" data-original-title="Collapse">
+										<i class="fa fa-plus"></i></button>
+								</div>
 							</div>
 							<!-- form start -->
-							<form method="post" action="{{url("/grupoevento/".$grupo_evento->id."/categoria/add")}}">
+							<form method="post" action="{{url("/grupoevento/".$grupo_evento->id."/categorias/new")}}">
 								<div class="box-body">
 									<div class="form-group">
-										<label for="categoria_id">Categoria</label>
-										<select name="categoria_id" id="categoria_id" class="form-control width-100">
-											<option value="">--- Selecione ---</option>
-											@foreach($categorias as $categoria)
-												<option value="{{$categoria->id}}">{{$categoria->id}} - {{$categoria->name}}</option>
-											@endforeach
-										</select>
+										<label for="name">Nome</label>
+										<input name="name" id="name" class="form-control" type="text" />
+									</div>
+									<div class="form-group">
+										<label for="name">Idade Mínima (Em anos)</label>
+										<input name="idade_minima" id="idade_minima" class="form-control" type="text" />
+									</div>
+									<div class="form-group">
+										<label for="name">Idade Máxima (Em anos)</label>
+										<input name="idade_maxima" id="idade_maxima" class="form-control" type="text" />
+									</div>
+									<div class="form-group">
+										<label for="name">Código Categoria (Padrão Swiss-Manager)</label>
+										<input name="cat_code" id="cat_code" class="form-control" type="text" />
+										<small>Exemplo: Para Sub-08, utilizar <strong>U08</strong>.</small>
+									</div>
+									<div class="form-group">
+										<label for="name">Código Grupo (Deve ser único em cada evento, para evitar problemas de processamento do resultado)</label>
+										<input name="code" id="code" class="form-control" type="text" />
+										<small>Este código pode ser diferente de acordo com a sua forma de controle. Mas vale saber: é esta a informação que será utilizada para identificação da categoria quando ocorrer o processamento do resultado, e por isso é importante que esteja preenchida no Swiss-Manager e também que seja única para cada categoria.</small>
 									</div>
 									<div class="form-group">
 										<label><input type="checkbox" id="nao_classificar" name="nao_classificar"> Não Classificar Categoria</label>
@@ -463,8 +480,6 @@
 								</div>
 							</form>
 						</div>
-					</section>	
-					<section class="col-lg-6 connectedSortable">
 						<div class="box box-primary">
 							<div class="box-header">
 								<h3 class="box-title">Categorias</h3>
@@ -483,11 +498,12 @@
 										<tbody>
 											@foreach($grupo_evento->categorias->all() as $categoria)
 												<tr>
-													<td>{{$categoria->categoria->id}}</td>
-													<td>{{$categoria->categoria->name}}</td>
+													<td>{{$categoria->id}}</td>
+													<td>{{$categoria->name}}</td>
 													<td>@if(!$categoria->nao_classificar) Sim @else Não @endif</td>
 													<td>
-														<a class="btn btn-danger" href="{{url("/grupoevento/".$grupo_evento->id."/categoria/remove/".$categoria->id)}}" role="button"><i class="fa fa-times"></i></a>
+														<a class="btn btn-success" href="{{url("/grupoevento/".$grupo_evento->id."/categorias/dashboard/".$categoria->id)}}" role="button"><i class="fa fa-dashboard"></i></a>
+														@if($categoria->isDeletavel()) <a class="btn btn-danger" href="{{url("/grupoevento/".$grupo_evento->id."/categorias/delete/".$categoria->id)}}" role="button"><i class="fa fa-times"></i></a> @endif
 													</td>
 												</tr>
 											@endforeach
@@ -590,6 +606,9 @@
 				responsive: true,
 		});
 		$("#tabela_categoria").DataTable({
+				responsive: true,
+		});
+		$("#tabela_evento").DataTable({
 				responsive: true,
 		});
 		$("#tabela_criterio_desempate").DataTable({

@@ -154,6 +154,25 @@ Route::group(["prefix"=>"evento"],function(){
 	        Route::get('/sm/all', 'InscricaoGerenciarController@list_to_manager_all')->name('evento.torneios.inscricoes.sm.all');
         });
     });
+
+
+    Route::group(["prefix"=>"{id}/categoria"],function(){
+        Route::post('/add', 'EventoGerenciarController@categoria_add')->name('evento.categoria.add');
+        Route::get('/remove/{categoria_evento_id}', 'EventoGerenciarController@categoria_remove')->name('evento.categoria.remove');
+    });
+    
+    Route::group(["prefix"=>"{evento_id}/categorias"],function(){
+        Route::get('/', 'CategoriaEventoController@index')->name('evento.categorias.index');
+        Route::get('/new', 'CategoriaEventoController@new')->name('evento.categorias.new');
+        Route::post('/new', 'CategoriaEventoController@new_post')->name('evento.categorias.new.post');
+        Route::get('/dashboard/{id}', 'CategoriaEventoController@edit')->name('evento.categorias.dashboard');
+        Route::post('/dashboard/{id}', 'CategoriaEventoController@edit_post')->name('evento.categorias.dashboard.post');
+        Route::get('/delete/{id}', 'CategoriaEventoController@delete')->name('evento.categorias.delete');
+        Route::group(["prefix"=>"{id}/sexo"],function(){
+            Route::post('/add', 'CategoriaEventoController@sexo_add')->name('evento.categorias.sexo.add');
+            Route::get('/remove/{categoria_sexo_id}', 'CategoriaEventoController@sexo_remove')->name('evento.categorias.sexo.remove');
+        });
+    });
 });
 
 Route::group(["prefix"=>"categoria"],function(){
@@ -221,6 +240,18 @@ Route::group(["prefix"=>"grupoevento"],function(){
     Route::group(["prefix"=>"{id}/categoria"],function(){
         Route::post('/add', 'GrupoEventoController@categoria_add')->name('grupoevento.categoria.add');
         Route::get('/remove/{categoria_grupo_evento_id}', 'GrupoEventoController@categoria_remove')->name('grupoevento.categoria.remove');
+    });
+    Route::group(["prefix"=>"{grupo_evento_id}/categorias"],function(){
+        Route::get('/', 'CategoriaGrupoEventoController@index')->name('grupoevento.categorias.index');
+        Route::get('/new', 'CategoriaGrupoEventoController@new')->name('grupoevento.categorias.new');
+        Route::post('/new', 'CategoriaGrupoEventoController@new_post')->name('grupoevento.categorias.new.post');
+        Route::get('/dashboard/{id}', 'CategoriaGrupoEventoController@edit')->name('grupoevento.categorias.dashboard');
+        Route::post('/dashboard/{id}', 'CategoriaGrupoEventoController@edit_post')->name('grupoevento.categorias.dashboard.post');
+        Route::get('/delete/{id}', 'CategoriaGrupoEventoController@delete')->name('grupoevento.categorias.delete');
+        Route::group(["prefix"=>"{id}/sexo"],function(){
+            Route::post('/add', 'CategoriaGrupoEventoController@sexo_add')->name('grupoevento.categorias.sexo.add');
+            Route::get('/remove/{categoria_sexo_id}', 'CategoriaGrupoEventoController@sexo_remove')->name('grupoevento.categorias.sexo.remove');
+        });
     });
     Route::group(["prefix"=>"{id}/torneiotemplate"],function(){
         Route::post('/add', 'GrupoEventoController@torneio_template_add')->name('grupoevento.torneiotemplate.add');
