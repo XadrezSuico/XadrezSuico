@@ -9,6 +9,12 @@ class WhatsNewController extends Controller
     public function index(){
         $news = array();
 
+        // Novidades versão 0.1.0.0
+        $new_0100_betha["name"] = "0.1.0.0 Beta";
+        $new_0100_betha["news"] = array();
+        $new_0100_betha["news"][] = "As versões anteriores deixam de serem compatíveis com as versões a partir da 0.1.0.0, sendo necessária uma instalação limpa do sistema a fim de ter o seu uso.";
+        $news[] = $new_0100_betha;
+
         // Novidades versão 0.0.2.1
         $new_0021_betha["name"] = "0.0.2.1 Beta";
         $new_0021_betha["news"] = array();
