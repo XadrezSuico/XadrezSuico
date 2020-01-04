@@ -15,7 +15,7 @@ Route::get('/', function () {
     if(\Illuminate\Support\Facades\Auth::check()){
         return redirect("/home");
     }
-    return redirect(env("REDIRECT_URL","http://crx.xadrezsuico.info"));
+    return redirect("/login");
 });
 
 Auth::routes();
@@ -213,6 +213,7 @@ Route::group(["prefix"=>"enxadrista"],function(){
 	Route::get('/edit/{id}', 'EnxadristaController@edit')->name('enxadrista.edit');
 	Route::post('/edit/{id}', 'EnxadristaController@edit_post')->name('enxadrista.edit.post');
 	Route::get('/delete/{id}', 'EnxadristaController@delete')->name('enxadrista.delete');
+	Route::get('/download', 'EnxadristaController@downloadBaseCompleta')->name('enxadrista.download');
 	Route::get('/api/searchList', 'EnxadristaController@searchEnxadristasList')->name('enxadrista.api.list');
 });
 

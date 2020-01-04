@@ -8,6 +8,8 @@ use App\Enxadrista;
 use App\Cidade;
 use App\Clube;
 use App\Sexo;
+use App\Exports\EnxadristasCompletoFromView;
+use Maatwebsite\Excel\Facades\Excel;
 
 class EnxadristaController extends Controller
 {
@@ -172,6 +174,18 @@ class EnxadristaController extends Controller
         return redirect("/enxadrista");
     }
 
+    
+	
+	public function downloadBaseCompleta(){
+        if(
+            !Auth::user()->hasPermissionGlobal()
+        ){
+            return redirect("/");
+        }
+		$enxadristasView = new EnxadristasCompletoFromView();
+		return Excel::download($enxadristasView, 'xadrezSuico_exportacao_lista_enxadristas_'.date('d-m-Y--H-i-s').'.xlsx');
+	}
+
 
     /*
      *
@@ -272,7 +286,7 @@ class EnxadristaController extends Controller
             $p[4] .= "LBX: ".$enxadrista->lbx_id."<br/>";
         }
 
-        $p[5] = $enxadrista->cidade->id;
+        $p[5] = "#".$enxadrista->cidade->id." - ".$enxadrista->cidade->name;
 
         if($enxadrista->clube){
             $p[6] = $enxadrista->clube->name;
@@ -290,11 +304,11 @@ class EnxadristaController extends Controller
                         <div class="modal-content">
                             <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                            <h4 class="modal-title" id="myModalLabel">Efetuar Exclusão - Enxadrista #'.$enxadrista->id.': '.$enxadrista->nome.'</h4>
+                            <h4 class="modal-title" id="myModalLabel">Efetuar Exclusão - Enxadrista #'.$enxadrista->id.': '.$enxadrista->name.'</h4>
                             </div>
                             <div class="modal-body">
                             <h2>Você tem certeza que pretende fazer isso?</h2><br>
-                            A viagem será deletada e não será possível recuperá-la.
+                            O enxadrista será deletado e não será possível recuperá-lo.
                             <h4>Você deseja ainda assim efetuar a exclusão?</h4>
                             </div>
                             <div class="modal-footer">

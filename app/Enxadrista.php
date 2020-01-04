@@ -63,6 +63,16 @@ class Enxadrista extends Model
     public function getName(){
         return mb_strtoupper($this->name);
     }
+    public function gerNameSemCaracteresEspeciais(){
+        $str = mb_strtolower($this->name);
+        $str = preg_replace('/[áàãâä]/ui', 'a', $str);
+        $str = preg_replace('/[éèêë]/ui', 'e', $str);
+        $str = preg_replace('/[íìîï]/ui', 'i', $str);
+        $str = preg_replace('/[óòõôö]/ui', 'o', $str);
+        $str = preg_replace('/[úùûü]/ui', 'u', $str);
+        $str = preg_replace('/[ç]/ui', 'c', $str);
+        return mb_strtoupper($str);
+    }
 
     public function setBorn($born){
         $datetime = DateTime::createFromFormat('d/m/Y', $born);

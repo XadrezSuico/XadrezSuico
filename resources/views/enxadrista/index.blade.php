@@ -29,6 +29,12 @@
     @if($permitido_edicao)
         <ul class="nav nav-pills">
             <li role="presentation"><a href="{{url("/enxadrista/new")}}">Novo Enxadrista</a></li>
+            
+            @if(
+                \Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal()
+            )
+                <li role="presentation"><a href="{{url("/enxadrista/download")}}">Baixar Base de Dados (Apenas Administradores e Super-Administradores)</a></li>
+            @endif
         </ul>
     @endif
     <div class="box">
