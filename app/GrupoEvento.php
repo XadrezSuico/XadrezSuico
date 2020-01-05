@@ -30,7 +30,7 @@ class GrupoEvento extends Model
     }
 
     public function torneios_template() {
-        return $this->hasMany("App\TorneioTemplateGrupoEvento","grupo_evento_id","id");
+        return $this->hasMany("App\TorneioTemplate","grupo_evento_id","id");
     }
 
     public function categorias() {

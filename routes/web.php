@@ -258,6 +258,16 @@ Route::group(["prefix"=>"grupoevento"],function(){
         Route::post('/add', 'GrupoEventoController@torneio_template_add')->name('grupoevento.torneiotemplate.add');
         Route::get('/remove/{torneio_template_grupo_evento_id}', 'GrupoEventoController@torneio_template_remove')->name('grupoevento.torneiotemplate.remove');
     });
+    Route::group(["prefix"=>"{grupo_evento_id}/torneiotemplates"],function(){
+        Route::post('/new', 'TorneioTemplateController@new_post')->name('torneiotemplate.new.post');
+        Route::get('/dashboard/{id}', 'TorneioTemplateController@edit')->name('torneiotemplate.dashboard');
+        Route::post('/dashboard/{id}', 'TorneioTemplateController@edit_post')->name('torneiotemplate.dashboard.post');
+        Route::get('/delete/{id}', 'TorneioTemplateController@delete')->name('torneiotemplate.delete');
+        Route::group(["prefix"=>"{id}/categoria"],function(){
+            Route::post('/add', 'TorneioTemplateController@categoria_add')->name('torneiotemplate.categoria.add');
+            Route::get('/remove/{categoria_torneio_id}', 'TorneioTemplateController@categoria_remove')->name('torneiotemplate.categoria.remove');
+        });
+    });
     Route::group(["prefix"=>"{id}/criteriodesempate"],function(){
         Route::post('/add', 'GrupoEventoController@criterio_desempate_add')->name('grupoevento.criteriodesempate.add');
         Route::get('/remove/{cd_grupo_evento_id}', 'GrupoEventoController@criterio_desempate_remove')->name('grupoevento.criteriodesempate.remove');

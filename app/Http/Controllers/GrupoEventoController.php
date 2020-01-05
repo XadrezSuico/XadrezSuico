@@ -266,7 +266,7 @@ class GrupoEventoController extends Controller
         // IMPORTAÇÃO DAS CATEGORIAS
         foreach($grupo_evento->categorias->all() as $categoria){
             $categoria_evento = new CategoriaEvento;
-            $categoria_evento->categoria_id = $categoria->categoria->id;
+            $categoria_evento->categoria_id = $categoria->id;
             $categoria_evento->evento_id = $evento->id;
             $categoria_evento->save();
         }
@@ -274,14 +274,14 @@ class GrupoEventoController extends Controller
         // IMPORTAÇÃO DOS TORNEIOS A PARTIR DOS TEMPLATES
         foreach($grupo_evento->torneios_template->all() as $torneio_template){
             $torneio = new Torneio;
-            $torneio->name = $torneio_template->template->name;
+            $torneio->name = ($torneio_template->torneio_name) ? $torneio_template->torneio_name : $torneio_template->name;
             $torneio->evento_id = $evento->id;
             $torneio->tipo_torneio_id = 1;
-            $torneio->torneio_template_id = $torneio_template->template->id;
+            $torneio->torneio_template_id = $torneio_template->id;
             $torneio->save();
 
             // IMPORTAÇÃO DAS CATEGORIAS PARA O TORNEIO A PARTIR DO TEMPLATE
-            foreach($torneio_template->template->categorias->all() as $categoria){
+            foreach($torneio_template->categorias->all() as $categoria){
                 $categoria_torneio = new CategoriaTorneio;
                 $categoria_torneio->categoria_id = $categoria->categoria->id;
                 $categoria_torneio->torneio_id = $torneio->id;

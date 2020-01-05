@@ -1,9 +1,9 @@
 @extends('adminlte::page')
 
-@section("title", "Dashboard de Template de Torneio")
+@section("title", "Grupo de Evento #".$grupo_evento->id." (".$grupo_evento->name.") >> Dashboard de Template de Torneio")
 
 @section('content_header')
-  <h1>Dashboard de Template de Torneio</h1>
+  <h1>Grupo de Evento #{{$grupo_evento->id}} ({{$grupo_evento->name}}) >> Dashboard de Template de Torneio</h1>
 @stop
 
 
@@ -18,18 +18,17 @@
 @section("content")
 <!-- Main row -->
 <ul class="nav nav-pills">
-  <li role="presentation"><a href="/torneiotemplate">Voltar a Lista de Templates de Torneio</a></li>
-  <li role="presentation"><a href="/torneiotemplate/new">Novo Template de Torneio</a></li>
+  <li role="presentation"><a href="/grupoevento/dashboard/{{$grupo_evento->id}}?tab=template_torneio">Voltar a Lista de Templates de Torneio na Dashboard de Grupo de Evento</a></li>
 </ul>
 <div class="row">
   <!-- Left col -->
   <section class="col-lg-6 connectedSortable">
 		<div class="box box-primary" id="inscricao">
 			<div class="box-header">
-				<h3 class="box-title">Editar Grupo de Evento</h3>
+				<h3 class="box-title">Editar Template de Torneio</h3>
 			</div>
 			<!-- form start -->
-					<form method="post">
+			<form method="post">
 				<div class="box-body">
 					<div class="form-group">
 						<label for="name">Nome</label>
@@ -46,7 +45,7 @@
 					<button type="submit" class="btn btn-success">Enviar</button>
 					<input type="hidden" name="_token" value="{{ csrf_token() }}">
 				</div>
-					</form>
+			</form>
 		</div>
 
   </section>
@@ -56,13 +55,13 @@
 				<h3 class="box-title">Nova Relação de Categoria</h3>
 			</div>
 			<!-- form start -->
-			<form method="post" action="{{url("/torneiotemplate/".$torneio_template->id."/categoria/add")}}">
+			<form method="post" action="{{url("/grupoevento/".$grupo_evento->id."/torneiotemplates/".$torneio_template->id."/categoria/add")}}">
 				<div class="box-body">
 					<div class="form-group">
 						<label for="categoria_id">Categoria</label>
 						<select name="categoria_id" id="categoria_id" class="form-control">
 							<option value="">--- Selecione ---</option>
-							@foreach($categorias as $categoria)
+							@foreach($grupo_evento->categorias->all() as $categoria)
 								<option value="{{$categoria->id}}">{{$categoria->id}} - {{$categoria->name}}</option>
 							@endforeach
 						</select>
@@ -96,7 +95,7 @@
 									<td>{{$categoria->categoria->id}}</td>
 									<td>{{$categoria->categoria->name}}</td>
 									<td>
-										<a class="btn btn-danger" href="{{url("/torneiotemplate/".$torneio_template->id."/categoria/remove/".$categoria->id)}}" role="button">Remover Relação</a>
+										<a class="btn btn-danger" href="{{url("/grupoevento/".$grupo_evento->id."/torneiotemplates/".$torneio_template->id."/categoria/remove/".$categoria->id)}}" role="button">Remover Relação</a>
 									</td>
 								</tr>
 							@endforeach

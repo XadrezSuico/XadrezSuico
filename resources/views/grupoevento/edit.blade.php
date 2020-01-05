@@ -215,24 +215,25 @@
 			@if($user->hasPermissionGlobal())			
 				<div role="tabpanel" class="tab-pane" id="template_torneio">
 					<br/>
-					<section class="col-lg-6 connectedSortable">
-					
-						<!-- Template de Torneio -->
-						<div class="box box-primary">
+					<section class="col-lg-12 connectedSortable">
+						<div class="box box-primary collapsed-box">
 							<div class="box-header">
-								<h3 class="box-title">Relacionar Template de Torneio</h3>
+								<h3 class="box-title">Novo Template de Torneio</h3>
+								<div class="pull-right box-tools">
+									<button type="button" class="btn btn-primary btn-sm pull-right" data-widget="collapse" data-toggle="tooltip" title="" style="margin-right: 5px;" data-original-title="Collapse">
+										<i class="fa fa-plus"></i></button>
+								</div>
 							</div>
 							<!-- form start -->
-							<form method="post" action="{{url("/grupoevento/".$grupo_evento->id."/torneiotemplate/add")}}">
+							<form method="post" action="{{url("/grupoevento/".$grupo_evento->id."/torneiotemplates/new")}}">
 								<div class="box-body">
 									<div class="form-group">
-										<label for="torneio_template_id">Template de Torneio</label>
-										<select name="torneio_template_id" id="torneio_template_id" class="form-control width-100">
-											<option value="">--- Selecione ---</option>
-											@foreach($torneio_templates as $torneio_template)
-												<option value="{{$torneio_template->id}}">{{$torneio_template->id}} - {{$torneio_template->name}}</option>
-											@endforeach
-										</select>
+										<label for="name">Nome</label>
+										<input name="name" id="name" class="form-control" type="text" />
+									</div>
+									<div class="form-group">
+										<label for="torneio_name">Nome do Torneio</label>
+										<input name="torneio_name" id="torneio_name" class="form-control" type="text" />
 									</div>
 								</div>
 								<!-- /.box-body -->
@@ -243,8 +244,6 @@
 								</div>
 							</form>
 						</div>
-					</section>	
-					<section class="col-lg-6 connectedSortable">
 						<div class="box box-primary">
 							<div class="box-header">
 								<h3 class="box-title">Templates de Torneio</h3>
@@ -262,10 +261,11 @@
 										<tbody>
 											@foreach($grupo_evento->torneios_template->all() as $torneio_template)
 												<tr>
-													<td>{{$torneio_template->template->id}}</td>
-													<td>{{$torneio_template->template->name}}</td>
+													<td>{{$torneio_template->id}}</td>
+													<td>{{$torneio_template->name}}</td>
 													<td>
-														<a class="btn btn-danger" href="{{url("/grupoevento/".$grupo_evento->id."/torneiotemplate/remove/".$torneio_template->id)}}" role="button"><i class="fa fa-times"></i></a>
+														<a class="btn btn-success" href="{{url("/grupoevento/".$grupo_evento->id."/torneiotemplates/dashboard/".$torneio_template->id)}}" role="button"><i class="fa fa-dashboard"></i></a>
+														@if($torneio_template->isDeletavel())<a class="btn btn-danger" href="{{url("/grupoevento/".$grupo_evento->id."/torneiotemplates/delete/".$torneio_template->id)}}" role="button"><i class="fa fa-times"></i></a>@endif
 													</td>
 												</tr>
 											@endforeach
