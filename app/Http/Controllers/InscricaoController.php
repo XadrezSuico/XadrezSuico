@@ -89,13 +89,13 @@ class InscricaoController extends Controller
                 return response()->json(["ok"=>0,"error"=>1,"message" => "A inscrição para este evento deve ser feita com o link de inscrições enviado (Inscrições Privadas)."]);
             }
         }
-        foreach($evento->campos()->whereHas("campo",function($q1){$q1->where([["is_required","=",true]]);})->get() as $campo){
+        foreach($evento->campos_obrigatorios() as $campo){
             if(
-                !$request->has("campo_personalizado_".$campo->campo->id)
+                !$request->has("campo_personalizado_".$campo->id)
             ){
                 return response()->json(["ok"=>0,"error"=>1,"message" => "Um dos campos obrigatórios não está preenchido. Por favor, verifique e envie novamente!<br/><br/><strong>Observação</strong>: TODOS os Campos com <strong>*</strong> SÃO OBRIGATÓRIOS!","registred"=>0]);
             }elseif(
-                $request->input("campo_personalizado_".$campo->campo->id) == NULL || $request->input("campo_personalizado_".$campo->campo->id) == ""
+                $request->input("campo_personalizado_".$campo->id) == NULL || $request->input("campo_personalizado_".$campo->id) == ""
             ){
                 return response()->json(["ok"=>0,"error"=>1,"message" => "Um dos campos obrigatórios não está preenchido. Por favor, verifique e envie novamente!<br/><br/><strong>Observação</strong>: TODOS os Campos com <strong>*</strong> SÃO OBRIGATÓRIOS!","registred"=>0]);
             }
@@ -146,12 +146,16 @@ class InscricaoController extends Controller
         $inscricao->regulamento_aceito = true;
         $inscricao->save();
 
-        foreach($evento->campos->all() as $campo){
-            $opcao_inscricao = new CampoPersonalizadoOpcaoInscricao;
-            $opcao_inscricao->inscricao_id = $inscricao->id;
-            $opcao_inscricao->opcaos_id = $request->input("campo_personalizado_".$campo->campo->id);
-            $opcao_inscricao->campo_personalizados_id = $campo->campo->id;
-            $opcao_inscricao->save();
+        foreach($evento->campos() as $campo){
+            if($request->has("campo_personalizado_".$campo->id)){
+                if($request->input("campo_personalizado_".$campo->id) != ""){
+                    $opcao_inscricao = new CampoPersonalizadoOpcaoInscricao;
+                    $opcao_inscricao->inscricao_id = $inscricao->id;
+                    $opcao_inscricao->opcaos_id = $request->input("campo_personalizado_".$campo->id);
+                    $opcao_inscricao->campo_personalizados_id = $campo->id;
+                    $opcao_inscricao->save();
+                }
+            }
         }
         
         if($enxadrista->email){

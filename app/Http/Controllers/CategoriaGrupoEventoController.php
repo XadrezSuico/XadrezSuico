@@ -15,7 +15,8 @@ use App\Enxadrista;
 use App\EnxadristaCriterioDesempateGeral;
 
 class CategoriaGrupoEventoController extends Controller
-{	public function __construct(){
+{	
+    public function __construct(){
 		return $this->middleware("auth");
 	}
     public function index($grupo_evento_id){

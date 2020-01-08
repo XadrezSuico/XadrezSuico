@@ -55,11 +55,8 @@ class Evento extends Model
         return $this->hasOne("App\Pagina","evento_id","id");
     }
 
-    public function campos() {
-        if($this->hasMany("App\CampoPersonalizadoEvento","evento_id","id")->count() > 0){
-            return $this->hasMany("App\CampoPersonalizadoEvento","evento_id","id");
-        }
-        return $this->grupo_evento->campos();
+    public function campos_adicionais() {
+        return $this->hasMany("App\CampoPersonalizado","evento_id","id");
     }
 
     public function tipo_rating() {
@@ -68,6 +65,26 @@ class Evento extends Model
         }else{
             return $this->grupo_evento->tipo_rating();
         }
+    }
+
+    public function campos() {
+        // if($this->hasMany("App\CampoPersonalizadoEvento","evento_id","id")->count() > 0){
+        //     return $this->hasMany("App\CampoPersonalizadoEvento","evento_id","id");
+        // }
+        // return $this->grupo_evento->campos();
+        return CampoPersonalizado::where([["grupo_evento_id","=",$this->grupo_evento->id]])
+        ->orWhere([["evento_id","=",$this->id]])
+        ->get();
+    }
+
+    public function campos_obrigatorios() {
+        // if($this->hasMany("App\CampoPersonalizadoEvento","evento_id","id")->count() > 0){
+        //     return $this->hasMany("App\CampoPersonalizadoEvento","evento_id","id");
+        // }
+        // return $this->grupo_evento->campos();
+        return CampoPersonalizado::where([["grupo_evento_id","=",$this->grupo_evento->id],["is_required","=",true]])
+        ->orWhere([["evento_id","=",$this->id],["is_required","=",true]])
+        ->get();
     }
     
     public function getDataInicio(){

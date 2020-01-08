@@ -173,6 +173,17 @@ Route::group(["prefix"=>"evento"],function(){
             Route::get('/remove/{categoria_sexo_id}', 'CategoriaEventoController@sexo_remove')->name('evento.categorias.sexo.remove');
         });
     });
+    
+    Route::group(["prefix"=>"{evento_id}/campos"],function(){
+        Route::post('/new', 'CampoPersonalizadoEventoController@new_post')->name('evento.campos.new.post');
+        Route::get('/dashboard/{id}', 'CampoPersonalizadoEventoController@dashboard')->name('evento.campos.dashboard');
+        Route::post('/dashboard/{id}', 'CampoPersonalizadoEventoController@edit_post')->name('evento.campos.dashboard.post');
+        Route::get('/delete/{id}', 'CampoPersonalizadoEventoController@delete')->name('evento.campos.delete');
+        Route::group(["prefix"=>"{id}/opcao"],function(){
+            Route::post('/add', 'CampoPersonalizadoEventoController@opcao_add')->name('evento.campos.opcao.add');
+            Route::get('/remove/{opcaos_id}', 'CampoPersonalizadoEventoController@opcao_remove')->name('evento.campos.opcao.remove');
+        });
+    });
 });
 
 Route::group(["prefix"=>"categoria"],function(){
@@ -252,6 +263,16 @@ Route::group(["prefix"=>"grupoevento"],function(){
         Route::group(["prefix"=>"{id}/sexo"],function(){
             Route::post('/add', 'CategoriaGrupoEventoController@sexo_add')->name('grupoevento.categorias.sexo.add');
             Route::get('/remove/{categoria_sexo_id}', 'CategoriaGrupoEventoController@sexo_remove')->name('grupoevento.categorias.sexo.remove');
+        });
+    });
+    Route::group(["prefix"=>"{grupo_evento_id}/campos"],function(){
+        Route::post('/new', 'CampoPersonalizadoGrupoEventoController@new_post')->name('grupoevento.campos.new.post');
+        Route::get('/dashboard/{id}', 'CampoPersonalizadoGrupoEventoController@dashboard')->name('grupoevento.campos.dashboard');
+        Route::post('/dashboard/{id}', 'CampoPersonalizadoGrupoEventoController@edit_post')->name('grupoevento.campos.dashboard.post');
+        Route::get('/delete/{id}', 'CampoPersonalizadoGrupoEventoController@delete')->name('grupoevento.campos.delete');
+        Route::group(["prefix"=>"{id}/opcao"],function(){
+            Route::post('/add', 'CampoPersonalizadoGrupoEventoController@opcao_add')->name('grupoevento.campos.opcao.add');
+            Route::get('/remove/{opcaos_id}', 'CampoPersonalizadoGrupoEventoController@opcao_remove')->name('grupoevento.campos.opcao.remove');
         });
     });
     Route::group(["prefix"=>"{id}/torneiotemplate"],function(){

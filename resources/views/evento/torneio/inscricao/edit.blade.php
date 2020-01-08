@@ -127,12 +127,12 @@
 					</select>
                     @if($permitido_edicao) <button id="clubeNaoCadastradoInscricao" class="btn btn-success">O clube não está cadastrado</button> @endif
 				</div>
-				@foreach($evento->campos->all() as $campo)
+				@foreach($evento->campos() as $campo)
 					<div class="form-group">
-						<label for="campo_personalizado_{{$campo->campo->id}}">{{$campo->campo->question}} *</label>
-						<select id="campo_personalizado_{{$campo->campo->id}}" class="campo_personalizado form-control" @if(!$permitido_edicao) disabled="disabled" @endif>
+						<label for="campo_personalizado_{{$campo->id}}">{{$campo->question}} *</label>
+						<select id="campo_personalizado_{{$campo->id}}" name="campo_personalizado_{{$campo->id}}" class="campo_personalizado form-control" @if(!$permitido_edicao) disabled="disabled" @endif>
 							<option value="">--- Selecione uma opção ---</option>
-							@foreach($campo->campo->opcoes->all() as $opcao)
+							@foreach($campo->opcoes->all() as $opcao)
 								<option value="{{$opcao->id}}">{{$opcao->response}}</option>
 							@endforeach
 						</select>

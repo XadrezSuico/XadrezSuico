@@ -67,6 +67,7 @@
 <!-- Main row -->
 <ul class="nav nav-pills">
   <li role="presentation"><a href="/evento">Voltar a Lista de Eventos</a></li>
+  <li role="presentation"><a href="/evento/dashboard/{{$evento->id}}">Voltar a Dashboard do Evento</a></li>
   <!--<li role="presentation"><a href="/evento/inscricao/{{$evento->id}}">Nova Inscrição</a></li>-->
   <li role="presentation"><a href="/evento/inscricao/{{$evento->id}}/confirmacao">Confirmar Inscrições</a></li>
 </ul>
@@ -208,12 +209,12 @@
 					</select>
                     <button id="clubeNaoCadastradoInscricao" class="btn btn-success">O clube não está cadastrado</button>
 				</div>
-				@foreach($evento->campos->all() as $campo)
+				@foreach($evento->campos() as $campo)
 					<div class="form-group">
-						<label for="campo_personalizado_{{$campo->campo->id}}">{{$campo->campo->question}} @if($campo->campo->is_required) * @endif </label>
-						<select id="campo_personalizado_{{$campo->campo->id}}" class="campo_personalizado form-control">
+						<label for="campo_personalizado_{{$campo->id}}">{{$campo->question}} @if($campo->is_required) * @endif </label>
+						<select id="campo_personalizado_{{$campo->id}}" class="campo_personalizado form-control">
 							<option value="">--- Selecione uma opção ---</option>
-							@foreach($campo->campo->opcoes->all() as $opcao)
+							@foreach($campo->opcoes->all() as $opcao)
 								<option value="{{$opcao->id}}">{{$opcao->response}}</option>
 							@endforeach
 						</select>
@@ -310,8 +311,8 @@
 					if($("#atualizar_cadastro").is(":checked")){
 						data = data.concat("&atualizar_cadastro=true");
 					}
-					@foreach($evento->campos->all() as $campo)
-						data = data.concat("&campo_personalizado_{{$campo->campo->id}}=").concat($("#campo_personalizado_{{$campo->campo->id}}").val());
+					@foreach($evento->campos() as $campo)
+						data = data.concat("&campo_personalizado_{{$campo->id}}=").concat($("#campo_personalizado_{{$campo->id}}").val());
 					@endforeach
 					$.ajax({
 						type: "post",

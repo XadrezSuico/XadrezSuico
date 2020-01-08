@@ -248,12 +248,12 @@
 					</select>
                     <button id="clubeNaoCadastradoInscricao" class="btn btn-success">O meu clube não está cadastrado</button>
 				</div>
-				@foreach($evento->campos->all() as $campo)
+				@foreach($evento->campos() as $campo)
 					<div class="form-group">
-						<label for="campo_personalizado_{{$campo->campo->id}}">{{$campo->campo->question}} *</label>
-						<select id="campo_personalizado_{{$campo->campo->id}}" class="campo_personalizado form-control">
+						<label for="campo_personalizado_{{$campo->id}}">{{$campo->question}} @if($campo->is_required) * @endif </label>
+						<select id="campo_personalizado_{{$campo->id}}" class="campo_personalizado form-control">
 							<option value="">--- Selecione uma opção ---</option>
-							@foreach($campo->campo->opcoes->all() as $opcao)
+							@foreach($campo->opcoes->all() as $opcao)
 								<option value="{{$opcao->id}}">{{$opcao->response}}</option>
 							@endforeach
 						</select>
@@ -342,8 +342,8 @@
 				if($("#regulamento_aceito").is(":checked")){
 					data = data.concat("&regulamento_aceito=true");
 				}
-				@foreach($evento->campos->all() as $campo)
-					data = data.concat("&campo_personalizado_{{$campo->campo->id}}=").concat($("#campo_personalizado_{{$campo->campo->id}}").val());
+				@foreach($evento->campos() as $campo)
+					data = data.concat("&campo_personalizado_{{$campo->id}}=").concat($("#campo_personalizado_{{$campo->id}}").val());
 				@endforeach
 					@if(isset($token))
 						@if($token != "")

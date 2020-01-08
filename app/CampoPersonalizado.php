@@ -21,4 +21,19 @@ class CampoPersonalizado extends Model
     public function inscricoes(){
         return $this->respostas();
     }
+
+    public function isDeletavel(){
+        if($this->id != null){
+            if(
+                $this->eventos()->count() > 0 ||
+                $this->opcoes()->count() > 0 ||
+                $this->respostas()->count() > 0
+            ){
+                return false;
+            }
+            return true;
+        }else{
+            return false;
+        }
+    }
 }
