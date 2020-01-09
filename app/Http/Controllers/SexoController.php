@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Sexo;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class SexoController extends Controller
 {
