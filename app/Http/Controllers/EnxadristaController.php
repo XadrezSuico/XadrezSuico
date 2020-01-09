@@ -20,10 +20,20 @@ class EnxadristaController extends Controller
     public function index()
     {
         // $enxadristas = Enxadrista::all();
+        $user = Auth::user();
+        if (!($user->hasPermissionGlobal() || $user->hasPermissionGlobalbyPerfil([9]))) {
+            return redirect("/");
+        }
+
         $enxadristas = Enxadrista::where([["id", "=", 1]])->get();
         return view('enxadrista.index', compact("enxadristas"));
     }
     function new () {
+        $user = Auth::user();
+        if (!($user->hasPermissionGlobal() || $user->hasPermissionGlobalbyPerfil([9]))) {
+            return redirect("/");
+        }
+
         $cidades = Cidade::all();
         $clubes = Clube::all();
         $sexos = Sexo::all();
@@ -31,6 +41,11 @@ class EnxadristaController extends Controller
     }
     public function new_post(Request $request)
     {
+        $user = Auth::user();
+        if (!($user->hasPermissionGlobal() || $user->hasPermissionGlobalbyPerfil([9]))) {
+            return redirect("/");
+        }
+
         $enx = new Enxadrista;
         $enx->setBorn($request->input("born"));
 
@@ -106,6 +121,11 @@ class EnxadristaController extends Controller
     }
     public function edit($id)
     {
+        $user = Auth::user();
+        if (!($user->hasPermissionGlobal() || $user->hasPermissionGlobalbyPerfil([9]))) {
+            return redirect("/");
+        }
+
         $enxadrista = Enxadrista::find($id);
         $cidades = Cidade::all();
         $clubes = Clube::all();
@@ -114,6 +134,10 @@ class EnxadristaController extends Controller
     }
     public function edit_post($id, Request $request)
     {
+        $user = Auth::user();
+        if (!($user->hasPermissionGlobal() || $user->hasPermissionGlobalbyPerfil([9]))) {
+            return redirect("/");
+        }
 
         $validator = \Validator::make($request->all(), [
             'name' => 'required|string',
@@ -190,6 +214,11 @@ class EnxadristaController extends Controller
     }
     public function delete($id)
     {
+        $user = Auth::user();
+        if (!($user->hasPermissionGlobal() || $user->hasPermissionGlobalbyPerfil([9]))) {
+            return redirect("/");
+        }
+
         $enxadrista = Enxadrista::find($id);
 
         if ($enxadrista->isDeletavel()) {
@@ -218,10 +247,15 @@ class EnxadristaController extends Controller
      */
     public function searchEnxadristasList($type = 0, Request $request)
     {
+        $user = Auth::user();
+        if (!($user->hasPermissionGlobal() || $user->hasPermissionGlobalbyPerfil([9]))) {
+            return redirect("/");
+        }
+
         $permitido_edicao = false;
         if (
-            Auth::user()->hasPermissionGlobal() ||
-            Auth::user()->hasPermissionEventsByPerfil([4])
+            $user->hasPermissionGlobal() ||
+            $user->hasPermissionEventsByPerfil([4])
         ) {
             $permitido_edicao = true;
         }
