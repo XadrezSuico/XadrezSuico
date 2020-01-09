@@ -9,6 +9,7 @@ use GuzzleHttp\Client;
 
 class FIDERatingController extends Controller
 {
+    private $codigo_organizacao = 0;
     public function updateRatings(){
         $enxadristas = Enxadrista::where([
             ["fide_id", "!=", NULL],
@@ -57,7 +58,7 @@ class FIDERatingController extends Controller
                                         if(count($exp_std) == 2){
                                             if(is_int(intval($rating))){
                                                 if(intval($rating) > 0){
-                                                    $enxadrista->setRating(0,0,intval($rating));
+                                                    $enxadrista->setRating($codigo_organizacao,0,intval($rating));
                                                 }
                                             }else{
                                                 echo "Erro Rating não é inteiro!";
@@ -65,7 +66,7 @@ class FIDERatingController extends Controller
                                         }elseif(count($exp_rpd) == 2){
                                             if(is_int(intval($rating))){
                                                 if(intval($rating) > 0){
-                                                    $enxadrista->setRating(0,1,intval($rating));
+                                                    $enxadrista->setRating($codigo_organizacao,1,intval($rating));
                                                 }
                                             }else{
                                                 echo "Erro Rating não é inteiro!";
@@ -73,7 +74,7 @@ class FIDERatingController extends Controller
                                         }elseif(count($exp_btz) == 2){
                                             if(is_int(intval($rating))){
                                                 if(intval($rating) > 0){
-                                                    $enxadrista->setRating(0,2,intval($rating));
+                                                    $enxadrista->setRating($codigo_organizacao,2,intval($rating));
                                                 }
                                             }else{
                                                 echo "Erro Rating não é inteiro!";

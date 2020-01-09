@@ -8,6 +8,7 @@ use GuzzleHttp\Client;
 
 class LBXRatingController extends Controller
 {
+    private $codigo_organizacao = 2;
     public function updateRatings(){
         $enxadristas = Enxadrista::where([
             ["lbx_id", "!=", NULL],
@@ -31,23 +32,23 @@ class LBXRatingController extends Controller
                     if(count($json) > 0){
                         if(isset($json->ratings->STD)){
                             if($json->ratings->STD == 0){
-                                $enxadrista->setRating(2,0,1800);
+                                $enxadrista->setRating($codigo_organizacao,0,1800);
                             }else{
-                                $enxadrista->setRating(2,0,$json->ratings->STD);
+                                $enxadrista->setRating($codigo_organizacao,0,$json->ratings->STD);
                             }
                         }
                         if(isset($json->ratings->RPD)){
                             if($json->ratings->RPD == 0){
-                                $enxadrista->setRating(2,1,1800);
+                                $enxadrista->setRating($codigo_organizacao,1,1800);
                             }else{
-                                $enxadrista->setRating(2,1,$json->ratings->RPD);
+                                $enxadrista->setRating($codigo_organizacao,1,$json->ratings->RPD);
                             }
                         }
                         if(isset($json->ratings->BTZ)){
                             if($json->ratings->BTZ == 0){
-                                $enxadrista->setRating(2,2,1800);
+                                $enxadrista->setRating($codigo_organizacao,2,1800);
                             }else{
-                                $enxadrista->setRating(2,2,$json->ratings->BTZ);
+                                $enxadrista->setRating($codigo_organizacao,2,$json->ratings->BTZ);
                             }
                         }
                     }else{

@@ -8,6 +8,8 @@ use GuzzleHttp\Client;
 
 class CBXRatingController extends Controller
 {
+    private $codigo_organizacao = 1;
+
     public function updateRatings(){
         $enxadristas = Enxadrista::where([
             ["cbx_id", "!=", NULL],
@@ -58,17 +60,17 @@ class CBXRatingController extends Controller
                                             switch($j){
                                                 case $std:
                                                     echo "Rating STD: ".$rating;
-                                                    $enxadrista->setRating(1,0,$rating);
+                                                    $enxadrista->setRating($codigo_organizacao,0,$rating);
                                                     break;
 
                                                 case $rpd:
                                                     echo "Rating RPD: ".$rating;
-                                                    $enxadrista->setRating(1,1,$rating);
+                                                    $enxadrista->setRating($codigo_organizacao,1,$rating);
                                                     break;
 
                                                 case $btz:
                                                     echo "Rating BTZ: ".$rating;
-                                                    $enxadrista->setRating(1,2,$rating);
+                                                    $enxadrista->setRating($codigo_organizacao,2,$rating);
                                                     break;
                                             }
                                         }else{
