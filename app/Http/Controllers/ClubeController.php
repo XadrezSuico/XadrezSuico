@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Cidade;
 use App\Clube;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ClubeController extends Controller
 {
