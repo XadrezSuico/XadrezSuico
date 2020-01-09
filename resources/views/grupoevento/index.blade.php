@@ -28,14 +28,20 @@
                 </thead>
                 <tbody>
                     @foreach($grupos_evento as $grupo_evento)
-                        <tr>
-                            <td>{{$grupo_evento->id}}</td>
-                            <td>{{$grupo_evento->name}}</td>
-                            <td>
-                                <a class="btn btn-default" href="{{url("/grupoevento/dashboard/".$grupo_evento->id)}}" role="button">Dashboard</a>
-                                @if($grupo_evento->isDeletavel()) <a class="btn btn-danger" href="{{url("/grupoevento/delete/".$grupo_evento->id)}}" role="button">Apagar</a> @endif
-                            </td>
-                        </tr>
+                        @if(\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() || \Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($grupo_evento->id,[6,7]) || \Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfilByGroupEvent($grupo_evento->id,[3,4,5]))
+                            <tr>
+                                <td>{{$grupo_evento->id}}</td>
+                                <td>{{$grupo_evento->name}}</td>
+                                <td>
+                                    <a class="btn btn-default" href="{{url("/grupoevento/dashboard/".$grupo_evento->id)}}" role="button">Dashboard</a>
+                                    @if(\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal())
+                                        @if($grupo_evento->isDeletavel())
+                                            <a class="btn btn-danger" href="{{url("/grupoevento/delete/".$grupo_evento->id)}}" role="button">Apagar</a>
+                                        @endif
+                                    @endif
+                                </td>
+                            </tr>
+                        @endif
                     @endforeach
                 </tbody>
             </table>

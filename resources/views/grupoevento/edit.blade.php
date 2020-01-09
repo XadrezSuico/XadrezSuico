@@ -22,8 +22,8 @@
 <!-- Main row -->
 <ul class="nav nav-pills">
   <li role="presentation"><a href="/grupoevento">Voltar a Lista de Grupos de Evento</a></li>
-  @if($user->hasPermissionGlobal()) <li role="presentation"><a href="/grupoevento/new">Novo Grupo de Evento</a></li>
-  <li role="presentation"><a href="/grupoevento/classificar/{{$grupo_evento->id}}">Classificar Grupo de Evento</a></li>@endif
+  @if($user->hasPermissionGlobal()) <li role="presentation"><a href="/grupoevento/new">Novo Grupo de Evento</a></li>@endif
+  @if($user->hasPermissionGlobal() || $user->hasPermissionGroupEventByPerfil($grupo_evento->id,[7])) <li role="presentation"><a href="/grupoevento/classificar/{{$grupo_evento->id}}">Classificar Grupo de Evento</a></li> @endif
   <li role="presentation"><a href="/grupoevento/classificacao/{{$grupo_evento->id}}">Visualizar Classificação Pública</a></li>
 </ul>
 <div class="row">
@@ -34,7 +34,7 @@
 		<ul class="nav nav-tabs" role="tablist">
 			<li role="presentation" class="active"><a id="tab_editar_evento" href="#editar_evento" aria-controls="editar_evento" role="tab" data-toggle="tab">Editar Grupo de Evento</a></li>
 			<li role="presentation"><a id="tab_evento" href="#evento" aria-controls="evento" role="tab" data-toggle="tab">Eventos</a></li>
-			@if($user->hasPermissionGlobal())			
+			@if($user->hasPermissionGlobal() || $user->hasPermissionGroupEventByPerfil($grupo_evento->id,[7]))			
 				<li role="presentation"><a id="tab_template_torneio" href="#template_torneio" aria-controls="template_torneio" role="tab" data-toggle="tab">Template de Torneio</a></li>
 				<li role="presentation"><a id="tab_criterio_desempate" href="#criterio_desempate" aria-controls="criterio_desempate" role="tab" data-toggle="tab">Critério de Desempate</a></li>
 				<li role="presentation"><a id="tab_criterio_desempate_geral" href="#criterio_desempate_geral" aria-controls="criterio_desempate_geral" role="tab" data-toggle="tab">Critério de Desempate Geral</a></li>
@@ -58,15 +58,15 @@
 							<div class="box-body">
 								<div class="form-group">
 									<label for="name">Nome</label>
-									<input name="name" id="name" class="form-control" type="text" value="{{$grupo_evento->name}}" @if(!$user->hasPermissionGlobal()) disabled="disabled" @endif />
+									<input name="name" id="name" class="form-control" type="text" value="{{$grupo_evento->name}}" @if(!$user->hasPermissionGlobal() && !$user->hasPermissionGroupEventByPerfil($grupo_evento->id,[7])) disabled="disabled" @endif />
 								</div>
 								<div class="form-group">
 									<label for="limite_calculo_geral">Limite de Valores para Cálculo de Pontuação Geral</label>
-									<input name="limite_calculo_geral" id="limite_calculo_geral" class="form-control" type="text" value="{{$grupo_evento->limite_calculo_geral}}" @if(!$user->hasPermissionGlobal()) disabled="disabled" @endif />
+									<input name="limite_calculo_geral" id="limite_calculo_geral" class="form-control" type="text" value="{{$grupo_evento->limite_calculo_geral}}" @if(!$user->hasPermissionGlobal() && !$user->hasPermissionGroupEventByPerfil($grupo_evento->id,[7])) disabled="disabled" @endif />
 								</div>
 								<div class="form-group">
 									<label for="tipo_ratings_id">Tipo de Rating</label>
-									<select name="tipo_ratings_id" id="tipo_ratings_id" class="form-control width-100" @if(!$user->hasPermissionGlobal()) disabled="disabled" @endif>
+									<select name="tipo_ratings_id" id="tipo_ratings_id" class="form-control width-100" @if(!$user->hasPermissionGlobal() && !$user->hasPermissionGroupEventByPerfil($grupo_evento->id,[7])) disabled="disabled" @endif>
 										<option value="">--- Você pode selecionar um tipo de rating ---</option>
 										@foreach($tipos_rating as $tipo_rating)
 											<option value="{{$tipo_rating->id}}">{{$tipo_rating->id}} - {{$tipo_rating->name}}</option>
@@ -80,7 +80,7 @@
 							<!-- /.box-body -->
 
 							<div class="box-footer">
-								<button type="submit" class="btn btn-success" @if(!$user->hasPermissionGlobal()) disabled="disabled" @endif>Enviar</button>
+								<button type="submit" class="btn btn-success" @if(!$user->hasPermissionGlobal() && !$user->hasPermissionGroupEventByPerfil($grupo_evento->id,[7])) disabled="disabled" @endif>Enviar</button>
 								<input type="hidden" name="_token" value="{{ csrf_token() }}">
 							</div>
 						</form>
@@ -89,7 +89,7 @@
 			</div>
 			<div role="tabpanel" class="tab-pane" id="evento">
 				<br/>
-				@if($user->hasPermissionGlobal())
+				@if($user->hasPermissionGlobal() || $user->hasPermissionGroupEventByPerfil($grupo_evento->id,[7]))
 					<section class="col-md-6 col-lg-4 connectedSortable">
 						<!-- Evento -->
 						<div class="box box-primary">
@@ -151,7 +151,7 @@
 						</div>
 					</section>
 				@endif	
-				<section class="col-md-6 col-lg-8 connectedSortable">
+				<section class=" @if($user->hasPermissionGlobal() || $user->hasPermissionGroupEventByPerfil($grupo_evento->id,[7])) col-md-6 col-lg-8 @else col-md-12 col-lg-12 @endif connectedSortable">
 					<div class="box box-primary">
 						<div class="box-header">
 							<h3 class="box-title">Eventos</h3>
@@ -174,7 +174,7 @@
 											@if(
 												\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
 												\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[3,4,5]) ||
-												\Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[6])
+												\Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[6,7])
 											)
 												<tr>
 													<td>{{$evento->id}}</td>
@@ -190,18 +190,19 @@
 													    @if(
 															\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
 															\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[3,4]) ||
-															\Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[6])
+															\Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[6,7])
 														)
 															<a class="btn btn-default" href="{{url("/evento/dashboard/".$evento->id)}}" role="button">Dashboard</a>
 														@endif
 														@if(
 															\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
-															\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4,5])
+															\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4,5]) ||
+															\Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])
 														)
 															<a class="btn btn-success" href="{{url("/evento/inscricao/".$evento->id)}}" role="button">Nova Inscrição</a>
 															<a class="btn btn-success" href="{{url("/evento/inscricao/".$evento->id."/confirmacao")}}" role="button">Confirmar Inscrição</a>
 														@endif
-														@if($evento->isDeletavel() && \Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal()) <a class="btn btn-danger" href="{{url("/evento/delete/".$evento->id)}}" role="button">Apagar</a> @endif
+														@if($evento->isDeletavel() && (\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() || \Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7]) )) <a class="btn btn-danger" href="{{url("/evento/delete/".$evento->id)}}" role="button">Apagar</a> @endif
 													</td>
 												</tr>
 											@endif
@@ -213,7 +214,7 @@
 					</div>
 				</section>	
 			</div>
-			@if($user->hasPermissionGlobal())			
+			@if($user->hasPermissionGlobal() || $user->hasPermissionGroupEventByPerfil($grupo_evento->id,[7]))			
 				<div role="tabpanel" class="tab-pane" id="template_torneio">
 					<br/>
 					<section class="col-lg-12 connectedSortable">
@@ -601,14 +602,14 @@
 									</div>
 									<div class="form-group">
 										<label for="campo_type">Tipo de Campo *</label>
-										<select name="type" id="campo_type" class="form-control width-100" @if(!$user->hasPermissionGlobal()) disabled="disabled" @endif>
+										<select name="type" id="campo_type" class="form-control width-100" @if(!$user->hasPermissionGlobal() && !$user->hasPermissionGroupEventByPerfil($grupo_evento->id,[7])) disabled="disabled" @endif>
 											<option value="">--- Selecione um tipo de campo ---</option>
 											<option value="select">Seleção</option>
 										</select>
 									</div>
 									<div class="form-group">
 										<label for="campo_validator">Validação</label>
-										<select name="validator" id="campo_validator" class="form-control width-100" @if(!$user->hasPermissionGlobal()) disabled="disabled" @endif>
+										<select name="validator" id="campo_validator" class="form-control width-100" @if(!$user->hasPermissionGlobal() && !$user->hasPermissionGroupEventByPerfil($grupo_evento->id,[7])) disabled="disabled" @endif>
 											<option value="">--- Você pode selecionar uma validação ---</option>
 											<option value="cpf">CPF</option>
 										</select>

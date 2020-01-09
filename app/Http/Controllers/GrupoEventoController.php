@@ -30,6 +30,7 @@ class GrupoEventoController extends Controller
 		return $this->middleware("auth");
 	}
     public function index(){
+        $user = Auth::user();
         $grupos_evento = GrupoEvento::all();
         return view('grupoevento.index',compact("grupos_evento"));
     }

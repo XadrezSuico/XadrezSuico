@@ -40,7 +40,7 @@ class AppServiceProvider extends ServiceProvider
                 $event->menu->add("ACESSO RESTRITO");
                 if(
                     $user->hasPermissionGlobal() || 
-                    $user->hasPermissionEventsByPerfil([3,4])
+                    $user->hasPermissionGlobalbyPerfil([9])
                 ){
                     $event->menu->add([
                         'text' => 'Enxadristas',
@@ -52,7 +52,7 @@ class AppServiceProvider extends ServiceProvider
                 if(
                     $user->hasPermissionGlobal() || 
                     $user->hasPermissionEventsByPerfil([3,4,5]) || 
-                    $user->hasPermissionGroupEventsByPerfil([6])
+                    $user->hasPermissionGroupEventsByPerfil([6,7])
                 ){
                     $event->menu->add([
                         'text' => 'Grupos de Evento',
@@ -62,7 +62,8 @@ class AppServiceProvider extends ServiceProvider
                 }
                 $event->menu->add("ADMINSTRAÇÃO");
                 if(
-                    $user->hasPermissionGlobal()
+                    $user->hasPermissionGlobal() || 
+                    $user->hasPermissionGlobalbyPerfil([8])
                 ){
                     $event->menu->add([
                         'text' => 'Cidades',
@@ -74,11 +75,10 @@ class AppServiceProvider extends ServiceProvider
                         'url'  => '/clube',
                         'icon' => 'building'
                     ]);
-                    $event->menu->add([
-                        'text' => 'Template de Torneio',
-                        'url'  => '/torneiotemplate',
-                        'icon' => 'file-text'
-                    ]);
+                }
+                if(
+                    $user->hasPermissionGlobal()
+                ){
                     $event->menu->add([
                         'text' => 'Sexos',
                         'url'  => '/sexo',
@@ -91,7 +91,8 @@ class AppServiceProvider extends ServiceProvider
                     ]);
                 }
                 if(
-                    $user->hasPermissionGlobalbyPerfil([1])
+                    $user->hasPermissionGlobal() ||
+                    $user->hasPermissionGroupEventsByPerfil([7])
                 ){
                     $event->menu->add([
                         'text' => 'Usuários',

@@ -15,7 +15,7 @@ class UserController extends Controller
 	
 	public function index(){
 		$user = Auth::user();
-		if(!$user->hasPermissionGlobalbyPerfil([1])){
+		if(!($user->hasPermissionGlobal() || $user->hasPermissionGroupEventsByPerfil([7]))){
 			return redirect("/");
 		}
 
@@ -24,7 +24,7 @@ class UserController extends Controller
 	}
 	public function new(){
 		$user = Auth::user();
-		if(!$user->hasPermissionGlobalbyPerfil([1])){
+		if(!($user->hasPermissionGlobal() || $user->hasPermissionGroupEventsByPerfil([7]))){
 			return redirect("/");
 		}
 
@@ -33,7 +33,7 @@ class UserController extends Controller
 	}
 	public function newPost(Request $request){
 		$user = Auth::user();
-		if(!$user->hasPermissionGlobalbyPerfil([1])){
+		if(!($user->hasPermissionGlobal() || $user->hasPermissionGroupEventsByPerfil([7]))){
 			return redirect("/");
 		}
 
@@ -56,7 +56,7 @@ class UserController extends Controller
 	}
 	public function edit($id){
 		$user = Auth::user();
-		if(!$user->hasPermissionGlobalbyPerfil([1])){
+		if(!($user->hasPermissionGlobal() || $user->hasPermissionGroupEventsByPerfil([7]))){
 			return redirect("/");
 		}
 
@@ -66,7 +66,7 @@ class UserController extends Controller
 	}
 	public function editPost(Request $request, $id){
 		$user = Auth::user();
-		if(!$user->hasPermissionGlobalbyPerfil([1])){
+		if(!$user->hasPermissionGlobal()){
 			return redirect("/");
 		}
 
@@ -140,6 +140,31 @@ class UserController extends Controller
 
 	
 	public function perfil_add($id,Request $request){
+		$user = Auth::user();
+		if(!($user->hasPermissionGlobal() || $user->hasPermissionGroupEventsByPerfil([7]))){
+			return redirect()->back();
+		}
+		if(!$user->hasPermissionGlobal() && $user->hasPermissionGroupEventsByPerfil([7])){
+			if(
+				$request->input("perfils_id") == 3 ||
+				$request->input("perfils_id") == 4 ||
+				$request->input("perfils_id") == 5
+			){
+				$evento = Evento::find($request->input("evento_id"));
+				if(!$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])){
+					return redirect()->back();
+				}
+			}elseif(
+				$request->input("perfils_id") == 6 ||
+				$request->input("perfils_id") == 7
+			){
+				if(!$user->hasPermissionGroupEventByPerfil($request->input("grupo_evento_id"),[7])){
+					return redirect()->back();
+				}
+			}else{
+				return redirect()->back();
+			}
+		}
         $perfil_user = new PerfilUser;
         $perfil_user->users_id = $id;
 		$perfil_user->perfils_id = $request->input("perfils_id");
@@ -149,14 +174,42 @@ class UserController extends Controller
 			$request->input("perfils_id") == 5
 		){
         	$perfil_user->evento_id = $request->input("evento_id");
-		}elseif($request->input("perfils_id") == 6){
+		}elseif(
+			$request->input("perfils_id") == 6 ||
+			$request->input("perfils_id") == 7
+		){
         	$perfil_user->grupo_evento_id = $request->input("grupo_evento_id");
 		}
         $perfil_user->save();
         return redirect("/usuario/edit/".$id);
     }
     public function perfil_remove($id,$perfil_users_id){
+		$user = Auth::user();
         $perfil_user = PerfilUser::find($perfil_users_id);
+		if(!($user->hasPermissionGlobal() || $user->hasPermissionGroupEventsByPerfil([7]))){
+			return redirect()->back();
+		}
+		if(!$user->hasPermissionGlobal() && $user->hasPermissionGroupEventsByPerfil([7])){
+			if(
+				$request->input("perfils_id") == 3 ||
+				$request->input("perfils_id") == 4 ||
+				$request->input("perfils_id") == 5
+			){
+				$evento = Evento::find($perfil_user->evento_id);
+				if(!$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])){
+					return redirect()->back();
+				}
+			}elseif(
+				$request->input("perfils_id") == 6 ||
+				$request->input("perfils_id") == 7
+			){
+				if(!$user->hasPermissionGroupEventByPerfil($perfil_user->grupo_evento_id,[7])){
+					return redirect()->back();
+				}
+			}else{
+				return redirect()->back();
+			}
+		}
         $perfil_user->delete();
         return redirect("/usuario/edit/".$id);
     }

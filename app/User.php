@@ -112,7 +112,7 @@ class User extends Authenticatable
         return false;
     }
     public function hasPermissionGlobalbyPerfil($perfils){
-        if($this->perfis()->whereNull("evento_id")->whereNull("grupo_evento_id")->whereIn("perfils_id",[1,2])->count() > 0){
+        if($this->perfis()->whereNull("evento_id")->whereNull("grupo_evento_id")->whereIn("perfils_id",$perfils)->count() > 0){
             return true;
         }
         return false;
@@ -133,6 +133,16 @@ class User extends Authenticatable
     }
     public function hasPermissionEventByPerfil($evento_id,$perfis){
         if($this->perfis()->where([["evento_id","=",$evento_id]])->whereIn("perfils_id",$perfis)->count() > 0){
+            return true;
+        }
+        return false;
+    }
+    public function hasPermissionEventByPerfilByGroupEvent($grupo_evento_id,$perfis){
+        if($this->perfis()->whereHas("evento",function($q1) use ($grupo_evento_id){
+            $q1->where([
+                ["grupo_evento_id","=",$grupo_evento_id]
+            ]);
+        })->whereIn("perfils_id",$perfis)->count() > 0){
             return true;
         }
         return false;

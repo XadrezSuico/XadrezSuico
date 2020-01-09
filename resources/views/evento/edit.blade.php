@@ -219,26 +219,30 @@
 									@if($evento->pagina)
 										@if($evento->pagina->imagem)
 											<br/><img src="data:image/png;base64, {!!$evento->pagina->imagem!!}" width="100%" style="max-width: 400px"/>
-											<label><input type="checkbox" name="remover_imagem" /> Remover Imagem?</label>
+											@if(\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() || \Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4])) 
+												<label><input type="checkbox" name="remover_imagem" /> Remover Imagem?</label>
+											@endif
 										@endif
 									@endif
-									<input type="file" id="imagem" name="imagem">
-									@if ($errors->has('imagem'))
-										<span class="help-block">
-											<strong>{{ $errors->first('imagem') }}</strong>
-										</span>
+									@if(\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() || \Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4])) 
+										<input type="file" id="imagem" name="imagem">
+										@if ($errors->has('imagem'))
+											<span class="help-block">
+												<strong>{{ $errors->first('imagem') }}</strong>
+											</span>
+										@endif
 									@endif
 								</div>
 								
 								<div class="form-group">
 									<label for="texto">Texto</label>
-									<textarea class="form-control" id="texto" name="texto" placeholder="Texto sobre o Evento">@if($evento->pagina){{$evento->pagina->texto}}@endif</textarea>				
+									<textarea class="form-control" id="texto" name="texto" placeholder="Texto sobre o Evento" @if(!\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() && !\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4])) disabled="disabled" @endif >@if($evento->pagina){{$evento->pagina->texto}}@endif</textarea>				
 								</div>
 							</div>
 							<!-- /.box-body -->
 
 							<div class="box-footer">
-								<button type="submit" class="btn btn-success">Enviar</button>
+								<button type="submit" class="btn btn-success" @if(!\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() && !\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4])) disabled="disabled" @endif >Enviar</button>
 								<input type="hidden" name="_token" value="{{ csrf_token() }}">
 							</div>
 					@if(
@@ -364,51 +368,56 @@
 				</section>
 				<br/>
 				<section class="col-lg-12 connectedSortable">
-					<div class="box box-primary collapsed-box">
-						<div class="box-header">
-							<h3 class="box-title">Nova Categoria</h3>
-							<div class="pull-right box-tools">
-								<button type="button" class="btn btn-primary btn-sm pull-right" data-widget="collapse" data-toggle="tooltip" title="" style="margin-right: 5px;" data-original-title="Collapse">
-									<i class="fa fa-plus"></i></button>
-							</div>
-						</div>
-						<!-- form start -->
-						<form method="post" action="{{url("/evento/".$evento->id."/categorias/new")}}">
-							<div class="box-body">
-								<div class="form-group">
-									<label for="name">Nome</label>
-									<input name="name" id="name" class="form-control" type="text" />
-								</div>
-								<div class="form-group">
-									<label for="name">Idade Mínima (Em anos)</label>
-									<input name="idade_minima" id="idade_minima" class="form-control" type="text" />
-								</div>
-								<div class="form-group">
-									<label for="name">Idade Máxima (Em anos)</label>
-									<input name="idade_maxima" id="idade_maxima" class="form-control" type="text" />
-								</div>
-								<div class="form-group">
-									<label for="name">Código Categoria (Padrão Swiss-Manager)</label>
-									<input name="cat_code" id="cat_code" class="form-control" type="text" />
-									<small>Exemplo: Para Sub-08, utilizar <strong>U08</strong>.</small>
-								</div>
-								<div class="form-group">
-									<label for="name">Código Grupo (Deve ser único em cada evento, para evitar problemas de processamento do resultado)</label>
-									<input name="code" id="code" class="form-control" type="text" />
-									<small>Este código pode ser diferente de acordo com a sua forma de controle. Mas vale saber: é esta a informação que será utilizada para identificação da categoria quando ocorrer o processamento do resultado, e por isso é importante que esteja preenchida no Swiss-Manager e também que seja única para cada categoria.</small>
-								</div>
-								<div class="form-group">
-									<label><input type="checkbox" id="nao_classificar" name="nao_classificar"> Não Classificar Categoria</label>
+					@if(
+						\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
+						\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4])
+					)
+						<div class="box box-primary collapsed-box">
+							<div class="box-header">
+								<h3 class="box-title">Nova Categoria</h3>
+								<div class="pull-right box-tools">
+									<button type="button" class="btn btn-primary btn-sm pull-right" data-widget="collapse" data-toggle="tooltip" title="" style="margin-right: 5px;" data-original-title="Collapse">
+										<i class="fa fa-plus"></i></button>
 								</div>
 							</div>
-							<!-- /.box-body -->
+							<!-- form start -->
+							<form method="post" action="{{url("/evento/".$evento->id."/categorias/new")}}">
+								<div class="box-body">
+									<div class="form-group">
+										<label for="name">Nome</label>
+										<input name="name" id="name" class="form-control" type="text" />
+									</div>
+									<div class="form-group">
+										<label for="name">Idade Mínima (Em anos)</label>
+										<input name="idade_minima" id="idade_minima" class="form-control" type="text" />
+									</div>
+									<div class="form-group">
+										<label for="name">Idade Máxima (Em anos)</label>
+										<input name="idade_maxima" id="idade_maxima" class="form-control" type="text" />
+									</div>
+									<div class="form-group">
+										<label for="name">Código Categoria (Padrão Swiss-Manager)</label>
+										<input name="cat_code" id="cat_code" class="form-control" type="text" />
+										<small>Exemplo: Para Sub-08, utilizar <strong>U08</strong>.</small>
+									</div>
+									<div class="form-group">
+										<label for="name">Código Grupo (Deve ser único em cada evento, para evitar problemas de processamento do resultado)</label>
+										<input name="code" id="code" class="form-control" type="text" />
+										<small>Este código pode ser diferente de acordo com a sua forma de controle. Mas vale saber: é esta a informação que será utilizada para identificação da categoria quando ocorrer o processamento do resultado, e por isso é importante que esteja preenchida no Swiss-Manager e também que seja única para cada categoria.</small>
+									</div>
+									<div class="form-group">
+										<label><input type="checkbox" id="nao_classificar" name="nao_classificar"> Não Classificar Categoria</label>
+									</div>
+								</div>
+								<!-- /.box-body -->
 
-							<div class="box-footer">
-								<button type="submit" class="btn btn-success">Enviar</button>
-								<input type="hidden" name="_token" value="{{ csrf_token() }}">
-							</div>
-						</form>
-					</div>
+								<div class="box-footer">
+									<button type="submit" class="btn btn-success">Enviar</button>
+									<input type="hidden" name="_token" value="{{ csrf_token() }}">
+								</div>
+							</form>
+						</div>
+					@endif
 					<div class="box box-primary">
 						<div class="box-header">
 							<h3 class="box-title">Categorias</h3>
@@ -431,8 +440,13 @@
 												<td>{{$categoria->name}}</td>
 												<td>@if(!$categoria->nao_classificar) Sim @else Não @endif</td>
 												<td>
-													<a class="btn btn-success" href="{{url("/evento/".$evento->id."/categorias/dashboard/".$categoria->id)}}" role="button"><i class="fa fa-dashboard"></i></a>
-													@if($categoria->isDeletavel()) <a class="btn btn-danger" href="{{url("/evento/".$evento->id."/categorias/delete/".$categoria->id)}}" role="button"><i class="fa fa-times"></i></a> @endif
+													@if(
+														\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
+														\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4])
+													)
+														<a class="btn btn-success" href="{{url("/evento/".$evento->id."/categorias/dashboard/".$categoria->id)}}" role="button"><i class="fa fa-dashboard"></i></a>
+														@if($categoria->isDeletavel()) <a class="btn btn-danger" href="{{url("/evento/".$evento->id."/categorias/delete/".$categoria->id)}}" role="button"><i class="fa fa-times"></i></a> @endif
+													@endif
 												</td>
 											</tr>
 										@endforeach
@@ -650,48 +664,54 @@
 						<strong>Alerta!</strong><br/>
 						Caso necessite de alguma informação adicional para este evento, você pode criar um campo personalizado para o Evento, porém, se esta informação é necessária a todos os eventos do Grupo de Evento, o correto é criar um campo personalizado para o Grupo de Evento.
 					</div>
-					<div class="box box-primary collapsed-box">
-						<div class="box-header">
-							<h3 class="box-title">Novo Campo Personalizado</h3>
-							<div class="pull-right box-tools">
-								<button type="button" class="btn btn-primary btn-sm pull-right" data-widget="collapse" data-toggle="tooltip" title="" style="margin-right: 5px;" data-original-title="Collapse">
-									<i class="fa fa-plus"></i></button>
-							</div>
-						</div>
-						<!-- form start -->
-						<form method="post" action="{{url("/evento/".$evento->id."/campos/new")}}">
-							<div class="box-body">
-								<div class="form-group">
-									<label for="campo_name">Nome *</label>
-									<input name="name" id="campo_name" class="form-control" type="text" />
-								</div>
-								<div class="form-group">
-									<label for="campo_question">Questão *</label>
-									<input name="question" id="campo_question" class="form-control" type="text" />
-								</div>
-								<div class="form-group">
-									<label for="campo_type">Tipo de Campo *</label>
-									<select name="type" id="campo_type" class="form-control width-100" @if(!\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal()) disabled="disabled" @endif>
-										<option value="">--- Selecione um tipo de campo ---</option>
-										<option value="select">Seleção</option>
-									</select>
-								</div>
-								<div class="form-group">
-									<label for="campo_validator">Validação</label>
-									<select name="validator" id="campo_validator" class="form-control width-100" @if(!\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal()) disabled="disabled" @endif>
-										<option value="">--- Você pode selecionar uma validação ---</option>
-										<option value="cpf">CPF</option>
-									</select>
+					@if(
+						\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
+						\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4])
+					)
+						<div class="box box-primary collapsed-box">
+							<div class="box-header">
+								<h3 class="box-title">Novo Campo Personalizado</h3>
+								<div class="pull-right box-tools">
+									<button type="button" class="btn btn-primary btn-sm pull-right" data-widget="collapse" data-toggle="tooltip" title="" style="margin-right: 5px;" data-original-title="Collapse">
+										<i class="fa fa-plus"></i></button>
 								</div>
 							</div>
-							<!-- /.box-body -->
+							<!-- form start -->
+							<form method="post" action="{{url("/evento/".$evento->id."/campos/new")}}">
+								<div class="box-body">
+									<div class="form-group">
+										<label for="campo_name">Nome *</label>
+										<input name="name" id="campo_name" class="form-control" type="text" />
+									</div>
+									<div class="form-group">
+										<label for="campo_question">Questão *</label>
+										<input name="question" id="campo_question" class="form-control" type="text" />
+									</div>
+									<div class="form-group">
+										<label for="campo_type">Tipo de Campo *</label>
+										<select name="type" id="campo_type" class="form-control width-100" @if(!\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal()) disabled="disabled" @endif>
+											<option value="">--- Selecione um tipo de campo ---</option>
+											<option value="select">Seleção</option>
+										</select>
+									</div>
+									<div class="form-group">
+										<label for="campo_validator">Validação</label>
+										<select name="validator" id="campo_validator" class="form-control width-100" @if(!\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal()) disabled="disabled" @endif>
+											<option value="">--- Você pode selecionar uma validação ---</option>
+											<option value="cpf">CPF</option>
+										</select>
+									</div>
+								</div>
+								<!-- /.box-body -->
 
-							<div class="box-footer">
-								<button type="submit" class="btn btn-success">Enviar</button>
-								<input type="hidden" name="_token" value="{{ csrf_token() }}">
-							</div>
-						</form>
-					</div>
+								<div class="box-footer">
+									<button type="submit" class="btn btn-success">Enviar</button>
+									<input type="hidden" name="_token" value="{{ csrf_token() }}">
+								</div>
+							</form>
+						</div>
+					@endif
+
 					<div class="box box-primary">
 						<div class="box-header">
 							<h3 class="box-title">Campos Personalizados Adicionais</h3>
@@ -716,8 +736,13 @@
 												<td>{{$campo->question}}</td>
 												<td>@if($campo->is_active) Sim @else Não @endif</td>
 												<td>
-													<a class="btn btn-success" href="{{url("/evento/".$evento->id."/campos/dashboard/".$campo->id)}}" role="button"><i class="fa fa-dashboard"></i></a>
-													@if($campo->isDeletavel()) <a class="btn btn-danger" href="{{url("/evento/".$evento->id."/campos/delete/".$campo->id)}}" role="button"><i class="fa fa-times"></i></a> @endif
+													@if(
+														\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
+														\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4])
+													)
+														<a class="btn btn-success" href="{{url("/evento/".$evento->id."/campos/dashboard/".$campo->id)}}" role="button"><i class="fa fa-dashboard"></i></a>
+														@if($campo->isDeletavel()) <a class="btn btn-danger" href="{{url("/evento/".$evento->id."/campos/delete/".$campo->id)}}" role="button"><i class="fa fa-times"></i></a> @endif
+													@endif
 												</td>
 											</tr>
 										@endforeach
