@@ -14,23 +14,22 @@ class Sexo extends Model
     protected static $logFillable = true;
 
     protected static $logAttributes = ['*'];
-    
-    
-    public function enxadristas() {
-        return $this->hasMany("App\Enxadrista","sexos_id","id");
+
+    public function enxadristas()
+    {
+        return $this->hasMany("App\Enxadrista", "sexos_id", "id");
     }
 
-
-
-    public function isDeletavel(){
-        if($this->id != null){
-            if(
+    public function isDeletavel()
+    {
+        if ($this->id != null) {
+            if (
                 $this->enxadristas()->count() > 0
-            ){
+            ) {
                 return false;
             }
             return true;
-        }else{
+        } else {
             return false;
         }
     }

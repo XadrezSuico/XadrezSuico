@@ -14,6 +14,5 @@ class EnxadristaCriterioDesempateGeral extends Model
     protected static $logFillable = true;
 
     protected static $logAttributes = ['*'];
-    
-    
+
 }

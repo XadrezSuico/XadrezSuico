@@ -15,5 +15,4 @@ class UserPerfil extends Model
 
     protected static $logAttributes = ['*'];
 
-    
 }

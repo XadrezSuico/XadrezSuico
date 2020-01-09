@@ -15,16 +15,17 @@ class CategoriaGrupoEvento extends Model
 
     protected static $logAttributes = ['*'];
 
-    
     public $timestamps = true;
     protected $primaryKey = 'id';
     protected $table = 'categoria_grupo_evento';
 
-    public function categoria() {
-        return $this->belongsTo("App\Categoria","categoria_id","id");
+    public function categoria()
+    {
+        return $this->belongsTo("App\Categoria", "categoria_id", "id");
     }
 
-    public function grupo_evento() {
-        return $this->belongsTo("App\GrupoEvento","grupo_evento_id","id");
+    public function grupo_evento()
+    {
+        return $this->belongsTo("App\GrupoEvento", "grupo_evento_id", "id");
     }
 }

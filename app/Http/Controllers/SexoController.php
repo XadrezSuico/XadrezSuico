@@ -2,43 +2,49 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Sexo;
+use Illuminate\Http\Request;
 
 class SexoController extends Controller
 {
-	public function __construct(){
-		return $this->middleware("auth");
-	}
-    public function index(){
-        $sexos = Sexo::all();
-        return view('sexo.index',compact("sexos"));
+    public function __construct()
+    {
+        return $this->middleware("auth");
     }
-    public function new(){
+    public function index()
+    {
+        $sexos = Sexo::all();
+        return view('sexo.index', compact("sexos"));
+    }
+    function new () {
         return view('sexo.new');
     }
-    public function new_post(Request $request){
+    public function new_post(Request $request)
+    {
         $sexo = new Sexo;
         $sexo->name = $request->input("name");
         $sexo->abbr = $request->input("abbr");
         $sexo->save();
-        return redirect("/sexo/edit/".$sexo->id);
+        return redirect("/sexo/edit/" . $sexo->id);
     }
-    public function edit($id){
+    public function edit($id)
+    {
         $sexo = Sexo::find($id);
-        return view('sexo.edit',compact("sexo"));
+        return view('sexo.edit', compact("sexo"));
     }
-    public function edit_post($id,Request $request){
+    public function edit_post($id, Request $request)
+    {
         $sexo = Sexo::find($id);
         $sexo->name = $request->input("name");
         $sexo->abbr = $request->input("abbr");
         $sexo->save();
-        return redirect("/sexo/edit/".$sexo->id);
+        return redirect("/sexo/edit/" . $sexo->id);
     }
-    public function delete($id){
+    public function delete($id)
+    {
         $sexo = Sexo::find($id);
-        
-        if($sexo->isDeletavel()){
+
+        if ($sexo->isDeletavel()) {
             $sexo->delete();
         }
         return redirect("/sexo");

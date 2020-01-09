@@ -2,32 +2,29 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\GrupoEvento;
-use App\Evento;
 use App\Categoria;
-use App\Inscricao;
-use App\Sexo;
 use App\CategoriaSexo;
-use App\Pontuacao;
-use App\PontuacaoEnxadrista;
-use App\Enxadrista;
-use App\EnxadristaCriterioDesempateGeral;
+use App\Evento;
+use App\Sexo;
+use Illuminate\Http\Request;
 
 class CategoriaEventoController extends Controller
-{	public function __construct(){
-		return $this->middleware("auth");
-	}
-    public function index($evento_id){
+{public function __construct()
+    {
+    return $this->middleware("auth");
+}
+    public function index($evento_id)
+    {
         $evento = Evento::find($evento_id);
         $categorias = $evento->categorias_cadastradas->all();
-        return view('evento.categoria.index',compact("categorias","evento"));
+        return view('evento.categoria.index', compact("categorias", "evento"));
     }
-    public function new($evento_id){
+    function new ($evento_id) {
         $evento = Evento::find($evento_id);
-        return view('evento.categoria.new',compact("evento"));
+        return view('evento.categoria.new', compact("evento"));
     }
-    public function new_post($evento_id,Request $request){
+    public function new_post($evento_id, Request $request)
+    {
         $evento = Evento::find($evento_id);
 
         $categoria = new Categoria;
@@ -39,15 +36,17 @@ class CategoriaEventoController extends Controller
         $categoria->evento_id = $evento->id;
         $categoria->save();
 
-        return redirect("/evento/".$evento->id."/categorias/dashboard/".$categoria->id);
+        return redirect("/evento/" . $evento->id . "/categorias/dashboard/" . $categoria->id);
     }
-    public function edit($evento_id, $id){
+    public function edit($evento_id, $id)
+    {
         $evento = Evento::find($evento_id);
         $categoria = Categoria::find($id);
         $sexos = Sexo::all();
-        return view('evento.categoria.edit',compact("categoria","sexos","evento"));
+        return view('evento.categoria.edit', compact("categoria", "sexos", "evento"));
     }
-    public function edit_post($evento_id, $id,Request $request){
+    public function edit_post($evento_id, $id, Request $request)
+    {
         $evento = Evento::find($evento_id);
 
         $categoria = Categoria::find($id);
@@ -58,22 +57,21 @@ class CategoriaEventoController extends Controller
         $categoria->cat_code = $request->input("cat_code");
         $categoria->save();
 
-        return redirect("/evento/".$evento->id."/categorias/dashboard/".$categoria->id);
+        return redirect("/evento/" . $evento->id . "/categorias/dashboard/" . $categoria->id);
     }
-    public function delete($evento_id, $id){
+    public function delete($evento_id, $id)
+    {
         $evento = Evento::find($evento_id);
         $categoria = Categoria::find($id);
-        
-        if($categoria->isDeletavel()){
+
+        if ($categoria->isDeletavel()) {
             $categoria->delete();
         }
-        return redirect("/evento/dashboard/".$evento->id."?tab=categoria");
+        return redirect("/evento/dashboard/" . $evento->id . "?tab=categoria");
     }
 
-
-    
-
-    public function sexo_add($evento_id,$id,Request $request){
+    public function sexo_add($evento_id, $id, Request $request)
+    {
         $evento = Evento::find($evento_id);
         $categoria = Categoria::find($id);
 
@@ -81,14 +79,15 @@ class CategoriaEventoController extends Controller
         $categoria_sexo->categoria_id = $id;
         $categoria_sexo->sexos_id = $request->input("sexos_id");
         $categoria_sexo->save();
-        return redirect("/evento/".$evento->id."/categorias/dashboard/".$categoria->id);
+        return redirect("/evento/" . $evento->id . "/categorias/dashboard/" . $categoria->id);
     }
-    public function sexo_remove($evento_id,$id,$categoria_sexo_id){
+    public function sexo_remove($evento_id, $id, $categoria_sexo_id)
+    {
         $evento = Evento::find($evento_id);
         $categoria = Categoria::find($id);
 
         $categoria_sexo = CategoriaSexo::find($categoria_sexo_id);
         $categoria_sexo->delete();
-        return redirect("/evento/".$evento->id."/categorias/dashboard/".$categoria->id);
+        return redirect("/evento/" . $evento->id . "/categorias/dashboard/" . $categoria->id);
     }
 }

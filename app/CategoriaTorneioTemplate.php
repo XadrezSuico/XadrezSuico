@@ -14,17 +14,18 @@ class CategoriaTorneioTemplate extends Model
     protected static $logFillable = true;
 
     protected static $logAttributes = ['*'];
-    
-    
+
     public $timestamps = true;
     protected $primaryKey = 'id';
     protected $table = 'categoria_torneio_template';
 
-    public function categoria() {
-        return $this->belongsTo("App\Categoria","categoria_id","id");
+    public function categoria()
+    {
+        return $this->belongsTo("App\Categoria", "categoria_id", "id");
     }
 
-    public function template() {
-        return $this->belongsTo("App\TorneioTemplate","torneio_id","id");
+    public function template()
+    {
+        return $this->belongsTo("App\TorneioTemplate", "torneio_id", "id");
     }
 }

@@ -14,8 +14,7 @@ class InscricaoCriterioDesempate extends Model
     protected static $logFillable = true;
 
     protected static $logAttributes = ['*'];
-    
-    
+
     public $timestamps = true;
     protected $primaryKey = 'id';
     protected $table = 'inscricao_criterio_desempate';

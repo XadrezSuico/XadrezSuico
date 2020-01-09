@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-
 class WhatsNewController extends Controller
 {
-    public function index(){
+    public function index()
+    {
         $news = array();
 
         // Novidades versão 0.1.0.0
@@ -61,7 +60,7 @@ class WhatsNewController extends Controller
         $new_0010_betha["news"][] = "Versão inicial do sistema em beta.";
         $news[] = $new_0010_betha;
 
-        return view("whatsnew",compact("news"));
+        return view("whatsnew", compact("news"));
 
     }
 }

@@ -14,21 +14,24 @@ class Rating extends Model
     protected static $logFillable = true;
 
     protected static $logAttributes = ['*'];
-    
-    
-    public function enxadrista(){
-        return $this->belongsTo("App\Enxadrista","enxadrista_id","id");
+
+    public function enxadrista()
+    {
+        return $this->belongsTo("App\Enxadrista", "enxadrista_id", "id");
     }
-    public function tipo_rating(){
-        return $this->belongsTo("App\TipoRating","tipo_ratings_id","id");
+    public function tipo_rating()
+    {
+        return $this->belongsTo("App\TipoRating", "tipo_ratings_id", "id");
     }
-    public function movimentacoes(){
-        return $this->hasMany("App\MovimentacaoRating","ratings_id","id");
+    public function movimentacoes()
+    {
+        return $this->hasMany("App\MovimentacaoRating", "ratings_id", "id");
     }
 
-    public function calcular(){
+    public function calcular()
+    {
         $this->valor = 0;
-        foreach($this->movimentacoes->all() as $movimentacao){
+        foreach ($this->movimentacoes->all() as $movimentacao) {
             $this->valor += $movimentacao->valor;
         }
         $this->save();

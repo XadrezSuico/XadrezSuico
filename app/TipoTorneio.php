@@ -14,8 +14,7 @@ class TipoTorneio extends Model
     protected static $logFillable = true;
 
     protected static $logAttributes = ['*'];
-    
-    
+
     public $timestamps = true;
     protected $primaryKey = 'id';
     protected $table = 'tipo_torneio';

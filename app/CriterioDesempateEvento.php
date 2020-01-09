@@ -14,14 +14,14 @@ class CriterioDesempateEvento extends Model
     protected static $logFillable = true;
 
     protected static $logAttributes = ['*'];
-    
-    
 
-    public function evento(){
-        return $this->belongsTo("App\Evento","evento_id","id");
+    public function evento()
+    {
+        return $this->belongsTo("App\Evento", "evento_id", "id");
     }
 
-    public function criterio(){
-        return $this->belongsTo("App\CriterioDesempate","criterio_desempate_id","id");
+    public function criterio()
+    {
+        return $this->belongsTo("App\CriterioDesempate", "criterio_desempate_id", "id");
     }
 }
