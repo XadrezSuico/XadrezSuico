@@ -27,19 +27,19 @@ class EventoGerenciarController extends Controller
         return $this->middleware("auth");
     }
 
-    public function index()
-    {
-        $user = Auth::user();
-        if (
-            !$user->hasPermissionGlobal() &&
-            !$user->hasPermissionEventsByPerfil([3, 4, 5]) &&
-            !$user->hasPermissionGroupEventsByPerfil([6])
-        ) {
-            return redirect("/");
-        }
-        $eventos = Evento::all();
-        return view("evento.index", compact("eventos"));
-    }
+    // public function index()
+    // {
+    //     $user = Auth::user();
+    //     if (
+    //         !$user->hasPermissionGlobal() &&
+    //         !$user->hasPermissionEventsByPerfil([3, 4, 5]) &&
+    //         !$user->hasPermissionGroupEventsByPerfil([6])
+    //     ) {
+    //         return redirect("/");
+    //     }
+    //     $eventos = Evento::all();
+    //     return view("evento.index", compact("eventos"));
+    // }
 
     public function edit($id, Request $request)
     {
@@ -48,10 +48,11 @@ class EventoGerenciarController extends Controller
         if (
             !$user->hasPermissionGlobal() &&
             !$user->hasPermissionEventByPerfil($id, [3, 4]) &&
-            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [6])
+            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [6,7])
         ) {
             return redirect("/");
         }
+
         $categorias = Categoria::where([
             ["evento_id", "=", $evento->id],
         ])
@@ -75,13 +76,15 @@ class EventoGerenciarController extends Controller
     public function edit_post($id, Request $request)
     {
         $user = Auth::user();
+        $evento = Evento::find($id);
         if (
             !$user->hasPermissionGlobal() &&
-            !$user->hasPermissionEventByPerfil($id, [4])
+            !$user->hasPermissionEventByPerfil($evento->id, [4]) &&
+            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
         ) {
-            return redirect("/evento/dashboard/" . $id);
+            return redirect("/evento/dashboard/" . $evento->id);
         }
-        $evento = Evento::find($id);
+
 
         $datetime_data_inicio = DateTime::createFromFormat('d/m/Y', $request->input("data_inicio"));
         $datetime_data_fim = DateTime::createFromFormat('d/m/Y', $request->input("data_fim"));
@@ -176,12 +179,15 @@ class EventoGerenciarController extends Controller
     public function edit_pagina_post($id, Request $request)
     {
         $user = Auth::user();
+        $evento = Evento::find($id);
         if (
             !$user->hasPermissionGlobal() &&
-            !$user->hasPermissionEventByPerfil($id, [4])
+            !$user->hasPermissionEventByPerfil($evento->id, [4]) &&
+            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
         ) {
-            return redirect("/evento/dashboard/" . $id);
+            return redirect("/evento/dashboard/" . $evento->id);
         }
+
         $evento = Evento::find($id);
 
         if (!$evento->pagina) {
@@ -212,6 +218,16 @@ class EventoGerenciarController extends Controller
 
     public function categoria_add($id, Request $request)
     {
+        $user = Auth::user();
+        $evento = Evento::find($id);
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionEventByPerfil($evento->id, [4]) &&
+            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
+        ) {
+            return redirect("/evento/dashboard/" . $evento->id);
+        }
+
         $categoria_evento = new CategoriaEvento;
         $categoria_evento->evento_id = $id;
         $categoria_evento->categoria_id = $request->input("categoria_id");
@@ -220,6 +236,16 @@ class EventoGerenciarController extends Controller
     }
     public function categoria_remove($id, $categoria_evento_id)
     {
+        $user = Auth::user();
+        $evento = Evento::find($id);
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionEventByPerfil($evento->id, [4]) &&
+            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
+        ) {
+            return redirect("/evento/dashboard/" . $evento->id);
+        }
+
         $categoria_evento = CategoriaEvento::find($categoria_evento_id);
         $categoria_evento->delete();
         return redirect("/evento/dashboard/" . $id . "?tab=categorias_relacionadas");
@@ -228,13 +254,14 @@ class EventoGerenciarController extends Controller
     public function classificar($evento_id)
     {
         $user = Auth::user();
+        $evento = Evento::find($evento_id);
         if (
             !$user->hasPermissionGlobal() &&
-            !$user->hasPermissionEventByPerfil($evento_id, [4])
+            !$user->hasPermissionEventByPerfil($evento->id, [4]) &&
+            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
         ) {
-            return redirect("/");
+            return redirect("/evento/dashboard".$evento->id);
         }
-        $evento = Evento::find($evento_id);
         if ($evento) {
             foreach ($evento->categorias->all() as $categoria) {
                 CategoriaController::classificar($evento->id, $categoria->categoria->id);
@@ -251,13 +278,14 @@ class EventoGerenciarController extends Controller
     public function toggleMostrarClassificacao($evento_id)
     {
         $user = Auth::user();
+        $evento = Evento::find($evento_id);
         if (
             !$user->hasPermissionGlobal() &&
-            !$user->hasPermissionEventByPerfil($evento_id, [4])
+            !$user->hasPermissionEventByPerfil($evento->id, [4]) &&
+            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
         ) {
-            return redirect("/");
+            return redirect("/evento/dashboard/".$evento->id);
         }
-        $evento = Evento::find($evento_id);
         if ($evento) {
             if ($evento->mostrar_resultados) {
                 $evento->mostrar_resultados = false;
@@ -272,13 +300,14 @@ class EventoGerenciarController extends Controller
     public function toggleEventoClassificavel($evento_id)
     {
         $user = Auth::user();
+        $evento = Evento::find($evento_id);
         if (
             !$user->hasPermissionGlobal() &&
-            !$user->hasPermissionEventByPerfil($evento_id, [4])
+            !$user->hasPermissionEventByPerfil($evento->id, [4]) &&
+            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
         ) {
-            return redirect("/");
+            return redirect("/evento/dashboard/".$evento->id);
         }
-        $evento = Evento::find($evento_id);
         if ($evento) {
             if ($evento->classificavel) {
                 $evento->classificavel = false;
@@ -292,13 +321,14 @@ class EventoGerenciarController extends Controller
     public function toggleClassificacaoManual($evento_id)
     {
         $user = Auth::user();
+        $evento = Evento::find($evento_id);
         if (
             !$user->hasPermissionGlobal() &&
-            !$user->hasPermissionEventByPerfil($evento_id, [4])
+            !$user->hasPermissionEventByPerfil($evento->id, [4]) &&
+            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
         ) {
-            return redirect("/");
+            return redirect("/evento/dashboard".$evento->id);
         }
-        $evento = Evento::find($evento_id);
         if ($evento) {
             if ($evento->e_resultados_manuais) {
                 $evento->e_resultados_manuais = false;
@@ -313,23 +343,28 @@ class EventoGerenciarController extends Controller
     public function classificacao($evento_id)
     {
         $user = Auth::user();
+        $evento = Evento::find($evento_id);
         if (
             !$user->hasPermissionGlobal() &&
-            !$user->hasPermissionEventsByPerfil([3, 4, 5]) &&
-            !$user->hasPermissionGroupEventsByPerfil([6])
+            !$user->hasPermissionEventByPerfil($evento->id,[3, 4, 5]) &&
+            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[6,7])
         ) {
-            return redirect("/");
+            return redirect("/evento/dashboard/".$evento->id);
         }
-        $evento = Evento::find($evento_id);
         return view("evento.publico.classificacao", compact("evento"));
     }
     public function resultados($evento_id, $categoria_id)
     {
         $user = Auth::user();
-        if (!$user->hasPermissionMain([1, 2, 3, 4, 5, 6])) {
-            return redirect("/");
-        }
         $evento = Evento::find($evento_id);
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionEventByPerfil($evento->id, [4]) &&
+            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
+        ) {
+            return redirect("/evento/dashboard/" . $evento->id);
+        }
+
         $categoria = Categoria::find($categoria_id);
         $torneio = $categoria->getTorneioByEvento($evento);
         $inscricoes = Inscricao::where([
@@ -349,6 +384,16 @@ class EventoGerenciarController extends Controller
 
     public function visualizar_inscricoes($id)
     {
+        $user = Auth::user();
+        $evento = Evento::find($id);
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionEventByPerfil($evento->id, [3,4,5]) &&
+            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
+        ) {
+            return redirect("/evento/dashboard/" . $evento->id);
+        }
+
         $evento = Evento::find($id);
         if ($evento) {
             return view("evento.inscricoes", compact("evento"));
@@ -358,6 +403,16 @@ class EventoGerenciarController extends Controller
 
     public function downloadListaManagerParaEvento($id)
     {
+        $user = Auth::user();
+        $evento = Evento::find($id);
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionEventByPerfil($evento->id, [4]) &&
+            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
+        ) {
+            return redirect("/evento/dashboard/" . $evento->id);
+        }
+
         $enxadristasView = new EnxadristasFromView();
         $enxadristasView->setEvento($id);
         return Excel::download($enxadristasView, 'xadrezSuico_evento_' . $id . '_lista_enxadristas_' . date('d-m-Y--H-i-s') . '.xlsx');

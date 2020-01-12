@@ -198,17 +198,17 @@ class UserController extends Controller
         }
         if (!$user->hasPermissionGlobal() && $user->hasPermissionGroupEventsByPerfil([7])) {
             if (
-                $request->input("perfils_id") == 3 ||
-                $request->input("perfils_id") == 4 ||
-                $request->input("perfils_id") == 5
+                $perfil_user->perfils_id == 3 ||
+                $perfil_user->perfils_id == 4 ||
+                $perfil_user->perfils_id == 5
             ) {
                 $evento = Evento::find($perfil_user->evento_id);
                 if (!$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])) {
                     return redirect()->back();
                 }
             } elseif (
-                $request->input("perfils_id") == 6 ||
-                $request->input("perfils_id") == 7
+                $perfil_user->perfils_id == 6 ||
+                $perfil_user->perfils_id == 7
             ) {
                 if (!$user->hasPermissionGroupEventByPerfil($perfil_user->grupo_evento_id, [7])) {
                     return redirect()->back();

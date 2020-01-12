@@ -19,6 +19,11 @@ class TorneioTemplate extends Model
     protected $primaryKey = 'id';
     protected $table = 'torneio_template';
 
+    public function grupo_evento()
+    {
+        return $this->belongsTo("App\GrupoEvento", "grupo_evento_id", "id");
+    }
+
     public function categorias()
     {
         return $this->hasMany("App\CategoriaTorneioTemplate", "torneio_template_id", "id");
@@ -27,11 +32,6 @@ class TorneioTemplate extends Model
     public function torneios()
     {
         return $this->hasMany("App\Torneio", "torneio_template_id", "id");
-    }
-
-    public function grupos_evento()
-    {
-        return $this->hasMany("App\TorneioTemplateGrupoEvento", "torneio_template_id", "id");
     }
 
     public function isDeletavel()

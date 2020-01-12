@@ -13,7 +13,9 @@
         </div>
     @endif
     <ul class="nav nav-pills">
-        <li role="presentation"><a href="{{url("/grupoevento/new")}}">Novo Grupo de Evento</a></li>
+        @if(\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal())
+            <li role="presentation"><a href="{{url("/grupoevento/new")}}">Novo Grupo de Evento</a></li>
+        @endif
     </ul>
 
     <div class="box">

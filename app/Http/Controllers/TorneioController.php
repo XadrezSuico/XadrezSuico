@@ -13,6 +13,7 @@ use App\Rating;
 use App\TipoTorneio;
 use App\Torneio;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class TorneioController extends Controller
 {
@@ -24,18 +25,45 @@ class TorneioController extends Controller
     public function index($id)
     {
         $evento = Evento::find($id);
+        $user = Auth::user();
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionEventByPerfil($evento->id, [4]) &&
+            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
+        ) {
+            return redirect("/evento/dashboard/" . $evento->id);
+        }
+
         $torneios = $evento->torneios->all();
         return view("evento.torneio.index", compact("evento", "torneios"));
     }
 
     function new ($id) {
         $evento = Evento::find($id);
+        $user = Auth::user();
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionEventByPerfil($evento->id, [4]) &&
+            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
+        ) {
+            return redirect("/evento/dashboard/" . $evento->id);
+        }
+        
         $tipos_torneio = TipoTorneio::all();
         return view('evento.torneio.new', compact("evento", "tipos_torneio"));
     }
     public function new_post($id, Request $request)
     {
         $evento = Evento::find($id);
+        $user = Auth::user();
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionEventByPerfil($evento->id, [4]) &&
+            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
+        ) {
+            return redirect("/evento/dashboard/" . $evento->id);
+        }
+        
         $torneio = new Torneio;
         $torneio->name = $request->input("name");
         $torneio->tipo_torneio_id = $request->input("tipo_torneio_id");
@@ -46,6 +74,15 @@ class TorneioController extends Controller
     public function edit($id, $torneio_id)
     {
         $evento = Evento::find($id);
+        $user = Auth::user();
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionEventByPerfil($evento->id, [4]) &&
+            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
+        ) {
+            return redirect("/evento/dashboard/" . $evento->id);
+        }
+        
         $torneio = Torneio::find($torneio_id);
         $tipos_torneio = TipoTorneio::all();
         $categorias = Categoria::where([
@@ -60,6 +97,15 @@ class TorneioController extends Controller
     public function edit_post($id, $torneio_id, Request $request)
     {
         $evento = Evento::find($id);
+        $user = Auth::user();
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionEventByPerfil($evento->id, [4]) &&
+            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
+        ) {
+            return redirect("/evento/dashboard/" . $evento->id);
+        }
+        
         $torneio = Torneio::find($torneio_id);
         $torneio->name = $request->input("name");
         $torneio->tipo_torneio_id = $request->input("tipo_torneio_id");
@@ -69,6 +115,15 @@ class TorneioController extends Controller
     public function delete($id, $torneio_id)
     {
         $evento = Evento::find($id);
+        $user = Auth::user();
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionEventByPerfil($evento->id, [4]) &&
+            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
+        ) {
+            return redirect("/evento/dashboard/" . $evento->id);
+        }
+        
         $torneio = Torneio::find($torneio_id);
 
         if ($torneio->isDeletavel()) {
@@ -79,6 +134,15 @@ class TorneioController extends Controller
     public function union($id, $torneio_id)
     {
         $evento = Evento::find($id);
+        $user = Auth::user();
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionEventByPerfil($evento->id, [4]) &&
+            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
+        ) {
+            return redirect("/evento/dashboard/" . $evento->id);
+        }
+        
         $torneio = Torneio::find($torneio_id);
         $torneios = $torneio->evento->torneios()->where([["id", "!=", $torneio->id]])->get();
         return view('evento.torneio.union', compact("torneio", "torneios", "evento"));
@@ -92,6 +156,15 @@ class TorneioController extends Controller
         }
 
         $evento = Evento::find($id);
+        $user = Auth::user();
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionEventByPerfil($id, [4]) &&
+            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
+        ) {
+            return redirect("/evento/dashboard/" . $id);
+        }
+        
         $torneio_base = Torneio::find($torneio_id);
         $torneio_a_ser_unido = Torneio::find($request->input("torneio_a_ser_unido"));
 
@@ -124,6 +197,15 @@ class TorneioController extends Controller
     public function categoria_add($id, $torneio_id, Request $request)
     {
         $evento = Evento::find($id);
+        $user = Auth::user();
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionEventByPerfil($evento->id, [4]) &&
+            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
+        ) {
+            return redirect("/evento/dashboard/" . $evento->id);
+        }
+        
         $torneio = Torneio::find($torneio_id);
         $categoria_torneio = new CategoriaTorneio;
         $categoria_torneio->torneio_id = $torneio_id;
@@ -138,6 +220,15 @@ class TorneioController extends Controller
     public function categoria_remove($id, $torneio_id, $categoria_torneio_id)
     {
         $evento = Evento::find($id);
+        $user = Auth::user();
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionEventByPerfil($evento->id, [4]) &&
+            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
+        ) {
+            return redirect("/evento/dashboard/" . $evento->id);
+        }
+        
         $torneio = Torneio::find($torneio_id);
         $categoria_torneio = CategoriaTorneio::find($categoria_torneio_id);
         $categoria_torneio->delete();
@@ -150,6 +241,16 @@ class TorneioController extends Controller
 
     public function formResults($id, $torneio_id)
     {
+        $evento = Evento::find($id);
+        $user = Auth::user();
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionEventByPerfil($evento->id, [4]) &&
+            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
+        ) {
+            return redirect("/evento/dashboard/" . $evento->id);
+        }
+        
         $torneio = Torneio::find($torneio_id);
         $evento = $torneio->evento;
         return view("evento.torneio.resultados", compact("evento", "torneio"));
@@ -162,6 +263,16 @@ class TorneioController extends Controller
 
     private function setResults($results, $torneio_id)
     {
+        $evento = Evento::find($id);
+        $user = Auth::user();
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionEventByPerfil($evento->id, [4]) &&
+            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
+        ) {
+            return redirect("/evento/dashboard/" . $evento->id);
+        }
+        
         $retornos = array();
         $torneio = Torneio::find($torneio_id);
         $retornos[] = date("d/m/Y H:i:s") . " - Início do Processamento para o torneio de #" . $torneio->id . " - '" . $torneio->name . "' do Evento '" . $torneio->evento->name . "'";

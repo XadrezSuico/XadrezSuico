@@ -7,6 +7,7 @@ use App\CategoriaSexo;
 use App\GrupoEvento;
 use App\Sexo;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CategoriaGrupoEventoController extends Controller
 {
@@ -17,16 +18,43 @@ class CategoriaGrupoEventoController extends Controller
     public function index($grupo_evento_id)
     {
         $grupo_evento = GrupoEvento::find($grupo_evento_id);
+        $user = Auth::user();
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionGroupEventByPerfil($grupo_evento->id, [7])
+        ) {
+            return redirect("/grupoevento/dashboard/".$grupo_evento->id);
+        }
+        
+
         $categorias = $grupo_evento->categorias->all();
         return view('grupoevento.categoria.index', compact("categorias", "grupo_evento"));
     }
     function new ($grupo_evento_id) {
         $grupo_evento = GrupoEvento::find($grupo_evento_id);
+        $user = Auth::user();
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionGroupEventByPerfil($grupo_evento->id, [7])
+        ) {
+            return redirect("/grupoevento/dashboard/".$grupo_evento->id);
+        }
+        
+
         return view('grupoevento.categoria.new', compact("grupo_evento"));
     }
     public function new_post($grupo_evento_id, Request $request)
     {
         $grupo_evento = GrupoEvento::find($grupo_evento_id);
+        $user = Auth::user();
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionGroupEventByPerfil($grupo_evento->id, [7])
+        ) {
+            return redirect("/grupoevento/dashboard/".$grupo_evento->id);
+        }
+        
+
 
         $categoria = new Categoria;
         $categoria->name = $request->input("name");
@@ -46,6 +74,15 @@ class CategoriaGrupoEventoController extends Controller
     public function edit($grupo_evento_id, $id)
     {
         $grupo_evento = GrupoEvento::find($grupo_evento_id);
+        $user = Auth::user();
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionGroupEventByPerfil($grupo_evento->id, [7])
+        ) {
+            return redirect("/grupoevento/dashboard/".$grupo_evento->id);
+        }
+        
+
         $categoria = Categoria::find($id);
         $sexos = Sexo::all();
         return view('grupoevento.categoria.edit', compact("categoria", "sexos", "grupo_evento"));
@@ -53,6 +90,15 @@ class CategoriaGrupoEventoController extends Controller
     public function edit_post($grupo_evento_id, $id, Request $request)
     {
         $grupo_evento = GrupoEvento::find($grupo_evento_id);
+        $user = Auth::user();
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionGroupEventByPerfil($grupo_evento->id, [7])
+        ) {
+            return redirect("/grupoevento/dashboard/".$grupo_evento->id);
+        }
+        
+
 
         $categoria = Categoria::find($id);
         $categoria->name = $request->input("name");
@@ -72,6 +118,15 @@ class CategoriaGrupoEventoController extends Controller
     public function delete($grupo_evento_id, $id)
     {
         $grupo_evento = GrupoEvento::find($grupo_evento_id);
+        $user = Auth::user();
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionGroupEventByPerfil($grupo_evento->id, [7])
+        ) {
+            return redirect("/grupoevento/dashboard/".$grupo_evento->id);
+        }
+        
+
         $categoria = Categoria::find($id);
 
         if ($categoria->isDeletavel()) {
@@ -83,6 +138,15 @@ class CategoriaGrupoEventoController extends Controller
     public function sexo_add($grupo_evento_id, $id, Request $request)
     {
         $grupo_evento = GrupoEvento::find($grupo_evento_id);
+        $user = Auth::user();
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionGroupEventByPerfil($grupo_evento->id, [7])
+        ) {
+            return redirect("/grupoevento/dashboard/".$grupo_evento->id);
+        }
+        
+
         $categoria = Categoria::find($id);
 
         $categoria_sexo = new CategoriaSexo;
@@ -94,6 +158,15 @@ class CategoriaGrupoEventoController extends Controller
     public function sexo_remove($grupo_evento_id, $id, $categoria_sexo_id)
     {
         $grupo_evento = GrupoEvento::find($grupo_evento_id);
+        $user = Auth::user();
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionGroupEventByPerfil($grupo_evento->id, [7])
+        ) {
+            return redirect("/grupoevento/dashboard/".$grupo_evento->id);
+        }
+        
+
         $categoria = Categoria::find($id);
 
         $categoria_sexo = CategoriaSexo::find($categoria_sexo_id);

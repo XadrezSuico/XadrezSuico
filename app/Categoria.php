@@ -28,11 +28,6 @@ class Categoria extends Model
         return $this->belongsTo("App\Evento", "evento_id", "id");
     }
 
-    public function grupos_evento()
-    {
-        return $this->hasMany("App\CategoriaGrupoEvento", "categoria_id", "id");
-    }
-
     public function torneios_template()
     {
         return $this->hasMany("App\CategoriaTorneioTemplate", "categoria_id", "id");

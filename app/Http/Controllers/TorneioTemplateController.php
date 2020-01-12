@@ -6,6 +6,7 @@ use App\CategoriaTorneioTemplate;
 use App\GrupoEvento;
 use App\TorneioTemplate;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class TorneioTemplateController extends Controller
 {
@@ -27,6 +28,10 @@ class TorneioTemplateController extends Controller
     public function new_post($grupo_evento_id, Request $request)
     {
         $grupo_evento = GrupoEvento::find($grupo_evento_id);
+        $user = Auth::user();
+        if (!$user->hasPermissionGlobal() && !$user->hasPermissionGroupEventByPerfil($grupo_evento->id,[7])) {
+            return redirect("/grupoevento");
+        }
 
         $torneio_template = new TorneioTemplate;
         $torneio_template->name = $request->input("name");
@@ -38,6 +43,10 @@ class TorneioTemplateController extends Controller
     public function edit($grupo_evento_id, $id)
     {
         $grupo_evento = GrupoEvento::find($grupo_evento_id);
+        $user = Auth::user();
+        if (!$user->hasPermissionGlobal() && !$user->hasPermissionGroupEventByPerfil($grupo_evento->id,[7])) {
+            return redirect("/grupoevento");
+        }
 
         $torneio_template = TorneioTemplate::find($id);
         return view('grupoevento.torneiotemplate.edit', compact("grupo_evento", "torneio_template", "categorias"));
@@ -45,6 +54,10 @@ class TorneioTemplateController extends Controller
     public function edit_post($grupo_evento_id, $id, Request $request)
     {
         $grupo_evento = GrupoEvento::find($grupo_evento_id);
+        $user = Auth::user();
+        if (!$user->hasPermissionGlobal() && !$user->hasPermissionGroupEventByPerfil($grupo_evento->id,[7])) {
+            return redirect("/grupoevento");
+        }
 
         $torneio_template = TorneioTemplate::find($id);
         $torneio_template->name = $request->input("name");
@@ -55,6 +68,10 @@ class TorneioTemplateController extends Controller
     public function delete($grupo_evento_id, $id)
     {
         $grupo_evento = GrupoEvento::find($grupo_evento_id);
+        $user = Auth::user();
+        if (!$user->hasPermissionGlobal() && !$user->hasPermissionGroupEventByPerfil($grupo_evento->id,[7])) {
+            return redirect("/grupoevento");
+        }
 
         $torneio_template = TorneioTemplate::find($id);
 
@@ -66,6 +83,10 @@ class TorneioTemplateController extends Controller
     public function categoria_add($grupo_evento_id, $id, Request $request)
     {
         $grupo_evento = GrupoEvento::find($grupo_evento_id);
+        $user = Auth::user();
+        if (!$user->hasPermissionGlobal() && !$user->hasPermissionGroupEventByPerfil($grupo_evento->id,[7])) {
+            return redirect("/grupoevento");
+        }
 
         $categoria_torneio_template = new CategoriaTorneioTemplate;
         $categoria_torneio_template->torneio_template_id = $id;
@@ -76,6 +97,10 @@ class TorneioTemplateController extends Controller
     public function categoria_remove($grupo_evento_id, $id, $categoria_torneio_id)
     {
         $grupo_evento = GrupoEvento::find($grupo_evento_id);
+        $user = Auth::user();
+        if (!$user->hasPermissionGlobal() && !$user->hasPermissionGroupEventByPerfil($grupo_evento->id,[7])) {
+            return redirect("/grupoevento");
+        }
 
         $categoria_torneio_template = CategoriaTorneioTemplate::find($categoria_torneio_id);
         $categoria_torneio_template->delete();

@@ -17,6 +17,14 @@ class CampoPersonalizadoGrupoEventoController extends Controller
     public function new_post($grupo_evento_id, Request $request)
     {
         $grupo_evento = GrupoEvento::find($grupo_evento_id);
+        $user = Auth::user();
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionGroupEventByPerfil($grupo_evento->id, [7])
+        ) {
+            return redirect("/grupoevento/dashboard/".$grupo_evento->id);
+        }
+        
 
         $campo = new CampoPersonalizado;
         $campo->name = $request->input("name");
@@ -41,6 +49,14 @@ class CampoPersonalizadoGrupoEventoController extends Controller
     public function dashboard($grupo_evento_id, $id)
     {
         $grupo_evento = GrupoEvento::find($grupo_evento_id);
+        $user = Auth::user();
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionGroupEventByPerfil($grupo_evento->id, [7])
+        ) {
+            return redirect("/grupoevento/dashboard/".$grupo_evento->id);
+        }
+        
         $campo = CampoPersonalizado::find($id);
         $user = Auth::user();
         return view('grupoevento.campo.dashboard', compact("campo", "sexos", "grupo_evento", "user"));
@@ -48,6 +64,14 @@ class CampoPersonalizadoGrupoEventoController extends Controller
     public function edit_post($grupo_evento_id, $id, Request $request)
     {
         $grupo_evento = GrupoEvento::find($grupo_evento_id);
+        $user = Auth::user();
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionGroupEventByPerfil($grupo_evento->id, [7])
+        ) {
+            return redirect("/grupoevento/dashboard/".$grupo_evento->id);
+        }
+        
 
         $campo = CampoPersonalizado::find($id);
         $campo->name = $request->input("name");
@@ -82,6 +106,14 @@ class CampoPersonalizadoGrupoEventoController extends Controller
     public function delete($grupo_evento_id, $id)
     {
         $grupo_evento = GrupoEvento::find($grupo_evento_id);
+        $user = Auth::user();
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionGroupEventByPerfil($grupo_evento->id, [7])
+        ) {
+            return redirect("/grupoevento/dashboard/".$grupo_evento->id);
+        }
+        
         $campo = CampoPersonalizado::find($id);
 
         if ($campo->isDeletavel()) {
@@ -93,6 +125,14 @@ class CampoPersonalizadoGrupoEventoController extends Controller
     public function opcao_add($grupo_evento_id, $id, Request $request)
     {
         $grupo_evento = GrupoEvento::find($grupo_evento_id);
+        $user = Auth::user();
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionGroupEventByPerfil($grupo_evento->id, [7])
+        ) {
+            return redirect("/grupoevento/dashboard/".$grupo_evento->id);
+        }
+        
         $campo = CampoPersonalizado::find($id);
 
         $opcao = new Opcao;
@@ -106,6 +146,14 @@ class CampoPersonalizadoGrupoEventoController extends Controller
     public function opcao_remove($grupo_evento_id, $id, $opcaos_id)
     {
         $grupo_evento = GrupoEvento::find($grupo_evento_id);
+        $user = Auth::user();
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionGroupEventByPerfil($grupo_evento->id, [7])
+        ) {
+            return redirect("/grupoevento/dashboard/".$grupo_evento->id);
+        }
+        
         $campo = CampoPersonalizado::find($id);
 
         $opcao = Opcao::find($opcaos_id);

@@ -15,4 +15,8 @@ class Perfil extends Model
 
     protected static $logAttributes = ['*'];
 
+    public function users()
+    {
+        return $this->hasMany("App\PerfilUser", "perfils_id", "id");
+    }
 }

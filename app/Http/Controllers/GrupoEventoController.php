@@ -37,10 +37,20 @@ class GrupoEventoController extends Controller
         return view('grupoevento.index', compact("grupos_evento"));
     }
     function new () {
+        $user = Auth::user();
+        if (!$user->hasPermissionGlobal()) {
+            return redirect("/grupoevento");
+        }
+
         return view('grupoevento.new');
     }
     public function new_post(Request $request)
     {
+        $user = Auth::user();
+        if (!$user->hasPermissionGlobal()) {
+            return redirect("/grupoevento");
+        }
+
         $grupo_evento = new GrupoEvento;
         $grupo_evento->name = $request->input("name");
         $grupo_evento->save();
@@ -59,6 +69,10 @@ class GrupoEventoController extends Controller
     public function edit($id, Request $request)
     {
         $user = Auth::user();
+        if (!$user->hasPermissionGlobal() && !$user->hasPermissionGroupEventByPerfil($id,[7]) && !$user->hasPermissionEventByPerfilByGroupEvent($id,[3,4,5])) {
+            return redirect("/grupoevento");
+        }
+
         $grupo_evento = GrupoEvento::find($id);
         $torneio_templates = TorneioTemplate::all();
         $categorias = Categoria::all();
@@ -77,6 +91,11 @@ class GrupoEventoController extends Controller
     }
     public function edit_post($id, Request $request)
     {
+        $user = Auth::user();
+        if (!$user->hasPermissionGlobal() && !$user->hasPermissionGroupEventByPerfil($id,[7])) {
+            return redirect("/grupoevento");
+        }
+
         $grupo_evento = GrupoEvento::find($id);
         $grupo_evento->name = $request->input("name");
         if ($request->has("limite_calculo_geral")) {
@@ -120,6 +139,11 @@ class GrupoEventoController extends Controller
     }
     public function delete($id)
     {
+        $user = Auth::user();
+        if (!$user->hasPermissionGlobal()) {
+            return redirect("/grupoevento");
+        }
+
         $grupo_evento = GrupoEvento::find($id);
 
         if ($grupo_evento->isDeletavel()) {
@@ -130,6 +154,11 @@ class GrupoEventoController extends Controller
 
     public function torneio_template_add($id, Request $request)
     {
+        $user = Auth::user();
+        if (!$user->hasPermissionGlobal() && !$user->hasPermissionGroupEventByPerfil($id,[7])) {
+            return redirect("/grupoevento");
+        }
+
         $torneio_template_grupo_evento = new TorneioTemplateGrupoEvento;
         $torneio_template_grupo_evento->grupo_evento_id = $id;
         $torneio_template_grupo_evento->torneio_template_id = $request->input("torneio_template_id");
@@ -138,6 +167,11 @@ class GrupoEventoController extends Controller
     }
     public function torneio_template_remove($id, $torneio_template_grupo_evento_id)
     {
+        $user = Auth::user();
+        if (!$user->hasPermissionGlobal() && !$user->hasPermissionGroupEventByPerfil($id,[7])) {
+            return redirect("/grupoevento");
+        }
+
         $torneio_template_grupo_evento = TorneioTemplateGrupoEvento::find($torneio_template_grupo_evento_id);
         $torneio_template_grupo_evento->delete();
         return redirect("/grupoevento/dashboard/" . $id . "?tab=torneio_template");
@@ -145,6 +179,11 @@ class GrupoEventoController extends Controller
 
     public function categoria_add($id, Request $request)
     {
+        $user = Auth::user();
+        if (!$user->hasPermissionGlobal() && !$user->hasPermissionGroupEventByPerfil($id,[7])) {
+            return redirect("/grupoevento");
+        }
+
         $categoria_grupo_evento = new CategoriaGrupoEvento;
         $categoria_grupo_evento->grupo_evento_id = $id;
         $categoria_grupo_evento->categoria_id = $request->input("categoria_id");
@@ -157,6 +196,11 @@ class GrupoEventoController extends Controller
     }
     public function categoria_remove($id, $categoria_grupo_evento_id)
     {
+        $user = Auth::user();
+        if (!$user->hasPermissionGlobal() && !$user->hasPermissionGroupEventByPerfil($id,[7])) {
+            return redirect("/grupoevento");
+        }
+
         $categoria_grupo_evento = CategoriaGrupoEvento::find($categoria_grupo_evento_id);
         $categoria_grupo_evento->delete();
         return redirect("/grupoevento/dashboard/" . $id . "?tab=categoria");
@@ -164,6 +208,11 @@ class GrupoEventoController extends Controller
 
     public function criterio_desempate_add($id, Request $request)
     {
+        $user = Auth::user();
+        if (!$user->hasPermissionGlobal() && !$user->hasPermissionGroupEventByPerfil($id,[7])) {
+            return redirect("/grupoevento");
+        }
+
         $criterio_desempate_grupo_evento = new CriterioDesempateGrupoEvento;
         $criterio_desempate_grupo_evento->grupo_evento_id = $id;
         $criterio_desempate_grupo_evento->criterio_desempate_id = $request->input("criterio_desempate_id");
@@ -175,6 +224,11 @@ class GrupoEventoController extends Controller
     }
     public function criterio_desempate_remove($id, $cd_grupo_evento_id)
     {
+        $user = Auth::user();
+        if (!$user->hasPermissionGlobal() && !$user->hasPermissionGroupEventByPerfil($id,[7])) {
+            return redirect("/grupoevento");
+        }
+
         $criterio_desempate_grupo_evento = CriterioDesempateGrupoEvento::find($cd_grupo_evento_id);
         $criterio_desempate_grupo_evento->delete();
         return redirect("/grupoevento/dashboard/" . $id . "?tab=criterio_desempate");
@@ -182,6 +236,11 @@ class GrupoEventoController extends Controller
 
     public function criterio_desempate_geral_add($id, Request $request)
     {
+        $user = Auth::user();
+        if (!$user->hasPermissionGlobal() && !$user->hasPermissionGroupEventByPerfil($id,[7])) {
+            return redirect("/grupoevento");
+        }
+
         $criterio_desempate_grupo_evento_geral = new CriterioDesempateGrupoEventoGeral;
         $criterio_desempate_grupo_evento_geral->grupo_evento_id = $id;
         $criterio_desempate_grupo_evento_geral->criterio_desempate_id = $request->input("criterio_desempate_id");
@@ -191,6 +250,11 @@ class GrupoEventoController extends Controller
     }
     public function criterio_desempate_geral_remove($id, $cd_grupo_evento_geral_id)
     {
+        $user = Auth::user();
+        if (!$user->hasPermissionGlobal() && !$user->hasPermissionGroupEventByPerfil($id,[7])) {
+            return redirect("/grupoevento");
+        }
+
         $criterio_desempate_grupo_evento_geral = CriterioDesempateGrupoEventoGeral::find($cd_grupo_evento_geral_id);
         $criterio_desempate_grupo_evento_geral->delete();
         return redirect("/grupoevento/dashboard/" . $id . "?tab=criterio_desempate_geral");
@@ -198,6 +262,11 @@ class GrupoEventoController extends Controller
 
     public function pontuacao_add($id, Request $request)
     {
+        $user = Auth::user();
+        if (!$user->hasPermissionGlobal() && !$user->hasPermissionGroupEventByPerfil($id,[7])) {
+            return redirect("/grupoevento");
+        }
+
         $pontuacao = new Pontuacao;
         $pontuacao->grupo_evento_id = $id;
         $pontuacao->posicao = $request->input("posicao");
@@ -207,6 +276,11 @@ class GrupoEventoController extends Controller
     }
     public function pontuacao_remove($id, $pontuacao_id)
     {
+        $user = Auth::user();
+        if (!$user->hasPermissionGlobal() && !$user->hasPermissionGroupEventByPerfil($id,[7])) {
+            return redirect("/grupoevento");
+        }
+
         $pontuacao = Pontuacao::find($pontuacao_id);
         $pontuacao->delete();
         return redirect("/grupoevento/dashboard/" . $id . "?tab=pontuacao");
@@ -214,6 +288,11 @@ class GrupoEventoController extends Controller
 
     public function classificar($grupo_evento_id)
     {
+        $user = Auth::user();
+        if (!$user->hasPermissionGlobal() && !$user->hasPermissionGroupEventByPerfil($id,[7])) {
+            return redirect("/grupoevento");
+        }
+
         $retornos = array();
         $grupo_evento = GrupoEvento::find($grupo_evento_id);
         if ($grupo_evento) {
@@ -226,6 +305,11 @@ class GrupoEventoController extends Controller
 
     public function classificar_page($grupo_evento_id)
     {
+        $user = Auth::user();
+        if (!$user->hasPermissionGlobal() && !$user->hasPermissionGroupEventByPerfil($id,[7])) {
+            return redirect("/grupoevento");
+        }
+
         $retornos = array();
         $grupo_evento = GrupoEvento::find($grupo_evento_id);
         return view("grupoevento.classificar", compact("grupo_evento"));
@@ -233,6 +317,11 @@ class GrupoEventoController extends Controller
 
     public function classificar_call($grupo_evento_id, $categoria_id, $action)
     {
+        $user = Auth::user();
+        if (!$user->hasPermissionGlobal() && !$user->hasPermissionGroupEventByPerfil($id,[7])) {
+            return redirect("/grupoevento");
+        }
+
         $retornos = array();
         $grupo_evento = GrupoEvento::find($grupo_evento_id);
         $categoria = Categoria::find($categoria_id);
@@ -257,6 +346,11 @@ class GrupoEventoController extends Controller
 
     public function evento_new($id, Request $request)
     {
+        $user = Auth::user();
+        if (!$user->hasPermissionGlobal() && !$user->hasPermissionGroupEventByPerfil($id,[7])) {
+            return redirect("/grupoevento");
+        }
+
         $grupo_evento = GrupoEvento::find($id);
 
         $datetime_data_inicio = DateTime::createFromFormat('d/m/Y', $request->input("data_inicio"));

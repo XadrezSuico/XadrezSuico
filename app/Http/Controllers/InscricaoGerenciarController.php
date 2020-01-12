@@ -14,6 +14,7 @@ use App\Sexo;
 use App\Torneio;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Facades\Auth;
 
 class InscricaoGerenciarController extends Controller
 {
@@ -24,7 +25,16 @@ class InscricaoGerenciarController extends Controller
 
     public function index($id, $torneio_id)
     {
+        $user = Auth::user();
         $evento = Evento::find($id);
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionEventByPerfil($evento->id, [3, 4]) &&
+            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [6,7])
+        ) {
+            return redirect("/evento/dashboard/".$evento->id);
+        }
+
         $torneio = Torneio::find($torneio_id);
         $inscricoes = $torneio->inscricoes->all();
         return view("evento.torneio.inscricao.index", compact("evento", "torneio", "inscricoes"));
@@ -32,7 +42,16 @@ class InscricaoGerenciarController extends Controller
 
     public function edit($id, $torneio_id, $inscricao_id)
     {
+        $user = Auth::user();
         $evento = Evento::find($id);
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionEventByPerfil($evento->id, [3, 4]) &&
+            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [6,7])
+        ) {
+            return redirect("/evento/dashboard/".$evento->id);
+        }
+
         $torneio = Torneio::find($torneio_id);
         $inscricao = Inscricao::find($inscricao_id);
         if ($evento->e_resultados_manuais) {
@@ -45,7 +64,15 @@ class InscricaoGerenciarController extends Controller
 
     public function edit_post($id, $torneio_id, $inscricao_id, Request $request)
     {
+        $user = Auth::user();
         $evento = Evento::find($id);
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionEventByPerfil($evento->id, [4]) &&
+            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
+        ) {
+            return redirect("/evento/dashboard/".$evento->id);
+        }
         $torneio = Torneio::find($torneio_id);
         $inscricao = Inscricao::find($inscricao_id);
         if ($inscricao) {
@@ -195,7 +222,16 @@ class InscricaoGerenciarController extends Controller
 
     public function unconfirm($id, $torneio_id, $inscricao_id)
     {
+        $user = Auth::user();
         $evento = Evento::find($id);
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionEventByPerfil($evento->id, [4]) &&
+            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
+        ) {
+            return redirect("/evento/dashboard/".$evento->id);
+        }
+        
         $torneio = Torneio::find($torneio_id);
         $inscricao = Inscricao::find($inscricao_id);
         if ($inscricao->confirmado) {
@@ -207,7 +243,16 @@ class InscricaoGerenciarController extends Controller
 
     public function delete($id, $torneio_id, $inscricao_id)
     {
+        $user = Auth::user();
         $evento = Evento::find($id);
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionEventByPerfil($evento->id, [4]) &&
+            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
+        ) {
+            return redirect("/evento/dashboard/".$evento->id);
+        }
+        
         $torneio = Torneio::find($torneio_id);
         $inscricao = Inscricao::find($inscricao_id);
         if ($inscricao->isDeletavel()) {
@@ -221,7 +266,16 @@ class InscricaoGerenciarController extends Controller
 
     public function list_to_manager($id, $torneio_id)
     {
+        $user = Auth::user();
         $evento = Evento::find($id);
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionEventByPerfil($evento->id, [4]) &&
+            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
+        ) {
+            return redirect("/evento/dashboard/".$evento->id);
+        }
+        
         $torneio = Torneio::find($torneio_id);
         $inscricoes = $torneio->inscricoes()->where([["confirmado", "=", true]])->get();
 
@@ -247,7 +301,16 @@ class InscricaoGerenciarController extends Controller
 
     public function list_to_manager_all($id, $torneio_id)
     {
+        $user = Auth::user();
         $evento = Evento::find($id);
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionEventByPerfil($evento->id, [4]) &&
+            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
+        ) {
+            return redirect("/evento/dashboard/".$evento->id);
+        }
+        
         $torneio = Torneio::find($torneio_id);
         $inscricoes = $torneio->inscricoes()->get();
 
@@ -414,7 +477,16 @@ class InscricaoGerenciarController extends Controller
 
     public function report_list_subscriptions($id, $torneio_id)
     {
+        $user = Auth::user();
         $evento = Evento::find($id);
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionEventByPerfil($evento->id, [3, 4]) &&
+            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [6,7])
+        ) {
+            return redirect("/evento/dashboard/".$evento->id);
+        }
+        
         $torneio = Torneio::find($torneio_id);
         $inscricoes = $torneio->inscricoes()->get();
 
@@ -429,7 +501,16 @@ class InscricaoGerenciarController extends Controller
 
     public function report_list_subscriptions_alf($id, $torneio_id)
     {
+        $user = Auth::user();
         $evento = Evento::find($id);
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionEventByPerfil($evento->id, [3, 4]) &&
+            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [6,7])
+        ) {
+            return redirect("/evento/dashboard/".$evento->id);
+        }
+        
         $torneio = Torneio::find($torneio_id);
         $inscricoes = $torneio->inscricoes()->get();
 
@@ -444,7 +525,16 @@ class InscricaoGerenciarController extends Controller
 
     public function report_list_subscriptions_cidade_alf($id, $torneio_id)
     {
+        $user = Auth::user();
         $evento = Evento::find($id);
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionEventByPerfil($evento->id, [3, 4]) &&
+            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [6,7])
+        ) {
+            return redirect("/evento/dashboard/".$evento->id);
+        }
+        
         $torneio = Torneio::find($torneio_id);
         $inscricoes = $torneio->inscricoes()->get();
 
@@ -459,7 +549,16 @@ class InscricaoGerenciarController extends Controller
 
     public function inscricao($id)
     {
+        $user = Auth::user();
         $evento = Evento::find($id);
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionEventByPerfil($evento->id, [4,5]) &&
+            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
+        ) {
+            return redirect("/evento/dashboard/".$evento->id);
+        }
+        
         $sexos = Sexo::all();
         if ($evento) {
             return view("inscricao.gerenciar.inscricao", compact("evento", "sexos"));
@@ -468,8 +567,18 @@ class InscricaoGerenciarController extends Controller
         }
     }
 
-    public function adicionarNovaInscricao(Request $request)
+    public function adicionarNovaInscricao($id,Request $request)
     {
+        $user = Auth::user();
+        $evento = Evento::find($id);
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionEventByPerfil($evento->id, [4,5]) &&
+            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
+        ) {
+            return response()->json(["ok" => 0, "error" => 1, "message" => "Você não possui permissão para fazer isto.", "registred" => 0]);
+        }
+        
         if (
             !$request->has("enxadrista_id") ||
             !$request->has("categoria_id") ||
@@ -597,8 +706,18 @@ class InscricaoGerenciarController extends Controller
         }
     }
 
-    public function adicionarNovoEnxadrista(Request $request)
+    public function adicionarNovoEnxadrista($id,Request $request)
     {
+        $user = Auth::user();
+        $evento = Evento::find($id);
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionEventByPerfil($evento->id, [4,5]) &&
+            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
+        ) {
+            return response()->json(["ok" => 0, "error" => 1, "message" => "Você não possui permissão para fazer isto.", "registred" => 0]);
+        }
+        
         if (
             !$request->has("name") ||
             !$request->has("born") ||
@@ -706,8 +825,18 @@ class InscricaoGerenciarController extends Controller
         }
     }
 
-    public function adicionarNovaCidade(Request $request)
+    public function adicionarNovaCidade($id,Request $request)
     {
+        $user = Auth::user();
+        $evento = Evento::find($id);
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionEventByPerfil($evento->id, [4,5]) &&
+            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
+        ) {
+            return response()->json(["ok" => 0, "error" => 1, "message" => "Você não possui permissão para fazer isto.", "registred" => 0]);
+        }
+        
         if (
             !$request->has("name")
         ) {
@@ -733,8 +862,18 @@ class InscricaoGerenciarController extends Controller
         }
     }
 
-    public function adicionarNovoClube(Request $request)
+    public function adicionarNovoClube($id,Request $request)
     {
+        $user = Auth::user();
+        $evento = Evento::find($id);
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionEventByPerfil($evento->id, [4,5]) &&
+            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
+        ) {
+            return response()->json(["ok" => 0, "error" => 1, "message" => "Você não possui permissão para fazer isto.", "registred" => 0]);
+        }
+        
         if (
             !$request->has("name") || !$request->has("cidade_id")
         ) {
@@ -762,8 +901,18 @@ class InscricaoGerenciarController extends Controller
         }
     }
 
-    public function buscaEnxadrista(Request $request)
+    public function buscaEnxadrista($id,Request $request)
     {
+        $user = Auth::user();
+        $evento = Evento::find($id);
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionEventByPerfil($evento->id, [4,5]) &&
+            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
+        ) {
+            return response()->json(["results" => [], "pagination" => true]);
+        }
+        
         $enxadristas = Enxadrista::where([
             ["name", "like", "%" . $request->input("q") . "%"],
         ])->orderBy("name", "ASC")->get();
@@ -781,6 +930,16 @@ class InscricaoGerenciarController extends Controller
 
     public function getCidadeClube($id, $enxadrista_id)
     {
+        $user = Auth::user();
+        $evento = Evento::find($id);
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionEventByPerfil($evento->id, [4,5]) &&
+            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
+        ) {
+            return response()->json(["ok" => 0, "error" => 1, "message" => "Você não possui permissão para fazer isto.", "registred" => 0]);
+        }
+        
         $enxadrista = Enxadrista::find($enxadrista_id);
         if ($enxadrista) {
             if ($enxadrista->clube) {
@@ -793,9 +952,18 @@ class InscricaoGerenciarController extends Controller
         }
     }
 
-    public function buscaCategoria(Request $request)
+    public function buscaCategoria($id,Request $request)
     {
-        $evento = Evento::find($request->input("evento_id"));
+        $user = Auth::user();
+        $evento = Evento::find($id);
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionEventByPerfil($evento->id, [4,5]) &&
+            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
+        ) {
+            return response()->json(["results" => [], "pagination" => true]);
+        }
+        
         $enxadrista = Enxadrista::find($request->input("enxadrista_id"));
         $categorias = $evento->categorias()->whereHas("categoria", function ($QUERY) use ($request, $enxadrista) {
             $QUERY->where([
@@ -844,8 +1012,18 @@ class InscricaoGerenciarController extends Controller
         return response()->json(["results" => $results, "pagination" => true]);
     }
 
-    public function buscaCidade(Request $request)
+    public function buscaCidade($id,Request $request)
     {
+        $user = Auth::user();
+        $evento = Evento::find($id);
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionEventByPerfil($evento->id, [4,5]) &&
+            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
+        ) {
+            return response()->json(["results" => [], "pagination" => true]);
+        }
+        
         $cidades = Cidade::where([
             ["name", "like", "%" . $request->input("q") . "%"],
         ])->get();
@@ -856,8 +1034,18 @@ class InscricaoGerenciarController extends Controller
         return response()->json(["results" => $results, "pagination" => true]);
     }
 
-    public function buscaClube(Request $request)
+    public function buscaClube($id,Request $request)
     {
+        $user = Auth::user();
+        $evento = Evento::find($id);
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionEventByPerfil($evento->id, [4,5]) &&
+            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
+        ) {
+            return response()->json(["results" => [], "pagination" => true]);
+        }
+        
         $clubes = Clube::where([
             ["name", "like", "%" . $request->input("q") . "%"],
         ])->orWhere(function ($q) use ($request) {
@@ -876,7 +1064,16 @@ class InscricaoGerenciarController extends Controller
 
     public function confirmacao($id)
     {
+        $user = Auth::user();
         $evento = Evento::find($id);
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionEventByPerfil($evento->id, [4,5]) &&
+            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
+        ) {
+            return redirect("/evento/dashboard/".$evento->id);
+        }
+        
         if ($evento) {
             return view("inscricao.gerenciar.confirmar", compact("evento"));
         } else {
@@ -885,6 +1082,16 @@ class InscricaoGerenciarController extends Controller
     }
     public function buscaEnxadristaParaConfirmacao($id, Request $request)
     {
+        $user = Auth::user();
+        $evento = Evento::find($id);
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionEventByPerfil($evento->id, [4,5]) &&
+            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
+        ) {
+            return response()->json(["results" => [], "pagination" => true]);
+        }
+        
         $inscricoes = Inscricao::where(function ($q1) use ($id, $request) {
             $q1->whereHas("enxadrista", function ($q2) use ($request) {
                 $q2->where([
@@ -911,6 +1118,16 @@ class InscricaoGerenciarController extends Controller
 
     public function getInscricaoDados($id, $inscricao_id)
     {
+        $user = Auth::user();
+        $evento = Evento::find($id);
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionEventByPerfil($evento->id, [4,5]) &&
+            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
+        ) {
+            return response()->json(["ok" => 0, "error" => 1, "message" => "Você não possui permissão para fazer isto.", "registred" => 0]);
+        }
+        
         $inscricao = Inscricao::find($inscricao_id);
         if ($inscricao) {
             if ($inscricao->clube) {
@@ -923,8 +1140,18 @@ class InscricaoGerenciarController extends Controller
         }
     }
 
-    public function confirmarInscricao(Request $request)
+    public function confirmarInscricao($id,Request $request)
     {
+        $user = Auth::user();
+        $evento = Evento::find($id);
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionEventByPerfil($evento->id, [4,5]) &&
+            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
+        ) {
+            return response()->json(["ok" => 0, "error" => 1, "message" => "Você não possui permissão para fazer isto.", "registred" => 0]);
+        }
+        
         if (
             !$request->has("inscricao_id") || !$request->has("categoria_id") || !$request->has("cidade_id") || !$request->has("evento_id")
         ) {

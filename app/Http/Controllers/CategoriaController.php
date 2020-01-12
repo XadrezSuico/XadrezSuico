@@ -13,6 +13,7 @@ use App\Pontuacao;
 use App\PontuacaoEnxadrista;
 use App\Sexo;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CategoriaController extends Controller
 {
@@ -20,70 +21,12 @@ class CategoriaController extends Controller
     {
         return $this->middleware("auth");
     }
-    public function index()
-    {
-        $categorias = Categoria::all();
-        return view('categoria.index', compact("categorias"));
-    }
-    function new () {
-        return view('categoria.new');
-    }
-    public function new_post(Request $request)
-    {
-        $categoria = new Categoria;
-        $categoria->name = $request->input("name");
-        $categoria->idade_minima = $request->input("idade_minima");
-        $categoria->idade_maxima = $request->input("idade_maxima");
-        $categoria->code = $request->input("code");
-        $categoria->cat_code = $request->input("cat_code");
-        $categoria->save();
-        return redirect("/categoria/dashboard/" . $categoria->id);
-    }
-    public function edit($id)
-    {
-        $categoria = Categoria::find($id);
-        $sexos = Sexo::all();
-        return view('categoria.edit', compact("categoria", "sexos"));
-    }
-    public function edit_post($id, Request $request)
-    {
-        $categoria = Categoria::find($id);
-        $categoria->name = $request->input("name");
-        $categoria->idade_minima = $request->input("idade_minima");
-        $categoria->idade_maxima = $request->input("idade_maxima");
-        $categoria->code = $request->input("code");
-        $categoria->cat_code = $request->input("cat_code");
-        $categoria->save();
-        return redirect("/categoria/dashboard/" . $categoria->id);
-    }
-    public function delete($id)
-    {
-        $categoria = Categoria::find($id);
-
-        if ($categoria->isDeletavel()) {
-            $categoria->delete();
-        }
-        return redirect("/categoria");
-    }
-
-    public function sexo_add($id, Request $request)
-    {
-        $categoria_sexo = new CategoriaSexo;
-        $categoria_sexo->categoria_id = $id;
-        $categoria_sexo->sexos_id = $request->input("sexos_id");
-        $categoria_sexo->save();
-        return redirect("/categoria/dashboard/" . $id);
-    }
-    public function sexo_remove($id, $categoria_sexo_id)
-    {
-        $categoria_sexo = CategoriaSexo::find($categoria_sexo_id);
-        $categoria_sexo->delete();
-        return redirect("/categoria/dashboard/" . $id);
-    }
 
     public static function classificar($evento_id, $categoria_id)
     {
         $evento = Evento::find($evento_id);
+        
+
         $categoria = Categoria::find($categoria_id);
         echo '<br/><br/> Categoria: ' . $categoria->name;
         $inscritos = array();
