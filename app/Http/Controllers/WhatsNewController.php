@@ -15,6 +15,7 @@ class WhatsNewController extends Controller
         $new_0100_betha["news"][] = "Categorias: As categorias agora estão vinculadas ao Grupo de Evento ou Evento, e para poder gerenciá-las, é necessário acessar a Dashboard de onde ela foi cadastrada, seja no Grupo de Evento ou então no Evento.";
         $new_0100_betha["news"][] = "Agora é possível exportar os enxadristas para poder fazer uma correção externa ou então para poder importar em outro sistema, caso necessário. Mas lembrando, que é necessário seguir a legislação vigente para isto em seu país.";
         $new_0100_betha["news"][] = "Template de Torneios: Agora estão vinculados ao Grupo de Evento, e para gerenciar é necessário acessar a Dashboard de Grupo de Evento de que ele foi criado.";
+        $new_0100_betha["news"][] = "Permissões: agora todas as permissões estão de fato sendo aplicadas a fim de limitar o acesso a funções e páginas de acordo com o perfil do usuário. Finalização da issue #29.";
         $news[] = $new_0100_betha;
 
         // Novidades versão 0.0.2.1
