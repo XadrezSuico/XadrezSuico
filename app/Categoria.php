@@ -75,7 +75,6 @@ class Categoria extends Model
     {
         if ($this->id != null) {
             if (
-                $this->grupos_evento()->count() > 0 ||
                 $this->torneios_template()->count() > 0 ||
                 $this->inscricoes()->count() > 0 ||
                 $this->torneios()->count() > 0 ||

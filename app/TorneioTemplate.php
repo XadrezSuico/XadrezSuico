@@ -39,8 +39,7 @@ class TorneioTemplate extends Model
         if ($this->id != null) {
             if (
                 $this->categorias()->count() > 0 ||
-                $this->torneios()->count() > 0 ||
-                $this->grupos_evento()->count() > 0
+                $this->torneios()->count() > 0
             ) {
                 return false;
             }

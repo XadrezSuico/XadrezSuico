@@ -58,6 +58,14 @@ CLARO! Faça um fork do projeto e nos ajude a deixar esse projeto ainda com aind
 -----
 
 ## O que há de novo?
+### Versão 0.1.0.0 Beta
+ - As versões anteriores deixam de serem compatíveis com as versões a partir da 0.1.0.0, sendo necessária uma instalação limpa do sistema a fim de ter o seu uso.
+ - Categorias: As categorias agora estão vinculadas ao Grupo de Evento ou Evento, e para poder gerenciá-las, é necessário acessar a Dashboard de onde ela foi cadastrada, seja no Grupo de Evento ou então no Evento.
+ - Agora é possível exportar os enxadristas para poder fazer uma correção externa ou então para poder importar em outro sistema, caso necessário. Mas lembrando, que é necessário seguir a legislação vigente para isto em seu país.
+ - Template de Torneios: Agora estão vinculados ao Grupo de Evento, e para gerenciar é necessário acessar a Dashboard de Grupo de Evento de que ele foi criado.
+ - Permissões: agora todas as permissões estão de fato sendo aplicadas a fim de limitar o acesso a funções e páginas de acordo com o perfil do usuário. Finalização da issue #29.
+
+
 ### Versão 0.0.2.1 Beta
  - Correção em bug relativo a forma de armazenamento da imagem e descrição do evento.
  - Agora é possível visualizar a lista de inscrições do evento de forma pública, porém, é necessário que a opção 'Permite a visualização da lista de inscrições de forma pública?' esteja selecionada - Issue #12
