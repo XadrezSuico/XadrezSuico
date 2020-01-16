@@ -258,12 +258,12 @@ class TorneioController extends Controller
 
     public function sendResultsTxt($evento_id, $torneio_id, Request $request)
     {
-        return $this->setResults($request->input("results"), $torneio_id);
+        return $this->setResults($request->input("results"), $evento_id, $torneio_id);
     }
 
-    private function setResults($results, $torneio_id)
+    private function setResults($results, $evento_id, $torneio_id)
     {
-        $evento = Evento::find($id);
+        $evento = Evento::find($evento_id);
         $user = Auth::user();
         if (
             !$user->hasPermissionGlobal() &&
