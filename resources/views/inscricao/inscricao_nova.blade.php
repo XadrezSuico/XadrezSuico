@@ -72,6 +72,7 @@
 <!-- Main row -->
 <ul class="nav nav-pills">
   <li role="presentation"><a href="/inscricao/{{$evento->id}}">Nova Inscrição</a></li>
+  @if($evento->e_permite_visualizar_lista_inscritos_publica) <li role="presentation"><a href="/inscricao/visualizar/{{$evento->id}}">Visualizar Lista de Inscrições</a></li> @endif
 </ul>
 <div class="row">
   <!-- Left col -->
@@ -85,6 +86,11 @@
 		</div>
 
 		<div class="box-body">
+			@if($evento->pagina)
+				@if($evento->pagina->imagem) <img src="data:image/png;base64, {!!$evento->pagina->imagem!!}" width="100%" style="max-width: 800px"/> <br/> @endif
+				@if($evento->pagina->texto) {!!$evento->pagina->texto!!} <br/> @endif
+				@if($evento->pagina->imagem || $evento->pagina->texto) <hr/> @endif
+			@endif
 			<strong>Categorias:</strong><br/>
 			@foreach($evento->categorias->all() as $categoria)
 				{{$categoria->categoria->name}}, 
@@ -223,10 +229,10 @@
 					</select>
                     <button id="clubeNaoCadastradoInscricao" class="btn btn-success">O meu clube não está cadastrado</button>
 				</div>
-				@foreach($evento->campos->all() as $campo)
+				@foreach($evento->campos() as $campo)
 					<div class="form-group">
-						<label for="campo_personalizado_{{$campo->campo->id}}">{{$campo->campo->question}} *</label>
-						<select id="campo_personalizado_{{$campo->campo->id}}" class="campo_personalizado form-control">
+						<label for="campo_personalizado_{{$campo->id}}">{{$campo->question}} *</label>
+						<select id="campo_personalizado_{{$campo->id}}" class="campo_personalizado form-control">
 							<option value="">--- Selecione uma opção ---</option>
 							@foreach($campo->campo->opcoes->all() as $opcao)
 								<option value="{{$opcao->id}}">{{$opcao->response}}</option>
@@ -317,8 +323,8 @@
 				if($("#regulamento_aceito").is(":checked")){
 					data = data.concat("&regulamento_aceito=true");
 				}
-				@foreach($evento->campos->all() as $campo)
-					data = data.concat("&campo_personalizado_{{$campo->campo->id}}=").concat($("#campo_personalizado_{{$campo->campo->id}}").val());
+				@foreach($evento->campos() as $campo)
+					data = data.concat("&campo_personalizado_{{$campo->id}}=").concat($("#campo_personalizado_{{$campo->id}}").val());
 				@endforeach
 				$.ajax({
 					type: "post",

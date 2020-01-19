@@ -51,16 +51,16 @@
                 @foreach($grupo_evento->categorias->all() as $categoria)
                     @if(!$categoria->nao_classificar)
                         <li>
-                            <h3>Categoria: {{$categoria->categoria->name}} <i id="categoria_{{$categoria->categoria->id}}_icon" style="display:none;" class="fa fa-spinner"></i></h3>
+                            <h3>Categoria: {{$categoria->name}} <i id="categoria_{{$categoria->id}}_icon" style="display:none;" class="fa fa-spinner"></i></h3>
                             <ul>
                                 <li>
-                                    <h5>Somar Pontuações das Etapas <i id="categoria_{{$categoria->categoria->id}}_1_icon" style="display:none;" class="fa fa-spinner"></i></h5>
+                                    <h5>Somar Pontuações das Etapas <i id="categoria_{{$categoria->id}}_1_icon" style="display:none;" class="fa fa-spinner"></i></h5>
                                 </li>
                                 <li>
-                                    <h5>Geração de Critérios de Desempate <i id="categoria_{{$categoria->categoria->id}}_2_icon" style="display:none;" class="fa fa-spinner"></i></h5>
+                                    <h5>Geração de Critérios de Desempate <i id="categoria_{{$categoria->id}}_2_icon" style="display:none;" class="fa fa-spinner"></i></h5>
                                 </li>
                                 <li>
-                                    <h5>Classificação da Categoria <i id="categoria_{{$categoria->categoria->id}}_3_icon" style="display:none;" class="fa fa-spinner"></i></h5>
+                                    <h5>Classificação da Categoria <i id="categoria_{{$categoria->id}}_3_icon" style="display:none;" class="fa fa-spinner"></i></h5>
                                 </li>
                             </ul>
                         </li>
@@ -78,7 +78,7 @@
     @php($j = 0)
     @foreach($grupo_evento->categorias->all() as $categoria)
         @if(!$categoria->nao_classificar)
-            categorias[{{$j++}}] = {{$categoria->categoria->id}};
+            categorias[{{$j++}}] = {{$categoria->id}};
         @endif
     @endforeach
 

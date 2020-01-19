@@ -4,7 +4,8 @@
         $permitido_edicao = false;
         if(
             \Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
-            \Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4])
+            \Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4]) ||
+			\Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])
         ){
             $permitido_edicao = true;
         }
@@ -127,12 +128,12 @@
 					</select>
                     @if($permitido_edicao) <button id="clubeNaoCadastradoInscricao" class="btn btn-success">O clube não está cadastrado</button> @endif
 				</div>
-				@foreach($evento->campos->all() as $campo)
+				@foreach($evento->campos() as $campo)
 					<div class="form-group">
-						<label for="campo_personalizado_{{$campo->campo->id}}">{{$campo->campo->question}} *</label>
-						<select id="campo_personalizado_{{$campo->campo->id}}" class="campo_personalizado form-control" @if(!$permitido_edicao) disabled="disabled" @endif>
+						<label for="campo_personalizado_{{$campo->id}}">{{$campo->question}} *</label>
+						<select id="campo_personalizado_{{$campo->id}}" name="campo_personalizado_{{$campo->id}}" class="campo_personalizado form-control" @if(!$permitido_edicao) disabled="disabled" @endif>
 							<option value="">--- Selecione uma opção ---</option>
-							@foreach($campo->campo->opcoes->all() as $opcao)
+							@foreach($campo->opcoes->all() as $opcao)
 								<option value="{{$opcao->id}}">{{$opcao->response}}</option>
 							@endforeach
 						</select>
@@ -143,25 +144,25 @@
                     <h3>Resultados</h3>
                         <div class="form-group">
                             <label for="posicao">Posição *</label>
-                            <input type="text" name="posicao" id="posicao" class="form-control" value="{{$inscricao->posicao}}" />
+                            <input type="text" name="posicao" id="posicao" class="form-control" value="{{$inscricao->posicao}}" @if(!$permitido_edicao) disabled="disabled" @endif />
                         </div>
                         <div class="form-group">
                             <label for="pontos">Pontuação *</label>
-                            <input type="text" name="pontos" id="pontos" class="form-control" value="{{$inscricao->pontos}}" />
+                            <input type="text" name="pontos" id="pontos" class="form-control" value="{{$inscricao->pontos}}" @if(!$permitido_edicao) disabled="disabled" @endif />
                         </div>
                         <div class="form-group">
                             <label for="posicao_geral">Posição Geral *</label>
-                            <input type="text" name="posicao_geral" id="posicao_geral" class="form-control" value="{{$inscricao->posicao_geral}}" />
+                            <input type="text" name="posicao_geral" id="posicao_geral" class="form-control" value="{{$inscricao->posicao_geral}}" @if(!$permitido_edicao) disabled="disabled" @endif />
                         </div>
                         <div class="form-group">
                             <label for="pontos_geral">Pontuação Geral *</label>
-                            <input type="text" name="pontos_geral" id="pontos_geral" class="form-control" value="{{$inscricao->pontos_geral}}" />
+                            <input type="text" name="pontos_geral" id="pontos_geral" class="form-control" value="{{$inscricao->pontos_geral}}" @if(!$permitido_edicao) disabled="disabled" @endif />
                         </div>
                     <h4>Critérios de Desempate</h4>
                         @foreach($criterios as $criterio)
                             <div class="form-group">
                                 <label for="criterio_{{$criterio->criterio->id}}">{{$criterio->criterio->name}} *</label>
-                                <input type="text" name="criterio_{{$criterio->criterio->id}}" id="criterio_{{$criterio->criterio->id}}" class="form-control" value="@if($criterio->criterio->valor_criterio($inscricao->id)){{$criterio->criterio->valor_criterio($inscricao->id)->valor}}@endif" />
+                                <input type="text" name="criterio_{{$criterio->criterio->id}}" id="criterio_{{$criterio->criterio->id}}" class="form-control" value="@if($criterio->criterio->valor_criterio($inscricao->id)){{$criterio->criterio->valor_criterio($inscricao->id)->valor}}@endif" @if(!$permitido_edicao) disabled="disabled" @endif />
                             </div>
                         @endforeach
                     <hr/>
@@ -172,7 +173,7 @@
                             @foreach($criterios as $criterio)
                                 <div class="form-group">
                                     <label for="criterio_{{$criterio->criterio->id}}">{{$criterio->criterio->name}} *</label>
-                                    <input type="text" name="criterio_{{$criterio->criterio->id}}" id="criterio_{{$criterio->criterio->id}}" class="form-control" value="@if($criterio->criterio->valor_criterio($inscricao->id)){{$criterio->criterio->valor_criterio($inscricao->id)->valor}}@endif" />
+                                    <input type="text" name="criterio_{{$criterio->criterio->id}}" id="criterio_{{$criterio->criterio->id}}" class="form-control" value="@if($criterio->criterio->valor_criterio($inscricao->id)){{$criterio->criterio->valor_criterio($inscricao->id)->valor}}@endif" @if(!$permitido_edicao) disabled="disabled" @endif />
                                 </div>
                             @endforeach
                         <hr/>

@@ -13,7 +13,7 @@
         <h3>Versão {{$new["name"]}}</h3>
         <ul>
             @foreach($new["news"] as $whats_new)
-                <li>{{$whats_new}}</li>
+                <li>{!!$whats_new!!}</li>
             @endforeach
         </ul>
     @endforeach

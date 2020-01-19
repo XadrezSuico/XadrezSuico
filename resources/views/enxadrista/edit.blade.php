@@ -62,20 +62,26 @@
 					<div class="row">
 						<div class="col-md-4">
 							<div class="form-group">
-								<label for="cbx_rating">Rating CBX</label>
-								<input name="cbx_rating" id="cbx_rating" class="form-control" type="text" value="{{$enxadrista->cbx_rating}}" @if(!$permitido_edicao) disabled="disabled" @endif />
+								<label for="cbx_rating">Rating CBX</label><br/>
+								STD: {{$enxadrista->showRating(1,0)}}<br/>
+								RPD: {{$enxadrista->showRating(1,1)}}<br/>
+								BTZ: {{$enxadrista->showRating(1,2)}}<br/>
 							</div>
 						</div>
 						<div class="col-md-4">
 							<div class="form-group">
-								<label for="fide_rating">Rating FIDE</label>
-								<input name="fide_rating" id="fide_rating" class="form-control" type="text" value="{{$enxadrista->fide_rating}}" @if(!$permitido_edicao) disabled="disabled" @endif />
+								<label for="fide_rating">Rating FIDE</label><br/>
+								STD: {{$enxadrista->showRating(0,0)}}<br/>
+								RPD: {{$enxadrista->showRating(0,1)}}<br/>
+								BTZ: {{$enxadrista->showRating(0,2)}}<br/>
 							</div>
 						</div>
 						<div class="col-md-4">
 							<div class="form-group">
-								<label for="lbx_rating">Rating LBX</label>
-								<input name="lbx_rating" id="lbx_rating" class="form-control" type="text" value="{{$enxadrista->lbx_rating}}" @if(!$permitido_edicao) disabled="disabled" @endif />
+								<label for="lbx_rating">Rating LBX</label><br/>
+								STD: {{$enxadrista->showRating(2,0)}}<br/>
+								RPD: {{$enxadrista->showRating(2,1)}}<br/>
+								BTZ: {{$enxadrista->showRating(2,2)}}<br/>
 							</div>
 						</div>
 					</div>

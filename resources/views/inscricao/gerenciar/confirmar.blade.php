@@ -67,6 +67,7 @@
 <!-- Main row -->
 <ul class="nav nav-pills">
   <li role="presentation"><a href="/evento">Voltar a Lista de Eventos</a></li>
+  <li role="presentation"><a href="/evento/dashboard/{{$evento->id}}">Voltar a Dashboard do Evento</a></li>
   <li role="presentation"><a href="/evento/inscricao/{{$evento->id}}">Efetuar Nova Inscrição</a></li>
 </ul>
 <div class="row">

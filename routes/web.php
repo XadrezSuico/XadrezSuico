@@ -15,7 +15,7 @@ Route::get('/', function () {
     if(\Illuminate\Support\Facades\Auth::check()){
         return redirect("/home");
     }
-    return redirect(env("REDIRECT_URL","http://crx.xadrezsuico.info"));
+    return redirect("/login");
 });
 
 Auth::routes();
@@ -59,6 +59,7 @@ Route::group(["prefix"=>"inscricao"],function(){
     Route::post('/{id}/clube/novo', 'InscricaoController@adicionarNovoClube')->name('inscricao.clube.novo');
     Route::post('/{id}/inscricao', 'InscricaoController@adicionarNovaInscricao')->name('inscricao.enviar');
     Route::get('/{id}/enxadrista/getCidadeClube/{enxadrista_id}', 'InscricaoController@getCidadeClube')->name('inscricao.getCidadeClube');
+    Route::get('/visualizar/{id}', 'InscricaoController@visualizar_inscricoes')->name('inscricao.visualizar.inscricao');
 });
 
 Route::group(["prefix"=>"rating"],function(){
@@ -87,9 +88,9 @@ Route::group(["prefix"=>"usuario"],function(){
 });
 
 Route::group(["prefix"=>"evento"],function(){
-	Route::get('/', 'EventoGerenciarController@index')->name('evento.index');
 	Route::get('/dashboard/{id}', 'EventoGerenciarController@edit')->name('evento.dashboard');
 	Route::post('/dashboard/{id}', 'EventoGerenciarController@edit_post')->name('evento.dashboard.post');
+	Route::post('/{id}/pagina', 'EventoGerenciarController@edit_pagina_post')->name('evento.dashboard.pagina.post');
     Route::get('/delete/{id}', 'EventoGerenciarController@delete')->name('evento.delete');
     Route::get('/classificar/{id}', 'EventoGerenciarController@classificar')->name('evento.classificar');
     Route::get('/classificacao/{id}', 'EventoController@classificacao')->name('evento.classificacao');
@@ -99,6 +100,8 @@ Route::group(["prefix"=>"evento"],function(){
     Route::get('/{id}/togglemanual', 'EventoGerenciarController@toggleClassificacaoManual')->name('evento.toggleClassificacaoManual');
     Route::get('/classificacao/{id}/interno', 'EventoGerenciarController@classificacao')->name('evento.classificacao.interno');
     Route::get('/{id}/resultados/{categoria_id}/interno', 'EventoGerenciarController@resultados')->name('evento.resultados.interno');
+	Route::get('/{id}/inscricoes/list', 'EventoGerenciarController@visualizar_inscricoes')->name('evento.inscricoes.list');
+	Route::get('/{id}/enxadristas/sm', 'EventoGerenciarController@downloadListaManagerParaEvento')->name('evento.enxadristas.sm');
     
 
 
@@ -122,7 +125,6 @@ Route::group(["prefix"=>"evento"],function(){
     });
 
     Route::group(["prefix"=>"{id}/torneios"],function(){
-	    Route::get('/', 'TorneioController@index')->name('evento.torneios.index');
 	    Route::get('/new', 'TorneioController@new')->name('evento.torneios.new');
 	    Route::post('/new', 'TorneioController@new_post')->name('evento.torneios.new.post');
 	    Route::get('/edit/{torneio_id}', 'TorneioController@edit')->name('evento.torneios.edit');
@@ -150,20 +152,38 @@ Route::group(["prefix"=>"evento"],function(){
 	        Route::get('/sm/all', 'InscricaoGerenciarController@list_to_manager_all')->name('evento.torneios.inscricoes.sm.all');
         });
     });
-});
 
-Route::group(["prefix"=>"categoria"],function(){
-	Route::get('/', 'CategoriaController@index')->name('categoria.index');
-	Route::get('/new', 'CategoriaController@new')->name('categoria.new');
-	Route::post('/new', 'CategoriaController@new_post')->name('categoria.new.post');
-	Route::get('/dashboard/{id}', 'CategoriaController@edit')->name('categoria.dashboard');
-	Route::post('/dashboard/{id}', 'CategoriaController@edit_post')->name('categoria.dashboard.post');
-	Route::get('/delete/{id}', 'CategoriaController@delete')->name('categoria.delete');
-    Route::group(["prefix"=>"{id}/sexo"],function(){
-        Route::post('/add', 'CategoriaController@sexo_add')->name('categoria.sexo.add');
-        Route::get('/remove/{categoria_sexo_id}', 'CategoriaController@sexo_remove')->name('categoria.sexo.remove');
+
+    Route::group(["prefix"=>"{id}/categoria"],function(){
+        Route::post('/add', 'EventoGerenciarController@categoria_add')->name('evento.categoria.add');
+        Route::get('/remove/{categoria_evento_id}', 'EventoGerenciarController@categoria_remove')->name('evento.categoria.remove');
+    });
+    
+    Route::group(["prefix"=>"{evento_id}/categorias"],function(){
+        Route::get('/', 'CategoriaEventoController@index')->name('evento.categorias.index');
+        Route::get('/new', 'CategoriaEventoController@new')->name('evento.categorias.new');
+        Route::post('/new', 'CategoriaEventoController@new_post')->name('evento.categorias.new.post');
+        Route::get('/dashboard/{id}', 'CategoriaEventoController@edit')->name('evento.categorias.dashboard');
+        Route::post('/dashboard/{id}', 'CategoriaEventoController@edit_post')->name('evento.categorias.dashboard.post');
+        Route::get('/delete/{id}', 'CategoriaEventoController@delete')->name('evento.categorias.delete');
+        Route::group(["prefix"=>"{id}/sexo"],function(){
+            Route::post('/add', 'CategoriaEventoController@sexo_add')->name('evento.categorias.sexo.add');
+            Route::get('/remove/{categoria_sexo_id}', 'CategoriaEventoController@sexo_remove')->name('evento.categorias.sexo.remove');
+        });
+    });
+    
+    Route::group(["prefix"=>"{evento_id}/campos"],function(){
+        Route::post('/new', 'CampoPersonalizadoEventoController@new_post')->name('evento.campos.new.post');
+        Route::get('/dashboard/{id}', 'CampoPersonalizadoEventoController@dashboard')->name('evento.campos.dashboard');
+        Route::post('/dashboard/{id}', 'CampoPersonalizadoEventoController@edit_post')->name('evento.campos.dashboard.post');
+        Route::get('/delete/{id}', 'CampoPersonalizadoEventoController@delete')->name('evento.campos.delete');
+        Route::group(["prefix"=>"{id}/opcao"],function(){
+            Route::post('/add', 'CampoPersonalizadoEventoController@opcao_add')->name('evento.campos.opcao.add');
+            Route::get('/remove/{opcaos_id}', 'CampoPersonalizadoEventoController@opcao_remove')->name('evento.campos.opcao.remove');
+        });
     });
 });
+
 
 Route::group(["prefix"=>"cidade"],function(){
 	Route::get('/', 'CidadeController@index')->name('cidade.index');
@@ -190,6 +210,8 @@ Route::group(["prefix"=>"enxadrista"],function(){
 	Route::get('/edit/{id}', 'EnxadristaController@edit')->name('enxadrista.edit');
 	Route::post('/edit/{id}', 'EnxadristaController@edit_post')->name('enxadrista.edit.post');
 	Route::get('/delete/{id}', 'EnxadristaController@delete')->name('enxadrista.delete');
+	Route::get('/download', 'EnxadristaController@downloadBaseCompleta')->name('enxadrista.download');
+	Route::get('/api/searchList', 'EnxadristaController@searchEnxadristasList')->name('enxadrista.api.list');
 });
 
 Route::group(["prefix"=>"sexo"],function(){
@@ -217,9 +239,41 @@ Route::group(["prefix"=>"grupoevento"],function(){
         Route::post('/add', 'GrupoEventoController@categoria_add')->name('grupoevento.categoria.add');
         Route::get('/remove/{categoria_grupo_evento_id}', 'GrupoEventoController@categoria_remove')->name('grupoevento.categoria.remove');
     });
+    Route::group(["prefix"=>"{grupo_evento_id}/categorias"],function(){
+        Route::get('/', 'CategoriaGrupoEventoController@index')->name('grupoevento.categorias.index');
+        Route::get('/new', 'CategoriaGrupoEventoController@new')->name('grupoevento.categorias.new');
+        Route::post('/new', 'CategoriaGrupoEventoController@new_post')->name('grupoevento.categorias.new.post');
+        Route::get('/dashboard/{id}', 'CategoriaGrupoEventoController@edit')->name('grupoevento.categorias.dashboard');
+        Route::post('/dashboard/{id}', 'CategoriaGrupoEventoController@edit_post')->name('grupoevento.categorias.dashboard.post');
+        Route::get('/delete/{id}', 'CategoriaGrupoEventoController@delete')->name('grupoevento.categorias.delete');
+        Route::group(["prefix"=>"{id}/sexo"],function(){
+            Route::post('/add', 'CategoriaGrupoEventoController@sexo_add')->name('grupoevento.categorias.sexo.add');
+            Route::get('/remove/{categoria_sexo_id}', 'CategoriaGrupoEventoController@sexo_remove')->name('grupoevento.categorias.sexo.remove');
+        });
+    });
+    Route::group(["prefix"=>"{grupo_evento_id}/campos"],function(){
+        Route::post('/new', 'CampoPersonalizadoGrupoEventoController@new_post')->name('grupoevento.campos.new.post');
+        Route::get('/dashboard/{id}', 'CampoPersonalizadoGrupoEventoController@dashboard')->name('grupoevento.campos.dashboard');
+        Route::post('/dashboard/{id}', 'CampoPersonalizadoGrupoEventoController@edit_post')->name('grupoevento.campos.dashboard.post');
+        Route::get('/delete/{id}', 'CampoPersonalizadoGrupoEventoController@delete')->name('grupoevento.campos.delete');
+        Route::group(["prefix"=>"{id}/opcao"],function(){
+            Route::post('/add', 'CampoPersonalizadoGrupoEventoController@opcao_add')->name('grupoevento.campos.opcao.add');
+            Route::get('/remove/{opcaos_id}', 'CampoPersonalizadoGrupoEventoController@opcao_remove')->name('grupoevento.campos.opcao.remove');
+        });
+    });
     Route::group(["prefix"=>"{id}/torneiotemplate"],function(){
         Route::post('/add', 'GrupoEventoController@torneio_template_add')->name('grupoevento.torneiotemplate.add');
         Route::get('/remove/{torneio_template_grupo_evento_id}', 'GrupoEventoController@torneio_template_remove')->name('grupoevento.torneiotemplate.remove');
+    });
+    Route::group(["prefix"=>"{grupo_evento_id}/torneiotemplates"],function(){
+        Route::post('/new', 'TorneioTemplateController@new_post')->name('torneiotemplate.new.post');
+        Route::get('/dashboard/{id}', 'TorneioTemplateController@edit')->name('torneiotemplate.dashboard');
+        Route::post('/dashboard/{id}', 'TorneioTemplateController@edit_post')->name('torneiotemplate.dashboard.post');
+        Route::get('/delete/{id}', 'TorneioTemplateController@delete')->name('torneiotemplate.delete');
+        Route::group(["prefix"=>"{id}/categoria"],function(){
+            Route::post('/add', 'TorneioTemplateController@categoria_add')->name('torneiotemplate.categoria.add');
+            Route::get('/remove/{categoria_torneio_id}', 'TorneioTemplateController@categoria_remove')->name('torneiotemplate.categoria.remove');
+        });
     });
     Route::group(["prefix"=>"{id}/criteriodesempate"],function(){
         Route::post('/add', 'GrupoEventoController@criterio_desempate_add')->name('grupoevento.criteriodesempate.add');
@@ -238,21 +292,23 @@ Route::group(["prefix"=>"grupoevento"],function(){
     });
 });
 
-Route::group(["prefix"=>"torneiotemplate"],function(){
-	Route::get('/', 'TorneioTemplateController@index')->name('torneiotemplate.index');
-	Route::get('/new', 'TorneioTemplateController@new')->name('torneiotemplate.new');
-	Route::post('/new', 'TorneioTemplateController@new_post')->name('torneiotemplate.new.post');
-	Route::get('/dashboard/{id}', 'TorneioTemplateController@edit')->name('torneiotemplate.dashboard');
-	Route::post('/dashboard/{id}', 'TorneioTemplateController@edit_post')->name('torneiotemplate.dashboard.post');
-	Route::get('/delete/{id}', 'TorneioTemplateController@delete')->name('torneiotemplate.delete');
-    Route::group(["prefix"=>"{id}/categoria"],function(){
-        Route::post('/add', 'TorneioTemplateController@categoria_add')->name('torneiotemplate.categoria.add');
-        Route::get('/remove/{categoria_torneio_id}', 'TorneioTemplateController@categoria_remove')->name('torneiotemplate.categoria.remove');
+
+Route::group(["prefix"=>"tiporating"],function(){
+	Route::get('/', 'TipoRatingController@index')->name('tiporating.index');
+	Route::get('/new', 'TipoRatingController@new')->name('tiporating.new');
+	Route::post('/new', 'TipoRatingController@new_post')->name('tiporating.new.post');
+	Route::get('/dashboard/{id}', 'TipoRatingController@dashboard')->name('tiporating.dashboard');
+	Route::post('/dashboard/{id}', 'TipoRatingController@dashboard_post')->name('tiporating.dashboard.post');
+	Route::get('/delete/{id}', 'TipoRatingController@delete')->name('tiporating.delete');
+    Route::group(["prefix"=>"{id}/regra"],function(){
+        Route::post('/add', 'TipoRatingController@regra_add')->name('tiporating.regra.add');
+        Route::get('/remove/{tipo_rating_regra_id}', 'TipoRatingController@regra_remove')->name('tiporating.regra.remove');
     });
 });
 Route::group(["prefix"=>"update"],function(){
     Route::get('/cbx/rating', 'CBXRatingController@updateRatings')->name('update.cbx.rating');
     Route::get('/fide/rating', 'FIDERatingController@updateRatings')->name('update.fide.rating');
+    Route::get('/lbx/rating', 'LBXRatingController@updateRatings')->name('update.lbx.rating');
 });
 
 

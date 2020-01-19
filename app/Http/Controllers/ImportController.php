@@ -2,25 +2,24 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Enxadrista;
-use App\Clube;
 use App\Cidade;
-use DateTime;
+use App\Clube;
+use App\Enxadrista;
 
 class ImportController extends Controller
 {
-    public function importCSVEnxadristas(){
-        $meuArray = Array();
+    public function importCSVEnxadristas()
+    {
+        $meuArray = array();
         $file = fopen('cadastro.csv', 'r');
         $positions = array();
         $i = 0;
-        while (($line = fgetcsv($file)) !== false){
+        while (($line = fgetcsv($file)) !== false) {
             print_r($line);
-            if($i++ == 0){
+            if ($i++ == 0) {
                 $j = 0;
-                foreach($line as $title){
-                    switch($title){
+                foreach ($line as $title) {
+                    switch ($title) {
                         case "Código Enxadrista":
                             $positions["rating_id"] = $j;
                             break;
@@ -42,31 +41,31 @@ class ImportController extends Controller
                     }
                     $j++;
                 }
-            }else{
-                if(isset($line[($positions["rating_id"])])){
-                    if($line[($positions["rating_id"])]){
-                        if($line[($positions["rating_id"])] != NULL){
-                            if($line[($positions["rating_id"])] != ''){
+            } else {
+                if (isset($line[($positions["rating_id"])])) {
+                    if ($line[($positions["rating_id"])]) {
+                        if ($line[($positions["rating_id"])] != null) {
+                            if ($line[($positions["rating_id"])] != '') {
                                 $enxadrista = new Enxadrista;
                                 $enxadrista->rating_id = $line[($positions["rating_id"])];
-                                $enxadrista->name = mb_strtoupper(trim($line[($positions["name"])])." ".trim($line[($positions["lastname"])]));
+                                $enxadrista->name = mb_strtoupper(trim($line[($positions["name"])]) . " " . trim($line[($positions["lastname"])]));
                                 $enxadrista->setBornFromSM($line[($positions["born"])]);
 
-                                if(isset($line[($positions["clube_rating_id"])])){
-                                    if($line[($positions["clube_rating_id"])]){
-                                        if($line[($positions["clube_rating_id"])] != NULL){
-                                            if($line[($positions["clube_rating_id"])] != ''){
-                                                $clube = Clube::where([["rating_id","=",$line[($positions["clube_rating_id"])]]])->first();
+                                if (isset($line[($positions["clube_rating_id"])])) {
+                                    if ($line[($positions["clube_rating_id"])]) {
+                                        if ($line[($positions["clube_rating_id"])] != null) {
+                                            if ($line[($positions["clube_rating_id"])] != '') {
+                                                $clube = Clube::where([["rating_id", "=", $line[($positions["clube_rating_id"])]]])->first();
                                                 $enxadrista->clube_id = $clube->id;
                                             }
                                         }
                                     }
                                 }
 
-                                $cidade = Cidade::where([["rating_id","=",$line[($positions["cidade_rating_id"])]]])->first();
+                                $cidade = Cidade::where([["rating_id", "=", $line[($positions["cidade_rating_id"])]]])->first();
                                 $enxadrista->cidade_id = $cidade->id;
                                 $enxadrista->save();
-                                echo $enxadrista->id." ".$enxadrista->name."<br/>";
+                                echo $enxadrista->id . " " . $enxadrista->name . "<br/>";
                             }
                         }
                     }

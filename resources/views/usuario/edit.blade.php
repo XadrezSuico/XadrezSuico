@@ -14,7 +14,7 @@
 	@endif
 	<ul class="nav nav-pills">
 		<li role="presentation"><a href="{{url("/usuario/new")}}">Novo Usuario</a></li>
-		<li role="presentation"><a href="{{url("/usuario/password/".$user->id)}}">Alterar Senha</a></li>
+		@if(\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobalbyPerfil([1])) <li role="presentation"><a href="{{url("/usuario/password/".$user->id)}}">Alterar Senha</a></li>@endif
 		<li role="presentation"><a href="{{url("/usuario")}}">Listar Todos</a></li>
 	</ul>
 	<div class="row">
@@ -24,10 +24,10 @@
 					<h3 class="box-title">Cadastro</h3>
 				</div>
 				<div class="box-body">
-					<form method="post">
+					@if(\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal()) <form method="post"> @endif
 						<div class="form-group {{ $errors->has('name') ? ' has-error' : '' }}">
 							<label for="nome">Nome</label>
-							<input type="text" class="form-control" id="nome" name="name" placeholder="Nome do Usuário" value="{{$user->name}}">
+							<input type="text" class="form-control" id="nome" name="name" placeholder="Nome do Usuário" value="{{$user->name}}" @if(!\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal()) disabled="disabled" @endif >
 							@if ($errors->has('name'))
 									<span class="help-block">
 											<strong>{{ $errors->first('name') }}</strong>
@@ -36,16 +36,16 @@
 						</div>
 						<div class="form-group {{ $errors->has('email') ? ' has-error' : '' }}">
 							<label for="email">Email</label>
-							<input type="text" class="form-control" id="email" name="email" placeholder="Email do Usuário" value="{{$user->email}}">
+							<input type="text" class="form-control" id="email" name="email" placeholder="Email do Usuário" value="{{$user->email}}" @if(!\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal()) disabled="disabled" @endif >
 							@if ($errors->has('email'))
 									<span class="help-block">
 											<strong>{{ $errors->first('email') }}</strong>
 									</span>
 							@endif
 						</div>
-						<button type="submit" class="btn btn-success">Enviar</button>
+						<button type="submit" class="btn btn-success" @if(!\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal()) disabled="disabled" @endif >Enviar</button>
 						<input type="hidden" name="_token" value="{{ csrf_token() }}">
-					</form>
+					@if(\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal()) </form> @endif
 				</div>
 			</div>
 		</div>
@@ -60,9 +60,21 @@
 							<label for="perfils_id">Perfil</label>
 							<select class="form-control" name="perfils_id" id="perfils_id">
 								<option value=""> --- Selecione ---</option>
-								@foreach(\App\Perfil::all() as $perfil)
-									<option value="{{$perfil->id}}">{{$perfil->id}} - {{$perfil->name}}</option>
-								@endforeach
+								@if(\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobalbyPerfil([1])) 
+									<option value="1">1 - Super-Administrador</option>
+									<option value="2">2 - Administrador</option>
+								@endif
+								@if(\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() || \Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventsByPerfil([7]))) 
+									<option value="3">3 - Diretor de Torneio</option>
+									<option value="4">4 - Árbitro Mesa</option>
+									<option value="5">5 - Árbitro de Confirmação</option>
+									<option value="6">6 - Diretor de Grupo de Evento</option>
+									<option value="7">7 - Administrador de Grupo de Evento</option>
+								@endif
+								@if(\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobalbyPerfil([1])) 
+									<option value="8">8 - Coordenador de Cadastro de Cidades e Clubes</option>
+									<option value="9">9 - Coordenador de Enxadristas</option>
+								@endif
 							</select>						
 						</div>
 						<div class="form-group" id="grupo_evento" style="display: none">
@@ -70,7 +82,9 @@
 							<select class="form-control" name="grupo_evento_id" id="grupo_evento_id">
 								<option value=""> --- Selecione ---</option>
 								@foreach(\App\GrupoEvento::all() as $grupo_evento)
-									<option value="{{$grupo_evento->id}}">{{$grupo_evento->id}} - {{$grupo_evento->name}}</option>
+                        			@if(\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() || \Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($grupo_evento->id,[6,7]) || \Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfilByGroupEvent($grupo_evento->id,[3,4,5]))
+										<option value="{{$grupo_evento->id}}">{{$grupo_evento->id}} - {{$grupo_evento->name}}</option>
+									@endif
 								@endforeach
 							</select>						
 						</div>
@@ -79,7 +93,9 @@
 							<select class="form-control" name="evento_id" id="evento_id">
 								<option value=""> --- Selecione ---</option>
 								@foreach(\App\Evento::all() as $evento)
-									<option value="{{$evento->id}}">{{$evento->id}} - {{$evento->name}}</option>
+                        			@if(\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() || \Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[6,7]) || \Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[3,4,5]))
+										<option value="{{$evento->id}}">{{$evento->id}} - {{$evento->name}}</option>
+									@endif
 								@endforeach
 							</select>						
 						</div>
@@ -116,7 +132,8 @@
 											Evento: {{$perfil->evento->id}} - {{$perfil->evento->name}}
 										@else
 											@if(
-												$perfil->perfil->id == 6
+												$perfil->perfil->id == 6 ||
+												$perfil->perfil->id == 7
 											)
 												Grupo de Evento: {{$perfil->grupo_evento->id}} - {{$perfil->grupo_evento->name}}
 											@else
@@ -125,7 +142,28 @@
 										@endif
 									</td>
 									<td>
-										<a class="btn btn-danger" href="{{url("/usuario/".$user->id."/perfis/remove/".$perfil->id)}}" role="button"><i class="fa fa-times"></i></a>
+										@if(
+											$perfil->perfil->id == 3 ||
+											$perfil->perfil->id == 4 ||
+											$perfil->perfil->id == 5
+										)
+											@if(\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobalbyPerfil([1]) || \Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($perfil->evento->grupo_evento->id,[7]))
+												<a class="btn btn-danger" href="{{url("/usuario/".$user->id."/perfis/remove/".$perfil->id)}}" role="button"><i class="fa fa-times"></i></a>
+											@endif
+										@else
+											@if(
+												$perfil->perfil->id == 6 ||
+												$perfil->perfil->id == 7
+											)
+											@if(\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobalbyPerfil([1]) || \Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($perfil->grupo_evento->id,[7]))
+												<a class="btn btn-danger" href="{{url("/usuario/".$user->id."/perfis/remove/".$perfil->id)}}" role="button"><i class="fa fa-times"></i></a>
+											@endif
+											@else
+												@if(\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobalbyPerfil([1]))
+													<a class="btn btn-danger" href="{{url("/usuario/".$user->id."/perfis/remove/".$perfil->id)}}" role="button"><i class="fa fa-times"></i></a>
+												@endif
+											@endif
+										@endif
 									</td>
 								</tr>
 							@endforeach
@@ -157,7 +195,10 @@
 					$("#perfils_id").val() == 5
 				){
 					$("#evento").show(100);
-				}else if($("#perfils_id").val() == 6){
+				}else if(
+					$("#perfils_id").val() == 6 ||
+					$("#perfils_id").val() == 7
+				){
 					$("#grupo_evento").show(100);
 				}
 			},300);

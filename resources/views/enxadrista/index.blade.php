@@ -12,6 +12,10 @@
 
 @section('title', 'Enxadristas')
 
+@section("css")
+  <link rel="stylesheet" href="{{url("/plugins/datatables/dataTables.bootstrap.css")}}">
+@endsection
+
 @section('content_header')
     <h1>Enxadristas</h1>
 @stop
@@ -25,6 +29,12 @@
     @if($permitido_edicao)
         <ul class="nav nav-pills">
             <li role="presentation"><a href="{{url("/enxadrista/new")}}">Novo Enxadrista</a></li>
+            
+            @if(
+                \Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal()
+            )
+                <li role="presentation"><a href="{{url("/enxadrista/download")}}">Baixar Base de Dados (Apenas Administradores e Super-Administradores)</a></li>
+            @endif
         </ul>
     @endif
     <div class="box">
@@ -39,33 +49,11 @@
                         <th>IDs</th>
                         <th>Cidade</th>
                         <th>Clube</th>
-                        <th width="20%">Opções</th>
+                        <th width="70px;">Opções</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($enxadristas as $enxadrista)
-                        <tr>
-                            <td>{{$enxadrista->id}}</td>
-                            <td>{{$enxadrista->name}}</td>
-                            <td>{{$enxadrista->getBorn()}}</td>
-                            <td>@if($enxadrista->sexos_id) {{$enxadrista->sexo->name}} @else - @endif</td>
-                            <td>
-                                @if($enxadrista->cbx_id) CBX: {{$enxadrista->cbx_id}} <br/>@endif
-                                @if($enxadrista->fide_id) FIDE: {{$enxadrista->fide_id}} <br/>@endif
-                                @if($enxadrista->lbx_id) LBX: {{$enxadrista->lbx_id}} <br/>@endif
-                            </td>
-                            <td>{{$enxadrista->cidade->name}}</td>
-                            <td>@if($enxadrista->clube) {{$enxadrista->clube->name}} @else Não possui clube @endif</td>
-                            <td>
-                                @if($permitido_edicao)
-                                    <a class="btn btn-default" href="{{url("/enxadrista/edit/".$enxadrista->id)}}" role="button">Editar</a>
-                                @else
-                                    <a class="btn btn-default" href="{{url("/enxadrista/edit/".$enxadrista->id)}}" role="button">Visualizar</a>
-                                @endif
-                                @if($enxadrista->isDeletavel() && $permitido_edicao) <a class="btn btn-danger" href="{{url("/enxadrista/delete/".$enxadrista->id)}}" role="button">Apagar</a> @endif
-                            </td>
-                        </tr>
-                    @endforeach
+                    
                 </tbody>
             </table>
         </div>
@@ -74,9 +62,36 @@
 
 @section("js")
 <script type="text/javascript">
-    $(document).ready(function(){
+    $(function () {
         $("#tabela").DataTable({
-            responsive: true,
+            processing: true,  
+            serverSide: true, 
+            searchDelay: 500,
+            ajax: '{{url("/enxadrista/api/searchList/")}}',
+            language: {
+                "decimal":        "",
+                "emptyTable":     "Não há dados na tabela",
+                "info":           "Mostrando de _START_ para _END_ de um total de _TOTAL_ registros",
+                "infoEmpty":      "Mostrando de 0 para 0 de um total de 0 registros",
+                "infoFiltered":   "(filtrado de um total de _MAX_ registros)",
+                "infoPostFix":    "",
+                "thousands":      ",",
+                "lengthMenu":     "Mostrar _MENU_",
+                "loadingRecords": "Carregando...",
+                "processing":     "Processando...",
+                "search":         "Pesquisar:",
+                "zeroRecords":    "Não foram encontrados registros seguindo o filtro",
+                "paginate": {
+                    "first":      "Primeiro",
+                    "last":       "Último",
+                    "next":       "Próximo",
+                    "previous":   "Anterior"
+                },
+                "aria": {
+                    "sortAscending":  ": ativar para organizar em ordem crescente da coluna",
+                    "sortDescending": ": ativar para organizar em ordem descrescente da coluna"
+                }
+            }
         });
     });
 </script>

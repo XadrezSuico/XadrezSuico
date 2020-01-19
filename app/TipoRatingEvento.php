@@ -14,12 +14,13 @@ class TipoRatingEvento extends Model
     protected static $logFillable = true;
 
     protected static $logAttributes = ['*'];
-    
-    
-    public function evento(){
-        return $this->belongsTo("App\Evento","evento_id","id");
+
+    public function evento()
+    {
+        return $this->belongsTo("App\Evento", "evento_id", "id");
     }
-    public function tipo_rating(){
-        return $this->belongsTo("App\TipoRating","tipo_ratings_id","id");
+    public function tipo_rating()
+    {
+        return $this->belongsTo("App\TipoRating", "tipo_ratings_id", "id");
     }
 }

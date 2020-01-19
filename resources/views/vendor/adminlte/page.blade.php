@@ -125,6 +125,31 @@
             <!-- Main content -->
             <section class="content">
 
+                @if ($errors->any())
+                    @if(!$errors->has("alerta"))
+                        <div class="alert alert-danger">
+                            <h4>Opa! Deu erro!</h4>
+                            <ul>
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @else
+                        <div class="alert alert-{{$errors->first("type")}}" role="alert">
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                            </button>
+                            @if($errors->first("type") == "success")
+                                <strong>Tudo certo!</strong> 
+                            @else
+                                <strong>Opa! Deu erro!</strong> 
+                            @endif <br/>
+                            {{ $errors->first("alerta") }}
+                        </div>
+                    @endif
+                @endif
+
                 @yield('content')
                 <div class="modal fade modal-success" id="success" tabindex="-1" role="dialog" aria-labelledby="alerts">
                     <div class="modal-dialog" role="document">

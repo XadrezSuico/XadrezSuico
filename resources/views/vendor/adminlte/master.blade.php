@@ -58,8 +58,10 @@
 @if(config('adminlte.plugins.datatables'))
     <!-- DataTables with bootstrap 3 renderer -->
     <script src="{{ asset('vendor/datatables/datatables.min.js') }}"></script>
+
+    <script src="{{ asset('vendor/datatables/DataTables-1.10.18/js/dataTables.bootstrap.min.js') }}"></script>
     <script src="{{ asset('vendor/datatables/Responsive-2.2.2/js/dataTables.responsive.min.js') }}"></script>
-    <script src="//cdn.datatables.net/responsive/2.2.3/js/dataTables.responsive.min.js"></script>
+    <!-- <script src="//cdn.datatables.net/responsive/2.2.3/js/dataTables.responsive.min.js"></script> -->
 @endif
 
 @if(config('adminlte.plugins.chartjs'))

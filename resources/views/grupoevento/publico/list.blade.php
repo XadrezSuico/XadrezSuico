@@ -27,15 +27,15 @@
             <table id="tabela" class="table-responsive table-condensed table-striped" style="width: 100%">
                 <thead>
                     <tr>
-                        <th rowspan="2">#</th>
-                        <th rowspan="2">Nome</th>
-                        <th rowspan="2">Data de Nascimento</th>
-                        <th rowspan="2">Cidade</th>
-                        <th rowspan="2">Clube</th>
-                        @if(count($eventos) > 0)<th rowspan="1" colspan="{{count($eventos)}}">Etapas</th> @endif
-                        <th rowspan="2">Pontuação</th>
+                        <th>#</th>
+                        <th>Cód</th>
+                        <th>Nome</th>
+                        <th>Data de Nascimento</th>
+                        <th>Cidade</th>
+                        <th>Clube</th>
+                        <th>Pontuação</th>
                         @foreach($criterios as $criterio)
-                            <th rowspan="2">{{$criterio->criterio->code}}</th>
+                            <th>{{$criterio->criterio->code}}</th>
                         @endforeach
                     </tr>
                     @if(count($eventos) > 0)
@@ -51,7 +51,8 @@
                     @foreach($pontuacoes as $pontuacao)
                         <tr>
                             <td>{{$pontuacao->posicao}}</td>
-                            <td><a href="{{url("/grupoevento/".$grupo_evento->id."/resultados/enxadrista/".$pontuacao->enxadrista->id)}}">#{{$pontuacao->enxadrista->id}} - {{$pontuacao->enxadrista->name}}</a></td>
+                            <td><a href="{{url("/grupoevento/".$grupo_evento->id."/resultados/enxadrista/".$pontuacao->enxadrista->id)}}">#{{$pontuacao->enxadrista->id}}</a></td>
+                            <td><a href="{{url("/grupoevento/".$grupo_evento->id."/resultados/enxadrista/".$pontuacao->enxadrista->id)}}">{{$pontuacao->enxadrista->name}}</a></td>
                             <td>{{$pontuacao->enxadrista->getBorn()}}</td>
                             <td>{{$pontuacao->enxadrista->cidade->name}}</td>
                             <td>@if($pontuacao->enxadrista->clube) {{$pontuacao->enxadrista->clube->name}} @else Sem Clube @endif</td>
@@ -123,7 +124,8 @@
             dom: 'Bfrtip',
             buttons: [
                 'copy', 'csv', 'excel', 'pdf', 'print'
-            ]
+            ],
+            paging: false
         });
     });
 </script>
