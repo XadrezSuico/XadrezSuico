@@ -22,7 +22,7 @@ class CreateClubeTable extends Migration
     {
         Schema::create($this->tableName, function (Blueprint $table) {
             $table->engine = 'InnoDB';
-            $table->increments('id')->nullable();
+            $table->increments('id');
             $table->unsignedInteger('rating_id')->nullable();
             $table->string('name', 45);
             $table->unsignedInteger('cidade_id');

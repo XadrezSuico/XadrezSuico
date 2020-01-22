@@ -293,7 +293,7 @@
 										<select name="criterio_desempate_id" id="criterio_desempate_id" class="form-control width-100">
 											<option value="">--- Selecione ---</option>
 											@foreach($criterios_desempate as $criterio_desempate)
-												<option value="{{$criterio_desempate->id}}">{{$criterio_desempate->id}} - {{$criterio_desempate->name}}</option>
+												<option value="{{$criterio_desempate->id}}">{{$criterio_desempate->id}} - {{$criterio_desempate->name}} @if($criterio_desempate->sm_code) [{{$criterio_desempate->sm_code}}] @endif</option>
 											@endforeach
 										</select>
 									</div>
@@ -351,7 +351,7 @@
 											@foreach($grupo_evento->criterios()->orderBy("tipo_torneio_id","ASC")->orderBy("softwares_id","ASC")->orderBy("prioridade","ASC")->get() as $criterio_desempate)
 												<tr>
 													<td>{{$criterio_desempate->criterio->id}}</td>
-													<td>{{$criterio_desempate->criterio->name}}</td>
+													<td>{{$criterio_desempate->criterio->name}}@if($criterio_desempate->criterio->sm_code) [{{$criterio_desempate->criterio->sm_code}}] @endif</td>
 													<td>{{$criterio_desempate->tipo_torneio->name}}</td>
 													<td>{{$criterio_desempate->software->name}}</td>
 													<td>{{$criterio_desempate->prioridade}}</td>

@@ -38,7 +38,7 @@ class TorneioTemplateController extends Controller
         $torneio_template->grupo_evento_id = $grupo_evento->id;
         $torneio_template->torneio_name = $request->input("torneio_name");
         $torneio_template->save();
-        return redirect("/grupoevento/" . $grupo_evento->id . "/torneiotemplates/dashboard/" . $id);
+        return redirect("/grupoevento/" . $grupo_evento->id . "/torneiotemplates/dashboard/" . $torneio_template->id);
     }
     public function edit($grupo_evento_id, $id)
     {
