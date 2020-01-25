@@ -19,6 +19,11 @@ class Cidade extends Model
     protected $primaryKey = 'id';
     protected $table = 'cidade';
 
+    public function estado()
+    {
+        return $this->belongsTo("App\Estado", "estados_id", "id");
+    }
+
     public function enxadristas()
     {
         return $this->hasMany("App\Enxadrista", "cidade_id", "id");

@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\CampoPersonalizadoOpcaoInscricao;
 use App\Categoria;
+use App\Pais;
+use App\Estado;
 use App\Cidade;
 use App\Clube;
 use App\Email;
@@ -27,7 +29,7 @@ class InscricaoController extends Controller
                         return view("inscricao.encerradas", compact("evento"));
                     } else {
                         $token = $request->input("token");
-                        return view("inscricao.inscricao", compact("evento", "sexos", "token"));
+                        return view("inscricao.inscricao_nova", compact("evento", "sexos", "token"));
                     }
                 } else {
                     return view("inscricao.naopermitida");
@@ -484,4 +486,180 @@ class InscricaoController extends Controller
         return response()->json(["results" => $results, "pagination" => true]);
     }
 
+
+
+
+
+
+
+
+    /*
+     *
+     * 
+     * NOVAS FUNÇÕES PARA NOVA TELA DE INSCRIÇÃO
+     * 
+     * 
+     */ 
+    
+
+    public function telav2_buscaEnxadrista($id,Request $request)
+    {
+        $evento = Evento::find($id);
+        $enxadristas = Enxadrista::where([
+            ["id", "like", "%" . $request->input("q") . "%"],
+        ])
+        ->orWhere([
+            ["name", "like", "%" . $request->input("q") . "%"],
+        ])->orderBy("name", "ASC")->limit(30)->get();
+        $results = array();
+        foreach ($enxadristas as $enxadrista) {
+            $rating = $enxadrista->ratingParaEvento($evento->id);
+            $item = array();
+            $item["id"] = $enxadrista->id;
+            $item["text"] = "<strong>#".$enxadrista->id." - ".$enxadrista->name . "</strong> | " . $enxadrista->getBorn() . " | ".$enxadrista->cidade->name;
+            if($enxadrista->clube){
+                $item["text"] .= " | Clube: ".$enxadrista->clube->name;
+            }
+            if ($rating) {
+                $item["text"] .= " | Rating: ".$rating;
+            }
+            
+            if ($enxadrista->estaInscrito($request->input("evento_id"))) {
+                $item["text"] .= " - Já Está Inscrito neste Evento";
+            }
+            $results[] = $item;
+        }
+
+        $total = Enxadrista::where([
+            ["id", "like", "%" . $request->input("q") . "%"],
+        ])
+        ->orWhere([
+            ["name", "like", "%" . $request->input("q") . "%"],
+        ])
+        ->orderBy("name", "ASC")
+        ->count();
+
+        return response()->json(["results" => $results, "hasMore" => ($total > 30) ? true : false]);
+    }
+
+    public function telav2_buscaEstado($evento_id,$pais_id)
+    {
+        $estados = Estado::where([
+            ["pais_id", "=", $pais_id],
+        ])->get();
+        $results = array();
+        foreach ($estados as $estado) {
+            $results[] = array("id" => $estado->id, "text" => $estado->nome);
+        }
+        return response()->json(["results" => $results, "pagination" => true]);
+    }
+
+    public function telav2_buscaCidade($evento_id,$estados_id)
+    {
+        $cidades = Cidade::where([
+            ["estados_id", "=", $estados_id],
+        ])->get();
+        $results = array();
+        foreach ($cidades as $cidade) {
+            $results[] = array("id" => $cidade->id, "text" => $cidade->name);
+        }
+        return response()->json(["results" => $results, "pagination" => true]);
+    }
+
+    public function telav2_buscaClube(Request $request)
+    {
+        $clubes = Clube::where([
+            ["name", "like", "%" . $request->input("q") . "%"],
+        ])->orWhere(function ($q) use ($request) {
+            $q->whereHas("cidade", function ($Q) use ($request) {
+                $Q->where([
+                    ["name", "like", "%" . $request->input("q") . "%"],
+                ]);
+            });
+        })->get();
+        $results = array(array("id" => -1, "text" => "Sem Clube"));
+        foreach ($clubes as $clube) {
+            $results[] = array("id" => $clube->id, "text" => $clube->cidade->name . " - " . $clube->name);
+        }
+        return response()->json(["results" => $results, "pagination" => true]);
+    }
+
+    public function telav2_buscarDadosEnxadrista($id,$enxadrista_id)
+    {
+        $evento = Evento::find($id);
+        $enxadrista = Enxadrista::find($enxadrista_id);
+        if($enxadrista){
+            $retorno = array();
+            $retorno["name"] = $enxadrista->name;
+            $retorno["cidade"] = array("id"=>$enxadrista->cidade->id,"name"=>$enxadrista->cidade->name);
+            $retorno["cidade"]["estado"] = array("id"=>$enxadrista->cidade->estado->id,"name"=>$enxadrista->cidade->estado->nome);
+            $retorno["cidade"]["estado"]["pais"] = array("id"=>$enxadrista->cidade->estado->pais->id,"name"=>$enxadrista->cidade->estado->pais->nome);
+            $retorno["clube"] = ($enxadrista->clube) ? array("id"=>$enxadrista->clube->id,"name"=>$enxadrista->clube->name) : array("id" => 0);
+            $retorno["categorias"] = array();
+            foreach($this->categoriasEnxadrista($evento,$enxadrista) as $categoria){
+                $retorno["categorias"][] = array("id"=>$categoria->categoria->id,"name"=>$categoria->categoria->name);
+            }
+            return response()->json(["ok" => 1, "error"=>0, "data" => $retorno]);
+        }else{
+            return response()->json(["ok" => 0, "error"=>1, "message" => "O enxadrista não foi encontrado."]);
+        }
+    }
+
+
+
+
+
+    /*
+     *
+     * 
+     * TELA V2: FUNÇÕES AUXILIARES
+     * 
+     * 
+     */ 
+    public function categoriasEnxadrista($evento, $enxadrista)
+    {
+        $categorias = $evento->categorias()->whereHas("categoria", function ($q1) use ($enxadrista) {
+            $q1->where(function ($q2) use ($enxadrista) {
+                    $q2->where(function ($q3) use ($enxadrista) {
+                        $q3->where([["idade_minima", "<=", $enxadrista->howOld()]]);
+                        $q3->where([["idade_maxima", ">=", $enxadrista->howOld()]]);
+                    })
+                        ->orWhere(function ($q3) use ($enxadrista) {
+                            $q3->where([["idade_minima", "<=", $enxadrista->howOld()]]);
+                            $q3->where([["idade_maxima", "=", null]]);
+                        })
+                        ->orWhere(function ($q3) use ($enxadrista) {
+                            $q3->where([["idade_minima", "=", null]]);
+                            $q3->where([["idade_maxima", ">=", $enxadrista->howOld()]]);
+                        })
+                        ->orWhere(function ($q3) {
+                            $q3->where([["idade_minima", "=", null]]);
+                            $q3->where([["idade_maxima", "=", null]]);
+                        });
+                })
+                ->where(function ($q2) use ($enxadrista) {
+                    $q2->where(function ($q3) use ($enxadrista) {
+                        if ($enxadrista->sexos_id) {
+                            $q3->where(function ($q4) use ($enxadrista) {
+                                $q4->whereHas("sexos", function ($q5) use ($enxadrista) {
+                                    $q5->where([["sexos_id", "=", $enxadrista->sexos_id]]);
+                                });
+                            });
+                            $q3->orWhere(function ($q4) {
+                                $q4->doesntHave("sexos");
+                            });
+                        } else {
+                            $q3->whereDoesntHave("sexos");
+                        }
+                    });
+                });
+        })
+            ->get();
+        // echo ($categorias); exit();
+        $results = array();
+        foreach ($categorias as $categoria) {
+            $results[] = $categoria;
+        }
+        return $results;
+    }
 }

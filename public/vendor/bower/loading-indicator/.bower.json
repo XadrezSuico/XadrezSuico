@@ -1,0 +1,42 @@
+{
+  "name": "loading-indicator",
+  "version": "1.1.0",
+  "homepage": "https://github.com/leftstick/loading-indicator",
+  "description": "a simple loading indicator",
+  "main": [
+    "dist/loading.js",
+    "dist/loading.min.css",
+    "dist/loading.min.js",
+    "dist/loading.min.map"
+  ],
+  "keywords": [
+    "loading",
+    "indicator",
+    "mask"
+  ],
+  "authors": [
+    "Howard.Zuo"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "demo/bower",
+    "test",
+    "tests",
+    "src"
+  ],
+  "devDependencies": {
+    "amazeui": "~1.0.0"
+  },
+  "_release": "1.1.0",
+  "_resolution": {
+    "type": "version",
+    "tag": "1.1.0",
+    "commit": "6a153728959a693b85cfcbe5abc51d618b2a7c3b"
+  },
+  "_source": "https://github.com/leftstick/loading-indicator.git",
+  "_target": "^1.1.0",
+  "_originalSource": "loading-indicator"
+}

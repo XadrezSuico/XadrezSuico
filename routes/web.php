@@ -60,6 +60,13 @@ Route::group(["prefix"=>"inscricao"],function(){
     Route::post('/{id}/inscricao', 'InscricaoController@adicionarNovaInscricao')->name('inscricao.enviar');
     Route::get('/{id}/enxadrista/getCidadeClube/{enxadrista_id}', 'InscricaoController@getCidadeClube')->name('inscricao.getCidadeClube');
     Route::get('/visualizar/{id}', 'InscricaoController@visualizar_inscricoes')->name('inscricao.visualizar.inscricao');
+    Route::group(["prefix"=>"v2"],function(){
+        Route::get('/{id}/busca/enxadrista', 'InscricaoController@telav2_buscaEnxadrista')->name('inscricao.v2.busca.enxadrista');
+        Route::get('/{id}/busca/estado/{pais_id}', 'InscricaoController@telav2_buscaEstado')->name('inscricao.v2.busca.estado');
+        Route::get('/{id}/busca/cidade/{estados_id}', 'InscricaoController@telav2_buscaCidade')->name('inscricao.v2.busca.cidade');
+        Route::get('/{id}/busca/clube', 'InscricaoController@telav2_buscaClube')->name('inscricao.v2.busca.clube');
+        Route::get('/{id}/enxadrista/{enxadrista_id}', 'InscricaoController@telav2_buscarDadosEnxadrista')->name('inscricao.v2.enxadrista');
+    });
 });
 
 Route::group(["prefix"=>"rating"],function(){

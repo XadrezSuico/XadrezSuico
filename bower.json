@@ -1,0 +1,21 @@
+{
+  "name": "XadrezSuico",
+  "homepage": "https://github.com/XadrezSuico/XadrezSuico",
+  "authors": [
+    "João Paulo Polles <joaopaulopolles@gmail.com>"
+  ],
+  "description": "Sistema de Gerenciamento de Circuitos de Xadrez",
+  "main": "",
+  "license": "GPL 3.0",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "loading-indicator": "^1.1.0"
+  }
+}

@@ -194,6 +194,21 @@
 					</div>
 				</div>
 				<div class="form-group">
+					<label for="enxadrista_pais_id">País *</label>
+					<select id="enxadrista_pais_id" class="cidade_id form-control">
+						@foreach(\App\Pais::all() as $pais)
+							<option value="{{$pais->id}}">{{$pais->nome}} @if($pais->codigo_iso) ({{$pais->codigo_iso}}) @endif</option>
+						@endforeach
+					</select><br/>
+				</div>
+				<div class="form-group">
+					<label for="enxadrista_estado_id">Estado *</label>
+					<select id="enxadrista_estado_id" class="cidade_id form-control">
+						<option value="">--- Selecione um estado ---</option>
+					</select><br/>
+                    <button id="cidadeNaoCadastradaEnxadrista" class="btn btn-success">A minha cidade não está cadastrada</button>
+				</div>
+				<div class="form-group">
 					<label for="enxadrista_cidade_id">Cidade *</label>
 					<select id="enxadrista_cidade_id" class="cidade_id form-control">
 						<option value="">--- Selecione uma cidade ---</option>
@@ -466,6 +481,8 @@
 			$("#celular").mask('+00 (00) 00000-0000');
 			$("#celular").val('+55');
 			$("#sexos_id").select2();
+			$("#enxadrista_pais_id").select2().val(33).change();
+			$("#enxadrista_estado_id").select2();
 			$("#enxadrista_cidade_id").select2({
 				ajax: {
 					url: '{{url("/inscricao/".$evento->id."/busca/cidade")}}',

@@ -30,7 +30,7 @@
         <link rel="stylesheet" href="{{ asset('vendor/datatables/datatables.min.css') }}">
         <link rel="stylesheet" href="{{ asset('vendor/datatables/Responsive-2.2.2/css/responsive.dataTables.min.css') }}">        
     @endif
-
+    <link rel="stylesheet" type="text/css" href="{{ asset('vendor/bower/loading-indicator/dist/loading.min.css')}}">
     @yield('adminlte_css')
 
     <!--[if lt IE 9]>
@@ -68,7 +68,7 @@
     <!-- ChartJS -->
     <script src="{{ asset('vendor/chartjs/Chart.bundle.min.js') }}"></script>
 @endif
-
+<script src="{{ asset('vendor/bower/loading-indicator/dist/loading.min.js') }}"></script>
 @yield('adminlte_js')
 
 </body>
