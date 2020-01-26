@@ -71,6 +71,43 @@
 							@endforeach
 						</select>
 					</div>
+					<hr/>
+					<h4>Documentos:</h4>
+					<div class="alert alert-warning">
+						<strong>É OBRIGATÓRIO informar ao menos um documento.</strong> Além disto, poderá haver documentos que são obrigatórios, porém, estes estarão identificados com <strong>*</strong>.
+					</div>
+					<div id="documentos">
+						<p>Não há documentos para este país.</p>
+					</div>
+					<hr/>
+					<h4>Outras Informações:</h4>
+					<div class="row">
+						<div class="col-md-12">
+							<div class="form-group">
+								<label for="email">E-mail</label>
+								<input name="email" id="email" class="form-control" type="text" value="{{$enxadrista->email}}" @if(!$permitido_edicao) disabled="disabled" @endif />
+							</div>
+						</div>
+						<div class="col-md-6">
+							<div class="form-group">
+								<label for="pais_celular_id">País do Celular *</label>
+								<select id="pais_celular_id" name="pais_celular_id" class="form-control this_is_select2" @if(!$permitido_edicao) disabled="disabled" @endif>
+									<option value="">--- Selecione um país ---</option>
+									@foreach(\App\Pais::all() as $pais)
+										<option value="{{$pais->id}}">{{$pais->nome}} @if($pais->codigo_iso) ({{$pais->codigo_iso}}) @endif</option>
+									@endforeach
+								</select>
+							</div>
+						</div>
+						<div class="col-md-6">
+							<div class="form-group">
+								<label for="celular">Celular</label>
+								<input name="celular" id="celular" class="form-control" type="text" value="{{$enxadrista->celular}}" @if(!$permitido_edicao) disabled="disabled" @endif />
+							</div>
+						</div>
+					</div>
+					<hr/>
+					<h4>Cadastros nas Entidades:</h4>
 					<div class="row">
 						<div class="col-md-4">
 							<div class="form-group">
@@ -114,31 +151,6 @@
 							<div class="form-group">
 								<label for="lbx_id">ID LBX</label>
 								<input name="lbx_id" id="lbx_id" class="form-control" type="text" value="{{$enxadrista->lbx_id}}" @if(!$permitido_edicao) disabled="disabled" @endif />
-							</div>
-						</div>
-					</div>
-					<div class="row">
-						<div class="col-md-12">
-							<div class="form-group">
-								<label for="email">E-mail</label>
-								<input name="email" id="email" class="form-control" type="text" value="{{$enxadrista->email}}" @if(!$permitido_edicao) disabled="disabled" @endif />
-							</div>
-						</div>
-						<div class="col-md-6">
-							<div class="form-group">
-								<label for="pais_celular_id">País do Celular *</label>
-								<select id="pais_celular_id" name="pais_celular_id" class="form-control this_is_select2" @if(!$permitido_edicao) disabled="disabled" @endif>
-									<option value="">--- Selecione um país ---</option>
-									@foreach(\App\Pais::all() as $pais)
-										<option value="{{$pais->id}}">{{$pais->nome}} @if($pais->codigo_iso) ({{$pais->codigo_iso}}) @endif</option>
-									@endforeach
-								</select>
-							</div>
-						</div>
-						<div class="col-md-6">
-							<div class="form-group">
-								<label for="celular">Celular</label>
-								<input name="celular" id="celular" class="form-control" type="text" value="{{$enxadrista->celular}}" @if(!$permitido_edicao) disabled="disabled" @endif />
 							</div>
 						</div>
 					</div>
@@ -224,8 +236,17 @@
 		$("#sexos_id").select2().val([{{$enxadrista->sexos_id}}]).change();
 		$("#pais_nascimento_id").select2().val([{{$enxadrista->pais_id}}]).change();
 		$("#pais_celular_id").select2().val([{{$enxadrista->pais_celular_id}}]).change();
+		Loading.enable(loading_default_animation,10000);
+		buscaTipoDocumentos(function(){
+			Loading.destroy();
+		});
 
-
+		$("#pais_nascimento_id").on("select2:select",function(){
+			Loading.enable(loading_default_animation,10000);
+			buscaTipoDocumentos(function(){
+				Loading.destroy();
+			});
+		});
 
 		if($("#pais_celular_id").val() == 33){
 			setTimeout(function(){
@@ -308,6 +329,79 @@
 				}
 			}
 		});
+	}
+	
+	function buscaTipoDocumentos(callback){
+		if($("#pais_nascimento_id").val() > 0){
+			$('#documentos').html("");
+			$.getJSON("{{url("/tipodocumento/searchByPais")}}/".concat($("#pais_nascimento_id").val()),function(data){
+				for (i = 0; i < data.data.length; i++) {
+
+					html = "";
+					html = html.concat('<div class="form-group">');
+					if(data.data[i].is_required){
+						html = html.concat('<label for="tipo_documento_').concat(data.data[i].id).concat('">').concat(data.data[i].name).concat(' *</label>');
+					}else{
+						html = html.concat('<label for="tipo_documento_').concat(data.data[i].id).concat('">').concat(data.data[i].name).concat('</label>');
+					}
+					html = html.concat('<input name="tipo_documento_').concat(data.data[i].id).concat('" id="tipo_documento_').concat(data.data[i].id).concat('" class="form-control" type="text" />');
+					html = html.concat('</div>');
+
+					$('#documentos').append(html);
+
+					if(data.data[i].pattern){
+						$("#tipo_documento_".concat(data.data[i].id)).mask(data.data[i].pattern);
+					}
+
+					if(i+1 == data.data.length){
+						if(callback){
+							preencheDocumentos(data.data,callback);
+						}else{
+							preencheDocumentos(data.data,false);
+						}
+					}
+				}
+				if(data.data.length == 0){
+					if(callback){
+						callback();
+					}
+				}
+			});
+		}else{
+			if(callback){
+				callback();
+			}
+			$('#documentos').html("<p>Selecione antes um país de nascimento...</p>");
+		}
+	}
+
+	function preencheDocumentos(tipo_documentos,callback){
+		if(tipo_documentos){
+			for (i = 0; i < tipo_documentos.length; i++) {
+				$.getJSON("{{url("/enxadrista/".$enxadrista->id."/documentos/getDocumento")}}/".concat(tipo_documentos[i].id),function(data){
+					if(data.ok){
+						$("#tipo_documento_".concat(data.data.id)).val(data.data.number);
+					}
+					if(i + 1 == tipo_documentos.length){
+						if(callback){
+							callback();
+						}
+					}
+				})
+				.fail(function(){
+					if(i + 1 == tipo_documentos.length){
+						if(callback){
+							callback();
+						}
+					}
+				});
+			}
+		}else{
+			if(callback){
+				callback();
+			}
+		}
+
 	}
 </script>
 @endsection

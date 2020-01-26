@@ -225,6 +225,9 @@ Route::group(["prefix"=>"enxadrista"],function(){
 	Route::get('/delete/{id}', 'EnxadristaController@delete')->name('enxadrista.delete');
 	Route::get('/download', 'EnxadristaController@downloadBaseCompleta')->name('enxadrista.download');
 	Route::get('/api/searchList', 'EnxadristaController@searchEnxadristasList')->name('enxadrista.api.list');
+    Route::group(["prefix"=>"{id}/documentos"],function(){
+	    Route::get('/getDocumento/{tipo_documento_id}', 'DocumentoController@getDocumento')->name('enxadrista.documentos.getDocumento');
+    });
 });
 
 Route::group(["prefix"=>"sexo"],function(){
@@ -318,6 +321,13 @@ Route::group(["prefix"=>"tiporating"],function(){
         Route::get('/remove/{tipo_rating_regra_id}', 'TipoRatingController@regra_remove')->name('tiporating.regra.remove');
     });
 });
+
+Route::group(["prefix"=>"tipodocumento"],function(){
+    Route::get('/searchByPais/{pais_id}', 'TipoDocumentoPaisController@getTiposDocumento')->name('tipodocumento.buscaPorPais');
+});
+
+
+
 Route::group(["prefix"=>"update"],function(){
     Route::get('/cbx/rating', 'CBXRatingController@updateRatings')->name('update.cbx.rating');
     Route::get('/fide/rating', 'FIDERatingController@updateRatings')->name('update.fide.rating');

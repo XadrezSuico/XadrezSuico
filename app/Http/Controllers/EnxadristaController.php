@@ -5,11 +5,15 @@ namespace App\Http\Controllers;
 use App\Cidade;
 use App\Clube;
 use App\Enxadrista;
-use App\Exports\EnxadristasCompletoFromView;
 use App\Sexo;
+use App\TipoDocumentoPais;
+use App\Documento;
+use App\Exports\EnxadristasCompletoFromView;
+use App\Http\Util\Util;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\MessageBag;
 
 class EnxadristaController extends Controller
 {
@@ -78,12 +82,79 @@ class EnxadristaController extends Controller
             return redirect()->back()->withErrors($validator->errors());
         }
 
+        $documentos = array();
+
+        foreach(TipoDocumentoPais::where([["pais_id","=",$request->input("pais_nascimento_id")]])->get() as $tipo_documento_pais){
+            if($tipo_documento_pais->e_requerido){
+                if(!$request->has("tipo_documento_".$tipo_documento_pais->tipo_documento->id)){
+                    $messageBag = new MessageBag;
+                    $messageBag->add("type","danger");
+                    $messageBag->add("alerta","Há um documento que é requerido que não foi informado.");
+
+                    return redirect()->back()->withErrors($messageBag);
+                }
+                if(
+                    $request->input("tipo_documento_".$tipo_documento_pais->tipo_documento->id) == "" || 
+                    $request->input("tipo_documento_".$tipo_documento_pais->tipo_documento->id) == NULL
+                ){
+                    $messageBag = new MessageBag;
+                    $messageBag->add("type","danger");
+                    $messageBag->add("alerta","Há um documento que é requerido que não foi informado.");
+
+                    return redirect()->back()->withErrors($messageBag);
+                }
+            }
+            if($request->has("tipo_documento_".$tipo_documento_pais->tipo_documento->id)){
+                if(
+                    $request->input("tipo_documento_".$tipo_documento_pais->tipo_documento->id) != "" && 
+                    $request->input("tipo_documento_".$tipo_documento_pais->tipo_documento->id) != NULL
+                ){
+                    
+                    $temEnxadrista = Enxadrista::whereHas("documentos",function($q1) use($request, $tipo_documento_pais){
+                        $q1->where([
+                            ["tipo_documentos_id","=",$tipo_documento_pais->tipo_documento->id],
+                            ["numero","=",$request->input("tipo_documento_".$tipo_documento_pais->tipo_documento->id)],
+                        ]);
+                    })->get();
+                    if(count($temEnxadrista) > 0){
+                        $messageBag = new MessageBag;
+                        $messageBag->add("type","danger");
+                        $messageBag->add("alerta","Já há um cadastro de Enxadrista com o Documento informado.");
+
+                        return redirect()->back()->withErrors($messageBag);
+                    }
+
+                    $documento = new Documento;
+                    $documento->tipo_documentos_id = $tipo_documento_pais->tipo_documento->id;
+                    if($tipo_documento_pais->tipo_documento->id == 1){
+                        $documento->numero = Util::numeros($request->input("tipo_documento_".$tipo_documento_pais->tipo_documento->id));
+                    }else{
+                        $documento->numero = $request->input("tipo_documento_".$tipo_documento_pais->tipo_documento->id);
+                    }
+
+                    $documentos[] = $documento;
+                }
+            }
+        }
+
+        if(count($documentos) == 0){
+            $messageBag = new MessageBag;
+            $messageBag->add("type","danger");
+            $messageBag->add("alerta","É obrigatório a inserção de ao menos UM DOCUMENTO.");
+
+            return redirect()->back()->withErrors($messageBag);
+        }
+
         $temEnxadrista = Enxadrista::where([
             ["name", "=", $nome_corrigido],
             ["born", "=", $enx->born],
         ])->get();
         if (count($temEnxadrista) > 0) {
-            return redirect()->back();
+            $messageBag = new MessageBag;
+            $messageBag->add("type","danger");
+            $messageBag->add("alerta","O enxadrista informado já possui cadastro.");
+
+            return redirect()->back()->withErrors($messageBag);
             exit();
         } else {
             $enxadrista = new Enxadrista;
@@ -120,6 +191,12 @@ class EnxadristaController extends Controller
             }
 
             $enxadrista->save();
+
+            foreach($documentos as $documento){
+                $documento->enxadrista_id = $enxadrista->id;
+                $documento->save();
+            }
+
             return redirect("/enxadrista/edit/" . $enxadrista->id);
         }
     }
@@ -157,6 +234,83 @@ class EnxadristaController extends Controller
             return redirect()->back()->withErrors($validator->errors());
         }
 
+        $enxadrista = Enxadrista::find($id);
+        
+        $documentos = array();
+
+        foreach(TipoDocumentoPais::where([["pais_id","=",$request->input("pais_nascimento_id")]])->get() as $tipo_documento_pais){
+            if($tipo_documento_pais->e_requerido){
+                if(!$request->has("tipo_documento_".$tipo_documento_pais->tipo_documento->id)){
+                    $messageBag = new MessageBag;
+                    $messageBag->add("type","danger");
+                    $messageBag->add("alerta","Há um documento que é requerido que não foi informado.");
+
+                    return redirect()->back()->withErrors($messageBag);
+                }
+                if(
+                    $request->input("tipo_documento_".$tipo_documento_pais->tipo_documento->id) == "" || 
+                    $request->input("tipo_documento_".$tipo_documento_pais->tipo_documento->id) == NULL
+                ){
+                    $messageBag = new MessageBag;
+                    $messageBag->add("type","danger");
+                    $messageBag->add("alerta","Há um documento que é requerido que não foi informado.");
+
+                    return redirect()->back()->withErrors($messageBag);
+                }
+            }
+            if($request->has("tipo_documento_".$tipo_documento_pais->tipo_documento->id)){
+                if(
+                    $request->input("tipo_documento_".$tipo_documento_pais->tipo_documento->id) != "" && 
+                    $request->input("tipo_documento_".$tipo_documento_pais->tipo_documento->id) != NULL
+                ){
+                    
+                    $temEnxadrista = Enxadrista::where([
+                        ["id","!=",$enxadrista->id]
+                    ])
+                    ->whereHas("documentos",function($q1) use($request, $tipo_documento_pais){
+                        if($tipo_documento_pais->tipo_documento->id == 1){
+                            $q1->where([
+                                ["tipo_documentos_id","=",$tipo_documento_pais->tipo_documento->id],
+                                ["numero","=",Util::numeros($request->input("tipo_documento_".$tipo_documento_pais->tipo_documento->id))],
+                            ]);
+                        }else{
+                            $q1->where([
+                                ["tipo_documentos_id","=",$tipo_documento_pais->tipo_documento->id],
+                                ["numero","=",$request->input("tipo_documento_".$tipo_documento_pais->tipo_documento->id)],
+                            ]);
+                        }
+                    })->get();
+
+                    if(count($temEnxadrista) > 0){
+                        $messageBag = new MessageBag;
+                        $messageBag->add("type","danger");
+                        $messageBag->add("alerta","Já há um cadastro de Enxadrista com o Documento informado.");
+
+                        return redirect()->back()->withErrors($messageBag);
+                    }
+
+                    $documento = new Documento;
+                    $documento->tipo_documentos_id = $tipo_documento_pais->tipo_documento->id;
+                    if($tipo_documento_pais->tipo_documento->id == 1){
+                        $documento->numero = Util::numeros($request->input("tipo_documento_".$tipo_documento_pais->tipo_documento->id));
+                    }else{
+                        $documento->numero = $request->input("tipo_documento_".$tipo_documento_pais->tipo_documento->id);
+                    }
+                    $documento->enxadrista_id = $enxadrista->id;
+
+                    $documentos[] = $documento;
+                }
+            }
+        }
+
+        if(count($documentos) == 0){
+            $messageBag = new MessageBag;
+            $messageBag->add("type","danger");
+            $messageBag->add("alerta","É obrigatório a inserção de ao menos UM DOCUMENTO.");
+
+            return redirect()->back()->withErrors($messageBag);
+        }
+
         // Algoritmo para eliminar os problemas com espaçamentos duplos ou até triplos.
         $nome_corrigido = "";
 
@@ -172,7 +326,6 @@ class EnxadristaController extends Controller
         }
         $nome_corrigido = trim($nome_corrigido);
 
-        $enxadrista = Enxadrista::find($id);
         $enxadrista->name = $nome_corrigido;
         $enxadrista->setBorn($request->input("born"));
         $enxadrista->cidade_id = $request->input("cidade_id");
@@ -218,6 +371,16 @@ class EnxadristaController extends Controller
             $enxadrista->lbx_id = null;
         }
         $enxadrista->save();
+
+        foreach($enxadrista->documentos->all() as $documento){
+            $documento->delete();
+        }
+        
+        foreach($documentos as $documento){
+            $documento->save();
+        }
+
+
         return redirect("/enxadrista/edit/" . $enxadrista->id);
     }
     public function delete($id)
@@ -230,6 +393,9 @@ class EnxadristaController extends Controller
         $enxadrista = Enxadrista::find($id);
 
         if ($enxadrista->isDeletavel()) {
+            foreach($enxadrista->documentos->all() as $documento){
+                $documento->delete();
+            }
             $enxadrista->delete();
         }
         return redirect("/enxadrista");

@@ -510,7 +510,14 @@ class InscricaoController extends Controller
         ])
         ->orWhere([
             ["name", "like", "%" . $request->input("q") . "%"],
-        ])->orderBy("name", "ASC")->limit(30)->get();
+        ])
+        ->orWhere(function($q1) use ($request){
+            $q1->whereHas("documentos",function($q2) use ($request){
+                $q2->where([
+                    ["numero","=",$request->input("q")]
+                ]);
+            });
+        })->orderBy("name", "ASC")->limit(30)->get();
         $results = array();
         foreach ($enxadristas as $enxadrista) {
             $rating = $enxadrista->ratingParaEvento($evento->id);

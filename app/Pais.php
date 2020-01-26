@@ -12,4 +12,8 @@ class Pais extends Model
     {
         return $this->hasMany("App\Estado", "pais_id", "id");
     }
+    public function tipo_documentos()
+    {
+        return $this->hasMany("App\TipoDocumentoPais", "pais_id", "id");
+    }
 }

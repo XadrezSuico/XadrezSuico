@@ -59,6 +59,43 @@
 							@endforeach
 						</select>
 					</div>
+					<hr/>
+					<h4>Documentos:</h4>
+					<div class="alert alert-warning">
+						<strong>É OBRIGATÓRIO informar ao menos um documento.</strong> Além disto, poderá haver documentos que são obrigatórios, porém, estes estarão identificados com <strong>*</strong>.
+					</div>
+					<div id="documentos">
+						<p>Não há documentos para este país.</p>
+					</div>
+					<hr/>
+					<h4>Outras Informações:</h4>
+					<div class="row">
+						<div class="col-md-12">
+							<div class="form-group">
+								<label for="email">E-mail *</label>
+								<input name="email" id="email" class="form-control" type="text" />
+							</div>
+						</div>
+						<div class="col-md-6">
+							<div class="form-group">
+								<label for="pais_celular_id">País do Celular *</label>
+								<select id="pais_celular_id" name="pais_celular_id" class="form-control this_is_select2">
+									<option value="">--- Selecione um país ---</option>
+									@foreach(\App\Pais::all() as $pais)
+										<option value="{{$pais->id}}">{{$pais->nome}} @if($pais->codigo_iso) ({{$pais->codigo_iso}}) @endif</option>
+									@endforeach
+								</select>
+							</div>
+						</div>
+						<div class="col-md-6">
+							<div class="form-group">
+								<label for="celular">Celular *</label>
+								<input name="celular" id="celular" class="form-control" type="text" />
+							</div>
+						</div>
+					</div>
+					<hr/>
+					<h4>Cadastros nas Entidades:</h4>
 					<div class="row">
 						<div class="col-md-4">
 							<div class="form-group">
@@ -76,31 +113,6 @@
 							<div class="form-group">
 								<label for="lbx_id">ID LBX</label>
 								<input name="lbx_id" id="lbx_id" class="form-control" type="text" />
-							</div>
-						</div>
-					</div>
-					<div class="row">
-						<div class="col-md-12">
-							<div class="form-group">
-								<label for="email">E-mail</label>
-								<input name="email" id="email" class="form-control" type="text" />
-							</div>
-						</div>
-						<div class="col-md-6">
-							<div class="form-group">
-								<label for="pais_celular_id">País do Celular *</label>
-								<select id="pais_celular_id" name="pais_celular_id" class="form-control this_is_select2">
-									<option value="">--- Selecione um país ---</option>
-									@foreach(\App\Pais::all() as $pais)
-										<option value="{{$pais->id}}">{{$pais->nome}} @if($pais->codigo_iso) ({{$pais->codigo_iso}}) @endif</option>
-									@endforeach
-								</select>
-							</div>
-						</div>
-						<div class="col-md-6">
-							<div class="form-group">
-								<label for="celular">Celular</label>
-								<input name="celular" id="celular" class="form-control" type="text" />
 							</div>
 						</div>
 					</div>
@@ -165,7 +177,30 @@
 		$("#born").mask("00/00/0000");
 		$("#celular").mask("(00) 00000-0000");
 
+		@if(env("PAIS_DEFAULT"))
+			$("#pais_nascimento_id").val({{env("PAIS_DEFAULT")}}).change();
+			$("#pais_id").val({{env("PAIS_DEFAULT")}}).change();
 
+			Loading.enable(loading_default_animation,10000);
+			buscaEstados(false,function(){
+				@if(env("ESTADO_DEFAULT"))
+					$("#estados_id").val({{env("ESTADO_DEFAULT")}}).change();
+				@endif
+				buscaCidades(function(){
+					@if(env("CIDADE_DEFAULT"))
+						$("#cidade_id").val({{env("CIDADE_DEFAULT")}}).change();
+					@endif
+					Loading.destroy();
+				});
+			});
+		@endif
+
+		$("#pais_nascimento_id").on("select2:select",function(){
+			Loading.enable(loading_default_animation,10000);
+			buscaTipoDocumentos(function(){
+				Loading.destroy();
+			});
+		});
 		$("#pais_id").on("select2:select",function(){
 			Loading.enable(loading_default_animation,10000);
 			buscaEstados(false,function(){
@@ -180,6 +215,13 @@
 				Loading.destroy();
 			});
 		});
+
+		setTimeout(function(){
+			Loading.enable(loading_default_animation,10000);
+			buscaTipoDocumentos(function(){
+				Loading.destroy();
+			});
+		},300);
 	});
 
   
@@ -227,6 +269,48 @@
 				}
 			}
 		});
+	}
+
+	function buscaTipoDocumentos(callback){
+		if($("#pais_nascimento_id").val() > 0){
+			$('#documentos').html("");
+			$.getJSON("{{url("/tipodocumento/searchByPais")}}/".concat($("#pais_nascimento_id").val()),function(data){
+				for (i = 0; i < data.data.length; i++) {
+
+					html = "";
+					html = html.concat('<div class="form-group">');
+					if(data.data[i].is_required){
+						html = html.concat('<label for="tipo_documento_').concat(data.data[i].id).concat('">').concat(data.data[i].name).concat(' *</label>');
+					}else{
+						html = html.concat('<label for="tipo_documento_').concat(data.data[i].id).concat('">').concat(data.data[i].name).concat('</label>');
+					}
+					html = html.concat('<input name="tipo_documento_').concat(data.data[i].id).concat('" id="tipo_documento_').concat(data.data[i].id).concat('" class="form-control" type="text" />');
+					html = html.concat('</div>');
+
+					$('#documentos').append(html);
+
+					if(data.data[i].pattern){
+						$("#tipo_documento_".concat(data.data[i].id)).mask(data.data[i].pattern);
+					}
+
+					if(i+1 == data.data.length){
+						if(callback){
+							callback();
+						}
+					}
+				}
+				if(data.data.length == 0){
+					if(callback){
+						callback();
+					}
+				}
+			});
+		}else{
+			if(callback){
+				callback();
+			}
+			$('#documentos').html("<p>Selecione antes um país de nascimento...</p>");
+		}
 	}
 </script>
 @endsection

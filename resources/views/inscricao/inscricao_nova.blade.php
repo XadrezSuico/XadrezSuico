@@ -143,8 +143,8 @@
 					Comece digitando o nome do(a) enxadrista, e caso o(a) mesmo(a) já possua cadastro, ele irá aparecer logo abaixo em "Resultado da Pesquisa", aí é só clicar no nome do(a) mesmo(a) e continuar o processo.<br/>
 					Caso ele(a) não apareça na lista, clique em "O(a) enxadrista não aparece na lista" para efetuar o cadastro dele(a).
 				</div>
-				<h3>Comece a Inserir o nome do enxadrista</h3>
-				<input type="text" id="texto_pesquisa" class="form-control" placeholder="Comece a digitar o nome do enxadrista para efetuar a pesquisa..." val="" />
+				<h3>Comece a Inserir o nome ou documento do enxadrista</h3>
+				<input type="text" id="texto_pesquisa" class="form-control" placeholder="Comece a digitar o nome ou documento do enxadrista para efetuar a pesquisa..." val="" />
 				<hr/>
 			</div>
 			<div id="pesquisa">
