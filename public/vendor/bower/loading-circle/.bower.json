@@ -1,0 +1,26 @@
+{
+  "version": "1.1.0",
+  "name": "loading-circle",
+  "description": "Animated loading circle icon",
+  "main": "loading-circle.css",
+  "authors": [
+    "Israel Muñoz <israel.munoz.v@gmail.com>"
+  ],
+  "license": "MIT",
+  "keywords": [
+    "css",
+    "animation",
+    "loading"
+  ],
+  "homepage": "https://github.com/israel-munoz/loading-circle",
+  "_release": "1.1.0",
+  "_resolution": {
+    "type": "version",
+    "tag": "v1.1.0",
+    "commit": "edbbb21a6f98d5fb6e7df8cdf8da5b1e2819e32e"
+  },
+  "_source": "https://github.com/israel-munoz/loading-circle.git",
+  "_target": "^1.1.0",
+  "_originalSource": "israel-munoz/loading-circle",
+  "_direct": true
+}

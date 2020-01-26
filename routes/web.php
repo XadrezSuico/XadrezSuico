@@ -193,6 +193,10 @@ Route::group(["prefix"=>"evento"],function(){
 });
 
 
+Route::group(["prefix"=>"estado"],function(){
+	Route::get('/search/{pais_id}', 'EstadoController@buscaEstado')->name('estado.search');
+});
+
 Route::group(["prefix"=>"cidade"],function(){
 	Route::get('/', 'CidadeController@index')->name('cidade.index');
 	Route::get('/new', 'CidadeController@new')->name('cidade.new');
@@ -200,6 +204,7 @@ Route::group(["prefix"=>"cidade"],function(){
 	Route::get('/edit/{id}', 'CidadeController@edit')->name('cidade.edit');
 	Route::post('/edit/{id}', 'CidadeController@edit_post')->name('cidade.edit.post');
 	Route::get('/delete/{id}', 'CidadeController@delete')->name('cidade.delete');
+	Route::get('/search/{estados_id}', 'CidadeController@buscaCidade')->name('cidade.search');
 });
 
 Route::group(["prefix"=>"clube"],function(){

@@ -79,4 +79,17 @@ class CidadeController extends Controller
         return redirect("/cidade");
     }
 
+
+    public function buscaCidade($estados_id)
+    {
+        $cidades = Cidade::where([
+            ["estados_id", "=", $estados_id],
+        ])->get();
+        $results = array();
+        foreach ($cidades as $cidade) {
+            $results[] = array("id" => $cidade->id, "text" => $cidade->name);
+        }
+        return response()->json(["results" => $results, "pagination" => true]);
+    }
+
 }

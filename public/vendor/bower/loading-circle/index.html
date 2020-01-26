@@ -1,0 +1,99 @@
+<!-- loading-circle v1.1
+     Demo page
+     Israel Muñoz <israel.munoz.v@gmail.com>
+     https://github.com/israel-munoz/loading-circle
+-->
+<!doctype html>
+<html>
+<head>
+  <link rel="stylesheet" href="loading-circle.min.css"/>
+  <style>
+    body { font-family: sans-serif; font-size: 14px; }
+    section { padding: 1.5em .5em; border-bottom: solid 1px #ddd; }
+    section:first-child { border-top: solid 1px #ddd; }
+    section div { margin: .5em 0; }
+    pre { background: #eee linear-gradient(0, rgba(0, 0, 0, .07) 50%, transparent 50%) repeat-y 0 0 / 100% 3em; box-sizing: border-box; line-height: 1.5em; margin: 0 auto; padding: 0 .5em; width: 60%; }
+    .panel { border-radius: .5em; box-sizing: border-box; margin: 1em auto; padding: .5em; width: 60%; }
+    .panel.light { background-color: #ddd; color: #777; }
+    .panel.dark { background-color: #777; color: #ddd; }
+    .panel.big { font-size: 300%; text-align: center; }
+    button .loading-circle { font-size: 70%; }
+    .loading-circle-green::after, .loading-circle-green::before { border-color: rgba(0, 180, 0, .5); }
+    .loading-circle-yellow::after, .loading-circle-yellow::before { border-color: rgba(255, 255, 0, .5); }
+    .loading-circle-red::after, .loading-circle-red::before { border-color: rgba(255, 0, 0, .5); }
+  </style>
+</head>
+<body>
+  <h1>Loading circle animation</h1>
+  <img src="loading.png" style="visibility: hidden; width: 0; height: 0; border: none; position: absolute"/>
+  <div class="panel big">
+    <span class="loading-circle"></span>
+  </div>
+  <section>
+    <p>Simply add a <code>span</code> element with the <code>loading-circle</code> class.</p>
+    <pre>&lt;span class=&quot;loading-circle&quot;&gt;&lt;/span&gt;</pre>
+    <span class="loading-circle"></span>
+    <p>It requires CSS3 animations to work.</p>
+  </section>
+  <section>
+    <p>The icon is an inline-element, and it's size depends on the <code>font-size</code> property, which can be set to the icon itself or will be inherited from a parent element.</p>
+    <div>
+      <button disabled>
+        <span class="loading-circle"></span>
+        Processing...
+      </button>
+      Loading icon inside a button. Icon font size is set to 70% of it's parent's font size.
+    </div>
+    <div>
+      <input type="text" placeholder="Text field"/> <span class="loading-circle"></span>
+    </div>
+    <div style="font-size: 160%">
+      <span class="loading-circle"></span> Loading icon inside an element with larger font-size
+    </div>
+  </section>
+  <section>
+    <h2>Icon color</h2>
+    <p>The default colors are <code>dark</code> and <code>light</code>.
+    <pre>&lt;div class="panel light"&gt;
+  &lt;span class="loading-circle loading-circle-dark"&gt;&lt;/span&gt;
+  Dark loading icon in a light space
+&lt;/div&gt;
+&lt;div class="panel dark"&gt;
+  &lt;span class="loading-circle loading-circle-light"&gt;&lt;/span&gt;
+  Light loading icon in a dark space
+&lt;/div&gt;</pre>
+    <div class="panel light">
+      <span class="loading-circle loading-circle-dark"></span> Dark loading icon in a light space
+    </div>
+    <div class="panel dark">
+      <span class="loading-circle loading-circle-light"></span> Light loading icon in a dark space
+    </div>
+    <p>You can easily add icons with different colors.</p>
+    <pre>&lt;style&gt;
+  .loading-circle-green::after,
+  .loading-circle-green::before {
+    border-color: rgba(0, 180, 0, .5);
+  }
+
+  .loading-circle-yellow::after,
+  .loading-circle-yellow::before {
+    border-color: rgba(255, 255, 0, .5);
+  }
+
+  .loading-circle-red::after,
+  .loading-circle-red::before {
+    border-color: rgba(255, 0, 0, .5);
+  }
+&lt;/style&gt;</pre>
+    <div class="panel light">
+      <span class="loading-circle loading-circle-red"></span> Red loading icon
+    </div>
+    <div class="panel dark">
+      <span class="loading-circle loading-circle-yellow"></span> Yellow loading icon
+    </div>
+    <div class="panel light">
+      <span class="loading-circle loading-circle-green"></span> Green loading icon
+    </div>
+  </section>
+</body>
+</html>

@@ -230,7 +230,6 @@
 <script type="text/javascript">
 	nome_enxadrista = "";
 	last_timeOut = 0;
-	loading_default_animation = 'circle';
   	$(document).ready(function(){
 		$(".this_is_select2").select2();
 		$("#enxadrista_clube_id").select2({
@@ -246,7 +245,7 @@
 		});
 
 		$("#texto_pesquisa").on("keyup",function(){
-			$("#pesquisa div").html("");
+			$("#pesquisa div").html("<div class='loading_circle_div'><span class='loading-circle'></span></div>");
 			nome_enxadrista = $("#texto_pesquisa").val();
 			if(last_timeOut > 0){
 				clearTimeout(last_timeOut);
@@ -258,10 +257,20 @@
 				$.getJSON("{{url("/inscricao/v2/".$evento->id."/busca/enxadrista")}}?q=".concat(nome_enxadrista),function(data){
 					html = "";
 					for (i = 0; i < data.results.length; i++) {
-						html = html.concat("<a class='btn btn-default btn-large' onclick='selectEnxadrista(").concat(data.results[i].id).concat(")'>").concat(data.results[i].text).concat("</a><br/><br/>");
+						if(data.results[i].permitida_inscricao){
+							html = html.concat("<a class='btn btn-default btn-large permitida_inscricao' onclick='selectEnxadrista(").concat(data.results[i].id).concat(")'>").concat(data.results[i].name).concat("</a><br/>");
+						}else{
+							html = html.concat("<a class='btn btn-default btn-large' disabled='disabled'>").concat(data.results[i].name).concat("</a><br/>");
+						}
+						html = html.concat("Informações: ").concat(data.results[i].text).concat("<br/><br/>");
 					} 
+					if(data.results.length == 0){
+						html = html.concat("<p>A pesquisa não retornou resultado.</p><br/>");
+					}
 					if(!data.hasMore){
 						html = html.concat("<a class='btn btn-warning' onclick='novoEnxadrista()'>O(a) enxadrista não aparece na lista.</a><br/>");
+					}else{
+						html = html.concat("<p>Há um limte de até 30 nomes por consulta. Para permitir o cadastro de um novo enxadrista é necessário que o nome do enxadrista esteja completo para a pesquisa.</p><br/>");
 					}
 					$("#pesquisa div").html(html);
 				});
@@ -270,6 +279,7 @@
 
 		$("#cancelar_inscricao").on("click",function(){
 			Loading.enable(loading_default_animation, 800);
+			$(".permitida_inscricao").removeAttr("disabled");
 			
 			zeraInscricao();
 		});
@@ -282,12 +292,12 @@
 
 		$("#enxadrista_pais_id").on("select2:select",function(){
 			Loading.enable(loading_default_animation, 1000);
-			buscaEstados(1,true);
+			buscaEstados(1,true,false);
 			verificaLiberaCadastro(1);
 		});
 		$("#enxadrista_estados_id").on("select2:select",function(){
 			Loading.enable(loading_default_animation, 800);
-			buscaCidades(1);
+			buscaCidades(1,false);
 		});
   	});
 	  
@@ -295,6 +305,7 @@
     	Loading.enable(loading_default_animation, 10000);
 		$("#enxadrista_id").val(id);
 		$("#texto_pesquisa").attr("disabled","disabled");
+		$(".permitida_inscricao").attr("disabled","disabled");
 
 		$(".campo_personalizado").val(0).change();
 		$("#regulamento_aceito").prop('checked',false);
@@ -318,17 +329,17 @@
 				}
 				$("#enxadrista_pais_id").val(data.data.cidade.estado.pais.id).change();
 				setTimeout(function(){
-					buscaEstados(1,false);
-					verificaLiberaCadastro(1);
-					setTimeout(function(){
+					buscaEstados(1,false,function(){
 						$("#enxadrista_estados_id").val(data.data.cidade.estado.id).change();
-						buscaCidades(1);
 						setTimeout(function(){
-							$("#enxadrista_cidade_id").val(data.data.cidade.id).change();
-							Loading.destroy();
-						},300);
-					},300);
-				},300);
+							buscaCidades(1,function(){
+								$("#enxadrista_cidade_id").val(data.data.cidade.id).change();
+								Loading.destroy();
+							});
+						},200);
+					});
+					verificaLiberaCadastro(1);
+				},200);
 
 				if(data.data.clube.id != 0){
 					var newOptionClube = new Option(data.data.clube.name, data.data.clube.id, false, false);
@@ -343,11 +354,19 @@
 				$("#inscricao").show(300);
 			}else{
 				$("#texto_pesquisa").removeAttr("disabled");
+				$(".permitida_inscricao").removeAttr("disabled","disabled");
 			}
+		})
+		.fail(function(){
+			$("#alertsMessage").html("Ocorreu um erro inesperado. Por favor, tente novamente mais tarde.");
+			$("#alerts").modal();
+			$("#texto_pesquisa").removeAttr("disabled");
+			$(".permitida_inscricao").removeAttr("disabled","disabled");
+			Loading.destroy();
 		});
 	}
 
-	function buscaEstados(place,buscaCidade){
+	function buscaEstados(place,buscaCidade,callback){
 		if(place == 0){
 
 		}else if(place == 1){
@@ -356,17 +375,28 @@
 				for (i = 0; i < data.results.length; i++) {
 					var newOptionEstado = new Option("#".concat(data.results[i].id).concat(" - ").concat(data.results[i].text), data.results[i].id, false, false);
 					$('#enxadrista_estados_id').append(newOptionEstado).trigger('change');
+					if(i + 1 == data.results.length){
+						if(callback){
+							callback();
+						}
+						if(buscaCidade){
+							buscaCidades(place,false);
+						}
+					}
+				}
+				if(data.results.length == 0){
+					if(callback){
+						callback();
+					}
+					if(buscaCidade){
+						buscaCidades(place,false);
+					}
 				}
 			});
-			if(buscaCidade){
-				setTimeout(function(){
-					buscaCidades(place);
-				},300);
-			}
 		}
 	}
 
-	function buscaCidades(place){
+	function buscaCidades(place, callback){
 		if(place == 0){
 
 		}else if(place == 1){
@@ -375,6 +405,16 @@
 				for (i = 0; i < data.results.length; i++) {
 					var newOptionCidade = new Option("#".concat(data.results[i].id).concat(" - ").concat(data.results[i].text), data.results[i].id, false, false);
 					$('#enxadrista_cidade_id').append(newOptionCidade).trigger('change');
+					if(i + 1 == data.results.length){
+						if(callback){
+							callback();
+						}
+					}
+				}
+				if(data.results.length == 0){
+					if(callback){
+						callback();
+					}
 				}
 			});
 		}

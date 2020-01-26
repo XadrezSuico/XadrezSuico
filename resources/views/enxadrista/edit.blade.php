@@ -23,6 +23,9 @@
 		.display-none, .displayNone{
 			display: none;
 		}
+		.select2{
+			width: 100% !important;
+		}
 	</style>
 @endsection
 
@@ -56,6 +59,15 @@
 							<option value="">--- Selecione ---</option>
 							@foreach($sexos as $sexo)
 								<option value="{{$sexo->id}}">{{$sexo->name}}</option>
+							@endforeach
+						</select>
+					</div>
+					<div class="form-group">
+						<label for="pais_nascimento_id">País de Nascimento *</label>
+						<select id="pais_nascimento_id" name="pais_nascimento_id" class="form-control this_is_select2" @if(!$permitido_edicao) disabled="disabled" @endif>
+							<option value="">--- Selecione um país ---</option>
+							@foreach(\App\Pais::all() as $pais)
+								<option value="{{$pais->id}}">{{$pais->nome}} @if($pais->codigo_iso) ({{$pais->codigo_iso}}) @endif</option>
 							@endforeach
 						</select>
 					</div>
@@ -106,7 +118,7 @@
 						</div>
 					</div>
 					<div class="row">
-						<div class="col-md-6">
+						<div class="col-md-12">
 							<div class="form-group">
 								<label for="email">E-mail</label>
 								<input name="email" id="email" class="form-control" type="text" value="{{$enxadrista->email}}" @if(!$permitido_edicao) disabled="disabled" @endif />
@@ -114,25 +126,47 @@
 						</div>
 						<div class="col-md-6">
 							<div class="form-group">
+								<label for="pais_celular_id">País do Celular *</label>
+								<select id="pais_celular_id" name="pais_celular_id" class="form-control this_is_select2" @if(!$permitido_edicao) disabled="disabled" @endif>
+									<option value="">--- Selecione um país ---</option>
+									@foreach(\App\Pais::all() as $pais)
+										<option value="{{$pais->id}}">{{$pais->nome}} @if($pais->codigo_iso) ({{$pais->codigo_iso}}) @endif</option>
+									@endforeach
+								</select>
+							</div>
+						</div>
+						<div class="col-md-6">
+							<div class="form-group">
 								<label for="celular">Celular</label>
 								<input name="celular" id="celular" class="form-control" type="text" value="{{$enxadrista->celular}}" @if(!$permitido_edicao) disabled="disabled" @endif />
-								<button type="button" id="celular_brasileiro" disabled="disabled" class="btn btn-success">Celular Brasileiro</button>
-								<button type="button" id="celular_paraguaio" class="btn btn-success">Celular Paraguaio</button>
-								<button type="button" id="celular_argentino" class="btn btn-success">Celular Argentino</button>
 							</div>
 						</div>
 					</div>
+					<hr/>
+					<h4>Vínculo do Enxadrista</h4>
 					<div class="form-group">
-						<label for="cidade_id">Cidade *</label>
-						<select id="cidade_id" name="cidade_id" class="form-control" @if(!$permitido_edicao) disabled="disabled" @endif>
-							<option value="">--- Selecione uma cidade ---</option>
-							@foreach($cidades as $cidade)
-								<option value="{{$cidade->id}}">{{$cidade->id}} - {{$cidade->name}}</option>
+						<label for="pais_id">País do Vínculo *</label>
+						<select id="pais_id" name="pais_id" class="form-control this_is_select2" @if(!$permitido_edicao) disabled="disabled" @endif>
+							<option value="">--- Selecione um País ---</option>
+							@foreach(\App\Pais::all() as $pais)
+								<option value="{{$pais->id}}">{{$pais->nome}} @if($pais->codigo_iso) ({{$pais->codigo_iso}}) @endif</option>
 							@endforeach
 						</select>
 					</div>
 					<div class="form-group">
-						<label for="clube_id">Clube</label>
+						<label for="estados_id">Estado do Vínculo *</label>
+						<select id="estados_id" name="estados_id" class="form-control this_is_select2" @if(!$permitido_edicao) disabled="disabled" @endif>
+							<option value="">--- Selecione um país antes ---</option>
+						</select>
+					</div>
+					<div class="form-group">
+						<label for="cidade_id">Cidade do Vínculo *</label>
+						<select id="cidade_id" name="cidade_id" class="form-control this_is_select2" @if(!$permitido_edicao) disabled="disabled" @endif>
+							<option value="">--- Selecione um estado antes ---</option>
+						</select>
+					</div>
+					<div class="form-group">
+						<label for="clube_id">Clube do Vínculo</label>
 						<select id="clube_id" name="clube_id" class="form-control" @if(!$permitido_edicao) disabled="disabled" @endif>
 							<option value="">--- Você pode selecionar um clube ---</option>
 							@foreach($clubes as $clube)
@@ -163,35 +197,117 @@
 <!-- Morris.js charts -->
 <script type="text/javascript" src="{{url("/js/jquery.mask.min.js")}}"></script>
 <script type="text/javascript">
-  $(document).ready(function(){
-		$("#cidade_id").select2().val([{{$enxadrista->cidade_id}}]).change();
+  	$(document).ready(function(){
+		$(".this_is_select2").select2();
+
+		@if($enxadrista->cidade)
+			@if($enxadrista->cidade->estado)
+				@if($enxadrista->cidade->estado->pais)
+					Loading.enable(loading_default_animation, 10000);
+					$("#pais_id").val({{$enxadrista->cidade->estado->pais->id}}).change();
+					buscaEstados(false,function(){
+						setTimeout(function(){
+							$("#estados_id").val({{$enxadrista->cidade->estado->id}}).change();
+							setTimeout(function(){
+								buscaCidades(function(){
+									$("#cidade_id").val({{$enxadrista->cidade_id}}).change();
+									Loading.destroy();
+								});
+							},200);
+						},200);
+					});
+				@endif
+			@endif
+		@endif
+
 		$("#clube_id").select2().val([{{$enxadrista->clube_id}}]).change();
 		$("#sexos_id").select2().val([{{$enxadrista->sexos_id}}]).change();
-		
-		$("#celular").mask("+00 (00) 00000-0000");
-		// $("#celular").val("+55");
+		$("#pais_nascimento_id").select2().val([{{$enxadrista->pais_id}}]).change();
+		$("#pais_celular_id").select2().val([{{$enxadrista->pais_celular_id}}]).change();
 
-		$("#celular_brasileiro").on("click",function(){
-			$("#celular_paraguaio").removeAttr("disabled");
-			$("#celular_argentino").removeAttr("disabled");
-			$("#celular_brasileiro").attr("disabled","disabled");
-			$("#celular").mask('+00 (00) 00000-0000');
-			$("#celular").val('+55');
+
+
+		if($("#pais_celular_id").val() == 33){
+			setTimeout(function(){
+				$("#celular").mask("(00) 00000-0000");
+			},300);
+		}else{
+			$("#celular").unmask();
+		}
+
+
+		$("#pais_celular_id").on("select2:select",function(){
+			Loading.enable(loading_default_animation,700);
+			$("#celular").unmask();
+			if($("#pais_celular_id").val() == 33){
+				setTimeout(function(){
+					$("#celular").mask("(00) 00000-0000");
+				},300);
+			}
 		});
-		$("#celular_paraguaio").on("click",function(){
-			$("#celular_brasileiro").removeAttr("disabled");
-			$("#celular_argentino").removeAttr("disabled");
-			$("#celular_paraguaio").attr("disabled","disabled");
-			$("#celular").mask('+000 (000) 000-000');
-			$("#celular").val('+595');
+
+		$("#pais_id").on("select2:select",function(){
+			Loading.enable(loading_default_animation,10000);
+			buscaEstados(false,function(){
+				buscaCidades(function(){
+					Loading.destroy();
+				});
+			});
 		});
-		$("#celular_argentino").on("click",function(){
-			$("#celular_brasileiro").removeAttr("disabled");
-			$("#celular_paraguaio").removeAttr("disabled");
-			$("#celular_argentino").attr("disabled","disabled");
-			$("#celular").mask('+00 (0000) 00-0000');
-			$("#celular").val('+54');
+		$("#estados_id").on("select2:select",function(){
+			Loading.enable(loading_default_animation,10000);
+			buscaCidades(function(){
+				Loading.destroy();
+			});
 		});
-  });
+  	});
+
+  
+  
+	function buscaEstados(buscaCidade,callback){
+		$('#estados_id').html("").trigger('change');
+		$.getJSON("{{url("/estado/search")}}/".concat($("#pais_id").val()),function(data){
+			for (i = 0; i < data.results.length; i++) {
+				var newOptionEstado = new Option("#".concat(data.results[i].id).concat(" - ").concat(data.results[i].text), data.results[i].id, false, false);
+				$('#estados_id').append(newOptionEstado).trigger('change');
+				if(i + 1 == data.results.length){
+					if(callback){
+						callback();
+					}
+					if(buscaCidade){
+						buscaCidades(false);
+					}
+				}
+			}
+			if(data.results.length == 0){
+				if(callback){
+					callback();
+				}
+				if(buscaCidade){
+					buscaCidades(false);
+				}
+			}
+		});
+	}
+
+	function buscaCidades(callback){
+		$('#cidade_id').html("").trigger('change');
+		$.getJSON("{{url("/cidade/search")}}/".concat($("#estados_id").val()),function(data){
+			for (i = 0; i < data.results.length; i++) {
+				var newOptionCidade = new Option("#".concat(data.results[i].id).concat(" - ").concat(data.results[i].text), data.results[i].id, false, false);
+				$('#cidade_id').append(newOptionCidade).trigger('change');
+				if(i + 1 == data.results.length){
+					if(callback){
+						callback();
+					}
+				}
+			}
+			if(data.results.length == 0){
+				if(callback){
+					callback();
+				}
+			}
+		});
+	}
 </script>
 @endsection

@@ -516,7 +516,9 @@ class InscricaoController extends Controller
             $rating = $enxadrista->ratingParaEvento($evento->id);
             $item = array();
             $item["id"] = $enxadrista->id;
-            $item["text"] = "<strong>#".$enxadrista->id." - ".$enxadrista->name . "</strong> | " . $enxadrista->getBorn() . " | ".$enxadrista->cidade->name;
+            $item["name"] = "<strong>#".$enxadrista->id." - ".$enxadrista->name . "</strong>";
+            $item["text"] = $enxadrista->getBorn() . " | ".$enxadrista->cidade->name;
+            $item["permitida_inscricao"] = true;
             if($enxadrista->clube){
                 $item["text"] .= " | Clube: ".$enxadrista->clube->name;
             }
@@ -524,8 +526,9 @@ class InscricaoController extends Controller
                 $item["text"] .= " | Rating: ".$rating;
             }
             
-            if ($enxadrista->estaInscrito($request->input("evento_id"))) {
+            if ($enxadrista->estaInscrito($evento->id)) {
                 $item["text"] .= " - Já Está Inscrito neste Evento";
+                $item["permitida_inscricao"] = false;
             }
             $results[] = $item;
         }

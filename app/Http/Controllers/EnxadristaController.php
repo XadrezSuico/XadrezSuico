@@ -70,6 +70,8 @@ class EnxadristaController extends Controller
             'born' => 'required|string',
             'cidade_id' => 'required|string',
             'sexos_id' => 'required|string',
+            'pais_nascimento_id' => 'required|string',
+            'pais_celular_id' => 'required|string',
             'celular' => 'required|string',
         ]);
         if ($validator->fails()) {
@@ -89,6 +91,8 @@ class EnxadristaController extends Controller
             $enxadrista->setBorn($request->input("born"));
             $enxadrista->cidade_id = $request->input("cidade_id");
             $enxadrista->sexos_id = $request->input("sexos_id");
+            $enxadrista->pais_id = $request->input("pais_nascimento_id");
+            $enxadrista->pais_celular_id = $request->input("pais_celular_id");
             $enxadrista->celular = $request->input("celular");
             $enxadrista->email = $request->input("email");
             if ($request->has("clube_id")) {
@@ -145,6 +149,8 @@ class EnxadristaController extends Controller
             'born' => 'required|string',
             'cidade_id' => 'required|string',
             'sexos_id' => 'required|string',
+            'pais_nascimento_id' => 'required|string',
+            'pais_celular_id' => 'required|string',
             'celular' => 'required|string',
         ]);
         if ($validator->fails()) {
@@ -171,6 +177,8 @@ class EnxadristaController extends Controller
         $enxadrista->setBorn($request->input("born"));
         $enxadrista->cidade_id = $request->input("cidade_id");
         $enxadrista->sexos_id = $request->input("sexos_id");
+        $enxadrista->pais_id = $request->input("pais_nascimento_id");
+        $enxadrista->pais_celular_id = $request->input("pais_celular_id");
         $enxadrista->celular = $request->input("celular");
         if ($request->has("clube_id")) {
             if ($request->input("clube_id")) {

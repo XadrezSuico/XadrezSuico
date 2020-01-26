@@ -12,6 +12,9 @@
 		.display-none, .displayNone{
 			display: none;
 		}
+		.select2{
+			width: 100% !important;
+		}
 	</style>
 @endsection
 
@@ -47,6 +50,15 @@
 							@endforeach
 						</select>
 					</div>
+					<div class="form-group">
+						<label for="pais_nascimento_id">País de Nascimento *</label>
+						<select id="pais_nascimento_id" name="pais_nascimento_id" class="form-control this_is_select2">
+							<option value="">--- Selecione um país ---</option>
+							@foreach(\App\Pais::all() as $pais)
+								<option value="{{$pais->id}}">{{$pais->nome}} @if($pais->codigo_iso) ({{$pais->codigo_iso}}) @endif</option>
+							@endforeach
+						</select>
+					</div>
 					<div class="row">
 						<div class="col-md-4">
 							<div class="form-group">
@@ -68,10 +80,21 @@
 						</div>
 					</div>
 					<div class="row">
-						<div class="col-md-6">
+						<div class="col-md-12">
 							<div class="form-group">
 								<label for="email">E-mail</label>
 								<input name="email" id="email" class="form-control" type="text" />
+							</div>
+						</div>
+						<div class="col-md-6">
+							<div class="form-group">
+								<label for="pais_celular_id">País do Celular *</label>
+								<select id="pais_celular_id" name="pais_celular_id" class="form-control this_is_select2">
+									<option value="">--- Selecione um país ---</option>
+									@foreach(\App\Pais::all() as $pais)
+										<option value="{{$pais->id}}">{{$pais->nome}} @if($pais->codigo_iso) ({{$pais->codigo_iso}}) @endif</option>
+									@endforeach
+								</select>
 							</div>
 						</div>
 						<div class="col-md-6">
@@ -81,13 +104,27 @@
 							</div>
 						</div>
 					</div>
+					<hr/>
+					<h4>Vínculo do Enxadrista</h4>
 					<div class="form-group">
-						<label for="cidade_id">Cidade *</label>
-						<select id="cidade_id" name="cidade_id" class="form-control">
-							<option value="">--- Selecione uma cidade ---</option>
-							@foreach($cidades as $cidade)
-								<option value="{{$cidade->id}}">{{$cidade->id}} - {{$cidade->name}}</option>
+						<label for="pais_id">País do Vínculo *</label>
+						<select id="pais_id" name="pais_id" class="form-control this_is_select2">
+							<option value="">--- Selecione um País ---</option>
+							@foreach(\App\Pais::all() as $pais)
+								<option value="{{$pais->id}}">{{$pais->nome}} @if($pais->codigo_iso) ({{$pais->codigo_iso}}) @endif</option>
 							@endforeach
+						</select>
+					</div>
+					<div class="form-group">
+						<label for="estados_id">Estado do Vínculo *</label>
+						<select id="estados_id" name="estados_id" class="form-control this_is_select2">
+							<option value="">--- Selecione um país antes ---</option>
+						</select>
+					</div>
+					<div class="form-group">
+						<label for="cidade_id">Cidade do Vínculo *</label>
+						<select id="cidade_id" name="cidade_id" class="form-control this_is_select2">
+							<option value="">--- Selecione um estado antes ---</option>
 						</select>
 					</div>
 					<div class="form-group">
@@ -120,12 +157,76 @@
 <!-- Morris.js charts -->
 <script type="text/javascript" src="{{url("/js/jquery.mask.min.js")}}"></script>
 <script type="text/javascript">
-  $(document).ready(function(){
+	$(document).ready(function(){
+	  	$(".this_is_select2").select2();
 		$("#cidade_id").select2();
 		$("#clube_id").select2();
 		$("#sexos_id").select2();
 		$("#born").mask("00/00/0000");
 		$("#celular").mask("(00) 00000-0000");
-  });
+
+
+		$("#pais_id").on("select2:select",function(){
+			Loading.enable(loading_default_animation,10000);
+			buscaEstados(false,function(){
+				buscaCidades(function(){
+					Loading.destroy();
+				});
+			});
+		});
+		$("#estados_id").on("select2:select",function(){
+			Loading.enable(loading_default_animation,10000);
+			buscaCidades(function(){
+				Loading.destroy();
+			});
+		});
+	});
+
+  
+	function buscaEstados(buscaCidade,callback){
+		$('#estados_id').html("").trigger('change');
+		$.getJSON("{{url("/estado/search")}}/".concat($("#pais_id").val()),function(data){
+			for (i = 0; i < data.results.length; i++) {
+				var newOptionEstado = new Option("#".concat(data.results[i].id).concat(" - ").concat(data.results[i].text), data.results[i].id, false, false);
+				$('#estados_id').append(newOptionEstado).trigger('change');
+				if(i + 1 == data.results.length){
+					if(callback){
+						callback();
+					}
+					if(buscaCidade){
+						buscaCidades(false);
+					}
+				}
+			}
+			if(data.results.length == 0){
+				if(callback){
+					callback();
+				}
+				if(buscaCidade){
+					buscaCidades(false);
+				}
+			}
+		});
+	}
+
+	function buscaCidades(callback){
+		$('#cidade_id').html("").trigger('change');
+		$.getJSON("{{url("/cidade/search")}}/".concat($("#estados_id").val()),function(data){
+			for (i = 0; i < data.results.length; i++) {
+				var newOptionCidade = new Option("#".concat(data.results[i].id).concat(" - ").concat(data.results[i].text), data.results[i].id, false, false);
+				$('#cidade_id').append(newOptionCidade).trigger('change');
+				if(i + 1 == data.results.length){
+					if(callback){
+						callback();
+					}
+				}
+			}
+			if(data.results.length == 0){
+				if(callback){
+					callback();
+				}
+			}
+		});
+	}
 </script>
 @endsection

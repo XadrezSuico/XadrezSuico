@@ -31,6 +31,19 @@
         <link rel="stylesheet" href="{{ asset('vendor/datatables/Responsive-2.2.2/css/responsive.dataTables.min.css') }}">        
     @endif
     <link rel="stylesheet" type="text/css" href="{{ asset('vendor/bower/loading-indicator/dist/loading.min.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('vendor/bower/loading-circle/loading-circle.min.css')}}">
+    <style>
+        .loading_circle_div{
+            width: 100%;
+            text-align: center;
+            color: green;
+            font-size: 7rem;
+            margin: 10rem auto;
+        }
+        .loading_circle_div span{
+            font-size: 7rem;
+        }
+    </style>
     @yield('adminlte_css')
 
     <!--[if lt IE 9]>
@@ -69,6 +82,9 @@
     <script src="{{ asset('vendor/chartjs/Chart.bundle.min.js') }}"></script>
 @endif
 <script src="{{ asset('vendor/bower/loading-indicator/dist/loading.min.js') }}"></script>
+<script type="text/javascript">
+	loading_default_animation = 'circle';
+</script>
 @yield('adminlte_js')
 
 </body>

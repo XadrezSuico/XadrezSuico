@@ -16,6 +16,7 @@
     "tests"
   ],
   "dependencies": {
-    "loading-indicator": "^1.1.0"
+    "loading-indicator": "^1.1.0",
+    "loading-circle": "israel-munoz/loading-circle#^1.1.0"
   }
 }

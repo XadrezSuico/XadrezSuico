@@ -1,0 +1,50 @@
+/*! loading-circle v1.1
+ * Israel Muñoz <israel.munoz.v@gmail.com>
+ * https://github.com/israel-munoz/loading-circle
+ */
+@keyframes full-rotate {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+.loading-circle {
+  border-radius: 50%;
+  display: inline-block;
+  font-size: 1em;
+  height: 1em;
+  position: relative;
+  text-align: center;
+  transform: rotate(225deg);
+  vertical-align: middle;
+  width: 1em;
+}
+.loading-circle::before,
+.loading-circle::after {
+  animation: 0s infinite none full-rotate running linear;
+  border: solid .15em rgba(0, 0, 0, .5);
+  border-left-color: transparent !important;
+  border-radius: 50%;
+  border-top-color: transparent !important;
+  box-sizing: border-box;
+  content: '';
+  display: block;
+  height: 100%;
+  position: absolute;
+  width: 100%;
+}
+.loading-circle::before {
+  animation-direction: normal;
+  animation-duration: 2s;
+}
+.loading-circle::after {
+  animation-direction: reverse;
+  animation-duration: 1s;
+}
+
+.loading-circle-dark::before,
+.loading-circle-dark::after {
+  border-color: rgba(0, 0, 0, .5);
+}
+.loading-circle-light::before,
+.loading-circle-light::after {
+  border-color: rgba(255, 255, 255, .5);
+}
