@@ -66,6 +66,7 @@ Route::group(["prefix"=>"inscricao"],function(){
         Route::get('/{id}/busca/cidade/{estados_id}', 'InscricaoController@telav2_buscaCidade')->name('inscricao.v2.busca.cidade');
         Route::get('/{id}/busca/clube', 'InscricaoController@telav2_buscaClube')->name('inscricao.v2.busca.clube');
         Route::get('/{id}/enxadrista/{enxadrista_id}', 'InscricaoController@telav2_buscarDadosEnxadrista')->name('inscricao.v2.enxadrista');
+        Route::post('/{id}/inscricao', 'InscricaoController@telav2_adicionarNovaInscricao')->name('inscricao.v2.enviar');
     });
 });
 

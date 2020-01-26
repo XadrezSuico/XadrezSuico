@@ -607,6 +607,137 @@ class InscricaoController extends Controller
 
 
 
+    public function telav2_adicionarNovaInscricao(Request $request)
+    {
+        if (
+            !$request->has("regulamento_aceito")
+        ) {
+            return response()->json(["ok" => 0, "error" => 1, "message" => "Você deve aceitar o regulamento do evento!", "registred" => 0]);
+        } elseif (
+            !$request->has("xadrezsuico_aceito")
+        ) {
+            return response()->json(["ok" => 0, "error" => 1, "message" => "Você deve aceitar o termo de uso da plataforma XadrezSuíço!", "registred" => 0]);
+        } elseif (
+            !$request->has("enxadrista_id") ||
+            !$request->has("categoria_id") ||
+            !$request->has("cidade_id") ||
+            !$request->has("evento_id")
+        ) {
+            return response()->json(["ok" => 0, "error" => 1, "message" => "Um dos campos obrigatórios não está preenchido. Por favor, verifique e envie novamente!<br/><br/><strong>Observação</strong>: TODOS os Campos com <strong>*</strong> SÃO OBRIGATÓRIOS!", "registred" => 0]);
+        } elseif (
+            $request->input("enxadrista_id") == null || $request->input("enxadrista_id") == "" ||
+            $request->input("categoria_id") == null || $request->input("categoria_id") == "" ||
+            $request->input("cidade_id") == null || $request->input("cidade_id") == "" ||
+            $request->input("evento_id") == null || $request->input("evento_id") == ""
+        ) {
+            return response()->json(["ok" => 0, "error" => 1, "message" => "Um dos campos obrigatórios não está preenchido. Por favor, verifique e envie novamente!<br/><br/><strong>Observação</strong>: TODOS os Campos com <strong>*</strong> SÃO OBRIGATÓRIOS!", "registred" => 0]);
+        }
+
+        $inscricao = new Inscricao;
+        $torneio = null;
+        $evento = Evento::find($request->input("evento_id"));
+
+        if ($evento->inscricoes_encerradas(true)) {
+            return response()->json(["ok" => 0, "error" => 1, "message" => env("MENSAGEM_FIM_INSCRICOES", "O prazo de inscrições antecipadas se esgotou ou então o limite de inscritos se completou. As inscrições poderão ser feitas no local do evento conforme regulamento.")]);
+        }
+
+        if ($evento->e_inscricao_apenas_com_link) {
+            if (!$evento->inscricaoLiberada($request->input("token"))) {
+                return response()->json(["ok" => 0, "error" => 1, "message" => "A inscrição para este evento deve ser feita com o link de inscrições enviado (Inscrições Privadas)."]);
+            }
+        }
+        foreach ($evento->campos_obrigatorios() as $campo) {
+            if (
+                !$request->has("campo_personalizado_" . $campo->id)
+            ) {
+                return response()->json(["ok" => 0, "error" => 1, "message" => "Um dos campos obrigatórios não está preenchido. Por favor, verifique e envie novamente!<br/><br/><strong>Observação</strong>: TODOS os Campos com <strong>*</strong> SÃO OBRIGATÓRIOS!", "registred" => 0]);
+            } elseif (
+                $request->input("campo_personalizado_" . $campo->id) == null || $request->input("campo_personalizado_" . $campo->id) == ""
+            ) {
+                return response()->json(["ok" => 0, "error" => 1, "message" => "Um dos campos obrigatórios não está preenchido. Por favor, verifique e envie novamente!<br/><br/><strong>Observação</strong>: TODOS os Campos com <strong>*</strong> SÃO OBRIGATÓRIOS!", "registred" => 0]);
+            }
+        }
+
+        foreach ($evento->torneios->all() as $Torneio) {
+            foreach ($Torneio->categorias->all() as $categoria) {
+                if ($categoria->categoria_id == $request->input("categoria_id")) {
+                    $torneio = $Torneio;
+                }
+            }
+        }
+        if (!$torneio) {
+            return response()->json(["ok" => 0, "error" => 1, "message" => "Ocorreu um erro inesperado de pesquisa de Torneio. Por favor, tente novamente mais tarde."]);
+        }
+        $temInscricao = $evento->torneios()->whereHas("inscricoes", function ($q) use ($request) {
+            $q->where([["enxadrista_id", "=", $request->input("enxadrista_id")]]);
+        })->first();
+        if (count($temInscricao) > 0) {
+            $inscricao = Inscricao::where([["enxadrista_id", "=", $request->input("enxadrista_id")], ["torneio_id", "=", $temInscricao->id]])->first();
+            return response()->json(["ok" => 0, "error" => 1, "message" => "Você já possui inscrição para este evento!<br/> Categoria: " . $inscricao->categoria->name . "<br/> Caso queira efetuar alguma alteração, favor enviar via email para " . env("EMAIL_ALTERACAO", "circuitoxadrezcascavel@gmail.com") . "."]);
+        }
+
+        $enxadrista = Enxadrista::find($request->input("enxadrista_id"));
+        $categoria = Categoria::find($request->input("categoria_id"));
+        if ($categoria) {
+            if ($categoria->idade_minima) {
+                if (!($categoria->idade_minima <= $enxadrista->howOld())) {
+                    return response()->json(["ok" => 0, "error" => 1, "message" => "Você não está apto a participar da categoria que você enviou! Motivo: Não possui idade mínima."]);
+                }
+            }
+            if ($categoria->idade_maxima) {
+                if (!($categoria->idade_maxima >= $enxadrista->howOld())) {
+                    return response()->json(["ok" => 0, "error" => 1, "message" => "Você não está apto a participar da categoria que você enviou! Motivo: Idade ultrapassa a máxima."]);
+                }
+            }
+        }
+
+        $inscricao->torneio_id = $torneio->id;
+        $inscricao->enxadrista_id = $enxadrista->id;
+        $inscricao->categoria_id = $categoria->id;
+        $inscricao->cidade_id = $request->input("cidade_id");
+        if ($request->has("clube_id")) {
+            if ($request->input("clube_id") > 0) {
+                $inscricao->clube_id = $request->input("clube_id");
+            }
+        }
+        $inscricao->regulamento_aceito = true;
+        $inscricao->xadrezsuico_aceito = true;
+        $inscricao->save();
+
+        foreach ($evento->campos() as $campo) {
+            if ($request->has("campo_personalizado_" . $campo->id)) {
+                if ($request->input("campo_personalizado_" . $campo->id) != "") {
+                    $opcao_inscricao = new CampoPersonalizadoOpcaoInscricao;
+                    $opcao_inscricao->inscricao_id = $inscricao->id;
+                    $opcao_inscricao->opcaos_id = $request->input("campo_personalizado_" . $campo->id);
+                    $opcao_inscricao->campo_personalizados_id = $campo->id;
+                    $opcao_inscricao->save();
+                }
+            }
+        }
+
+        if ($enxadrista->email) {
+            // EMAIL PARA O ENXADRISTA SOLICITANTE
+            $text = "Olá " . $enxadrista->name . "!<br/>";
+            $text .= "Você está recebendo este email para confirmar a inscrição no Evento '" . $evento->name . "'.<br/>";
+            $text .= "Informações:<br/>";
+            $text .= "Cidade: " . $inscricao->cidade->name . "<br/>";
+            $text .= "Clube: " . (($inscricao->clube) ? $inscricao->clube->name : "Sem Clube") . "<br/>";
+            $text .= "Categoria: " . $inscricao->categoria->name . "<br/>";
+            EmailController::scheduleEmail(
+                $enxadrista->email,
+                $evento->name . " - Inscrição Recebida - Enxadrista: " . $enxadrista->name,
+                $text,
+                $enxadrista
+            );
+        }
+
+        if ($inscricao->id > 0) {
+            return response()->json(["ok" => 1, "error" => 0]);
+        } else {
+            return response()->json(["ok" => 0, "error" => 1, "message" => "Um erro inesperado aconteceu. Por favor, tente novamente mais tarde."]);
+        }
+    }
 
 
     /*

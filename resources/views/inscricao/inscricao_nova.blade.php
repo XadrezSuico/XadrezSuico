@@ -176,7 +176,7 @@
 					</select>
 				</div>
 				<div class="form-group">
-					<label for="enxadrista_estado_id">Estado *</label>
+					<label for="enxadrista_estado_id">Estado/Província *</label>
 					<select id="enxadrista_estados_id" class="estados_id this_is_select2 form-control">
 						<option value="">--- Selecione um país primeiro ---</option>
 					</select>
@@ -190,7 +190,7 @@
                     <button id="cidadeNaoCadastradaInscricao" class="btn btn-success">A minha cidade não está cadastrada</button>
 				</div>
 				<div class="form-group">
-					<label for="clube_id">Clube *</label>
+					<label for="clube_id">Clube</label>
 					<select id="enxadrista_clube_id" class="clube_id this_is_select2 form-control">
 						<option value="">--- Você pode escolher um clube ---</option>
 					</select>
@@ -209,7 +209,7 @@
 				@endforeach
 				<div class="form-group">
 					<label><input type="checkbox" id="regulamento_aceito"> Eu aceito o regulamento do {{$evento->grupo_evento->name}} integralmente.</label><br/>
-					<label><input type="checkbox" id="termos_aceito"> Eu aceito o termo de uso da Plataforma de Gerenciamento de Circuitos de Xadrez - XadrezSuíço.</label>
+					<label><input type="checkbox" id="xadrezsuico_aceito"> Eu aceito o termo de uso da Plataforma de Gerenciamento de Circuitos de Xadrez - XadrezSuíço - Implementada pela <u>{{env("IMPLEMENTADO_POR")}}</u>.</label>
 				</div>
 				<button id="enviar_inscricao" class="btn btn-success">Enviar Inscrição</button>
 				<button id="cancelar_inscricao" class="btn btn-danger">Cancelar Inscrição</button>
@@ -230,6 +230,7 @@
 <script type="text/javascript">
 	nome_enxadrista = "";
 	last_timeOut = 0;
+	loading_default_animation = 'circle';
   	$(document).ready(function(){
 		$(".this_is_select2").select2();
 		$("#enxadrista_clube_id").select2({
@@ -264,28 +265,42 @@
 					}
 					$("#pesquisa div").html(html);
 				});
-			},"3000");
+			},"1000");
 		});
+
 		$("#cancelar_inscricao").on("click",function(){
-			Loading.enable('double-bounce', 1000);
+			Loading.enable(loading_default_animation, 800);
 			
-			$("#enxadrista_id").val("");
-			$("#enxadrista_nome").html("");
-			$('#enxadrista_categoria_id').html("").trigger('change');
-			$("#enxadrista_pais_id").val(0).change();
+			zeraInscricao();
+		});
 
+		$("#enviar_inscricao").on("click",function(){
+			Loading.enable(loading_default_animation, 10000);
+			
+			enviarInscricao();
+		});
 
-			$("#inscricao").hide(300);
-			$("#form_pesquisa").show(300);
-			$("#pesquisa").show(300);
-			$("#texto_pesquisa").removeAttr("disabled");
+		$("#enxadrista_pais_id").on("select2:select",function(){
+			Loading.enable(loading_default_animation, 1000);
+			buscaEstados(1,true);
+			verificaLiberaCadastro(1);
+		});
+		$("#enxadrista_estados_id").on("select2:select",function(){
+			Loading.enable(loading_default_animation, 800);
+			buscaCidades(1);
 		});
   	});
 	  
 	function selectEnxadrista(id){
-    	Loading.enable('double-bounce', 4000);
+    	Loading.enable(loading_default_animation, 10000);
 		$("#enxadrista_id").val(id);
 		$("#texto_pesquisa").attr("disabled","disabled");
+
+		$(".campo_personalizado").val(0).change();
+		$("#regulamento_aceito").prop('checked',false);
+		$("#regulamento_aceito").removeAttr('checked');
+		$("#xadrezsuico_aceito").prop('checked',false);
+		$("#xadrezsuico_aceito").removeAttr('checked');
 		
 		$.getJSON("{{url("/inscricao/v2/".$evento->id."/enxadrista")}}/".concat($("#enxadrista_id").val()),function(data){
 			if(data.ok == 1){
@@ -297,17 +312,20 @@
 					if(data.data.categorias.length == 1){
 						$("#enxadrista_categoria_id").val(data.data.categorias[i].id).change();
 						$("#enxadrista_categoria_id").attr("disabled","disabled").change();
+					}else{
+						$("#enxadrista_categoria_id").removeAttr("disabled").change();
 					}
 				}
 				$("#enxadrista_pais_id").val(data.data.cidade.estado.pais.id).change();
 				setTimeout(function(){
-					buscaEstados(1);
+					buscaEstados(1,false);
 					verificaLiberaCadastro(1);
 					setTimeout(function(){
 						$("#enxadrista_estados_id").val(data.data.cidade.estado.id).change();
 						buscaCidades(1);
 						setTimeout(function(){
 							$("#enxadrista_cidade_id").val(data.data.cidade.id).change();
+							Loading.destroy();
 						},300);
 					},300);
 				},300);
@@ -329,17 +347,22 @@
 		});
 	}
 
-	function buscaEstados(place){
+	function buscaEstados(place,buscaCidade){
 		if(place == 0){
 
 		}else if(place == 1){
+			$('#enxadrista_estados_id').html("").trigger('change');
 			$.getJSON("{{url("/inscricao/v2/".$evento->id."/busca/estado/")}}/".concat($("#enxadrista_pais_id").val()),function(data){
-				$('#enxadrista_estados_id').html("").trigger('change');
 				for (i = 0; i < data.results.length; i++) {
 					var newOptionEstado = new Option("#".concat(data.results[i].id).concat(" - ").concat(data.results[i].text), data.results[i].id, false, false);
 					$('#enxadrista_estados_id').append(newOptionEstado).trigger('change');
 				}
 			});
+			if(buscaCidade){
+				setTimeout(function(){
+					buscaCidades(place);
+				},300);
+			}
 		}
 	}
 
@@ -347,8 +370,8 @@
 		if(place == 0){
 
 		}else if(place == 1){
+			$('#enxadrista_cidade_id').html("").trigger('change');
 			$.getJSON("{{url("/inscricao/v2/".$evento->id."/busca/cidade/")}}/".concat($("#enxadrista_estados_id").val()),function(data){
-				$('#enxadrista_cidade_id').html("").trigger('change');
 				for (i = 0; i < data.results.length; i++) {
 					var newOptionCidade = new Option("#".concat(data.results[i].id).concat(" - ").concat(data.results[i].text), data.results[i].id, false, false);
 					$('#enxadrista_cidade_id').append(newOptionCidade).trigger('change');
@@ -369,6 +392,57 @@
 				$("#cidadeNaoCadastradaInscricao").show(100);
 			}
 		}
+	}
+
+	function enviarInscricao(){
+		var data = "evento_id={{$evento->id}}&enxadrista_id=".concat($("#enxadrista_id").val()).concat("&categoria_id=").concat($("#enxadrista_categoria_id").val()).concat("&cidade_id=").concat($("#enxadrista_cidade_id").val()).concat("&clube_id=").concat($("#enxadrista_clube_id").val());
+		if($("#regulamento_aceito").is(":checked")){
+			data = data.concat("&regulamento_aceito=true");
+		}		
+		if($("#xadrezsuico_aceito").is(":checked")){
+			data = data.concat("&xadrezsuico_aceito=true");
+		}
+		@foreach($evento->campos() as $campo)
+			data = data.concat("&campo_personalizado_{{$campo->id}}=").concat($("#campo_personalizado_{{$campo->id}}").val());
+		@endforeach
+			@if(isset($token))
+				@if($token != "")
+					data = data.concat("&token=").concat("{{$token}}");
+				@endif
+			@endif
+		$.ajax({
+			type: "post",
+			url: "{{url("/inscricao/v2/".$evento->id."/inscricao")}}",
+			data: data,
+			dataType: "json",
+			success: function(data){
+				Loading.destroy();
+				if(data.ok == 1){
+					zeraInscricao();
+					$("#texto_pesquisa").val("");
+					$("#pesquisa div").html("");
+					$("#inscricao").boxWidget('collapse');
+					$("#successMessage").html("<strong>Sua inscrição foi efetuada com sucesso!</strong>");
+					$("#success").modal();
+				}else{
+					$("#alertsMessage").html(data.message);
+					$("#alerts").modal();
+				}
+			}
+		});
+	}
+
+	function zeraInscricao(){
+		$("#enxadrista_id").val("");
+		$("#enxadrista_nome").html("");
+		$('#enxadrista_categoria_id').html("").trigger('change');
+		$("#enxadrista_pais_id").val(0).change();
+
+
+		$("#inscricao").hide(300);
+		$("#form_pesquisa").show(300);
+		$("#pesquisa").show(300);
+		$("#texto_pesquisa").removeAttr("disabled");
 	}
 </script>
 @endsection
