@@ -13,11 +13,11 @@ return [
     |
     */
 
-    'title' => 'Sistema XadrezSuiço',
+    'title' => 'Sistema XadrezSuíço',
 
     'title_prefix' => '',
 
-    'title_postfix' => 'Sistema XadrezSuiço',
+    'title_postfix' => 'Sistema XadrezSuíço',
 
     /*
     |--------------------------------------------------------------------------
@@ -30,7 +30,7 @@ return [
     |
     */
 
-    'logo' => '<b>Xadrez</b>Suiço',
+    'logo' => '<b>Xadrez</b>Suíço',
 
     'logo_mini' => '<b>X</b>Su',
 
