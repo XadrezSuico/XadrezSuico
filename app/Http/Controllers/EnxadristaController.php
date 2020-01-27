@@ -111,10 +111,17 @@ class EnxadristaController extends Controller
                 ){
                     
                     $temEnxadrista = Enxadrista::whereHas("documentos",function($q1) use($request, $tipo_documento_pais){
-                        $q1->where([
-                            ["tipo_documentos_id","=",$tipo_documento_pais->tipo_documento->id],
-                            ["numero","=",$request->input("tipo_documento_".$tipo_documento_pais->tipo_documento->id)],
-                        ]);
+                        if($tipo_documento_pais->tipo_documento->id == 1){
+                            $q1->where([
+                                ["tipo_documentos_id","=",$tipo_documento_pais->tipo_documento->id],
+                                ["numero","=",Util::numeros($request->input("tipo_documento_".$tipo_documento_pais->tipo_documento->id))],
+                            ]);
+                        }else{
+                            $q1->where([
+                                ["tipo_documentos_id","=",$tipo_documento_pais->tipo_documento->id],
+                                ["numero","=",$request->input("tipo_documento_".$tipo_documento_pais->tipo_documento->id)],
+                            ]);
+                        }
                     })->get();
                     if(count($temEnxadrista) > 0){
                         $messageBag = new MessageBag;
@@ -159,6 +166,7 @@ class EnxadristaController extends Controller
         } else {
             $enxadrista = new Enxadrista;
             $enxadrista->name = $nome_corrigido;
+            $enxadrista->splitName();
             $enxadrista->setBorn($request->input("born"));
             $enxadrista->cidade_id = $request->input("cidade_id");
             $enxadrista->sexos_id = $request->input("sexos_id");

@@ -84,6 +84,10 @@ class Enxadrista extends Model
         return mb_strtoupper($str);
     }
 
+    public function splitName(){
+        
+    }
+
     public function setBorn($born)
     {
         $datetime = DateTime::createFromFormat('d/m/Y', $born);

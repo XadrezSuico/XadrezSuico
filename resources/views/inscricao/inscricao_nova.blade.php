@@ -21,6 +21,9 @@
 		#texto_pesquisa{
 			font-size: 2rem;
 		}
+		#processo_inscricao .box-body{
+			min-height: 500px;
+		}
 		#pesquisa{
 			min-height: 400px;
 		}
@@ -35,6 +38,28 @@
 
 @section("content")
 
+<div class="modal fade modal-warning" id="asks" tabindex="-1" role="dialog" aria-labelledby="alerts">
+	<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+					<h4 class="modal-title">ATENÇÃO!</h4>
+				</div>
+				<div class="modal-body">
+					<span id="asksMessage"></span>
+					<h5>Dados do Enxadrista</h5>
+					ID: <strong><span id="asksMessage_id"></span></strong><br/>
+					Nome Completo: <strong><span id="asksMessage_name"></span></strong><br/>
+					Data de Nascimento: <strong><span id="asksMessage_born"></span></strong><br/>
+					Cidade: <strong><span id="asksMessage_city"></span></strong>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-danger" id="naoUsarCadastroEnxadrista">Não, vou conferir os dados e enviar novamente</button>
+					<button type="button" class="btn btn-success" id="usarCadastroEnxadrista">Sim, este cadastro é deste enxadrista.</button>
+				</div>
+			</div>
+	</div>
+</div>
 <div class="modal fade modal-warning" id="novaCidade" tabindex="-1" role="dialog" aria-labelledby="alerts">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -130,7 +155,7 @@
 		</div>
 	</div>
 	
-	<div class="box box-primary">
+	<div class="box box-primary" id="processo_inscricao">
 		<div class="box-header">
 			<h3 class="box-title">Processo de Inscrição</h3>
 			<div class="pull-right box-tools">
@@ -155,20 +180,157 @@
 			</div>
 			<div id="enxadrista" style="display:none">
 				<h3>Cadastro de Enxadrista:</h3>
+				<hr/>
+				<div id="enxadrista_1">
+					<h4>1/5 - Dados Básicos:</h4>
+					<div class="form-group">
+						<label for="name">Nome Completo *</label>
+						<input name="name" id="name" class="form-control cadastro_enxadrista_input" type="text" />
+					</div>
+					<div class="form-group">
+						<label for="born">Data de Nascimento *</label>
+						<input name="born" id="born" class="form-control cadastro_enxadrista_input" type="text" />
+					</div>
+					<div class="form-group">
+						<label for="sexos_id">Sexo *</label>
+						<select id="sexos_id" name="sexos_id" class="form-control this_is_select2 cadastro_enxadrista_select">
+							<option value="">--- Selecione ---</option>
+							@foreach($sexos as $sexo)
+								<option value="{{$sexo->id}}">{{$sexo->name}}</option>
+							@endforeach
+						</select>
+					</div>
+					<div class="form-group">
+						<label for="pais_nascimento_id">País de Nascimento *</label>
+						<select id="pais_nascimento_id" name="pais_nascimento_id" class="form-control this_is_select2 cadastro_enxadrista_select">
+							<option value="">--- Selecione um país ---</option>
+							@foreach(\App\Pais::all() as $pais)
+								<option value="{{$pais->id}}">{{$pais->nome}} @if($pais->codigo_iso) ({{$pais->codigo_iso}}) @endif</option>
+							@endforeach
+						</select>
+					</div>
+				</div>
+				<div id="enxadrista_2" style="display:none">
+					<h4>2/5 - Documentos:</h4>
+					<div class="alert alert-warning">
+						<strong>É OBRIGATÓRIO informar ao menos um documento.</strong> Além disto, poderá haver documentos que são obrigatórios, porém, estes estarão identificados com <strong>*</strong>.<br/>
+						<br/>
+						O documento informado será <strong>utilizado a fim de Confirmação da Inscrição</strong> - Então informe <strong>documento(s) válido(s)</strong> dentre os que estão listados.
+					</div>
+					<div id="documentos">
+						<p>Não há documentos para este país.</p>
+					</div>
+				</div>
+				<div id="enxadrista_3" style="display:none">
+					<h4>3/5 - Outras Informações:</h4>
+					<div class="row">
+						<div class="col-md-12">
+							<div class="form-group">
+								<label for="email">E-mail *</label>
+								<input name="email" id="email" class="form-control cadastro_enxadrista_input" type="text" />
+							</div>
+						</div>
+						<div class="col-md-6">
+							<div class="form-group">
+								<label for="pais_celular_id">País do Celular *</label>
+								<select id="pais_celular_id" name="pais_celular_id" class="form-control this_is_select2 cadastro_enxadrista_select">
+									<option value="">--- Selecione um país ---</option>
+									@foreach(\App\Pais::all() as $pais)
+										<option value="{{$pais->id}}">{{$pais->nome}} @if($pais->codigo_iso) ({{$pais->codigo_iso}}) @endif</option>
+									@endforeach
+								</select>
+							</div>
+						</div>
+						<div class="col-md-6">
+							<div class="form-group">
+								<label for="celular">Celular *</label>
+								<input name="celular" id="celular" class="form-control cadastro_enxadrista_input" type="text" />
+							</div>
+						</div>
+					</div>
+				</div>
+				<div id="enxadrista_4" style="display:none">
+					<h4>4/5 - Cadastros nas Entidades:</h4>
+					<div class="alert alert-warning">
+						Caso o(a) enxadrista possua cadastro na CBX (Confederação Brasileira de Xadrez), FIDE (Federação Internacional de Xadrez) ou então na LBX (Liga Brasileira de Xadrez) é indispensável a informação dos códigos referentes a cada entidade para que seja utilizado o Rating do(a) Enxadrista para os Torneios, de acordo com cada Evento.
+					</div>
+					<div class="row">
+						<div class="col-md-4">
+							<div class="form-group">
+								<label for="cbx_id">ID CBX</label>
+								<input name="cbx_id" id="cbx_id" class="form-control cadastro_enxadrista_input" type="text" />
+								É possível efetuar a pesquisa de ID CBX pelo site <a href="http://cbx.com.br" target="_blank">http://cbx.com.br</a> - Barra Lateral Direita - Buscar Jogadores.<br/>
+								<hr/>
+								Caso possua alguma dúvida sobre como encontrar, confira o vídeo tutorial <a href="https://youtu.be/csFzNDomNcw" target="_blank">clicando aqui</a>.
+							</div>
+						</div>
+						<div class="col-md-4">
+							<div class="form-group">
+								<label for="fide_id">ID FIDE</label>
+								<input name="fide_id" id="fide_id" class="form-control cadastro_enxadrista_input" type="text" />
+								É possível efetuar a pesquisa de ID FIDE pelo site <a href="http://ratings.fide.com" target="_blank">http://ratings.fide.com</a> - Search Database - Clique no nome e procure pelo campo "FIDE ID" na página.<br/>
+								<hr/>
+								Caso possua alguma dúvida sobre como encontrar, confira o vídeo tutorial <a href="https://youtu.be/14PxrkqXtiA" target="_blank">clicando aqui</a>.
+							</div>
+						</div>
+						<div class="col-md-4">
+							<div class="form-group">
+								<label for="lbx_id">ID LBX</label>
+								<input name="lbx_id" id="lbx_id" class="form-control cadastro_enxadrista_input" type="text" />
+								É possível efetuar a pesquisa de ID LBX pelo site <a href="https://www.talsker.com/" target="_blank">https://www.talsker.com/</a> - Formulário no Topo da Página "Procure por Jogadores" - Utilize o código que aparece no campo LBX.<br/>
+								<hr/>
+								Caso possua alguma dúvida sobre como encontrar, confira o vídeo tutorial <a href="https://youtu.be/d0a0CS8WROY" target="_blank">clicando aqui</a>.
+							</div>
+						</div>
+					</div>
+				</div>
+				<div id="enxadrista_5" style="display:none">
+					<h4>5/5 - Vínculo do Enxadrista</h4>
+					<div class="form-group">
+						<label for="pais_id">País do Vínculo *</label>
+						<select id="pais_id" name="pais_id" class="form-control this_is_select2 cadastro_enxadrista_select">
+							<option value="">--- Selecione um País ---</option>
+							@foreach(\App\Pais::all() as $pais)
+								<option value="{{$pais->id}}">{{$pais->nome}} @if($pais->codigo_iso) ({{$pais->codigo_iso}}) @endif</option>
+							@endforeach
+						</select>
+					</div>
+					<div class="form-group">
+						<label for="estados_id">Estado do Vínculo *</label>
+						<select id="estados_id" name="estados_id" class="form-control this_is_select2 cadastro_enxadrista_select">
+							<option value="">--- Selecione um país antes ---</option>
+						</select>
+					</div>
+					<div class="form-group">
+						<label for="cidade_id">Cidade do Vínculo *</label>
+						<select id="cidade_id" name="cidade_id" class="form-control this_is_select2 cadastro_enxadrista_select">
+							<option value="">--- Selecione um estado antes ---</option>
+						</select>
+					</div>
+					<div class="form-group">
+						<label for="clube_id">Clube</label>
+						<select id="clube_id" name="clube_id" class="form-control this_is_select2 cadastro_enxadrista_select">
+							<option value="">--- Você pode selecionar um clube ---</option>
+						</select>
+					</div>
+				</div>
 			</div>
 			<div id="inscricao" style="display:none">
 				<h3>Inscrição:</h3>
-				<h4>Enxadrista: <span id="enxadrista_nome">XXXXXXXX</span></h4>
+				<h4>ID: <span id="enxadrista_mostrar_id">Carregando...</span></h4>
+				<h4>Nome Completo: <span id="enxadrista_mostrar_nome">Carregando...</span></h4>
+				<h4>Data de Nascimento: <span id="enxadrista_mostrar_born">Carregando...</span></h4>
+				<hr/>
 				<input type="hidden" id="enxadrista_id" />
 				<div class="form-group">
-					<label for="enxadrista_categoria_id">Categoria *</label>
-					<select id="enxadrista_categoria_id" class="this_is_select2 form-control">
+					<label for="inscricao_categoria_id">Categoria *</label>
+					<select id="inscricao_categoria_id" class="this_is_select2 form-control">
 						<option value="">--- Selecione ---</option>
 					</select>
 				</div>
 				<div class="form-group">
-					<label for="enxadrista_pais_id">País *</label>
-					<select id="enxadrista_pais_id" class="pais_id this_is_select2 form-control">
+					<label for="inscricao_pais_id">País *</label>
+					<select id="inscricao_pais_id" class="pais_id this_is_select2 form-control">
 						<option value="">--- Selecione um país ---</option>
 						@foreach(\App\Pais::all() as $pais)
 							<option value="{{$pais->id}}">{{$pais->nome}} @if($pais->codigo_iso) ({{$pais->codigo_iso}}) @endif</option>
@@ -176,22 +338,22 @@
 					</select>
 				</div>
 				<div class="form-group">
-					<label for="enxadrista_estado_id">Estado/Província *</label>
-					<select id="enxadrista_estados_id" class="estados_id this_is_select2 form-control">
+					<label for="inscricao_estados_id">Estado/Província *</label>
+					<select id="inscricao_estados_id" class="estados_id this_is_select2 form-control">
 						<option value="">--- Selecione um país primeiro ---</option>
 					</select>
                     <button id="estadoNaoCadastradoInscricao" class="btn btn-success">O meu estado não está cadastrado</button>
 				</div>
 				<div class="form-group">
 					<label for="cidade_id">Cidade *</label>
-					<select id="enxadrista_cidade_id" class="cidade_id this_is_select2 form-control">
+					<select id="inscricao_cidade_id" class="cidade_id this_is_select2 form-control">
 						<option value="">--- Selecione um estado primeiro ---</option>
 					</select>
                     <button id="cidadeNaoCadastradaInscricao" class="btn btn-success">A minha cidade não está cadastrada</button>
 				</div>
 				<div class="form-group">
 					<label for="clube_id">Clube</label>
-					<select id="enxadrista_clube_id" class="clube_id this_is_select2 form-control">
+					<select id="inscricao_clube_id" class="clube_id this_is_select2 form-control">
 						<option value="">--- Você pode escolher um clube ---</option>
 					</select>
                     <button id="clubeNaoCadastradoInscricao" class="btn btn-success">O meu clube não está cadastrado</button>
@@ -215,6 +377,55 @@
 				<button id="cancelar_inscricao" class="btn btn-danger">Cancelar Inscrição</button>
 			</div>
 		</div>
+		<div class="box-footer">
+			<div id="enxadrista_footer" style="display:none">
+				<div class="progress">
+					<div id="barra_progresso_cadastro" class="progress-bar progress-bar-success progress-bar-striped active" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%">
+						<span class="sr-only">0% Complete</span>
+					</div>
+				</div>
+				<div id="enxadrista_footer_1" class="row">
+					<div class="col-md-6" style="text-align: left">
+						<button class="btn btn-danger" id="cancelar_cadastro">Cancelar Cadastro</button>
+					</div>
+					<div class="col-md-6" style="text-align: right">
+						<button class="btn btn-success" id="cadastro_passo_2">Próximo Passo - Documentos (2/5)</button>
+					</div>
+				</div>
+				<div id="enxadrista_footer_2" class="row" style="display:none">
+					<div class="col-md-6" style="text-align: left">
+						<button class="btn btn-warning" id="cadastro_voltar_passo_1">Voltar - Dados Básicos (1/5)</button>
+					</div>
+					<div class="col-md-6" style="text-align: right">
+						<button class="btn btn-success" id="cadastro_passo_3">Próximo Passo - Outras Informações (3/5)</button>
+					</div>
+				</div>
+				<div id="enxadrista_footer_3" class="row" style="display:none">
+					<div class="col-md-6" style="text-align: left">
+						<button class="btn btn-warning" id="cadastro_voltar_passo_2">Voltar Passo - Documentos (2/5)</button>
+					</div>
+					<div class="col-md-6" style="text-align: right">
+						<button class="btn btn-success" id="cadastro_passo_4">Próximo Passo - Cadastros nas Entidades (4/5)</button>
+					</div>
+				</div>
+				<div id="enxadrista_footer_4" class="row" style="display:none">
+					<div class="col-md-6" style="text-align: left">
+						<button class="btn btn-warning" id="cadastro_voltar_passo_3">Voltar Passo - Outras Informações (3/5)</button>
+					</div>
+					<div class="col-md-6" style="text-align: right">
+						<button class="btn btn-success" id="cadastro_passo_5">Próximo Passo - Vínculo do Enxadrista (5/5)</button>
+					</div>
+				</div>
+				<div id="enxadrista_footer_5" class="row" style="display:none">
+					<div class="col-md-6" style="text-align: left">
+						<button class="btn btn-warning" id="cadastro_voltar_passo_4">Voltar Passo - Cadastros nas Entidades (4/5)</button>
+					</div>
+					<div class="col-md-6" style="text-align: right">
+						<button class="btn btn-success" id="enviar_cadastro">Finalizar Inscrição</button>
+					</div>
+				</div>
+			</div>
+		</div>
 	</div>
 
   </section>
@@ -230,9 +441,43 @@
 <script type="text/javascript">
 	nome_enxadrista = "";
 	last_timeOut = 0;
+	tipo_documentos = false;
   	$(document).ready(function(){
 		$(".this_is_select2").select2();
-		$("#enxadrista_clube_id").select2({
+		$("#born").mask("00/00/0000");
+
+		@if(env("PAIS_DEFAULT"))
+			$("#pais_nascimento_id").val({{env("PAIS_DEFAULT")}}).change();
+			$("#pais_celular_id").val({{env("PAIS_DEFAULT")}}).change();
+			$("#pais_id").val({{env("PAIS_DEFAULT")}}).change();
+
+			Loading.enable(loading_default_animation,10000);
+			buscaEstados(0,false,function(){
+				mascaraCelular();
+				@if(env("ESTADO_DEFAULT"))
+					$("#estados_id").val({{env("ESTADO_DEFAULT")}}).change();
+				@endif
+				buscaCidades(0,function(){
+					@if(env("CIDADE_DEFAULT"))
+						$("#cidade_id").val({{env("CIDADE_DEFAULT")}}).change();
+					@endif
+					Loading.destroy();
+				});
+			});
+		@endif
+
+		$("#inscricao_clube_id").select2({
+			ajax: {
+				url: '{{url("/inscricao/v2/".$evento->id."/busca/clube")}}',
+				delay: 250,
+				processResults: function (data) {
+					return {
+						results: data.results
+					};
+				}
+			}
+		});
+		$("#clube_id").select2({
 			ajax: {
 				url: '{{url("/inscricao/v2/".$evento->id."/busca/clube")}}',
 				delay: 250,
@@ -258,7 +503,7 @@
 					html = "";
 					for (i = 0; i < data.results.length; i++) {
 						if(data.results[i].permitida_inscricao){
-							html = html.concat("<a class='btn btn-default btn-large permitida_inscricao' onclick='selectEnxadrista(").concat(data.results[i].id).concat(")'>").concat(data.results[i].name).concat("</a><br/>");
+							html = html.concat("<a class='btn btn-default btn-large permitida_inscricao' onclick='selectEnxadrista(").concat(data.results[i].id).concat(",false)'>").concat(data.results[i].name).concat("</a><br/>");
 						}else{
 							html = html.concat("<a class='btn btn-default btn-large' disabled='disabled'>").concat(data.results[i].name).concat("</a><br/>");
 						}
@@ -277,6 +522,13 @@
 			},"1000");
 		});
 
+		$("#cancelar_cadastro").on("click",function(){
+			Loading.enable(loading_default_animation, 800);
+			$(".permitida_inscricao").removeAttr("disabled");
+			
+			zeraCadastro(true);
+		});
+
 		$("#cancelar_inscricao").on("click",function(){
 			Loading.enable(loading_default_animation, 800);
 			$(".permitida_inscricao").removeAttr("disabled");
@@ -290,18 +542,142 @@
 			enviarInscricao();
 		});
 
-		$("#enxadrista_pais_id").on("select2:select",function(){
+		
+		$("#usarCadastroEnxadrista").on("click",function(){
+			selectEnxadrista($("#enxadrista_id").val(),function(){
+				zeraCadastro(false);
+			});
+			$("#asks").modal('hide');
+		});
+		$("#naoUsarCadastroEnxadrista").on("click",function(){
+			$("#enxadrista_id").val("");
+			$("#asks").modal('hide');
+		});
+
+		$("#inscricao_pais_id").on("select2:select",function(){
 			Loading.enable(loading_default_animation, 1000);
 			buscaEstados(1,true,false);
 			verificaLiberaCadastro(1);
 		});
-		$("#enxadrista_estados_id").on("select2:select",function(){
+		$("#inscricao_estados_id").on("select2:select",function(){
 			Loading.enable(loading_default_animation, 800);
 			buscaCidades(1,false);
 		});
+
+		
+		$("#pais_nascimento_id").on("select2:select",function(){
+			Loading.enable(loading_default_animation,10000);
+			buscaTipoDocumentos(function(){
+				Loading.destroy();
+			});
+		});
+		
+
+		$("#cadastro_passo_2").on("click",function(){
+			Loading.enable(loading_default_animation, 500);
+			
+			$("#enxadrista_1").css("display","none");
+			$("#enxadrista_footer_1").css("display","none");
+			$("#enxadrista_2").css("display","");
+			$("#enxadrista_footer_2").css("display","");
+			$("#barra_progresso_cadastro").css("width","20%");
+		});
+
+		$("#cadastro_passo_3").on("click",function(){
+			Loading.enable(loading_default_animation, 500);
+			
+			$("#enxadrista_2").css("display","none");
+			$("#enxadrista_footer_2").css("display","none");
+			$("#enxadrista_3").css("display","");
+			$("#enxadrista_footer_3").css("display","");
+			$("#barra_progresso_cadastro").css("width","40%");
+		});
+
+		$("#cadastro_passo_4").on("click",function(){
+			Loading.enable(loading_default_animation, 500);
+			
+			$("#enxadrista_3").css("display","none");
+			$("#enxadrista_footer_3").css("display","none");
+			$("#enxadrista_4").css("display","");
+			$("#enxadrista_footer_4").css("display","");
+			$("#barra_progresso_cadastro").css("width","60%");
+		});
+
+		$("#cadastro_passo_5").on("click",function(){
+			Loading.enable(loading_default_animation, 500);
+			
+			$("#enxadrista_4").css("display","none");
+			$("#enxadrista_footer_4").css("display","none");
+			$("#enxadrista_5").css("display","");
+			$("#enxadrista_footer_5").css("display","");
+			$("#barra_progresso_cadastro").css("width","80%");
+		});
+
+
+
+		
+		$("#cadastro_voltar_passo_1").on("click",function(){
+			Loading.enable(loading_default_animation, 500);
+			
+			$("#enxadrista_2").css("display","none");
+			$("#enxadrista_footer_2").css("display","none");
+			$("#enxadrista_1").css("display","");
+			$("#enxadrista_footer_1").css("display","");
+			$("#barra_progresso_cadastro").css("width","0%");
+		});
+
+		$("#cadastro_voltar_passo_2").on("click",function(){
+			Loading.enable(loading_default_animation, 500);
+			
+			$("#enxadrista_3").css("display","none");
+			$("#enxadrista_footer_3").css("display","none");
+			$("#enxadrista_2").css("display","");
+			$("#enxadrista_footer_2").css("display","");
+			$("#barra_progresso_cadastro").css("width","20%");
+		});
+
+		$("#cadastro_voltar_passo_3").on("click",function(){
+			Loading.enable(loading_default_animation, 500);
+			
+			$("#enxadrista_4").css("display","none");
+			$("#enxadrista_footer_4").css("display","none");
+			$("#enxadrista_3").css("display","");
+			$("#enxadrista_footer_3").css("display","");
+			$("#barra_progresso_cadastro").css("width","40%");
+		});
+
+		$("#cadastro_voltar_passo_4").on("click",function(){
+			Loading.enable(loading_default_animation, 500);
+			
+			$("#enxadrista_5").css("display","none");
+			$("#enxadrista_footer_5").css("display","none");
+			$("#enxadrista_4").css("display","");
+			$("#enxadrista_footer_4").css("display","");
+			$("#barra_progresso_cadastro").css("width","60%");
+		});
+
+		$("#enviar_cadastro").on("click",function(){
+			enviarNovoEnxadrista();
+		});
   	});
+
+	function novoEnxadrista(){
+    	Loading.enable(loading_default_animation, 1000);
+		$("#texto_pesquisa").attr("disabled","disabled");
+		$("#form_pesquisa").css("display","none");
+		$("#pesquisa").css("display","none");
+		$("#enxadrista").css("display","");
+		$("#enxadrista_footer").css("display","");
+
+		if($("#pais_nascimento_id").val() > 0){
+			buscaTipoDocumentos(function(){
+				Loading.destroy();
+			});
+		}
+
+	}
 	  
-	function selectEnxadrista(id){
+	function selectEnxadrista(id,callback_on_ok){
     	Loading.enable(loading_default_animation, 10000);
 		$("#enxadrista_id").val(id);
 		$("#texto_pesquisa").attr("disabled","disabled");
@@ -315,25 +691,27 @@
 		
 		$.getJSON("{{url("/inscricao/v2/".$evento->id."/enxadrista")}}/".concat($("#enxadrista_id").val()),function(data){
 			if(data.ok == 1){
-				$("#enxadrista_nome").html(data.data.name);
-				$('#enxadrista_categoria_id').html("").trigger('change');
+				$("#enxadrista_mostrar_id").html(data.data.id);
+				$("#enxadrista_mostrar_nome").html(data.data.name);
+				$("#enxadrista_mostrar_born").html(data.data.born);
+				$('#inscricao_categoria_id').html("").trigger('change');
 				for (i = 0; i < data.data.categorias.length; i++) {
 					var newOptionCategoria = new Option(data.data.categorias[i].name, data.data.categorias[i].id, false, false);
-					$('#enxadrista_categoria_id').append(newOptionCategoria).trigger('change');
+					$('#inscricao_categoria_id').append(newOptionCategoria).trigger('change');
 					if(data.data.categorias.length == 1){
-						$("#enxadrista_categoria_id").val(data.data.categorias[i].id).change();
-						$("#enxadrista_categoria_id").attr("disabled","disabled").change();
+						$("#inscricao_categoria_id").val(data.data.categorias[i].id).change();
+						$("#inscricao_categoria_id").attr("disabled","disabled").change();
 					}else{
-						$("#enxadrista_categoria_id").removeAttr("disabled").change();
+						$("#inscricao_categoria_id").removeAttr("disabled").change();
 					}
 				}
-				$("#enxadrista_pais_id").val(data.data.cidade.estado.pais.id).change();
+				$("#inscricao_pais_id").val(data.data.cidade.estado.pais.id).change();
 				setTimeout(function(){
 					buscaEstados(1,false,function(){
-						$("#enxadrista_estados_id").val(data.data.cidade.estado.id).change();
+						$("#inscricao_estados_id").val(data.data.cidade.estado.id).change();
 						setTimeout(function(){
 							buscaCidades(1,function(){
-								$("#enxadrista_cidade_id").val(data.data.cidade.id).change();
+								$("#inscricao_cidade_id").val(data.data.cidade.id).change();
 								Loading.destroy();
 							});
 						},200);
@@ -343,15 +721,18 @@
 
 				if(data.data.clube.id != 0){
 					var newOptionClube = new Option(data.data.clube.name, data.data.clube.id, false, false);
-					$('#enxadrista_clube_id').append(newOptionClube).trigger('change');
-					$("#enxadrista_clube_id").val(data.data.clube.id).change();
+					$('#inscricao_clube_id').append(newOptionClube).trigger('change');
+					$("#inscricao_clube_id").val(data.data.clube.id).change();
 				}
 			
+				$("#form_pesquisa").css("display","none");
+				$("#pesquisa").css("display","none");
+				$("#enxadrista").css("display","none");
+				$("#inscricao").css("display","");
 				
-
-				$("#form_pesquisa").hide(300);
-				$("#pesquisa").hide(300);
-				$("#inscricao").show(300);
+				if(callback_on_ok){
+					callback_on_ok();
+				}
 			}else{
 				$("#texto_pesquisa").removeAttr("disabled");
 				$(".permitida_inscricao").removeAttr("disabled","disabled");
@@ -368,13 +749,35 @@
 
 	function buscaEstados(place,buscaCidade,callback){
 		if(place == 0){
-
-		}else if(place == 1){
-			$('#enxadrista_estados_id').html("").trigger('change');
-			$.getJSON("{{url("/inscricao/v2/".$evento->id."/busca/estado/")}}/".concat($("#enxadrista_pais_id").val()),function(data){
+			$('#estados_id').html("").trigger('change');
+			$.getJSON("{{url("/inscricao/v2/".$evento->id."/busca/estado/")}}/".concat($("#pais_id").val()),function(data){
 				for (i = 0; i < data.results.length; i++) {
 					var newOptionEstado = new Option("#".concat(data.results[i].id).concat(" - ").concat(data.results[i].text), data.results[i].id, false, false);
-					$('#enxadrista_estados_id').append(newOptionEstado).trigger('change');
+					$('#estados_id').append(newOptionEstado).trigger('change');
+					if(i + 1 == data.results.length){
+						if(callback){
+							callback();
+						}
+						if(buscaCidade){
+							buscaCidades(place,false);
+						}
+					}
+				}
+				if(data.results.length == 0){
+					if(callback){
+						callback();
+					}
+					if(buscaCidade){
+						buscaCidades(place,false);
+					}
+				}
+			});
+		}else if(place == 1){
+			$('#inscricao_estados_id').html("").trigger('change');
+			$.getJSON("{{url("/inscricao/v2/".$evento->id."/busca/estado/")}}/".concat($("#inscricao_pais_id").val()),function(data){
+				for (i = 0; i < data.results.length; i++) {
+					var newOptionEstado = new Option("#".concat(data.results[i].id).concat(" - ").concat(data.results[i].text), data.results[i].id, false, false);
+					$('#inscricao_estados_id').append(newOptionEstado).trigger('change');
 					if(i + 1 == data.results.length){
 						if(callback){
 							callback();
@@ -398,13 +801,29 @@
 
 	function buscaCidades(place, callback){
 		if(place == 0){
-
-		}else if(place == 1){
-			$('#enxadrista_cidade_id').html("").trigger('change');
-			$.getJSON("{{url("/inscricao/v2/".$evento->id."/busca/cidade/")}}/".concat($("#enxadrista_estados_id").val()),function(data){
+			$('#cidade_id').html("").trigger('change');
+			$.getJSON("{{url("/inscricao/v2/".$evento->id."/busca/cidade/")}}/".concat($("#estados_id").val()),function(data){
 				for (i = 0; i < data.results.length; i++) {
 					var newOptionCidade = new Option("#".concat(data.results[i].id).concat(" - ").concat(data.results[i].text), data.results[i].id, false, false);
-					$('#enxadrista_cidade_id').append(newOptionCidade).trigger('change');
+					$('#cidade_id').append(newOptionCidade).trigger('change');
+					if(i + 1 == data.results.length){
+						if(callback){
+							callback();
+						}
+					}
+				}
+				if(data.results.length == 0){
+					if(callback){
+						callback();
+					}
+				}
+			});
+		}else if(place == 1){
+			$('#inscricao_cidade_id').html("").trigger('change');
+			$.getJSON("{{url("/inscricao/v2/".$evento->id."/busca/cidade/")}}/".concat($("#inscricao_estados_id").val()),function(data){
+				for (i = 0; i < data.results.length; i++) {
+					var newOptionCidade = new Option("#".concat(data.results[i].id).concat(" - ").concat(data.results[i].text), data.results[i].id, false, false);
+					$('#inscricao_cidade_id').append(newOptionCidade).trigger('change');
 					if(i + 1 == data.results.length){
 						if(callback){
 							callback();
@@ -424,18 +843,19 @@
 		if(place == 0){
 
 		}else if(place == 1){
-			if($("#enxadrista_pais_id").val() == 33){
-				$("#estadoNaoCadastradoInscricao").hide(100);
-				$("#cidadeNaoCadastradaInscricao").hide(100);
+			if($("#inscricao_pais_id").val() == 33){
+				$("#estadoNaoCadastradoInscricao").css("display","none");
+				$("#cidadeNaoCadastradaInscricao").css("display","none");
+				
 			}else{
-				$("#estadoNaoCadastradoInscricao").show(100);
-				$("#cidadeNaoCadastradaInscricao").show(100);
+				$("#estadoNaoCadastradoInscricao").css("display","");
+				$("#cidadeNaoCadastradaInscricao").css("display","");
 			}
 		}
 	}
 
 	function enviarInscricao(){
-		var data = "evento_id={{$evento->id}}&enxadrista_id=".concat($("#enxadrista_id").val()).concat("&categoria_id=").concat($("#enxadrista_categoria_id").val()).concat("&cidade_id=").concat($("#enxadrista_cidade_id").val()).concat("&clube_id=").concat($("#enxadrista_clube_id").val());
+		var data = "evento_id={{$evento->id}}&enxadrista_id=".concat($("#enxadrista_id").val()).concat("&categoria_id=").concat($("#inscricao_categoria_id").val()).concat("&cidade_id=").concat($("#inscricao_cidade_id").val()).concat("&clube_id=").concat($("#inscricao_clube_id").val());
 		if($("#regulamento_aceito").is(":checked")){
 			data = data.concat("&regulamento_aceito=true");
 		}		
@@ -472,17 +892,179 @@
 		});
 	}
 
+	function mascaraCelular(){
+		$("#celular").unmask();
+		if($("#pais_celular_id").val() == 33){
+			$("#celular").mask("(00) 00000-0000");
+		}
+	}
+
 	function zeraInscricao(){
 		$("#enxadrista_id").val("");
-		$("#enxadrista_nome").html("");
-		$('#enxadrista_categoria_id').html("").trigger('change');
-		$("#enxadrista_pais_id").val(0).change();
+		$("#enxadrista_mostrar_id").html("");
+		$("#enxadrista_mostrar_nome").html("");
+		$("#enxadrista_mostrar_born").html("");
+		$('#inscricao_categoria_id').html("").trigger('change');
+		$("#inscricao_pais_id").val(0).change();
 
 
-		$("#inscricao").hide(300);
-		$("#form_pesquisa").show(300);
-		$("#pesquisa").show(300);
+		$("#inscricao").css("display","none");
+		$("#form_pesquisa").css("display","");
+		$("#pesquisa").css("display","");
 		$("#texto_pesquisa").removeAttr("disabled");
+	}
+
+	function zeraCadastro(redirect_home){
+		$("#enxadrista_id").val("");
+		$(".cadastro_enxadrista_input").val("");
+		$(".cadastro_enxadrista_select").val("").change();
+		$("#barra_progresso_cadastro").css("width","0%");
+
+		$("#enxadrista").css("display","none");
+		$("#enxadrista_1").css("display","");
+		$("#enxadrista_2").css("display","none");
+		$("#enxadrista_3").css("display","none");
+		$("#enxadrista_4").css("display","none");
+		$("#enxadrista_5").css("display","none");
+
+		$("#enxadrista_footer").css("display","none");
+		$("#enxadrista_footer_1").css("display","");
+		$("#enxadrista_footer_2").css("display","none");
+		$("#enxadrista_footer_3").css("display","none");
+		$("#enxadrista_footer_4").css("display","none");
+		$("#enxadrista_footer_5").css("display","none");
+
+		
+		@if(env("PAIS_DEFAULT"))
+			$("#pais_nascimento_id").val({{env("PAIS_DEFAULT")}}).change();
+			$("#pais_celular_id").val({{env("PAIS_DEFAULT")}}).change();
+			$("#pais_id").val({{env("PAIS_DEFAULT")}}).change();
+
+			Loading.enable(loading_default_animation,10000);
+			buscaEstados(0,false,function(){
+				mascaraCelular();
+				@if(env("ESTADO_DEFAULT"))
+					$("#estados_id").val({{env("ESTADO_DEFAULT")}}).change();
+				@endif
+				buscaCidades(0,function(){
+					@if(env("CIDADE_DEFAULT"))
+						$("#cidade_id").val({{env("CIDADE_DEFAULT")}}).change();
+					@endif
+					Loading.destroy();
+				});
+			});
+		@endif
+
+		if(redirect_home){
+			$("#form_pesquisa").css("display","");
+			$("#pesquisa").css("display","");
+			$("#texto_pesquisa").removeAttr("disabled");
+		}
+	}
+
+	function enviarNovoEnxadrista(){
+		
+		var data = "name=".concat($("#name").val())
+			.concat("&born=").concat($("#born").val())
+			.concat("&sexos_id=").concat($("#sexos_id").val())
+			.concat("&pais_nascimento_id=").concat($("#pais_nascimento_id").val())
+			.concat("&cbx_id=").concat($("#cbx_id").val())
+			.concat("&fide_id=").concat($("#fide_id").val())
+			.concat("&lbx_id=").concat($("#lbx_id").val())
+			.concat("&email=").concat($("#email").val())
+			.concat("&pais_celular_id=").concat($("#pais_celular_id").val())
+			.concat("&celular=").concat($("#celular").val())
+			.concat("&cidade_id=").concat($("#cidade_id").val())
+			.concat("&clube_id=").concat($("#clube_id").val());
+
+		if(tipo_documentos){
+			for(var i = 0; i < tipo_documentos.length; i++){
+				if($("#tipo_documento_".concat(tipo_documentos[i].id)).val() != ""){
+					data = data.concat("&tipo_documento_").concat(tipo_documentos[i].id).concat("=").concat($("#tipo_documento_".concat(tipo_documentos[i].id)).val());
+				}
+			}
+		}
+		
+		$.ajax({
+			type: "post",
+			url: "{{url("/inscricao/v2/".$evento->id."/enxadrista/novo")}}",
+			data: data,
+			dataType: "json",
+			success: function(data){
+				if(data.ok == 1){
+					selectEnxadrista(data.enxadrista_id,function(){
+						$("#successMessage").html("<strong>O cadastro do enxadrista foi efetuado com sucesso!</strong>");
+						$("#success").modal();
+						zeraCadastro(false);
+					});
+				}else{
+					if(data.ask == 1){
+						$("#asksMessage").html(data.message);
+						$("#asksMessage_id").html(data.enxadrista_id);
+						$("#asksMessage_name").html(data.enxadrista_name);
+						$("#asksMessage_city").html(data.enxadrista_city);
+						$("#asksMessage_born").html(data.enxadrista_born);
+						$("#enxadrista_id").val(data.enxadrista_id);
+						$("#asks").modal();
+					}else if(data.registred == 1){
+						selectEnxadrista(data.enxadrista_id,function(){
+							zeraCadastro(false);
+							$("#alertsMessage").html(data.message);
+							$("#alerts").modal();
+						});
+					}else{
+						$("#alertsMessage").html(data.message);
+						$("#alerts").modal();
+					}
+				}
+			}
+		});
+	}
+
+
+	
+	function buscaTipoDocumentos(callback){
+		if($("#pais_nascimento_id").val() > 0){
+			$('#documentos').html("");
+			$.getJSON("{{url("/tipodocumento/searchByPais")}}/".concat($("#pais_nascimento_id").val()),function(data){
+				for (i = 0; i < data.data.length; i++) {
+
+					html = "";
+					html = html.concat('<div class="form-group">');
+					if(data.data[i].is_required){
+						html = html.concat('<label for="tipo_documento_').concat(data.data[i].id).concat('">').concat(data.data[i].name).concat(' *</label>');
+					}else{
+						html = html.concat('<label for="tipo_documento_').concat(data.data[i].id).concat('">').concat(data.data[i].name).concat('</label>');
+					}
+					html = html.concat('<input name="tipo_documento_').concat(data.data[i].id).concat('" id="tipo_documento_').concat(data.data[i].id).concat('" class="form-control" type="text" />');
+					html = html.concat('</div>');
+
+					$('#documentos').append(html);
+
+					if(data.data[i].pattern){
+						$("#tipo_documento_".concat(data.data[i].id)).mask(data.data[i].pattern);
+					}
+
+					if(i+1 == data.data.length){
+						tipo_documentos = data.data;
+						if(callback){
+							callback();
+						}
+					}
+				}
+				if(data.data.length == 0){
+					tipo_documentos = false;
+					if(callback){
+						callback();
+					}
+				}
+			});
+		}else{
+			if(callback){
+				callback();
+			}
+			$('#documentos').html("<p>Selecione antes um país de nascimento...</p>");
+		}
 	}
 </script>
 @endsection

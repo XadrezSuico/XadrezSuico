@@ -13,6 +13,10 @@ use App\Enxadrista;
 use App\Evento;
 use App\Inscricao;
 use App\Sexo;
+use App\Documento;
+use App\TipoDocumento;
+use App\TipoDocumentoPais;
+use App\Http\Util\Util;
 use Illuminate\Http\Request;
 
 class InscricaoController extends Controller
@@ -600,7 +604,9 @@ class InscricaoController extends Controller
         $enxadrista = Enxadrista::find($enxadrista_id);
         if($enxadrista){
             $retorno = array();
+            $retorno["id"] = $enxadrista->id;
             $retorno["name"] = $enxadrista->name;
+            $retorno["born"] = $enxadrista->getBorn();
             $retorno["cidade"] = array("id"=>$enxadrista->cidade->id,"name"=>$enxadrista->cidade->name);
             $retorno["cidade"]["estado"] = array("id"=>$enxadrista->cidade->estado->id,"name"=>$enxadrista->cidade->estado->nome);
             $retorno["cidade"]["estado"]["pais"] = array("id"=>$enxadrista->cidade->estado->pais->id,"name"=>$enxadrista->cidade->estado->pais->nome);
@@ -746,6 +752,198 @@ class InscricaoController extends Controller
             return response()->json(["ok" => 1, "error" => 0]);
         } else {
             return response()->json(["ok" => 0, "error" => 1, "message" => "Um erro inesperado aconteceu. Por favor, tente novamente mais tarde."]);
+        }
+    }
+
+    
+    public function telav2_adicionarNovoEnxadrista(Request $request)
+    {
+        if (
+            !$request->has("name") ||
+            !$request->has("born") ||
+            !$request->has("sexos_id") ||
+            !$request->has("email") ||
+            !$request->has("pais_nascimento_id") ||
+            !$request->has("pais_celular_id") ||
+            !$request->has("celular") ||
+            !$request->has("cidade_id")
+        ) {
+            return response()->json(["ok" => 0, "error" => 1, "message" => "Um dos campos obrigatórios não está preenchido. Por favor, verifique e envie novamente!<br/><br/><strong>Observação</strong>: TODOS os Campos com <strong>*</strong> SÃO OBRIGATÓRIOS!", "registred" => 0, "ask" => 0]);
+        } elseif (
+            $request->input("name") == null || $request->input("name") == "" ||
+            $request->input("born") == null || $request->input("born") == "" ||
+            $request->input("sexos_id") == null || $request->input("sexos_id") == "" ||
+            $request->input("email") == null || $request->input("email") == "" ||
+            $request->input("pais_nascimento_id") == null || $request->input("pais_nascimento_id") == "" ||
+            $request->input("pais_celular_id") == null || $request->input("pais_celular_id") == "" ||
+            $request->input("celular") == null || $request->input("celular") == "" ||
+            $request->input("cidade_id") == null || $request->input("cidade_id") == ""
+        ) {
+            return response()->json(["ok" => 0, "error" => 1, "message" => "Um dos campos obrigatórios não está preenchido. Por favor, verifique e envie novamente!<br/><br/><strong>Observação</strong>: TODOS os Campos com <strong>*</strong> SÃO OBRIGATÓRIOS!", "registred" => 0, "ask" => 0]);
+        }
+
+        $validator = \Validator::make($request->all(), [
+            'email' => 'required|string|email|max:255',
+        ]);
+        if ($validator->fails()) {
+            return response()->json(["ok" => 0, "error" => 1, "message" => "O e-mail é inválido. Por favor, verifique e tente novamente.", "registred" => 0, "ask" => 0]);
+        }
+
+        // Algoritmo para eliminar os problemas com espaçamentos duplos ou até triplos.
+        $nome_corrigido = "";
+
+        $part_names = explode(" ", mb_strtoupper($request->input("name")));
+        foreach ($part_names as $part_name) {
+            if ($part_name != ' ') {
+                $trim = trim($part_name);
+                if (strlen($trim) > 0) {
+                    $nome_corrigido .= $trim;
+                    $nome_corrigido .= " ";
+                }
+            }
+        }
+
+
+        $documentos = array();
+
+        foreach(TipoDocumentoPais::where([["pais_id","=",$request->input("pais_nascimento_id")]])->get() as $tipo_documento_pais){
+            if($tipo_documento_pais->e_requerido){
+                if(!$request->has("tipo_documento_".$tipo_documento_pais->tipo_documento->id)){
+                    return response()->json(["ok"=>0,"error"=>1,"Há um documento que é requerido que não foi informado.", "registred" => 0, "ask" => 0]);
+                }
+                if(
+                    $request->input("tipo_documento_".$tipo_documento_pais->tipo_documento->id) == "" || 
+                    $request->input("tipo_documento_".$tipo_documento_pais->tipo_documento->id) == NULL
+                ){
+                    return response()->json(["ok"=>0,"error"=>1,"Há um documento que é requerido que não foi informado.", "registred" => 0, "ask" => 0]);
+                }
+            }
+            if($request->has("tipo_documento_".$tipo_documento_pais->tipo_documento->id)){
+                if(
+                    $request->input("tipo_documento_".$tipo_documento_pais->tipo_documento->id) != "" && 
+                    $request->input("tipo_documento_".$tipo_documento_pais->tipo_documento->id) != NULL
+                ){
+                    
+                    $temEnxadrista = Enxadrista::whereHas("documentos",function($q1) use($request, $tipo_documento_pais){
+                        if($tipo_documento_pais->tipo_documento->id == 1){
+                            $q1->where([
+                                ["tipo_documentos_id","=",$tipo_documento_pais->tipo_documento->id],
+                                ["numero","=",Util::numeros($request->input("tipo_documento_".$tipo_documento_pais->tipo_documento->id))],
+                            ]);
+                        }else{
+                            $q1->where([
+                                ["tipo_documentos_id","=",$tipo_documento_pais->tipo_documento->id],
+                                ["numero","=",$request->input("tipo_documento_".$tipo_documento_pais->tipo_documento->id)],
+                            ]);
+                        }
+                    })->first();
+                    if(count($temEnxadrista) > 0){
+                        return response()->json([
+                            "ok"=>0,
+                            "error"=>1,
+                            "message" => "Já há um cadastro de Enxadrista com o Documento informado. Deseja utilizar ele?",
+                            "registred" => 0,
+                            "ask" => 1,
+                            "enxadrista_id" => $temEnxadrista->id,
+                            "enxadrista_name" => $temEnxadrista->name,
+                            "enxadrista_born" => $temEnxadrista->getBorn(),
+                            "enxadrista_city" => $temEnxadrista->cidade->name,
+                        ]);
+                    }
+
+                    $documento = new Documento;
+                    $documento->tipo_documentos_id = $tipo_documento_pais->tipo_documento->id;
+                    if($tipo_documento_pais->tipo_documento->id == 1){
+                        $documento->numero = Util::numeros($request->input("tipo_documento_".$tipo_documento_pais->tipo_documento->id));
+                    }else{
+                        $documento->numero = $request->input("tipo_documento_".$tipo_documento_pais->tipo_documento->id);
+                    }
+
+                    $documentos[] = $documento;
+                }
+            }
+        }
+
+        if(count($documentos) == 0){
+            return response()->json(["ok"=>0,"error"=>1,"É obrigatório a inserção de ao menos UM DOCUMENTO.", "registred" => 0, "ask" => 0]);
+        }
+
+        $nome_corrigido = trim($nome_corrigido);
+
+        $enxadrista = new Enxadrista;
+        if (!$enxadrista->setBorn($request->input("born"))) {
+            return response()->json(["ok" => 0, "error" => 1, "message" => "A data de nascimento é inválida.", "registred" => 0, "ask" => 0]);
+        }
+        if($enxadrista->howOld() >= 130){
+            return response()->json(["ok" => 0, "error" => 1, "message" => "A data de nascimento parece inválida. Por favor, verifique e tente novamente.", "registred" => 0, "ask" => 0]);
+        }
+
+        $temEnxadrista = Enxadrista::where([["name", "=", $nome_corrigido], ["born", "=", $enxadrista->born]])->first();
+        if (count($temEnxadrista) > 0) {
+            if ($temEnxadrista->clube) {
+                return response()->json([
+                    "ok" => 0,
+                    "error" => 1,
+                    "message" => "Você já possui cadastro! Você será direcionado(a) à próxima etapa da inscrição!",
+                    "registred" => 1,
+                    "ask" => 0,
+                    "enxadrista_id" => $temEnxadrista->id,
+                ]);
+            } else {
+                return response()->json([
+                    "ok" => 0,
+                    "error" => 1,
+                    "message" => "Você já possui cadastro! Você será direcionado(a) à próxima etapa da inscrição!",
+                    "registred" => 1,
+                    "ask" => 0,
+                    "enxadrista_id" => $temEnxadrista->id,
+                ]);
+            }
+        }
+
+        $enxadrista->name = $nome_corrigido;
+        $enxadrista->splitName();
+        $enxadrista->sexos_id = $request->input("sexos_id");
+        $enxadrista->email = $request->input("email");
+        $enxadrista->pais_id = $request->input("pais_nascimento_id");
+        $enxadrista->pais_celular_id = $request->input("pais_celular_id");
+        $enxadrista->celular = $request->input("celular");
+        if ($request->has("cbx_id")) {
+            if ($request->input("cbx_id") > 0) {
+                $enxadrista->cbx_id = $request->input("cbx_id");
+            }
+        }
+        if ($request->has("fide_id")) {
+            if ($request->input("fide_id") > 0) {
+                $enxadrista->fide_id = $request->input("fide_id");
+            }
+        }
+        if ($request->has("lbx_id")) {
+            if ($request->input("lbx_id") > 0) {
+                $enxadrista->lbx_id = $request->input("lbx_id");
+            }
+        }
+        $enxadrista->cidade_id = $request->input("cidade_id");
+        if ($request->has("clube_id")) {
+            if ($request->input("clube_id") > 0) {
+                $enxadrista->clube_id = $request->input("clube_id");
+            }
+        }
+        $enxadrista->save();
+
+        foreach($documentos as $documento){
+            $documento->enxadrista_id = $enxadrista->id;
+            $documento->save();
+        }
+
+        if ($enxadrista->id > 0) {
+            if ($enxadrista->clube) {
+                return response()->json(["ok" => 1, "error" => 0, "enxadrista_id" => $enxadrista->id, "ask" => 0]);
+            } else {
+                return response()->json(["ok" => 1, "error" => 0, "enxadrista_id" => $enxadrista->id, "ask" => 0]);
+            }
+        } else {
+            return response()->json(["ok" => 0, "error" => 1, "message" => "Um erro inesperado aconteceu. Por favor, tente novamente mais tarde.", "registred" => 0, "ask" => 0]);
         }
     }
 
