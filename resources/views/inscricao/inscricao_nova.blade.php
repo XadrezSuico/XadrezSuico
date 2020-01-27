@@ -52,6 +52,7 @@
 					Nome Completo: <strong><span id="asksMessage_name"></span></strong><br/>
 					Data de Nascimento: <strong><span id="asksMessage_born"></span></strong><br/>
 					Cidade: <strong><span id="asksMessage_city"></span></strong>
+					<input type="hidden" id="asksMessage_jaInscrito" />
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-danger" id="naoUsarCadastroEnxadrista">Não, vou conferir os dados e enviar novamente</button>
@@ -182,7 +183,7 @@
 				<h3>Cadastro de Enxadrista:</h3>
 				<hr/>
 				<div id="enxadrista_1">
-					<h4>1/5 - Dados Básicos:</h4>
+					<h4>Passo 1/5 - Dados Básicos:</h4>
 					<div class="form-group">
 						<label for="name">Nome Completo *</label>
 						<input name="name" id="name" class="form-control cadastro_enxadrista_input" type="text" />
@@ -211,7 +212,7 @@
 					</div>
 				</div>
 				<div id="enxadrista_2" style="display:none">
-					<h4>2/5 - Documentos:</h4>
+					<h4>Passo 2/5 - Documentos:</h4>
 					<div class="alert alert-warning">
 						<strong>É OBRIGATÓRIO informar ao menos um documento.</strong> Além disto, poderá haver documentos que são obrigatórios, porém, estes estarão identificados com <strong>*</strong>.<br/>
 						<br/>
@@ -222,7 +223,7 @@
 					</div>
 				</div>
 				<div id="enxadrista_3" style="display:none">
-					<h4>3/5 - Outras Informações:</h4>
+					<h4>Passo 3/5 - Outras Informações:</h4>
 					<div class="row">
 						<div class="col-md-12">
 							<div class="form-group">
@@ -250,7 +251,7 @@
 					</div>
 				</div>
 				<div id="enxadrista_4" style="display:none">
-					<h4>4/5 - Cadastros nas Entidades:</h4>
+					<h4>Passo 4/5 - Cadastros nas Entidades:</h4>
 					<div class="alert alert-warning">
 						Caso o(a) enxadrista possua cadastro na CBX (Confederação Brasileira de Xadrez), FIDE (Federação Internacional de Xadrez) ou então na LBX (Liga Brasileira de Xadrez) é indispensável a informação dos códigos referentes a cada entidade para que seja utilizado o Rating do(a) Enxadrista para os Torneios, de acordo com cada Evento.
 					</div>
@@ -285,7 +286,7 @@
 					</div>
 				</div>
 				<div id="enxadrista_5" style="display:none">
-					<h4>5/5 - Vínculo do Enxadrista</h4>
+					<h4>Passo 5/5 - Vínculo do Enxadrista</h4>
 					<div class="form-group">
 						<label for="pais_id">País do Vínculo *</label>
 						<select id="pais_id" name="pais_id" class="form-control this_is_select2 cadastro_enxadrista_select">
@@ -421,7 +422,8 @@
 						<button class="btn btn-warning" id="cadastro_voltar_passo_4">Voltar Passo - Cadastros nas Entidades (4/5)</button>
 					</div>
 					<div class="col-md-6" style="text-align: right">
-						<button class="btn btn-success" id="enviar_cadastro">Finalizar Inscrição</button>
+						<button class="btn btn-success" id="enviar_cadastro">Finalizar Cadastro de Enxadrista</button>
+						<button class="btn btn-success" id="enviar_atualizacao" style="display:none">Finalizar Atualização Cadastral</button>
 					</div>
 				</div>
 			</div>
@@ -432,7 +434,9 @@
   <!-- /.Left col -->
 </div>
 <!-- /.row (main row) -->
-
+<input type="hidden" id="temporary_enxadrista_id" class="temporary_enxadrista" />
+<input type="hidden" id="temporary_estados_id" class="temporary_enxadrista" />
+<input type="hidden" id="temporary_cidade_id" class="temporary_enxadrista" />
 @endsection
 
 @section("js")
@@ -542,15 +546,32 @@
 			enviarInscricao();
 		});
 
+		$("#enviar_atualizacao").on("click",function(){
+			Loading.enable(loading_default_animation, 10000);
+			
+			enviarAtualizacaoEnxadrista();
+		});
+
 		
 		$("#usarCadastroEnxadrista").on("click",function(){
-			selectEnxadrista($("#enxadrista_id").val(),function(){
-				zeraCadastro(false);
-			});
-			$("#asks").modal('hide');
+			if($("#asksMessage_jaInscrito").val()){
+				zeraCadastro(true);
+				$("#asks").modal('hide');
+				$("#alertsMessage").html("O enxadrista já se encontra inscrito para este evento. Caso necessite efetuar alguma alteração, por favor, solicite à equipe do evento.");
+				$("#alerts").modal();
+			}else{
+				$("#barra_progresso_cadastro").css("width","100%");
+				selectEnxadrista($("#enxadrista_id").val(),function(){
+					zeraCadastro(false);
+					$("#asksMessage_jaInscrito").val("");
+				});
+				$("#asks").modal('hide');
+			}
 		});
 		$("#naoUsarCadastroEnxadrista").on("click",function(){
+			$("#barra_progresso_cadastro").css("width","80%");
 			$("#enxadrista_id").val("");
+			$("#asksMessage_jaInscrito").val("");
 			$("#asks").modal('hide');
 		});
 
@@ -676,75 +697,142 @@
 		}
 
 	}
-	  
+	fields = "";
 	function selectEnxadrista(id,callback_on_ok){
     	Loading.enable(loading_default_animation, 10000);
 		$("#enxadrista_id").val(id);
-		$("#texto_pesquisa").attr("disabled","disabled");
-		$(".permitida_inscricao").attr("disabled","disabled");
+		$.getJSON("{{url("/inscricao/v2/".$evento->id."/enxadrista/conferencia")}}/".concat($("#enxadrista_id").val()),function(data){
+			if(data.ok == 0){
+				// $(".cadastro_enxadrista_input").attr("disabled","disabled");
+				// $(".cadastro_enxadrista_select").attr("disabled","disabled");
+				$("#enviar_cadastro").css("display","none");
+				$("#enviar_atualizacao").css("display","");
 
-		$(".campo_personalizado").val(0).change();
-		$("#regulamento_aceito").prop('checked',false);
-		$("#regulamento_aceito").removeAttr('checked');
-		$("#xadrezsuico_aceito").prop('checked',false);
-		$("#xadrezsuico_aceito").removeAttr('checked');
-		
-		$.getJSON("{{url("/inscricao/v2/".$evento->id."/enxadrista")}}/".concat($("#enxadrista_id").val()),function(data){
-			if(data.ok == 1){
-				$("#enxadrista_mostrar_id").html(data.data.id);
-				$("#enxadrista_mostrar_nome").html(data.data.name);
-				$("#enxadrista_mostrar_born").html(data.data.born);
-				$('#inscricao_categoria_id').html("").trigger('change');
-				for (i = 0; i < data.data.categorias.length; i++) {
-					var newOptionCategoria = new Option(data.data.categorias[i].name, data.data.categorias[i].id, false, false);
-					$('#inscricao_categoria_id').append(newOptionCategoria).trigger('change');
-					if(data.data.categorias.length == 1){
-						$("#inscricao_categoria_id").val(data.data.categorias[i].id).change();
-						$("#inscricao_categoria_id").attr("disabled","disabled").change();
-					}else{
-						$("#inscricao_categoria_id").removeAttr("disabled").change();
-					}
+				$("#temporary_enxadrista_id").val(data.fields.id);
+				if(data.fields.name){
+					$("#name").val(data.fields.name);
+					$("#name").attr("disabled","disabled");
 				}
-				$("#inscricao_pais_id").val(data.data.cidade.estado.pais.id).change();
-				setTimeout(function(){
-					buscaEstados(1,false,function(){
-						$("#inscricao_estados_id").val(data.data.cidade.estado.id).change();
-						setTimeout(function(){
-							buscaCidades(1,function(){
-								$("#inscricao_cidade_id").val(data.data.cidade.id).change();
-								Loading.destroy();
-							});
-						},200);
-					});
-					verificaLiberaCadastro(1);
-				},200);
-
-				if(data.data.clube.id != 0){
-					var newOptionClube = new Option(data.data.clube.name, data.data.clube.id, false, false);
-					$('#inscricao_clube_id').append(newOptionClube).trigger('change');
-					$("#inscricao_clube_id").val(data.data.clube.id).change();
+				if(data.fields.born){
+					$("#born").val(data.fields.born);
+					$("#born").attr("disabled","disabled");
 				}
-			
+				if(data.fields.sexos_id){
+					$("#sexos_id").val(data.fields.sexos_id);
+					$("#sexos_id").attr("disabled","disabled");
+				}
+				if(data.fields.pais_nascimento_id){
+					$("#pais_nascimento_id").val(data.fields.pais_nascimento_id);
+					$("#pais_nascimento_id").attr("disabled","disabled");
+					setTimeout(function(){
+						buscaTipoDocumentos();
+					},200);
+				}
+				if(data.fields.cbx_id){
+					$("#cbx_id").val(data.fields.cbx_id);
+				}
+				if(data.fields.fide_id){
+					$("#fide_id").val(data.fields.fide_id);
+				}
+				if(data.fields.lbx_id){
+					$("#lbx_id").val(data.fields.lbx_id);
+				}
+				if(data.fields.pais_id){
+					setTimeout(function(){
+						$("#pais_id").val(data.fields.pais_id).change();
+						$("#temporary_estados_id").val(data.fields.estados_id);
+						$("#temporary_cidade_id").val(data.fields.cidade_id);
+						buscaEstados(0,false,function(){
+							$("#estados_id").val($("#temporary_estados_id").val()).change();	
+							setTimeout(function(){
+								buscaCidades(0,function(){
+									$("#cidade_id").val($("#temporary_cidade_id").val()).change();	
+								});
+							},200);
+						});
+					},200);
+				}
+				
 				$("#form_pesquisa").css("display","none");
 				$("#pesquisa").css("display","none");
-				$("#enxadrista").css("display","none");
-				$("#inscricao").css("display","");
-				
-				if(callback_on_ok){
-					callback_on_ok();
-				}
+				$("#enxadrista").css("display","");
+				$("#enxadrista_footer").css("display","");
+				$("#inscricao").css("display","none");
+				Loading.destroy();
+				$("#alertsMessage").html(data.message);
+				$("#alerts").modal();
 			}else{
-				$("#texto_pesquisa").removeAttr("disabled");
-				$(".permitida_inscricao").removeAttr("disabled","disabled");
+				$(".cadastro_enxadrista_input").removeAttr("disabled");
+				$(".cadastro_enxadrista_select").removeAttr("disabled");
+
+				$("#texto_pesquisa").attr("disabled","disabled");
+				$(".permitida_inscricao").attr("disabled","disabled");
+
+				$(".campo_personalizado").val(0).change();
+				$("#regulamento_aceito").prop('checked',false);
+				$("#regulamento_aceito").removeAttr('checked');
+				$("#xadrezsuico_aceito").prop('checked',false);
+				$("#xadrezsuico_aceito").removeAttr('checked');
+				
+				$.getJSON("{{url("/inscricao/v2/".$evento->id."/enxadrista")}}/".concat($("#enxadrista_id").val()),function(data){
+					if(data.ok == 1){
+						$("#enxadrista_mostrar_id").html(data.data.id);
+						$("#enxadrista_mostrar_nome").html(data.data.name);
+						$("#enxadrista_mostrar_born").html(data.data.born);
+						$('#inscricao_categoria_id').html("").trigger('change');
+						for (i = 0; i < data.data.categorias.length; i++) {
+							var newOptionCategoria = new Option(data.data.categorias[i].name, data.data.categorias[i].id, false, false);
+							$('#inscricao_categoria_id').append(newOptionCategoria).trigger('change');
+							if(data.data.categorias.length == 1){
+								$("#inscricao_categoria_id").val(data.data.categorias[i].id).change();
+								$("#inscricao_categoria_id").attr("disabled","disabled").change();
+							}else{
+								$("#inscricao_categoria_id").removeAttr("disabled").change();
+							}
+						}
+						$("#inscricao_pais_id").val(data.data.cidade.estado.pais.id).change();
+						setTimeout(function(){
+							buscaEstados(1,false,function(){
+								$("#inscricao_estados_id").val(data.data.cidade.estado.id).change();
+								setTimeout(function(){
+									buscaCidades(1,function(){
+										$("#inscricao_cidade_id").val(data.data.cidade.id).change();
+										Loading.destroy();
+									});
+								},200);
+							});
+							verificaLiberaCadastro(1);
+						},200);
+
+						if(data.data.clube.id != 0){
+							var newOptionClube = new Option(data.data.clube.name, data.data.clube.id, false, false);
+							$('#inscricao_clube_id').append(newOptionClube).trigger('change');
+							$("#inscricao_clube_id").val(data.data.clube.id).change();
+						}
+					
+						$("#form_pesquisa").css("display","none");
+						$("#pesquisa").css("display","none");
+						$("#enxadrista").css("display","none");
+						$("#inscricao").css("display","");
+						
+						if(callback_on_ok){
+							callback_on_ok();
+						}
+					}else{
+						$("#texto_pesquisa").removeAttr("disabled");
+						$(".permitida_inscricao").removeAttr("disabled","disabled");
+					}
+				})
+				.fail(function(){
+					$("#alertsMessage").html("Ocorreu um erro inesperado. Por favor, tente novamente mais tarde.");
+					$("#alerts").modal();
+					$("#texto_pesquisa").removeAttr("disabled");
+					$(".permitida_inscricao").removeAttr("disabled","disabled");
+					Loading.destroy();
+				});
 			}
-		})
-		.fail(function(){
-			$("#alertsMessage").html("Ocorreu um erro inesperado. Por favor, tente novamente mais tarde.");
-			$("#alerts").modal();
-			$("#texto_pesquisa").removeAttr("disabled");
-			$(".permitida_inscricao").removeAttr("disabled","disabled");
-			Loading.destroy();
 		});
+		
 	}
 
 	function buscaEstados(place,buscaCidade,callback){
@@ -892,6 +980,7 @@
 		});
 	}
 
+
 	function mascaraCelular(){
 		$("#celular").unmask();
 		if($("#pais_celular_id").val() == 33){
@@ -955,6 +1044,11 @@
 			});
 		@endif
 
+		$("#enviar_cadastro").css("display","");
+		$("#enviar_atualizacao").css("display","none");
+		$(".temporary_enxadrista").val("");
+
+
 		if(redirect_home){
 			$("#form_pesquisa").css("display","");
 			$("#pesquisa").css("display","");
@@ -963,7 +1057,8 @@
 	}
 
 	function enviarNovoEnxadrista(){
-		
+		$("#barra_progresso_cadastro").css("width","90%");
+
 		var data = "name=".concat($("#name").val())
 			.concat("&born=").concat($("#born").val())
 			.concat("&sexos_id=").concat($("#sexos_id").val())
@@ -975,7 +1070,8 @@
 			.concat("&pais_celular_id=").concat($("#pais_celular_id").val())
 			.concat("&celular=").concat($("#celular").val())
 			.concat("&cidade_id=").concat($("#cidade_id").val())
-			.concat("&clube_id=").concat($("#clube_id").val());
+			.concat("&clube_id=").concat($("#clube_id").val())
+			.concat("&evento_id=").concat({{$evento->id}});
 
 		if(tipo_documentos){
 			for(var i = 0; i < tipo_documentos.length; i++){
@@ -992,6 +1088,7 @@
 			dataType: "json",
 			success: function(data){
 				if(data.ok == 1){
+					$("#barra_progresso_cadastro").css("width","100%");
 					selectEnxadrista(data.enxadrista_id,function(){
 						$("#successMessage").html("<strong>O cadastro do enxadrista foi efetuado com sucesso!</strong>");
 						$("#success").modal();
@@ -1005,6 +1102,7 @@
 						$("#asksMessage_city").html(data.enxadrista_city);
 						$("#asksMessage_born").html(data.enxadrista_born);
 						$("#enxadrista_id").val(data.enxadrista_id);
+						$("#asksMessage_jaInscrito").val(data.esta_inscrito);
 						$("#asks").modal();
 					}else if(data.registred == 1){
 						selectEnxadrista(data.enxadrista_id,function(){
@@ -1015,6 +1113,73 @@
 					}else{
 						$("#alertsMessage").html(data.message);
 						$("#alerts").modal();
+					}
+				}
+			}
+		});
+	}
+	function enviarAtualizacaoEnxadrista(){
+		$("#barra_progresso_cadastro").css("width","90%");
+		var data = "";
+		if($("#name").attr("disabled") == "disabled") data 
+		var data = "name=".concat($("#name").val())
+			.concat("&born=").concat($("#born").val())
+			.concat("&sexos_id=").concat($("#sexos_id").val())
+			.concat("&pais_nascimento_id=").concat($("#pais_nascimento_id").val())
+			.concat("&cbx_id=").concat($("#cbx_id").val())
+			.concat("&fide_id=").concat($("#fide_id").val())
+			.concat("&lbx_id=").concat($("#lbx_id").val())
+			.concat("&email=").concat($("#email").val())
+			.concat("&pais_celular_id=").concat($("#pais_celular_id").val())
+			.concat("&celular=").concat($("#celular").val())
+			.concat("&cidade_id=").concat($("#cidade_id").val())
+			.concat("&clube_id=").concat($("#clube_id").val())
+			.concat("&evento_id=").concat({{$evento->id}});
+
+		if(tipo_documentos){
+			for(var i = 0; i < tipo_documentos.length; i++){
+				if($("#tipo_documento_".concat(tipo_documentos[i].id)).val() != ""){
+					data = data.concat("&tipo_documento_").concat(tipo_documentos[i].id).concat("=").concat($("#tipo_documento_".concat(tipo_documentos[i].id)).val());
+				}
+			}
+		}
+		
+		$.ajax({
+			type: "post",
+			url: "{{url("/inscricao/v2/".$evento->id."/enxadrista/atualizacao")}}/".concat($("#temporary_enxadrista_id").val()),
+			data: data,
+			dataType: "json",
+			success: function(data){
+				if(data.ok == 1){
+					$("#barra_progresso_cadastro").css("width","100%");
+					selectEnxadrista(data.enxadrista_id,function(){
+						$("#successMessage").html("<strong>A atualização de cadastro do enxadrista foi efetuada com sucesso!</strong>");
+						$("#success").modal();
+						zeraCadastro(false);
+						Loading.destroy();
+					});
+				}else{
+					if(data.ask == 1){
+						$("#asksMessage").html(data.message);
+						$("#asksMessage_id").html(data.enxadrista_id);
+						$("#asksMessage_name").html(data.enxadrista_name);
+						$("#asksMessage_city").html(data.enxadrista_city);
+						$("#asksMessage_born").html(data.enxadrista_born);
+						$("#enxadrista_id").val(data.enxadrista_id);
+						$("#asksMessage_jaInscrito").val(data.esta_inscrito);
+						$("#asks").modal();
+						Loading.destroy();
+					}else if(data.registred == 1){
+						selectEnxadrista(data.enxadrista_id,function(){
+							zeraCadastro(false);
+							$("#alertsMessage").html(data.message);
+							$("#alerts").modal();
+						Loading.destroy();
+						});
+					}else{
+						$("#alertsMessage").html(data.message);
+						$("#alerts").modal();
+						Loading.destroy();
 					}
 				}
 			}

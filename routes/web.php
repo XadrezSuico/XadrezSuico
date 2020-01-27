@@ -68,6 +68,8 @@ Route::group(["prefix"=>"inscricao"],function(){
         Route::get('/{id}/enxadrista/{enxadrista_id}', 'InscricaoController@telav2_buscarDadosEnxadrista')->name('inscricao.v2.enxadrista');
         Route::post('/{id}/inscricao', 'InscricaoController@telav2_adicionarNovaInscricao')->name('inscricao.v2.enviar');
         Route::post('/{id}/enxadrista/novo', 'InscricaoController@telav2_adicionarNovoEnxadrista')->name('inscricao.v2.enxadrista.novo');
+        Route::get('/{id}/enxadrista/conferencia/{enxadrista_id}', 'InscricaoController@telav2_conferenciaDados')->name('inscricao.v2.enxadrista.conferencia');
+        Route::post('/{id}/enxadrista/atualizacao/{enxadrista_id}', 'InscricaoController@telav2_atualizarEnxadrista')->name('inscricao.v2.enxadrista.atualizacao');
     });
 });
 

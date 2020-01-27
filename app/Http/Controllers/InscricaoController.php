@@ -598,6 +598,60 @@ class InscricaoController extends Controller
         return response()->json(["results" => $results, "pagination" => true]);
     }
 
+    public function telav2_conferenciaDados($id,$enxadrista_id)
+    {
+        $evento = Evento::find($id);
+        $enxadrista = Enxadrista::find($enxadrista_id);
+        if($enxadrista){
+            if(
+                !(
+                    $enxadrista->name != NULL &&
+                    $enxadrista->born != NULL &&
+                    $enxadrista->pais_id != NULL &&
+                    $enxadrista->cidade_id != NULL &&
+                    $enxadrista->email != NULL &&
+                    $enxadrista->sexos_id != NULL &&
+                    $enxadrista->pais_celular_id != NULL &&
+                    $enxadrista->celular != NULL &&
+                    $enxadrista->documentos()->count() > 0
+                )
+                ||
+                $enxadrista->howOld() >= 130
+            ){
+                $fields = array();
+                // 1/5
+                $fields["id"] = $enxadrista->id;
+                $fields["name"] = $enxadrista->name;
+                if($enxadrista->howOld() < 130) $fields["born"] = $enxadrista->getBorn();
+                $fields["sexos_id"] = $enxadrista->sexos_id;
+                $fields["pais_nascimento_id"] = $enxadrista->pais_id;
+                // 2/5 - NADA
+                // 3/5 - NADA
+                // 4/5
+                $fields["cbx_id"] = $enxadrista->cbx_id;
+                $fields["fide_id"] = $enxadrista->fide_id;
+                $fields["lbx_id"] = $enxadrista->lbx_id;
+                // 5/5
+                if($enxadrista->cidade){
+                    if($enxadrista->cidade->estado){
+                        if($enxadrista->cidade->estado->pais){
+                            $fields["cidade_id"] = $enxadrista->cidade_id;
+                            $fields["estados_id"] = $enxadrista->cidade->estado->id;
+                            $fields["pais_id"] = $enxadrista->cidade->estado->pais->id;
+                        }
+                    }
+                }
+                $fields["clube_id"] = $enxadrista->clube_id;
+
+
+                return response()->json(["ok" => 0, "error" => 1, "message" => "Antes de efetuar a inscrição, é necessária fazer uma atualização cadastral, por favor, preencha os dados cadastrais obrigatórios para continuar.", "necessita_atualizacao" => 1, "fields"=>$fields]);
+            }
+            return response()->json(["ok" => 1, "error" => 0]);
+        }else{
+            return response()->json(["ok" => 0, "error" => 1, "message" => "O enxadrista não foi encontrado.", "necessita_atualizacao" => 0]);
+        }
+    }
+
     public function telav2_buscarDadosEnxadrista($id,$enxadrista_id)
     {
         $evento = Evento::find($id);
@@ -838,7 +892,7 @@ class InscricaoController extends Controller
                         }
                     })->first();
                     if(count($temEnxadrista) > 0){
-                        return response()->json([
+                        $array = [
                             "ok"=>0,
                             "error"=>1,
                             "message" => "Já há um cadastro de Enxadrista com o Documento informado. Deseja utilizar ele?",
@@ -848,7 +902,14 @@ class InscricaoController extends Controller
                             "enxadrista_name" => $temEnxadrista->name,
                             "enxadrista_born" => $temEnxadrista->getBorn(),
                             "enxadrista_city" => $temEnxadrista->cidade->name,
-                        ]);
+                        ];
+                        
+                        if ($temEnxadrista->estaInscrito($request->input("evento_id"))) {
+                            $array["esta_inscrito"] = true;
+                        }else{
+                            $array["esta_inscrito"] = false;
+                        }
+                        return response()->json($array);
                     }
 
                     $documento = new Documento;
@@ -880,24 +941,38 @@ class InscricaoController extends Controller
 
         $temEnxadrista = Enxadrista::where([["name", "=", $nome_corrigido], ["born", "=", $enxadrista->born]])->first();
         if (count($temEnxadrista) > 0) {
-            if ($temEnxadrista->clube) {
-                return response()->json([
-                    "ok" => 0,
-                    "error" => 1,
-                    "message" => "Você já possui cadastro! Você será direcionado(a) à próxima etapa da inscrição!",
-                    "registred" => 1,
-                    "ask" => 0,
-                    "enxadrista_id" => $temEnxadrista->id,
-                ]);
-            } else {
-                return response()->json([
-                    "ok" => 0,
-                    "error" => 1,
-                    "message" => "Você já possui cadastro! Você será direcionado(a) à próxima etapa da inscrição!",
-                    "registred" => 1,
-                    "ask" => 0,
-                    "enxadrista_id" => $temEnxadrista->id,
-                ]);
+            
+            if ($temEnxadrista->estaInscrito($evento->id)) {
+                    return response()->json([
+                        "ok" => 0,
+                        "error" => 1,
+                        "message" => "Você já possui cadastro! Porém, já está inscrito neste evento. Caso queira efetuar alguma alteração, entre em contato com a equipe do evento ou envie uma mensagem de email para o endereço de email para " . env("EMAIL_ALTERACAO", "circuitoxadrezcascavel@gmail.com") . ".",
+                        "registred" => 0,
+                        "ask" => 0,
+                        "enxadrista_id" => $temEnxadrista->id,
+                    ]);
+            }else{
+                if ($temEnxadrista->clube) {
+                    return response()->json([
+                        "ok" => 0,
+                        "error" => 1,
+                        "message" => "Você já possui cadastro! Você será direcionado(a) à próxima etapa da inscrição!",
+                        "registred" => 1,
+                        "ask" => 0,
+                        "esta_inscrito" => false,
+                        "enxadrista_id" => $temEnxadrista->id,
+                    ]);
+                } else {
+                    return response()->json([
+                        "ok" => 0,
+                        "error" => 1,
+                        "message" => "Você já possui cadastro! Você será direcionado(a) à próxima etapa da inscrição!",
+                        "registred" => 1,
+                        "ask" => 0,
+                        "esta_inscrito" => 0,
+                        "enxadrista_id" => $temEnxadrista->id,
+                    ]);
+                }
             }
         }
 
@@ -942,6 +1017,267 @@ class InscricaoController extends Controller
             } else {
                 return response()->json(["ok" => 1, "error" => 0, "enxadrista_id" => $enxadrista->id, "ask" => 0]);
             }
+        } else {
+            return response()->json(["ok" => 0, "error" => 1, "message" => "Um erro inesperado aconteceu. Por favor, tente novamente mais tarde.", "registred" => 0, "ask" => 0]);
+        }
+    }
+
+    public function telav2_atualizarEnxadrista($evento_id, $enxadrista_id, Request $request)
+    {
+        
+        $evento = Evento::find($evento_id);
+        $enxadrista = Enxadrista::find($enxadrista_id);
+        if(!$enxadrista){
+            return response()->json(["ok" => 0, "error" => 1, "message" => "O cadastro do enxadrista não foi encontrado.", "registred" => 0, "ask" => 0]);
+        }
+        if(
+            (
+                $enxadrista->name != NULL &&
+                $enxadrista->born != NULL &&
+                $enxadrista->pais_id != NULL &&
+                $enxadrista->cidade_id != NULL &&
+                $enxadrista->email != NULL &&
+                $enxadrista->sexos_id != NULL &&
+                $enxadrista->pais_celular_id != NULL &&
+                $enxadrista->celular != NULL &&
+                $enxadrista->documentos()->count() > 0
+            )
+            &&
+            $enxadrista->howOld() < 130
+        ){
+            return response()->json(["ok" => 0, "error" => 1, "message" => "O enxadrista não necessita de atualização de cadastro.", "registred" => 0, "ask" => 0]);
+        }
+
+        if (
+            !$request->has("name") ||
+            !$request->has("born") ||
+            !$request->has("sexos_id") ||
+            !$request->has("email") ||
+            !$request->has("pais_nascimento_id") ||
+            !$request->has("pais_celular_id") ||
+            !$request->has("celular") ||
+            !$request->has("cidade_id")
+        ) {
+            return response()->json(["ok" => 0, "error" => 1, "message" => "Um dos campos obrigatórios não está preenchido. Por favor, verifique e envie novamente!<br/><br/><strong>Observação</strong>: TODOS os Campos com <strong>*</strong> SÃO OBRIGATÓRIOS!", "registred" => 0, "ask" => 0]);
+        } elseif (
+            $request->input("name") == null || $request->input("name") == "" ||
+            $request->input("born") == null || $request->input("born") == "" ||
+            $request->input("sexos_id") == null || $request->input("sexos_id") == "" ||
+            $request->input("email") == null || $request->input("email") == "" ||
+            $request->input("pais_nascimento_id") == null || $request->input("pais_nascimento_id") == "" ||
+            $request->input("pais_celular_id") == null || $request->input("pais_celular_id") == "" ||
+            $request->input("celular") == null || $request->input("celular") == "" ||
+            $request->input("cidade_id") == null || $request->input("cidade_id") == ""
+        ) {
+            return response()->json(["ok" => 0, "error" => 1, "message" => "Um dos campos obrigatórios não está preenchido. Por favor, verifique e envie novamente!<br/><br/><strong>Observação</strong>: TODOS os Campos com <strong>*</strong> SÃO OBRIGATÓRIOS!", "registred" => 0, "ask" => 0]);
+        }
+
+        $validator = \Validator::make($request->all(), [
+            'email' => 'required|string|email|max:255',
+        ]);
+        if ($validator->fails()) {
+            return response()->json(["ok" => 0, "error" => 1, "message" => "O e-mail é inválido. Por favor, verifique e tente novamente.", "registred" => 0, "ask" => 0]);
+        }
+
+        // Algoritmo para eliminar os problemas com espaçamentos duplos ou até triplos.
+        $nome_corrigido = "";
+
+        $part_names = explode(" ", mb_strtoupper($request->input("name")));
+        foreach ($part_names as $part_name) {
+            if ($part_name != ' ') {
+                $trim = trim($part_name);
+                if (strlen($trim) > 0) {
+                    $nome_corrigido .= $trim;
+                    $nome_corrigido .= " ";
+                }
+            }
+        }
+
+
+        $documentos = array();
+
+        foreach(TipoDocumentoPais::where([["pais_id","=",$request->input("pais_nascimento_id")]])->get() as $tipo_documento_pais){
+            if($tipo_documento_pais->e_requerido){
+                if(!$request->has("tipo_documento_".$tipo_documento_pais->tipo_documento->id)){
+                    return response()->json(["ok"=>0,"error"=>1,"Há um documento que é requerido que não foi informado.", "registred" => 0, "ask" => 0]);
+                }
+                if(
+                    $request->input("tipo_documento_".$tipo_documento_pais->tipo_documento->id) == "" || 
+                    $request->input("tipo_documento_".$tipo_documento_pais->tipo_documento->id) == NULL
+                ){
+                    return response()->json(["ok"=>0,"error"=>1,"Há um documento que é requerido que não foi informado.", "registred" => 0, "ask" => 0]);
+                }
+            }
+            if($request->has("tipo_documento_".$tipo_documento_pais->tipo_documento->id)){
+                if(
+                    $request->input("tipo_documento_".$tipo_documento_pais->tipo_documento->id) != "" && 
+                    $request->input("tipo_documento_".$tipo_documento_pais->tipo_documento->id) != NULL
+                ){
+                    
+                    $temEnxadrista = Enxadrista::whereHas("documentos",function($q1) use($request, $tipo_documento_pais){
+                        if($tipo_documento_pais->tipo_documento->id == 1){
+                            $q1->where([
+                                ["tipo_documentos_id","=",$tipo_documento_pais->tipo_documento->id],
+                                ["numero","=",Util::numeros($request->input("tipo_documento_".$tipo_documento_pais->tipo_documento->id))],
+                            ]);
+                        }else{
+                            $q1->where([
+                                ["tipo_documentos_id","=",$tipo_documento_pais->tipo_documento->id],
+                                ["numero","=",$request->input("tipo_documento_".$tipo_documento_pais->tipo_documento->id)],
+                            ]);
+                        }
+                    })
+                    ->where([
+                        ["id","!=",$enxadrista->id]
+                    ])
+                    ->first();
+                    if(count($temEnxadrista) > 0){
+                        $array = [
+                            "ok"=>0,
+                            "error"=>1,
+                            "message" => "Já há um cadastro de Enxadrista com o Documento informado. Deseja utilizar ele?",
+                            "registred" => 0,
+                            "ask" => 1,
+                            "enxadrista_id" => $temEnxadrista->id,
+                            "enxadrista_name" => $temEnxadrista->name,
+                            "enxadrista_born" => $temEnxadrista->getBorn(),
+                            "enxadrista_city" => $temEnxadrista->cidade->name,
+                        ];
+                        
+                        if ($temEnxadrista->estaInscrito($request->input("evento_id"))) {
+                            $array["esta_inscrito"] = true;
+                        }else{
+                            $array["esta_inscrito"] = false;
+                        }
+                        return response()->json($array);
+                    }
+
+                    $documento = new Documento;
+                    $documento->tipo_documentos_id = $tipo_documento_pais->tipo_documento->id;
+                    if($tipo_documento_pais->tipo_documento->id == 1){
+                        $documento->numero = Util::numeros($request->input("tipo_documento_".$tipo_documento_pais->tipo_documento->id));
+                    }else{
+                        $documento->numero = $request->input("tipo_documento_".$tipo_documento_pais->tipo_documento->id);
+                    }
+
+                    $documentos[] = $documento;
+                }
+            }
+        }
+
+        if(count($documentos) == 0){
+            return response()->json(["ok"=>0,"error"=>1,"É obrigatório a inserção de ao menos UM DOCUMENTO.", "registred" => 0, "ask" => 0]);
+        }
+
+        $nome_corrigido = trim($nome_corrigido);
+        if(!$enxadrista->born){
+            if (!$enxadrista->setBorn($request->input("born"))) {
+                return response()->json(["ok" => 0, "error" => 1, "message" => "A data de nascimento é inválida.", "registred" => 0, "ask" => 0]);
+            }
+            if($enxadrista->howOld() >= 130){
+                return response()->json(["ok" => 0, "error" => 1, "message" => "A data de nascimento parece inválida. Por favor, verifique e tente novamente.", "registred" => 0, "ask" => 0]);
+            }
+        }
+        if(
+            !$enxadrista->name || !$enxadrista->born
+        ){
+            $temEnxadrista = Enxadrista::where([["name", "=", $nome_corrigido], ["born", "=", $enxadrista->born],["id","!=",$enxadrista->id]])->first();
+            if (count($temEnxadrista) > 0) {
+                
+                if ($temEnxadrista->estaInscrito($evento->id)) {
+                        return response()->json([
+                            "ok" => 0,
+                            "error" => 1,
+                            "message" => "Você já possui cadastro! Porém, já está inscrito neste evento. Caso queira efetuar alguma alteração, entre em contato com a equipe do evento ou envie uma mensagem de email para o endereço de email para " . env("EMAIL_ALTERACAO", "circuitoxadrezcascavel@gmail.com") . ".",
+                            "registred" => 0,
+                            "ask" => 0,
+                            "enxadrista_id" => $temEnxadrista->id,
+                        ]);
+                }else{
+                    if ($temEnxadrista->clube) {
+                        return response()->json([
+                            "ok" => 0,
+                            "error" => 1,
+                            "message" => "Você já possui cadastro! Você será direcionado(a) à próxima etapa da inscrição!",
+                            "registred" => 1,
+                            "ask" => 0,
+                            "esta_inscrito" => false,
+                            "enxadrista_id" => $temEnxadrista->id,
+                        ]);
+                    } else {
+                        return response()->json([
+                            "ok" => 0,
+                            "error" => 1,
+                            "message" => "Você já possui cadastro! Você será direcionado(a) à próxima etapa da inscrição!",
+                            "registred" => 1,
+                            "ask" => 0,
+                            "esta_inscrito" => 0,
+                            "enxadrista_id" => $temEnxadrista->id,
+                        ]);
+                    }
+                }
+            }
+        }
+
+        if(!$enxadrista->name){
+            $enxadrista->name = $nome_corrigido;
+            $enxadrista->splitName();
+        } 
+        if(!$enxadrista->sexos_id) $enxadrista->sexos_id = $request->input("sexos_id");
+        if(!$enxadrista->pais_id) $enxadrista->pais_id = $request->input("pais_nascimento_id");
+        $enxadrista->email = $request->input("email");
+        $enxadrista->pais_celular_id = $request->input("pais_celular_id");
+        $enxadrista->celular = $request->input("celular");
+        if ($request->has("cbx_id")) {
+            if ($request->input("cbx_id") > 0) {
+                $enxadrista->cbx_id = $request->input("cbx_id");
+            }else{
+                $enxadrista->cbx_id = NULL;
+            }
+        }else{
+            $enxadrista->cbx_id = NULL;
+        }
+        if ($request->has("fide_id")) {
+            if ($request->input("fide_id") > 0) {
+                $enxadrista->fide_id = $request->input("fide_id");
+            }else{
+                $enxadrista->fide_id = NULL;
+            }
+        }else{
+            $enxadrista->fide_id = NULL;
+        }
+        if ($request->has("lbx_id")) {
+            if ($request->input("lbx_id") > 0) {
+                $enxadrista->lbx_id = $request->input("lbx_id");
+            }else{
+                $enxadrista->lbx_id = NULL;
+            }
+        }else{
+            $enxadrista->lbx_id = NULL;
+        }
+        $enxadrista->cidade_id = $request->input("cidade_id");
+        if ($request->has("clube_id")) {
+            if ($request->input("clube_id") > 0) {
+                $enxadrista->clube_id = $request->input("clube_id");
+            }else{
+                $enxadrista->clube_id = NULL;
+            }
+        }else{
+            $enxadrista->clube_id = NULL;
+        }
+        $enxadrista->save();
+
+        foreach($enxadrista->documentos->all() as $documento){
+            $documento->delete();
+        }
+
+        foreach($documentos as $documento){
+            $documento->enxadrista_id = $enxadrista->id;
+            $documento->save();
+        }
+
+        if ($enxadrista->id > 0) {
+            return response()->json(["ok" => 1, "error" => 0, "enxadrista_id" => $enxadrista->id, "ask" => 0]);
         } else {
             return response()->json(["ok" => 0, "error" => 1, "message" => "Um erro inesperado aconteceu. Por favor, tente novamente mais tarde.", "registred" => 0, "ask" => 0]);
         }
