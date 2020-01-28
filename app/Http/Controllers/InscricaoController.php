@@ -16,6 +16,7 @@ use App\Sexo;
 use App\Documento;
 use App\TipoDocumento;
 use App\TipoDocumentoPais;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Util\Util;
 use Illuminate\Http\Request;
 
@@ -26,6 +27,7 @@ class InscricaoController extends Controller
         $evento = Evento::find($id);
         $sexos = Sexo::all();
         $token = "";
+        $user = Auth::user();
         if ($evento) {
             if ($evento->e_inscricao_apenas_com_link) {
                 if ($evento->inscricaoLiberada($request->input("token"))) {
@@ -33,17 +35,22 @@ class InscricaoController extends Controller
                         return view("inscricao.encerradas", compact("evento"));
                     } else {
                         $token = $request->input("token");
-                        return view("inscricao.inscricao_nova", compact("evento", "sexos", "token"));
+                        return view("inscricao.inscricao_nova", compact("evento", "sexos", "token","user"));
                     }
                 } else {
                     return view("inscricao.naopermitida");
                 }
             } else {
-                if ($evento->inscricoes_encerradas()) {
-                    return view("inscricao.encerradas", compact("evento"));
-                } else {
-                    return view("inscricao.inscricao", compact("evento", "sexos"));
+                if (
+                    !$user->hasPermissionGlobal() &&
+                    !$user->hasPermissionEventByPerfil($evento->id, [3, 4]) &&
+                    !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [6,7])
+                ) {
+                    if ($evento->inscricoes_encerradas()) {
+                        return view("inscricao.encerradas", compact("evento"));
+                    }
                 }
+                return view("inscricao.inscricao_nova", compact("evento", "sexos","user"));
             }
         } else {
             return view("inscricao.naoha");
@@ -508,6 +515,7 @@ class InscricaoController extends Controller
 
     public function telav2_buscaEnxadrista($id,Request $request)
     {
+        $user = Auth::user();
         $evento = Evento::find($id);
         $enxadristas = Enxadrista::where([
             ["id", "like", "%" . $request->input("q") . "%"],
@@ -537,9 +545,51 @@ class InscricaoController extends Controller
                 $item["text"] .= " | Rating: ".$rating;
             }
             
-            if ($enxadrista->estaInscrito($evento->id)) {
-                $item["text"] .= " - Já Está Inscrito neste Evento";
-                $item["permitida_inscricao"] = false;
+            if($user){
+                
+                if (
+                    $user->hasPermissionGlobal() ||
+                    $user->hasPermissionEventByPerfil($evento->id, [3, 4]) ||
+                    $user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [6,7])
+                ) {
+                    // Sem Inscrição
+                    $item["status"] = 1;
+                    if ($enxadrista->estaInscrito($evento->id)) {
+                        // Inscrito - Não Confirmado
+                        $item["status"] = 2;
+                        $inscricao = Inscricao::where([
+                            ["enxadrista_id","=",$enxadrista->id],
+                        ])
+                        ->whereHas("torneio",function($q1) use ($evento){
+                            $q1->where([
+                                ["evento_id","=",$evento->id]
+                            ]);
+                        })
+                        ->first();
+                        $item["inscricao_id"] = $inscricao->id;
+                        if($inscricao->confirmado){
+                            // Inscrito - Confirmado
+                            $item["status"] = 3;
+                        }
+                    }
+                    if ($enxadrista->estaInscrito($evento->id)) {
+                        $item["permitida_inscricao"] = false;
+                    }
+                }else{
+                    if ($enxadrista->estaInscrito($evento->id)) {
+                        $item["text"] .= " - Já Está Inscrito neste Evento";
+                        $item["permitida_inscricao"] = false;
+                    }
+                    // Deslogado ou Sem permissão
+                    $item["status"] = 0;
+                }
+            }else{
+                if ($enxadrista->estaInscrito($evento->id)) {
+                    $item["text"] .= " - Já Está Inscrito neste Evento";
+                    $item["permitida_inscricao"] = false;
+                }
+                // Deslogado ou Sem permissão
+                $item["status"] = 0;
             }
             $results[] = $item;
         }
@@ -1280,6 +1330,181 @@ class InscricaoController extends Controller
             return response()->json(["ok" => 1, "error" => 0, "enxadrista_id" => $enxadrista->id, "ask" => 0]);
         } else {
             return response()->json(["ok" => 0, "error" => 1, "message" => "Um erro inesperado aconteceu. Por favor, tente novamente mais tarde.", "registred" => 0, "ask" => 0]);
+        }
+    }
+
+
+
+    
+
+    public function telav2_getInscricaoDados($id, $inscricao_id)
+    {
+        $user = Auth::user();
+        $evento = Evento::find($id);
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionEventByPerfil($evento->id, [4,5]) &&
+            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
+        ) {
+            return response()->json(["ok" => 0, "error" => 1, "message" => "Você não possui permissão para fazer isto.", "registred" => 0]);
+        }
+        
+        $inscricao = Inscricao::find($inscricao_id);
+        if ($inscricao) {
+            if ($inscricao->clube) {
+                return response()->json(["ok" => 1, "error" => 0, "enxadrista_id" => $inscricao->enxadrista->id, "cidade_id" => $inscricao->cidade->id, "categoria_id" => $inscricao->categoria->id, "clube_id" => $inscricao->clube->id]);
+            } else {
+                return response()->json(["ok" => 1, "error" => 0, "enxadrista_id" => $inscricao->enxadrista->id, "cidade_id" => $inscricao->cidade->id, "categoria_id" => $inscricao->categoria->id, "clube_id" => 0]);
+            }
+        } else {
+            return response()->json(["ok" => 0, "error" => 1, "message" => "Não há enxadrista com esse código!"]);
+        }
+    }
+
+    
+    public function telav2_confirmarInscricao($id,Request $request)
+    {
+        $user = Auth::user();
+        $evento = Evento::find($id);
+        if($user){
+            if (
+                !$user->hasPermissionGlobal() &&
+                !$user->hasPermissionEventByPerfil($evento->id, [4,5]) &&
+                !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
+            ) {
+                return response()->json(["ok" => 0, "error" => 1, "message" => "Você não possui permissão para fazer isto.", "registred" => 0]);
+            }
+            
+            if (
+                !$request->has("inscricao_id") || !$request->has("categoria_id") || !$request->has("cidade_id") || !$request->has("evento_id")
+            ) {
+                return response()->json(["ok" => 0, "error" => 1, "message" => "Um dos campos obrigatórios não está preenchido. Por favor, verifique e envie novamente!", "registred" => 0]);
+            } elseif (
+                $request->input("inscricao_id") == null || $request->input("inscricao_id") == "" ||
+                $request->input("categoria_id") == null || $request->input("categoria_id") == "" ||
+                $request->input("cidade_id") == null || $request->input("cidade_id") == "" ||
+                $request->input("evento_id") == null || $request->input("evento_id") == ""
+            ) {
+                return response()->json(["ok" => 0, "error" => 1, "message" => "Um dos campos obrigatórios não está preenchido. Por favor, verifique e envie novamente!"]);
+            }
+
+            $inscricao = Inscricao::find($request->input("inscricao_id"));
+            if (!$inscricao) {
+                return response()->json(["ok" => 0, "error" => 1, "message" => "Não existe um inscrição com o código informado!"]);
+            }
+            if ($inscricao->confirmado) {
+                return response()->json(["ok" => 0, "error" => 1, "message" => "A inscrição já está confirmada!"]);
+            }
+            $torneio = null;
+            if ($request->input("categoria_id") != $inscricao->categoria_id) {
+                $evento = Evento::find($request->input("evento_id"));
+
+                foreach ($evento->torneios->all() as $Torneio) {
+                    foreach ($Torneio->categorias->all() as $categoria) {
+                        if ($categoria->categoria_id == $request->input("categoria_id")) {
+                            $torneio = $Torneio;
+                        }
+                    }
+                }
+                if (!$torneio) {
+                    return response()->json(["ok" => 0, "error" => 1, "message" => "Ocorreu um erro inesperado de pesquisa de Torneio. Por favor, tente novamente mais tarde."]);
+                }
+
+                $categoria = Categoria::find($request->input("categoria_id"));
+                if ($categoria) {
+                    if ($categoria->idade_minima) {
+                        if (!($categoria->idade_minima <= $enxadrista->howOld())) {
+                            return response()->json(["ok" => 0, "error" => 1, "message" => "Você não está apto a participar da categoria que você enviou! Motivo: Não possui idade mínima."]);
+                        }
+                    }
+                    if ($categoria->idade_maxima) {
+                        if (!($categoria->idade_maxima >= $enxadrista->howOld())) {
+                            return response()->json(["ok" => 0, "error" => 1, "message" => "Você não está apto a participar da categoria que você enviou! Motivo: Idade ultrapassa a máxima."]);
+                        }
+                    }
+                }
+                $inscricao->categoria_id = $categoria->id;
+                $inscricao->torneio_id = $torneio->id;
+            }
+
+            if ($inscricao->cidade_id != $request->input("cidade_id")) {
+                $inscricao->cidade_id = $request->input("cidade_id");
+            }
+
+            if ($inscricao->clube_id != $request->input("clube_id")) {
+                if ($request->has("clube_id")) {
+                    if ($request->input("clube_id") > 0) {
+                        $inscricao->clube_id = $request->input("clube_id");
+                    }
+                }
+            }
+
+            $inscricao->confirmado = true;
+            $inscricao->regulamento_aceito = true;
+            $inscricao->save();
+
+            if ($request->has("atualizar_cadastro")) {
+                $enxadrista = Enxadrista::find($inscricao->enxadrista_id);
+                $enxadrista->cidade_id = $inscricao->cidade_id;
+                if ($request->has("clube_id")) {
+                    if ($request->input("clube_id") > 0) {
+                        $enxadrista->clube_id = $request->input("clube_id");
+                    } else {
+                        $enxadrista->clube_id = null;
+                    }
+                } else {
+                    $enxadrista->clube_id = null;
+                }
+                $enxadrista->save();
+
+                if ($inscricao->id > 0) {
+                    if ($inscricao->confirmado) {
+                        return response()->json(["ok" => 1, "error" => 0, "updated" => 1, "confirmed" => 1]);
+                    } else {
+                        return response()->json(["ok" => 1, "error" => 0, "updated" => 1, "confirmed" => 0]);
+                    }
+                } else {
+                    return response()->json(["ok" => 0, "error" => 1, "message" => "Um erro inesperado aconteceu. Por favor, tente novamente mais tarde.", "updated" => 1]);
+                }
+            } else {
+                if ($inscricao->id > 0) {
+                    if ($inscricao->confirmado) {
+                        return response()->json(["ok" => 1, "error" => 0, "updated" => 0, "confirmed" => 1]);
+                    } else {
+                        return response()->json(["ok" => 1, "error" => 0, "updated" => 0, "confirmed" => 0]);
+                    }
+                } else {
+                    return response()->json(["ok" => 0, "error" => 1, "message" => "Um erro inesperado aconteceu. Por favor, tente novamente mais tarde.", "updated" => 0]);
+                }
+            }
+        } else {
+            return response()->json(["ok" => 0, "error" => 1, "message" => "Você não possui permissão para fazer isto.", "registred" => 0]);
+        }
+    }
+
+    public function telav2_desconfirmarInscricao($id,$inscricao_id)
+    {
+        $user = Auth::user();
+        $evento = Evento::find($id);
+        if($user){
+            if (
+                !$user->hasPermissionGlobal() &&
+                !$user->hasPermissionEventByPerfil($evento->id, [4,5]) &&
+                !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
+            ) {
+                return response()->json(["ok" => 0, "error" => 1, "message" => "Você não possui permissão para fazer isto.", "registred" => 0]);
+            }
+            
+            $inscricao = Inscricao::find($inscricao_id);
+            if($inscricao){
+                $inscricao->confirmado = false;
+                $inscricao->save();
+
+                return response()->json(["ok" => 1, "error" => 0]);
+            }
+            return response()->json(["ok" => 0, "error" => 1, "message" => "Você não possui permissão para fazer isto.", "registred" => 0]);
+        } else {
+            return response()->json(["ok" => 0, "error" => 1, "message" => "Você não possui permissão para fazer isto.", "registred" => 0]);
         }
     }
 

@@ -322,7 +322,6 @@
 				<h4>Nome Completo: <span id="enxadrista_mostrar_nome">Carregando...</span></h4>
 				<h4>Data de Nascimento: <span id="enxadrista_mostrar_born">Carregando...</span></h4>
 				<hr/>
-				<input type="hidden" id="enxadrista_id" />
 				<div class="form-group">
 					<label for="inscricao_categoria_id">Categoria *</label>
 					<select id="inscricao_categoria_id" class="this_is_select2 form-control">
@@ -376,6 +375,55 @@
 				</div>
 				<button id="enviar_inscricao" class="btn btn-success">Enviar Inscrição</button>
 				<button id="cancelar_inscricao" class="btn btn-danger">Cancelar Inscrição</button>
+			</div>
+			<div id="confirmacao" style="display:none">
+				<h3>Confirmar Inscrição:</h3>
+				<h4>ID: <span id="enxadrista_confirmar_id">Carregando...</span></h4>
+				<h4>Nome Completo: <span id="enxadrista_confirmar_nome">Carregando...</span></h4>
+				<h4>Data de Nascimento: <span id="enxadrista_confirmar_born">Carregando...</span></h4>
+				<hr/>
+				<input type="hidden" id="enxadrista_id" />
+				<div class="form-group">
+					<label for="confirmacao_categoria_id">Categoria *</label>
+					<select id="confirmacao_categoria_id" class="this_is_select2 form-control">
+						<option value="">--- Selecione ---</option>
+					</select>
+				</div>
+				<div class="form-group">
+					<label for="confirmacao_pais_id">País *</label>
+					<select id="confirmacao_pais_id" class="pais_id this_is_select2 form-control">
+						<option value="">--- Selecione um país ---</option>
+						@foreach(\App\Pais::all() as $pais)
+							<option value="{{$pais->id}}">{{$pais->nome}} @if($pais->codigo_iso) ({{$pais->codigo_iso}}) @endif</option>
+						@endforeach
+					</select>
+				</div>
+				<div class="form-group">
+					<label for="confirmacao_estados_id">Estado/Província *</label>
+					<select id="confirmacao_estados_id" class="estados_id this_is_select2 form-control">
+						<option value="">--- Selecione um país primeiro ---</option>
+					</select>
+                    <button id="estadoNaoCadastradoConfirmacao" class="btn btn-success">O meu estado não está cadastrado</button>
+				</div>
+				<div class="form-group">
+					<label for="confirmacao_cidade_id">Cidade *</label>
+					<select id="confirmacao_cidade_id" class="cidade_id this_is_select2 form-control">
+						<option value="">--- Selecione um estado primeiro ---</option>
+					</select>
+                    <button id="cidadeNaoCadastradaConfirmacao" class="btn btn-success">A minha cidade não está cadastrada</button>
+				</div>
+				<div class="form-group">
+					<label for="confirmacao_clube_id">Clube</label>
+					<select id="confirmacao_clube_id" class="clube_id this_is_select2 form-control">
+						<option value="">--- Você pode escolher um clube ---</option>
+					</select>
+                    <button id="clubeNaoCadastradoInscricao" class="btn btn-success">O meu clube não está cadastrado</button>
+				</div>
+				<div class="form-group">
+					<label><input type="checkbox" id="atualizar_cadastro_confirmacao"> Atualizar Cadastro</label><br/>
+				</div>
+				<button id="confirmar_inscricao" class="btn btn-success">Confirmar Inscrição</button>
+				<button id="cancelar_confirmacao" class="btn btn-danger">Cancelar Confirmação</button>
 			</div>
 		</div>
 		<div class="box-footer">
@@ -437,6 +485,13 @@
 <input type="hidden" id="temporary_enxadrista_id" class="temporary_enxadrista" />
 <input type="hidden" id="temporary_estados_id" class="temporary_enxadrista" />
 <input type="hidden" id="temporary_cidade_id" class="temporary_enxadrista" />
+<input type="hidden" id="enxadrista_id" />
+<input type="hidden" id="inscricao_id" />
+
+<!-- Para processo de confirmação -->
+<input type="hidden" id="temporary_confirmacao_categoria_id" class="temporary_confirmacao" />
+<input type="hidden" id="temporary_confirmacao_cidade_id" class="temporary_confirmacao" />
+<input type="hidden" id="temporary_confirmacao_clube_id" class="temporary_confirmacao" />
 @endsection
 
 @section("js")
@@ -506,11 +561,29 @@
 				$.getJSON("{{url("/inscricao/v2/".$evento->id."/busca/enxadrista")}}?q=".concat(nome_enxadrista),function(data){
 					html = "";
 					for (i = 0; i < data.results.length; i++) {
-						if(data.results[i].permitida_inscricao){
-							html = html.concat("<a class='btn btn-default btn-large permitida_inscricao' onclick='selectEnxadrista(").concat(data.results[i].id).concat(",false)'>").concat(data.results[i].name).concat("</a><br/>");
-						}else{
-							html = html.concat("<a class='btn btn-default btn-large' disabled='disabled'>").concat(data.results[i].name).concat("</a><br/>");
-						}
+						@if($user)
+							if(data.results[i].status == 0){
+								if(data.results[i].permitida_inscricao){
+									html = html.concat("<a class='btn btn-default btn-large permitida_inscricao' onclick='selectEnxadrista(").concat(data.results[i].id).concat(",false)'>").concat(data.results[i].name).concat("</a><br/>");
+								}else{
+									html = html.concat("<a class='btn btn-default btn-large' disabled='disabled'>").concat(data.results[i].name).concat("</a><br/>");
+								}
+							}else{
+								if(data.results[i].status == 1){
+									html = html.concat("<a class='btn btn-default btn-large permitida_inscricao' onclick='selectEnxadrista(").concat(data.results[i].id).concat(",false)' title='Efetuar Inscrição'>").concat(data.results[i].name).concat("</a><br/>");
+								}else if(data.results[i].status == 2){
+									html = html.concat("<a class='btn btn-success btn-large permitida_inscricao' onclick='selectConfirmarEnxadrista(").concat(data.results[i].inscricao_id).concat(",false)' title='Confirmar Enxadrista'>").concat(data.results[i].name).concat(" (Inscrito)</a><br/>");
+								}else if(data.results[i].status == 3){
+									html = html.concat("<a class='btn btn-danger btn-large permitida_inscricao' onclick='enviarDesconfirmacao(").concat(data.results[i].inscricao_id).concat(",false)' title='Desconfirmar Enxadrista'>").concat(data.results[i].name).concat(" (Confirmado)</a><br/>");
+								}
+							}
+						@else
+							if(data.results[i].permitida_inscricao){
+								html = html.concat("<a class='btn btn-default btn-large permitida_inscricao' onclick='selectEnxadrista(").concat(data.results[i].id).concat(",false)'>").concat(data.results[i].name).concat("</a><br/>");
+							}else{
+								html = html.concat("<a class='btn btn-default btn-large' disabled='disabled'>").concat(data.results[i].name).concat("</a><br/>");
+							}
+						@endif
 						html = html.concat("Informações: ").concat(data.results[i].text).concat("<br/><br/>");
 					} 
 					if(data.results.length == 0){
@@ -540,6 +613,13 @@
 			zeraInscricao();
 		});
 
+		$("#cancelar_confirmacao").on("click",function(){
+			Loading.enable(loading_default_animation, 800);
+			$(".permitida_inscricao").removeAttr("disabled");
+			
+			zeraConfirmacao();
+		});
+
 		$("#enviar_inscricao").on("click",function(){
 			Loading.enable(loading_default_animation, 10000);
 			
@@ -550,6 +630,12 @@
 			Loading.enable(loading_default_animation, 10000);
 			
 			enviarAtualizacaoEnxadrista();
+		});
+
+		$("#confirmar_inscricao").on("click",function(){
+			Loading.enable(loading_default_animation, 10000);
+			
+			enviarConfirmacao();
 		});
 
 		
@@ -834,6 +920,100 @@
 		});
 		
 	}
+	function selectConfirmarEnxadrista(id,callback_on_ok){
+    	Loading.enable(loading_default_animation, 10000);
+		$("#inscricao_id").val(id);
+		$(".cadastro_enxadrista_input").removeAttr("disabled");
+		$(".cadastro_enxadrista_select").removeAttr("disabled");
+
+		$("#texto_pesquisa").attr("disabled","disabled");
+		$(".permitida_inscricao").attr("disabled","disabled");
+		
+		$.getJSON("{{url("/inscricao/v2/".$evento->id."/inscricao/get/")}}/".concat($("#inscricao_id").val()),function(data){
+			$("#enxadrista_id").val(data.enxadrista_id);
+			$("#temporary_confirmacao_categoria_id").val(data.categoria_id);
+			$("#temporary_confirmacao_cidade_id").val(data.cidade_id);
+			$("#temporary_confirmacao_clube_id").val(data.clube_id);
+			$.getJSON("{{url("/inscricao/v2/".$evento->id."/enxadrista")}}/".concat($("#enxadrista_id").val()),function(data){
+				if(data.ok == 1){
+					$("#enxadrista_confirmar_id").html(data.data.id);
+					$("#enxadrista_confirmar_nome").html(data.data.name);
+					$("#enxadrista_confirmar_born").html(data.data.born);
+					$('#confirmacao_categoria_id').html("").trigger('change');
+					for (i = 0; i < data.data.categorias.length; i++) {
+						var newOptionCategoria = new Option(data.data.categorias[i].name, data.data.categorias[i].id, false, false);
+						$('#confirmacao_categoria_id').append(newOptionCategoria).trigger('change');
+						if(data.data.categorias.length == 1){
+							if($("#temporary_confirmacao_categoria_id").val() == data.data.categorias[i].id){
+								$('#confirmacao_categoria_id').val($("#temporary_confirmacao_categoria_id").val()).trigger('change');
+							}else{
+								$('#confirmacao_categoria_id').val(data.data.categorias[i].id).trigger('change');
+							}
+							$("#confirmacao_categoria_id").attr("disabled","disabled").change();
+						}else{
+							if(i+1 == data.data.categorias.length){
+								$('#confirmacao_categoria_id').val($("#temporary_confirmacao_categoria_id").val()).trigger('change');
+							}
+							$("#confirmacao_categoria_id").removeAttr("disabled").change();
+						}
+					}
+					$("#confirmacao_pais_id").val(data.data.cidade.estado.pais.id).change();
+					setTimeout(function(){
+						buscaEstados(2,false,function(){
+							$("#confirmacao_estados_id").val(data.data.cidade.estado.id).change();
+							setTimeout(function(){
+								buscaCidades(2,function(){
+									$("#confirmacao_cidade_id").val(data.data.cidade.id).change();
+									Loading.destroy();
+								});
+							},200);
+						});
+						verificaLiberaCadastro(2);
+					},200);
+
+					if(data.data.clube.id != 0){
+						var newOptionClube = new Option(data.data.clube.name, data.data.clube.id, false, false);
+						$('#confirmacao_clube_id').append(newOptionClube).trigger('change');
+						$("#confirmacao_clube_id").val(data.data.clube.id).change();
+					}
+				
+					$("#form_pesquisa").css("display","none");
+					$("#pesquisa").css("display","none");
+					$("#enxadrista").css("display","none");
+					$("#inscricao").css("display","none");
+					$("#confirmacao").css("display","");
+					
+					if(callback_on_ok){
+						callback_on_ok();
+						setTimeout(function(){
+							$("#enxadrista_id").val("");
+							$("#temporary_confirmacao_categoria_id").val("");
+							$("#temporary_confirmacao_cidade_id").val("");
+							$("#temporary_confirmacao_clube_id").val("");
+						},1000);
+					}
+				}else{
+					$("#texto_pesquisa").removeAttr("disabled");
+					$(".permitida_inscricao").removeAttr("disabled","disabled");
+				}
+			})
+			.fail(function(){
+				$("#alertsMessage").html("Ocorreu um erro inesperado. Por favor, tente novamente mais tarde.");
+				$("#alerts").modal();
+				$("#texto_pesquisa").removeAttr("disabled");
+				$(".permitida_inscricao").removeAttr("disabled","disabled");
+				Loading.destroy();
+			});
+		})
+		.fail(function(){
+			$("#alertsMessage").html("Ocorreu um erro inesperado. Por favor, tente novamente mais tarde.");
+			$("#alerts").modal();
+			$("#texto_pesquisa").removeAttr("disabled");
+			$(".permitida_inscricao").removeAttr("disabled","disabled");
+			Loading.destroy();
+		});
+		
+	}
 
 	function buscaEstados(place,buscaCidade,callback){
 		if(place == 0){
@@ -866,6 +1046,30 @@
 				for (i = 0; i < data.results.length; i++) {
 					var newOptionEstado = new Option("#".concat(data.results[i].id).concat(" - ").concat(data.results[i].text), data.results[i].id, false, false);
 					$('#inscricao_estados_id').append(newOptionEstado).trigger('change');
+					if(i + 1 == data.results.length){
+						if(callback){
+							callback();
+						}
+						if(buscaCidade){
+							buscaCidades(place,false);
+						}
+					}
+				}
+				if(data.results.length == 0){
+					if(callback){
+						callback();
+					}
+					if(buscaCidade){
+						buscaCidades(place,false);
+					}
+				}
+			});
+		}else if(place == 2){
+			$('#confirmacao_estados_id').html("").trigger('change');
+			$.getJSON("{{url("/inscricao/v2/".$evento->id."/busca/estado/")}}/".concat($("#confirmacao_pais_id").val()),function(data){
+				for (i = 0; i < data.results.length; i++) {
+					var newOptionEstado = new Option("#".concat(data.results[i].id).concat(" - ").concat(data.results[i].text), data.results[i].id, false, false);
+					$('#confirmacao_estados_id').append(newOptionEstado).trigger('change');
 					if(i + 1 == data.results.length){
 						if(callback){
 							callback();
@@ -924,6 +1128,24 @@
 					}
 				}
 			});
+		}else if(place == 2){
+			$('#confirmacao_cidade_id').html("").trigger('change');
+			$.getJSON("{{url("/inscricao/v2/".$evento->id."/busca/cidade/")}}/".concat($("#confirmacao_estados_id").val()),function(data){
+				for (i = 0; i < data.results.length; i++) {
+					var newOptionCidade = new Option("#".concat(data.results[i].id).concat(" - ").concat(data.results[i].text), data.results[i].id, false, false);
+					$('#confirmacao_cidade_id').append(newOptionCidade).trigger('change');
+					if(i + 1 == data.results.length){
+						if(callback){
+							callback();
+						}
+					}
+				}
+				if(data.results.length == 0){
+					if(callback){
+						callback();
+					}
+				}
+			});
 		}
 	}
 
@@ -938,6 +1160,15 @@
 			}else{
 				$("#estadoNaoCadastradoInscricao").css("display","");
 				$("#cidadeNaoCadastradaInscricao").css("display","");
+			}
+		}else if(place == 2){
+			if($("#confirmacao_pais_id").val() == 33){
+				$("#estadoNaoCadastradoConfirmacao").css("display","none");
+				$("#cidadeNaoCadastradaConfirmacao").css("display","none");
+				
+			}else{
+				$("#estadoNaoCadastradoConfirmacao").css("display","");
+				$("#cidadeNaoCadastradaConfirmacao").css("display","");
 			}
 		}
 	}
@@ -979,6 +1210,70 @@
 			}
 		});
 	}
+
+	function enviarConfirmacao(){
+		var data = "evento_id={{$evento->id}}&inscricao_id=".concat($("#inscricao_id").val()).concat("&categoria_id=").concat($("#confirmacao_categoria_id").val()).concat("&cidade_id=").concat($("#confirmacao_cidade_id").val()).concat("&clube_id=").concat($("#confirmacao_clube_id").val());
+		if($("#atualizar_cadastro_confirmacao").is(":checked")){
+			data = data.concat("&atualizar_cadastro=true");
+		}
+		@if(isset($token))
+			@if($token != "")
+				data = data.concat("&token=").concat("{{$token}}");
+			@endif
+		@endif
+		$.ajax({
+			type: "post",
+			url: "{{url("/inscricao/v2/".$evento->id."/inscricao/confirmar")}}",
+			data: data,
+			dataType: "json",
+			success: function(data){
+				Loading.destroy();
+				if(data.ok == 1){
+					zeraConfirmacao();
+					$("#texto_pesquisa").val("");
+					$("#pesquisa div").html("");
+					if(data.updated == 0){
+						$("#successMessage").html("<strong>Sua inscrição foi confirmada com sucesso!</strong>");
+					}else if(data.updated == 1){
+						$("#successMessage").html("<strong>A inscrição foi confirmada e o cadastro de enxadrista atualizado com sucesso!</strong>");
+					}
+					$("#success").modal();
+				}else{
+					$("#alertsMessage").html(data.message);
+					$("#alerts").modal();
+				}
+			}
+		});
+	}
+	function enviarDesconfirmacao(id,callback_on_ok){
+    	Loading.enable(loading_default_animation, 10000);
+		$("#inscricao_id").val(id);
+
+		$("#texto_pesquisa").attr("disabled","disabled");
+		$(".permitida_inscricao").attr("disabled","disabled");
+		
+		$.getJSON("{{url("/inscricao/v2/".$evento->id."/inscricao/desconfirmar/")}}/".concat(id),function(data){
+			Loading.destroy();
+
+			$("#texto_pesquisa").removeAttr("disabled");
+			$(".permitida_inscricao").removeAttr("disabled");
+
+			$("#pesquisa div").html("");
+			$("#texto_pesquisa").val("");
+
+			$("#successMessage").html("A inscrição foi desconfirmada com sucesso!");
+			$("#success").modal();
+		})
+		.fail(function(){
+			$("#alertsMessage").html("Ocorreu um erro inesperado. Por favor, tente novamente mais tarde.");
+			$("#alerts").modal();
+			$("#texto_pesquisa").removeAttr("disabled");
+			$(".permitida_inscricao").removeAttr("disabled","disabled");
+			Loading.destroy();
+		});
+		
+	}
+
 
 
 	function mascaraCelular(){
@@ -1054,6 +1349,22 @@
 			$("#pesquisa").css("display","");
 			$("#texto_pesquisa").removeAttr("disabled");
 		}
+	}
+
+	
+	function zeraConfirmacao(){
+		$("#enxadrista_id").val("");
+		$("#enxadrista_confirmar_id").html("");
+		$("#enxadrista_confirmar_nome").html("");
+		$("#enxadrista_confirmar_born").html("");
+		$('#confirmacao_categoria_id').html("").trigger('change');
+		$("#confirmacao_pais_id").val(0).change();
+
+
+		$("#confirmacao").css("display","none");
+		$("#form_pesquisa").css("display","");
+		$("#pesquisa").css("display","");
+		$("#texto_pesquisa").removeAttr("disabled");
 	}
 
 	function enviarNovoEnxadrista(){
