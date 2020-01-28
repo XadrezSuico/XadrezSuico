@@ -14,6 +14,7 @@ class CreatePaisTable extends Migration
     public function up()
     {
         Schema::create('pais', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->bigIncrements('id');
             $table->string('nome');
             $table->string('nome_ingles')->nullable();

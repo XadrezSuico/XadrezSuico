@@ -14,6 +14,7 @@ class CreatePaginasTable extends Migration
     public function up()
     {
         Schema::create('paginas', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->bigIncrements('id');
             $table->longtext('imagem')->nullable();
             $table->longtext('texto')->nullable();

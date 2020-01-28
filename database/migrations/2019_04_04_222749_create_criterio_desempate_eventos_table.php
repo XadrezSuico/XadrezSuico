@@ -14,6 +14,7 @@ class CreateCriterioDesempateEventosTable extends Migration
     public function up()
     {
         Schema::create('criterio_desempate_eventos', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->bigIncrements('id');
             $table->unsignedInteger('evento_id');
             $table->unsignedInteger('criterio_desempate_id');

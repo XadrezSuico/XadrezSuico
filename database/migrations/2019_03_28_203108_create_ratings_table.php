@@ -14,6 +14,7 @@ class CreateRatingsTable extends Migration
     public function up()
     {
         Schema::create('ratings', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->bigIncrements('id');
             $table->bigInteger('tipo_ratings_id')->unsigned();
             $table->foreign("tipo_ratings_id")->references("id")->on("tipo_ratings");

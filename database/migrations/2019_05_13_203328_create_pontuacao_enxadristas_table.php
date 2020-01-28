@@ -14,6 +14,7 @@ class CreatePontuacaoEnxadristasTable extends Migration
     public function up()
     {
         Schema::create('pontuacao_enxadristas', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->bigIncrements('id');
             $table->integer('enxadrista_id')->unsigned();
             $table->foreign('enxadrista_id')->references("id")->on("enxadrista");

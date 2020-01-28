@@ -14,6 +14,7 @@ class UpdateCidadeTableAddIBGEAndEstado extends Migration
     public function up()
     {
         Schema::table('cidade', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->integer("ibge_id")->nullable()->after("name");
             $table->bigInteger("estados_id")->unsigned()->nullable()->after("name");
             $table->foreign("estados_id")->references("id")->on("estados");

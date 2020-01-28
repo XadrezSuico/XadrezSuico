@@ -14,6 +14,7 @@ class CreateTipoDocumentoPaisTable extends Migration
     public function up()
     {
         Schema::create('tipo_documento_pais', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->bigIncrements('id');
             $table->bigInteger("tipo_documentos_id")->unsigned();
             $table->foreign("tipo_documentos_id")->references("id")->on("tipo_documentos");

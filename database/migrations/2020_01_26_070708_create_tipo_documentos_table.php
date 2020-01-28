@@ -14,6 +14,7 @@ class CreateTipoDocumentosTable extends Migration
     public function up()
     {
         Schema::create('tipo_documentos', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->bigIncrements('id');
             $table->string('nome');
             $table->string('padrao')->nullable();

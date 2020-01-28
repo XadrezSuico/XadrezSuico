@@ -14,6 +14,7 @@ class CreateTipoRatingsTable extends Migration
     public function up()
     {
         Schema::create('tipo_ratings', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->bigIncrements('id');
             $table->string('name',150);
             $table->timestamps();

@@ -14,6 +14,7 @@ class CreateCategoriaSexosTable extends Migration
     public function up()
     {
         Schema::create('categoria_sexos', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->bigIncrements('id');
             $table->integer('categoria_id')->unsigned();
             $table->foreign('categoria_id')->references("id")->on("categoria");
