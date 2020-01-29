@@ -32,21 +32,32 @@ class InscricaoController extends Controller
             if ($evento->e_inscricao_apenas_com_link) {
                 if ($evento->inscricaoLiberada($request->input("token"))) {
                     if ($evento->inscricoes_encerradas()) {
-                        return view("inscricao.encerradas", compact("evento"));
-                    } else {
-                        $token = $request->input("token");
-                        return view("inscricao.inscricao_nova", compact("evento", "sexos", "token","user"));
+                        if(!$user){
+                            return view("inscricao.encerradas", compact("evento"));
+                        }
+                        if (
+                            !$user->hasPermissionGlobal() &&
+                            !$user->hasPermissionEventByPerfil($evento->id, [3, 4]) &&
+                            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [6,7])
+                        ) {
+                                return view("inscricao.encerradas", compact("evento"));
+                        }
                     }
+                    $token = $request->input("token");
+                    return view("inscricao.inscricao_nova", compact("evento", "sexos", "token","user"));
                 } else {
                     return view("inscricao.naopermitida");
                 }
             } else {
-                if (
-                    !$user->hasPermissionGlobal() &&
-                    !$user->hasPermissionEventByPerfil($evento->id, [3, 4]) &&
-                    !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [6,7])
-                ) {
-                    if ($evento->inscricoes_encerradas()) {
+                if ($evento->inscricoes_encerradas()) {
+                    if(!$user){
+                        return view("inscricao.encerradas", compact("evento"));
+                    }
+                    if (
+                        !$user->hasPermissionGlobal() &&
+                        !$user->hasPermissionEventByPerfil($evento->id, [3, 4]) &&
+                        !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [6,7])
+                    ) {
                         return view("inscricao.encerradas", compact("evento"));
                     }
                 }
@@ -1395,6 +1406,7 @@ class InscricaoController extends Controller
             if ($inscricao->confirmado) {
                 return response()->json(["ok" => 0, "error" => 1, "message" => "A inscrição já está confirmada!"]);
             }
+            $enxadrista = $inscricao->enxadrista;
             $torneio = null;
             if ($request->input("categoria_id") != $inscricao->categoria_id) {
                 $evento = Evento::find($request->input("evento_id"));
@@ -1494,7 +1506,7 @@ class InscricaoController extends Controller
             ) {
                 return response()->json(["ok" => 0, "error" => 1, "message" => "Você não possui permissão para fazer isto.", "registred" => 0]);
             }
-            
+
             $inscricao = Inscricao::find($inscricao_id);
             if($inscricao){
                 $inscricao->confirmado = false;

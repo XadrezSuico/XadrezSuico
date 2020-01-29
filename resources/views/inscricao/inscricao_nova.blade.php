@@ -301,18 +301,21 @@
 						<select id="estados_id" name="estados_id" class="form-control this_is_select2 cadastro_enxadrista_select">
 							<option value="">--- Selecione um país antes ---</option>
 						</select>
+                    	<button id="estadoNaoCadastradoEnxadrista" class="btn btn-success">O meu estado não está cadastrado</button>
 					</div>
 					<div class="form-group">
 						<label for="cidade_id">Cidade do Vínculo *</label>
 						<select id="cidade_id" name="cidade_id" class="form-control this_is_select2 cadastro_enxadrista_select">
 							<option value="">--- Selecione um estado antes ---</option>
 						</select>
+                    	<button id="cidadeNaoCadastradaEnxadrista" class="btn btn-success">A minha cidade não está cadastrada</button>
 					</div>
 					<div class="form-group">
 						<label for="clube_id">Clube</label>
 						<select id="clube_id" name="clube_id" class="form-control this_is_select2 cadastro_enxadrista_select">
 							<option value="">--- Você pode selecionar um clube ---</option>
 						</select>
+                    	<button id="clubeNaoCadastradoEnxadrista" class="btn btn-success">O meu clube não está cadastrado</button>
 					</div>
 				</div>
 			</div>
@@ -602,6 +605,9 @@
 		$("#cancelar_cadastro").on("click",function(){
 			Loading.enable(loading_default_animation, 800);
 			$(".permitida_inscricao").removeAttr("disabled");
+			$(".cadastro_enxadrista_input").removeAttr("disabled");
+			$(".cadastro_enxadrista_select").removeAttr("disabled");
+
 			
 			zeraCadastro(true);
 		});
@@ -677,6 +683,41 @@
 			buscaTipoDocumentos(function(){
 				Loading.destroy();
 			});
+		});
+
+		$("#pais_id").on("select2:select",function(){
+			Loading.enable(loading_default_animation,10000);
+			verificaLiberaCadastro(0);
+			buscaEstados(0,function(){
+				buscaCidades(0,false);
+			})
+		});
+		$("#inscricao_pais_id").on("select2:select",function(){
+			Loading.enable(loading_default_animation,10000);
+			verificaLiberaCadastro(1);
+			buscaEstados(1,function(){
+				buscaCidades(1,false);
+			})
+		});
+		$("#confirmacao_pais_id").on("select2:select",function(){
+			Loading.enable(loading_default_animation,10000);
+			verificaLiberaCadastro(2);
+			buscaEstados(2,function(){
+				buscaCidades(2,false);
+			})
+		});
+
+		$("#estados_id").on("select2:select",function(){
+			Loading.enable(loading_default_animation,800);
+			buscaCidades(0,false);
+		});
+		$("#inscricao_estados_id").on("select2:select",function(){
+			Loading.enable(loading_default_animation,800);
+			buscaCidades(1,false);
+		});
+		$("#confirmacao_estados_id").on("select2:select",function(){
+			Loading.enable(loading_default_animation,800);
+			buscaCidades(2,false);
 		});
 		
 
@@ -782,6 +823,10 @@
 			});
 		}
 
+		if($("#pais_id").val() > 0){
+			verificaLiberaCadastro(0);
+		}
+
 	}
 	fields = "";
 	function selectEnxadrista(id,callback_on_ok){
@@ -804,12 +849,22 @@
 					$("#born").attr("disabled","disabled");
 				}
 				if(data.fields.sexos_id){
-					$("#sexos_id").val(data.fields.sexos_id);
+					$("#sexos_id").val(data.fields.sexos_id).change();
 					$("#sexos_id").attr("disabled","disabled");
 				}
 				if(data.fields.pais_nascimento_id){
-					$("#pais_nascimento_id").val(data.fields.pais_nascimento_id);
+					$("#pais_nascimento_id").val(data.fields.pais_nascimento_id).change();
 					$("#pais_nascimento_id").attr("disabled","disabled");
+					setTimeout(function(){
+						buscaTipoDocumentos();
+					},400);
+				}else{
+					@if(env("PAIS_DEFAULT"))
+						$("#pais_nascimento_id").val({{env("PAIS_DEFAULT")}}).change();
+					@else
+						$("#pais_nascimento_id").val("").change();
+					@endif
+					$("#pais_nascimento_id").removeAttr("disabled");
 					setTimeout(function(){
 						buscaTipoDocumentos();
 					},200);
@@ -1151,7 +1206,14 @@
 
 	function verificaLiberaCadastro(place){
 		if(place == 0){
-
+			if($("#pais_id").val() == 33){
+				$("#estadoNaoCadastradoEnxadrista").css("display","none");
+				$("#cidadeNaoCadastradaEnxadrista").css("display","none");
+				
+			}else{
+				$("#estadoNaoCadastradoEnxadrista").css("display","");
+				$("#cidadeNaoCadastradaEnxadrista").css("display","");
+			}
 		}else if(place == 1){
 			if($("#inscricao_pais_id").val() == 33){
 				$("#estadoNaoCadastradoInscricao").css("display","none");
@@ -1171,6 +1233,7 @@
 				$("#cidadeNaoCadastradaConfirmacao").css("display","");
 			}
 		}
+		Loading.destroy();
 	}
 
 	function enviarInscricao(){
@@ -1482,12 +1545,17 @@
 						Loading.destroy();
 					}else if(data.registred == 1){
 						selectEnxadrista(data.enxadrista_id,function(){
+							$("#barra_progresso_cadastro").css("width","100%");
 							zeraCadastro(false);
 							$("#alertsMessage").html(data.message);
 							$("#alerts").modal();
-						Loading.destroy();
+							Loading.destroy();
+							setTimeout(function(){
+								$("#barra_progresso_cadastro").css("width","0%");
+							});
 						});
 					}else{
+						$("#barra_progresso_cadastro").css("width","80%");
 						$("#alertsMessage").html(data.message);
 						$("#alerts").modal();
 						Loading.destroy();
