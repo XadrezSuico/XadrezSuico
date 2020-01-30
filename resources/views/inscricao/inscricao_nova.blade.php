@@ -609,7 +609,7 @@
 			$(".cadastro_enxadrista_select").removeAttr("disabled");
 
 			
-			zeraCadastro(true);
+			zeraCadastro(true,true);
 		});
 
 		$("#cancelar_inscricao").on("click",function(){
@@ -646,15 +646,15 @@
 
 		
 		$("#usarCadastroEnxadrista").on("click",function(){
-			if($("#asksMessage_jaInscrito").val()){
-				zeraCadastro(true);
+			if($("#asksMessage_jaInscrito").val() == 1 || $("#asksMessage_jaInscrito").val() == "true" || $("#asksMessage_jaInscrito").val() == true){
+				zeraCadastro(true,true);
 				$("#asks").modal('hide');
 				$("#alertsMessage").html("O enxadrista já se encontra inscrito para este evento. Caso necessite efetuar alguma alteração, por favor, solicite à equipe do evento.");
 				$("#alerts").modal();
 			}else{
 				$("#barra_progresso_cadastro").css("width","100%");
 				selectEnxadrista($("#enxadrista_id").val(),function(){
-					zeraCadastro(false);
+					zeraCadastro(false,false);
 					$("#asksMessage_jaInscrito").val("");
 				});
 				$("#asks").modal('hide');
@@ -1361,8 +1361,10 @@
 		$("#texto_pesquisa").removeAttr("disabled");
 	}
 
-	function zeraCadastro(redirect_home){
-		$("#enxadrista_id").val("");
+	function zeraCadastro(redirect_home,zeraEnxadrista){
+		if(zeraEnxadrista){
+			$("#enxadrista_id").val("");
+		}
 		$(".cadastro_enxadrista_input").val("");
 		$(".cadastro_enxadrista_select").val("").change();
 		$("#barra_progresso_cadastro").css("width","0%");
@@ -1466,7 +1468,7 @@
 					selectEnxadrista(data.enxadrista_id,function(){
 						$("#successMessage").html("<strong>O cadastro do enxadrista foi efetuado com sucesso!</strong>");
 						$("#success").modal();
-						zeraCadastro(false);
+						zeraCadastro(false,false);
 					});
 				}else{
 					if(data.ask == 1){
@@ -1480,7 +1482,7 @@
 						$("#asks").modal();
 					}else if(data.registred == 1){
 						selectEnxadrista(data.enxadrista_id,function(){
-							zeraCadastro(false);
+							zeraCadastro(false,false);
 							$("#alertsMessage").html(data.message);
 							$("#alerts").modal();
 						});
@@ -1546,7 +1548,7 @@
 					}else if(data.registred == 1){
 						selectEnxadrista(data.enxadrista_id,function(){
 							$("#barra_progresso_cadastro").css("width","100%");
-							zeraCadastro(false);
+							zeraCadastro(false,false);
 							$("#alertsMessage").html(data.message);
 							$("#alerts").modal();
 							Loading.destroy();
