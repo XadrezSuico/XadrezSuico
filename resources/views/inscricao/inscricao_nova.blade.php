@@ -61,6 +61,35 @@
 			</div>
 	</div>
 </div>
+<div class="modal fade modal-warning" id="novoEstado" tabindex="-1" role="dialog" aria-labelledby="alerts">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">Cadastrar Novo Estado</h4>
+            </div>
+            <div class="modal-body">
+				<div class="form-group">
+					<label for="estado_pais_id">País *</label>
+					<select id="estado_pais_id" class="pais_id this_is_select2 form-control">
+						<option value="">--- Selecione um país ---</option>
+						@foreach(\App\Pais::all() as $pais)
+							<option value="{{$pais->id}}">{{$pais->nome}} @if($pais->codigo_iso) ({{$pais->codigo_iso}}) @endif</option>
+						@endforeach
+					</select>
+				</div>
+                <div class="form-group">
+                    <label for="name">Nome *</label>
+                    <input type="text" name="name" class="form-control" id="estado_nome" placeholder="Insira o Nome Completo da Cidade" required="required">
+                </div>
+            </div>
+            <div class="modal-footer">
+            <button type="button" class="btn btn-warning" data-dismiss="modal">Não Quero Mais</button>
+            <button type="button" id="cadastrarEstado" class="btn btn-success">Cadastrar</button>
+            </div>
+        </div>
+    </div>
+</div>
 <div class="modal fade modal-warning" id="novaCidade" tabindex="-1" role="dialog" aria-labelledby="alerts">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -69,6 +98,21 @@
             <h4 class="modal-title">Cadastrar Nova Cidade</h4>
             </div>
             <div class="modal-body">
+				<div class="form-group">
+					<label for="cidade_pais_id">País *</label>
+					<select id="cidade_pais_id" class="pais_id this_is_select2 form-control">
+						<option value="">--- Selecione um país ---</option>
+						@foreach(\App\Pais::all() as $pais)
+							<option value="{{$pais->id}}">{{$pais->nome}} @if($pais->codigo_iso) ({{$pais->codigo_iso}}) @endif</option>
+						@endforeach
+					</select>
+				</div>
+				<div class="form-group">
+					<label for="cidade_estados_id">Estado/Província *</label>
+					<select id="cidade_estados_id" class="estados_id this_is_select2 form-control">
+						<option value="">--- Selecione um país primeiro ---</option>
+					</select>
+				</div>
                 <div class="form-group">
                     <label for="name">Nome *</label>
                     <input type="text" name="name" class="form-control" id="cidade_nome" placeholder="Insira o Nome Completo da Cidade" required="required">
@@ -93,9 +137,24 @@
                     <label for="name">Nome *</label>
                     <input type="text" name="name" class="form-control" id="clube_nome" placeholder="Insira o Nome Completo do Clube" required="required">
                 </div>
+				<div class="form-group">
+					<label for="clube_pais_id">País *</label>
+					<select id="clube_pais_id" class="pais_id this_is_select2 form-control">
+						<option value="">--- Selecione um país ---</option>
+						@foreach(\App\Pais::all() as $pais)
+							<option value="{{$pais->id}}">{{$pais->nome}} @if($pais->codigo_iso) ({{$pais->codigo_iso}}) @endif</option>
+						@endforeach
+					</select>
+				</div>
+				<div class="form-group">
+					<label for="clube_estados_id">Estado/Província *</label>
+					<select id="clube_estados_id" class="estados_id this_is_select2 form-control">
+						<option value="">--- Selecione um país primeiro ---</option>
+					</select>
+				</div>
                 <div class="form-group">
                     <label for="clube_cidade_id">Cidade *</label>
-                    <select id="clube_cidade_id" class="form-control">
+                    <select id="clube_cidade_id" class="this_is_select2 form-control">
                         <option value="">--- Selecione uma cidade ---</option>
                     </select>
                 </div>
@@ -301,21 +360,21 @@
 						<select id="estados_id" name="estados_id" class="form-control this_is_select2 cadastro_enxadrista_select">
 							<option value="">--- Selecione um país antes ---</option>
 						</select>
-                    	<button id="estadoNaoCadastradoEnxadrista" class="btn btn-success">O meu estado não está cadastrado</button>
+                    	<button id="estadoNaoCadastradoEnxadrista" onclick="chamaCadastroEstado(0)" class="btn btn-success">O meu estado não está cadastrado</button>
 					</div>
 					<div class="form-group">
 						<label for="cidade_id">Cidade do Vínculo *</label>
 						<select id="cidade_id" name="cidade_id" class="form-control this_is_select2 cadastro_enxadrista_select">
 							<option value="">--- Selecione um estado antes ---</option>
 						</select>
-                    	<button id="cidadeNaoCadastradaEnxadrista" class="btn btn-success">A minha cidade não está cadastrada</button>
+                    	<button id="cidadeNaoCadastradaEnxadrista" onclick="chamaCadastroCidade(0)" class="btn btn-success">A minha cidade não está cadastrada</button>
 					</div>
 					<div class="form-group">
 						<label for="clube_id">Clube</label>
 						<select id="clube_id" name="clube_id" class="form-control this_is_select2 cadastro_enxadrista_select">
 							<option value="">--- Você pode selecionar um clube ---</option>
 						</select>
-                    	<button id="clubeNaoCadastradoEnxadrista" class="btn btn-success">O meu clube não está cadastrado</button>
+                    	<button id="clubeNaoCadastradoEnxadrista" onclick="chamaCadastroClube(0)" class="btn btn-success">O meu clube não está cadastrado</button>
 					</div>
 				</div>
 			</div>
@@ -345,21 +404,21 @@
 					<select id="inscricao_estados_id" class="estados_id this_is_select2 form-control">
 						<option value="">--- Selecione um país primeiro ---</option>
 					</select>
-                    <button id="estadoNaoCadastradoInscricao" class="btn btn-success">O meu estado não está cadastrado</button>
+                    <button id="estadoNaoCadastradoInscricao" onclick="chamaCadastroEstado(1)" class="btn btn-success">O meu estado não está cadastrado</button>
 				</div>
 				<div class="form-group">
 					<label for="cidade_id">Cidade *</label>
 					<select id="inscricao_cidade_id" class="cidade_id this_is_select2 form-control">
 						<option value="">--- Selecione um estado primeiro ---</option>
 					</select>
-                    <button id="cidadeNaoCadastradaInscricao" class="btn btn-success">A minha cidade não está cadastrada</button>
+                    <button id="cidadeNaoCadastradaInscricao" onclick="chamaCadastroCidade(2)" class="btn btn-success">A minha cidade não está cadastrada</button>
 				</div>
 				<div class="form-group">
 					<label for="clube_id">Clube</label>
 					<select id="inscricao_clube_id" class="clube_id this_is_select2 form-control">
 						<option value="">--- Você pode escolher um clube ---</option>
 					</select>
-                    <button id="clubeNaoCadastradoInscricao" class="btn btn-success">O meu clube não está cadastrado</button>
+                    <button id="clubeNaoCadastradoInscricao" onclick="chamaCadastroClube(1)" class="btn btn-success">O meu clube não está cadastrado</button>
 				</div>
 				@foreach($evento->campos() as $campo)
 					<div class="form-group">
@@ -406,21 +465,21 @@
 					<select id="confirmacao_estados_id" class="estados_id this_is_select2 form-control">
 						<option value="">--- Selecione um país primeiro ---</option>
 					</select>
-                    <button id="estadoNaoCadastradoConfirmacao" class="btn btn-success">O meu estado não está cadastrado</button>
+                    <button id="estadoNaoCadastradoConfirmacao" onclick="chamaCadastroEstado(2)" class="btn btn-success">O meu estado não está cadastrado</button>
 				</div>
 				<div class="form-group">
 					<label for="confirmacao_cidade_id">Cidade *</label>
 					<select id="confirmacao_cidade_id" class="cidade_id this_is_select2 form-control">
 						<option value="">--- Selecione um estado primeiro ---</option>
 					</select>
-                    <button id="cidadeNaoCadastradaConfirmacao" class="btn btn-success">A minha cidade não está cadastrada</button>
+                    <button id="cidadeNaoCadastradaConfirmacao" onclick="chamaCadastroCidade(2)" class="btn btn-success">A minha cidade não está cadastrada</button>
 				</div>
 				<div class="form-group">
 					<label for="confirmacao_clube_id">Clube</label>
 					<select id="confirmacao_clube_id" class="clube_id this_is_select2 form-control">
 						<option value="">--- Você pode escolher um clube ---</option>
 					</select>
-                    <button id="clubeNaoCadastradoInscricao" class="btn btn-success">O meu clube não está cadastrado</button>
+                    <button id="clubeNaoCadastradoInscricao" onclick="chamaCadastroClube(2)" class="btn btn-success">O meu clube não está cadastrado</button>
 				</div>
 				<div class="form-group">
 					<label><input type="checkbox" id="atualizar_cadastro_confirmacao"> Atualizar Cadastro</label><br/>
@@ -495,6 +554,15 @@
 <input type="hidden" id="temporary_confirmacao_categoria_id" class="temporary_confirmacao" />
 <input type="hidden" id="temporary_confirmacao_cidade_id" class="temporary_confirmacao" />
 <input type="hidden" id="temporary_confirmacao_clube_id" class="temporary_confirmacao" />
+
+<!-- Para saber de onde veio o clique para o cadastro de estado -->
+<input type="hidden" id="where_from_cadastro_estado" />
+
+<!-- Para saber de onde veio o clique para o cadastro de cidade -->
+<input type="hidden" id="where_from_cadastro_cidade" />
+
+<!-- Para saber de onde veio o clique para o cadastro de clube -->
+<input type="hidden" id="where_from_cadastro_clube" />
 @endsection
 
 @section("js")
@@ -528,18 +596,7 @@
 			});
 		@endif
 
-		$("#inscricao_clube_id").select2({
-			ajax: {
-				url: '{{url("/inscricao/v2/".$evento->id."/busca/clube")}}',
-				delay: 250,
-				processResults: function (data) {
-					return {
-						results: data.results
-					};
-				}
-			}
-		});
-		$("#clube_id").select2({
+		$(".clube_id").select2({
 			ajax: {
 				url: '{{url("/inscricao/v2/".$evento->id."/busca/clube")}}',
 				delay: 250,
@@ -807,6 +864,20 @@
 		$("#enviar_cadastro").on("click",function(){
 			enviarNovoEnxadrista();
 		});
+
+
+
+
+
+		$("#cadastrarCidade").on("click",function(){
+			salvarCadastroCidade();
+		});
+		$("#cadastrarEstado").on("click",function(){
+			salvarCadastroEstado();
+		});
+		$("#cadastrarClube").on("click",function(){
+			salvarCadastroClube();
+		});
   	});
 
 	function novoEnxadrista(){
@@ -1071,7 +1142,52 @@
 	}
 
 	function buscaEstados(place,buscaCidade,callback){
-		if(place == 0){
+		if(place == -2){
+			// CADASTRO DE CIDADE
+			$('#cidade_estados_id').html("").trigger('change');
+			$.getJSON("{{url("/inscricao/v2/".$evento->id."/busca/estado/")}}/".concat($("#cidade_pais_id").val()),function(data){
+				for (i = 0; i < data.results.length; i++) {
+					var newOptionEstado = new Option("#".concat(data.results[i].id).concat(" - ").concat(data.results[i].text), data.results[i].id, false, false);
+					$('#cidade_estados_id').append(newOptionEstado).trigger('change');
+					if(i + 1 == data.results.length){
+						if(callback){
+							callback();
+						}
+					}
+				}
+				if(data.results.length == 0){
+					if(callback){
+						callback();
+					}
+				}
+			});
+		}else if(place == -1){
+			// CADASTRO DE CLUBE
+			$('#clube_estados_id').html("").trigger('change');
+			$.getJSON("{{url("/inscricao/v2/".$evento->id."/busca/estado/")}}/".concat($("#clube_pais_id").val()),function(data){
+				for (i = 0; i < data.results.length; i++) {
+					var newOptionEstado = new Option("#".concat(data.results[i].id).concat(" - ").concat(data.results[i].text), data.results[i].id, false, false);
+					$('#clube_estados_id').append(newOptionEstado).trigger('change');
+					if(i + 1 == data.results.length){
+						if(callback){
+							callback();
+						}
+						if(buscaCidade){
+							buscaCidades(place,false);
+						}
+					}
+				}
+				if(data.results.length == 0){
+					if(callback){
+						callback();
+					}
+					if(buscaCidade){
+						buscaCidades(place,false);
+					}
+				}
+			});
+		}else if(place == 0){
+			// CADASTRO DE ENXADRISTA
 			$('#estados_id').html("").trigger('change');
 			$.getJSON("{{url("/inscricao/v2/".$evento->id."/busca/estado/")}}/".concat($("#pais_id").val()),function(data){
 				for (i = 0; i < data.results.length; i++) {
@@ -1096,6 +1212,7 @@
 				}
 			});
 		}else if(place == 1){
+			// INSCRIÇÃO
 			$('#inscricao_estados_id').html("").trigger('change');
 			$.getJSON("{{url("/inscricao/v2/".$evento->id."/busca/estado/")}}/".concat($("#inscricao_pais_id").val()),function(data){
 				for (i = 0; i < data.results.length; i++) {
@@ -1120,6 +1237,7 @@
 				}
 			});
 		}else if(place == 2){
+			// CONFIRMAÇÃO DE INSCRIÇÃO
 			$('#confirmacao_estados_id').html("").trigger('change');
 			$.getJSON("{{url("/inscricao/v2/".$evento->id."/busca/estado/")}}/".concat($("#confirmacao_pais_id").val()),function(data){
 				for (i = 0; i < data.results.length; i++) {
@@ -1147,7 +1265,25 @@
 	}
 
 	function buscaCidades(place, callback){
-		if(place == 0){
+		if(place == -1){
+			$('#clube_cidade_id').html("").trigger('change');
+			$.getJSON("{{url("/inscricao/v2/".$evento->id."/busca/cidade/")}}/".concat($("#clube_estados_id").val()),function(data){
+				for (i = 0; i < data.results.length; i++) {
+					var newOptionCidade = new Option("#".concat(data.results[i].id).concat(" - ").concat(data.results[i].text), data.results[i].id, false, false);
+					$('#clube_cidade_id').append(newOptionCidade).trigger('change');
+					if(i + 1 == data.results.length){
+						if(callback){
+							callback();
+						}
+					}
+				}
+				if(data.results.length == 0){
+					if(callback){
+						callback();
+					}
+				}
+			});
+		}else if(place == 0){
 			$('#cidade_id').html("").trigger('change');
 			$.getJSON("{{url("/inscricao/v2/".$evento->id."/busca/cidade/")}}/".concat($("#estados_id").val()),function(data){
 				for (i = 0; i < data.results.length; i++) {
@@ -1432,6 +1568,21 @@
 		$("#texto_pesquisa").removeAttr("disabled");
 	}
 
+	function zeraCidade(){
+		$("#where_from_cadastro_cidade").val("");
+		$("#cidade_pais_id").val("");
+		$("#cidade_estados_id").val("");
+		$("#cidade_nome").val("");
+	}
+
+	function zeraClube(){
+		$("#where_from_cadastro_clube").val("");
+		$("#clube_pais_id").val("");
+		$("#clube_estados_id").val("");
+		$("#clube_cidade_id").val("");
+		$("#clube_nome").val("");
+	}
+
 	function enviarNovoEnxadrista(){
 		$("#barra_progresso_cadastro").css("width","90%");
 
@@ -1568,7 +1719,7 @@
 	}
 
 
-	
+
 	function buscaTipoDocumentos(callback){
 		if($("#pais_nascimento_id").val() > 0){
 			$('#documentos').html("");
@@ -1611,6 +1762,422 @@
 			}
 			$('#documentos').html("<p>Selecione antes um país de nascimento...</p>");
 		}
+	}
+
+
+	// CADASTRO DE CIDADE
+	function chamaCadastroCidade(whereFrom){
+		$("#where_from_cadastro_cidade").val(whereFrom);
+		if(whereFrom == 0){
+			$("#cidade_pais_id").val($("#pais_id").val()).change();
+			setTimeout(function(){
+				buscaEstados(-2,false,function(){
+					$("#cidade_estados_id").val($("#estados_id").val()).change();
+				});
+			},200);
+		}
+		if(whereFrom == 1){
+			$("#cidade_pais_id").val($("#inscricao_pais_id").val()).change();
+			setTimeout(function(){
+				buscaEstados(-2,false,function(){
+					$("#cidade_estados_id").val($("#inscricao_estados_id").val()).change();
+				});
+			},200);
+		}
+		if(whereFrom == 2){
+			$("#cidade_pais_id").val($("#confirmacao_pais_id").val()).change();
+			setTimeout(function(){
+				buscaEstados(-2,false,function(){
+					$("#cidade_estados_id").val($("#confirmacao_estados_id").val()).change();
+				});
+			},200);
+		}
+		$("#novaCidade").modal();
+	}
+
+	function salvarCadastroCidade(){
+		Loading.enable(loading_default_animation,10000);
+		var data = "estados_id=".concat($("#cidade_estados_id").val()).concat("&name=").concat($("#cidade_nome").val());
+		@if(isset($token))
+			@if($token != "")
+				data = data.concat("&token=").concat("{{$token}}");
+			@endif
+		@endif
+		$.ajax({
+			type: "post",
+			url: "{{url("/inscricao/v2/".$evento->id."/cidade/nova")}}",
+			data: data,
+			dataType: "json",
+			success: function(data){
+				if(data.ok == 1){
+					Loading.destroy();
+					$("#successMessage").html("<strong>A cidade foi cadastrada com sucesso!</strong>");
+					$("#success").modal();
+					$("#novaCidade").modal('hide');
+
+					if($("#where_from_cadastro_cidade").val() == 0){
+						$("#pais_id").val(data.pais_id).change();
+						setTimeout(function(){
+							buscaEstados(0,false,function(){
+								$("#estados_id").val(data.estados_id).change();
+								setTimeout(function(){
+									buscaCidades(0,function(){
+										Loading.destroy();
+										$("#cidade_id").val(data.cidade_id).change();
+										$("#novaCidade").modal('hide');
+									});
+								},200);
+							});
+						},200);
+					}else if($("#where_from_cadastro_cidade").val() == 1){
+						$("#inscricao_pais_id").val(data.pais_id).change();
+						setTimeout(function(){
+							buscaEstados(1,false,function(){
+								$("#inscricao_estados_id").val(data.estados_id).change();
+								setTimeout(function(){
+									buscaCidades(1,function(){
+										Loading.destroy();
+										$("#inscricao_cidade_id").val(data.cidade_id).change();
+										$("#novaCidade").modal('hide');
+									});
+								},200);
+							});
+						},200);
+					}else if($("#where_from_cadastro_cidade").val() == 2){
+						$("#confirmacao_pais_id").val(data.pais_id).change();
+						setTimeout(function(){
+							buscaEstados(2,false,function(){
+								$("#confirmacao_estados_id").val(data.estados_id).change();
+								setTimeout(function(){
+									buscaCidades(2,function(){
+										Loading.destroy();
+										$("#confirmacao_cidade_id").val(data.cidade_id).change();
+										$("#novaCidade").modal('hide');
+									});
+								},200);
+							});
+						},200);
+					}
+						
+					setTimeout(function(){
+						$("#novaCidade").modal('hide');
+						zeraCidade();
+					},1000);
+				}else{
+					if(data.registred == 1){
+						if($("#where_from_cadastro_cidade").val() == 0){
+							$("#pais_id").val(data.pais_id).change();
+							setTimeout(function(){
+								buscaEstados(0,false,function(){
+									$("#estados_id").val(data.estados_id).change();
+									setTimeout(function(){
+										buscaCidades(0,function(){
+											Loading.destroy();
+											$("#cidade_id").val(data.cidade_id).change();
+											$("#novaCidade").modal('hide');
+										});
+									},200);
+								});
+							},200);
+						}else if($("#where_from_cadastro_cidade").val() == 1){
+							$("#inscricao_pais_id").val(data.pais_id).change();
+							setTimeout(function(){
+								buscaEstados(1,false,function(){
+									$("#inscricao_estados_id").val(data.estados_id).change();
+									setTimeout(function(){
+										buscaCidades(1,function(){
+											Loading.destroy();
+											$("#inscricao_cidade_id").val(data.cidade_id).change();
+											$("#novaCidade").modal('hide');
+										});
+									},200);
+								})
+							},200);
+						}else if($("#where_from_cadastro_cidade").val() == 2){
+							$("#confirmacao_pais_id").val(data.pais_id).change();
+							setTimeout(function(){
+								buscaEstados(2,false,function(){
+									$("#confirmacao_estados_id").val(data.estados_id).change();
+									setTimeout(function(){
+										buscaCidades(2,function(){
+											Loading.destroy();
+											$("#confirmacao_cidade_id").val(data.cidade_id).change();
+											$("#novaCidade").modal('hide');
+										});
+									},200);
+								})
+							},200);
+						}
+						
+						setTimeout(function(){
+							$("#novaCidade").modal('hide');
+							zeraCidade();
+						},1000);
+					}else{
+						Loading.destroy();
+					}
+					$("#alertsMessage").html(data.message);
+					$("#alerts").modal();
+
+				}
+			}
+		});
+	}
+
+
+	// CADASTRO DE ESTADO
+	function chamaCadastroEstado(whereFrom){
+		$("#where_from_cadastro_estado").val(whereFrom);
+		if(whereFrom == 0){
+			$("#estado_pais_id").val($("#pais_id").val()).change();
+		}
+		if(whereFrom == 1){
+			$("#estado_pais_id").val($("#inscricao_pais_id").val()).change();
+		}
+		if(whereFrom == 2){
+			$("#estado_pais_id").val($("#confirmacao_pais_id").val()).change();
+		}
+		$("#novoEstado").modal();
+	}
+
+	function salvarCadastroEstado(){
+		Loading.enable(loading_default_animation,10000);
+		var data = "pais_id=".concat($("#estado_pais_id").val()).concat("&name=").concat($("#estado_nome").val());
+		@if(isset($token))
+			@if($token != "")
+				data = data.concat("&token=").concat("{{$token}}");
+			@endif
+		@endif
+		$.ajax({
+			type: "post",
+			url: "{{url("/inscricao/v2/".$evento->id."/estado/novo")}}",
+			data: data,
+			dataType: "json",
+			success: function(data){
+				if(data.ok == 1){
+					Loading.destroy();
+					$("#successMessage").html("<strong>O estado foi cadastrado com sucesso!</strong>");
+					$("#success").modal();
+					$("#novoEstado").modal('hide');
+
+					if($("#where_from_cadastro_estado").val() == 0){
+						$("#pais_id").val(data.pais_id).change();
+						setTimeout(function(){
+							buscaEstados(0,false,function(){
+								$("#estados_id").val(data.estados_id).change();
+								setTimeout(function(){
+									buscaCidades(0,false);
+									$("#novoEstado").modal('hide');
+								},200);
+							});
+						},200);
+					}else if($("#where_from_cadastro_estado").val() == 1){
+						$("#inscricao_pais_id").val(data.pais_id).change();
+						setTimeout(function(){
+							buscaEstados(1,false,function(){
+								$("#inscricao_estados_id").val(data.estados_id).change();
+								setTimeout(function(){
+									buscaCidades(1,false);
+									$("#novoEstado").modal('hide');
+								},200);
+							});
+						},200);
+					}else if($("#where_from_cadastro_estado").val() == 2){
+						$("#confirmacao_pais_id").val(data.pais_id).change();
+						setTimeout(function(){
+							buscaEstados(2,false,function(){
+								$("#confirmacao_estados_id").val(data.estados_id).change();
+								setTimeout(function(){
+									buscaCidades(2,false);
+									$("#novoEstado").modal('hide');
+								},200);
+							});
+						},200);
+					}
+						
+					setTimeout(function(){
+						$("#novoEstado").modal('hide');
+						zeraCidade();
+					},1000);
+				}else{
+					if(data.registred == 1){
+						if($("#where_from_cadastro_cidade").val() == 0){
+							$("#pais_id").val(data.pais_id).change();
+							setTimeout(function(){
+								buscaEstados(0,false,function(){
+									$("#estados_id").val(data.estados_id).change();
+									setTimeout(function(){
+										buscaCidades(0,false);
+										$("#novoEstado").modal('hide');
+									},200);
+								});
+							},200);
+						}else if($("#where_from_cadastro_cidade").val() == 1){
+							$("#inscricao_pais_id").val(data.pais_id).change();
+							setTimeout(function(){
+								buscaEstados(1,false,function(){
+									$("#inscricao_estados_id").val(data.estados_id).change();
+									setTimeout(function(){
+										buscaCidades(1,false);
+										$("#novoEstado").modal('hide');
+									},200);
+								})
+							},200);
+						}else if($("#where_from_cadastro_cidade").val() == 2){
+							$("#confirmacao_pais_id").val(data.pais_id).change();
+							setTimeout(function(){
+								buscaEstados(2,false,function(){
+									$("#confirmacao_estados_id").val(data.estados_id).change();
+									setTimeout(function(){
+										buscaCidades(2,false);
+										$("#novoEstado").modal('hide');
+									},200);
+								})
+							},200);
+						}
+						
+						setTimeout(function(){
+							$("#novoEstado").modal('hide');
+							zeraCidade();
+						},1000);
+					}else{
+						Loading.destroy();
+					}
+					$("#alertsMessage").html(data.message);
+					$("#alerts").modal();
+
+				}
+			}
+		});
+	}
+
+	// CADASTRO DE CLUBE
+	function chamaCadastroClube(whereFrom){
+		$("#where_from_cadastro_clube").val(whereFrom);
+		if(whereFrom == 0){
+			$("#cidade_pais_id").val($("#pais_id").val()).change();
+			setTimeout(function(){
+				buscaEstados(-1,false,function(){
+					$("#clube_estados_id").val($("#estados_id").val()).change();
+					setTimeout(function(){
+						buscaCidades(-1,function(){
+							$("#clube_cidade_id").val($("#cidade_id").val()).change();
+						});
+					},200);
+				});
+			},200);
+		}
+		if(whereFrom == 1){
+			$("#clube_pais_id").val($("#inscricao_pais_id").val()).change();
+			setTimeout(function(){
+				buscaEstados(-1,false,function(){
+					$("#clube_estados_id").val($("#inscricao_estados_id").val()).change();
+					setTimeout(function(){
+						buscaCidades(-1,function(){
+							$("#clube_cidade_id").val($("#inscricao_cidade_id").val()).change();
+						});
+					},200);
+				});
+			},200);
+		}
+		if(whereFrom == 2){
+			$("#clube_pais_id").val($("#confirmacao_pais_id").val()).change();
+			setTimeout(function(){
+				buscaEstados(-1,false,function(){
+					$("#clube_estados_id").val($("#confirmacao_estados_id").val()).change();
+					setTimeout(function(){
+						buscaCidades(-1,function(){
+							$("#clube_cidade_id").val($("#confirmacao_cidade_id").val()).change();
+						});
+					},200);
+				});
+			},200);
+		}
+		$("#novoClube").modal();
+	}
+
+	function salvarCadastroClube(){
+		Loading.enable(loading_default_animation,10000);
+		var data = "cidade_id=".concat($("#clube_cidade_id").val()).concat("&name=").concat($("#clube_nome").val());
+		@if(isset($token))
+			@if($token != "")
+				data = data.concat("&token=").concat("{{$token}}");
+			@endif
+		@endif
+		$.ajax({
+			type: "post",
+			url: "{{url("/inscricao/v2/".$evento->id."/clube/novo")}}",
+			data: data,
+			dataType: "json",
+			success: function(data){
+				if(data.ok == 1){
+					Loading.destroy();
+					$("#successMessage").html("<strong>O clube foi cadastrado com sucesso!</strong>");
+					$("#success").modal();
+					$("#novoClube").modal('hide');
+
+					if($("#where_from_cadastro_clube").val() == 0){
+						var newOptionClube = new Option(data.cidade_nome.concat(" | ").concat(data.clube_id).concat(" - ").concat(data.clube_nome), data.clube_id, false, false);
+						$('#clube_id').append(newOptionClube).trigger('change');
+						setTimeout(function(){
+							$("#clube_id").val(data.clube_id).change();
+						},200);
+					}else if($("#where_from_cadastro_clube").val() == 1){
+						var newOptionClube = new Option(data.cidade_nome.concat(" | ").concat(data.clube_id).concat(" - ").concat(data.clube_nome), data.clube_id, false, false);
+						$('#inscricao_clube_id').append(newOptionClube).trigger('change');
+						setTimeout(function(){
+							$("#inscricao_clube_id").val(data.clube_id).change();
+						},200);
+					}else if($("#where_from_cadastro_clube").val() == 2){
+						var newOptionClube = new Option(data.cidade_nome.concat(" | ").concat(data.clube_id).concat(" - ").concat(data.clube_nome), data.clube_id, false, false);
+						$('#confirmacao_clube_id').append(newOptionClube).trigger('change');
+						setTimeout(function(){
+							$("#confirmacao_clube_id").val(data.clube_id).change();
+						},200);
+					}
+						
+					setTimeout(function(){
+						$("#novoClube").modal('hide');
+						zeraClube();
+					},1000);
+				}else{
+					if(data.registred == 1){
+						if($("#where_from_cadastro_clube").val() == 0){
+							var newOptionClube = new Option(data.cidade_nome.concat(" | ").concat(data.clube_id).concat(" - ").concat(data.clube_nome), data.clube_id, false, false);
+							$('#clube_id').append(newOptionClube).trigger('change');
+							setTimeout(function(){
+								Loading.destroy();
+								$("#clube_id").val(data.clube_id).change();
+							},200);
+						}else if($("#where_from_cadastro_clube").val() == 1){
+							var newOptionClube = new Option(data.cidade_nome.concat(" | ").concat(data.clube_id).concat(" - ").concat(data.clube_nome), data.clube_id, false, false);
+							$('#inscricao_clube_id').append(newOptionClube).trigger('change');
+							setTimeout(function(){
+								Loading.destroy();
+								$("#inscricao_clube_id").val(data.clube_id).change();
+							},200);
+						}else if($("#where_from_cadastro_clube").val() == 2){
+							var newOptionClube = new Option(data.cidade_nome.concat(" | ").concat(data.clube_id).concat(" - ").concat(data.clube_nome), data.clube_id, false, false);
+							$('#confirmacao_clube_id').append(newOptionClube).trigger('change');
+							setTimeout(function(){
+								Loading.destroy();
+								$("#confirmacao_clube_id").val(data.clube_id).change();
+							},200);
+						}
+						
+						setTimeout(function(){
+							$("#novoClube").modal('hide');
+							zeraClube();
+						},1000);
+					}else{
+						Loading.destroy();
+					}
+					$("#alertsMessage").html(data.message);
+					$("#alerts").modal();
+
+				}
+			}
+		});
 	}
 </script>
 @endsection

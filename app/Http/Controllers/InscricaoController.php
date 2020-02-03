@@ -654,7 +654,7 @@ class InscricaoController extends Controller
         })->get();
         $results = array(array("id" => -1, "text" => "Sem Clube"));
         foreach ($clubes as $clube) {
-            $results[] = array("id" => $clube->id, "text" => $clube->cidade->name . " - " . $clube->name);
+            $results[] = array("id" => $clube->id, "text" => $clube->cidade->estado->pais->nome . "-" . $clube->cidade->name . "/" . $clube->cidade->estado->nome . " | ".$clube->id." -  " . $clube->name);
         }
         return response()->json(["results" => $results, "pagination" => true]);
     }
@@ -1520,6 +1520,110 @@ class InscricaoController extends Controller
         }
     }
 
+
+    
+    public function telav2_adicionarNovoEstado(Request $request)
+    {
+        if (
+            !$request->has("name") || !$request->has("pais_id")
+        ) {
+            return response()->json(["ok" => 0, "error" => 1, "message" => "Um dos campos obrigatórios não está preenchido. Por favor, verifique e envie novamente!", "registred" => 0]);
+        } elseif (
+            $request->input("name") == null || $request->input("name") == "" ||
+            $request->input("pais_id") == null || $request->input("pais_id") == ""
+        ) {
+            return response()->json(["ok" => 0, "error" => 1, "message" => "Um dos campos obrigatórios não está preenchido. Por favor, verifique e envie novamente!", "registred" => 0]);
+        }
+        $pais = Pais::find($request->input("pais_id"));
+        if(!$pais){
+            return response()->json(["ok" => 0, "error" => 1, "message" => "O estado não foi encontrado. Por favor, verifique e tente novamente!", "registred" => 0]);
+        }
+        if($pais->id == 33){
+            return response()->json(["ok" => 0, "error" => 1, "message" => "Este país não permite o cadastro de cidade.", "registred" => 0]);
+        }
+
+        $estado = new Estado;
+
+        $temEstado = Estado::where([["nome", "=", mb_strtoupper($request->input("name"))],["pais_id","=",$request->input("pais_id")]])->first();
+        if (count($temEstado) > 0) {
+            return response()->json(["ok" => 0, "error" => 1, "message" => "Este estado já está cadastrado! Selecionamos ele para você.", "registred" => 1, "estados_id" => $temEstado->id, "pais_id" => $temEstado->pais->id]);
+        }
+
+        $estado->nome = mb_strtoupper($request->input("name"));
+        $estado->pais_id = mb_strtoupper($request->input("pais_id"));
+        $estado->save();
+        if ($estado->id > 0) {
+            return response()->json(["ok" => 1, "error" => 0, "estados_id" => $estado->id, "pais_id" => $estado->pais->id]);
+        } else {
+            return response()->json(["ok" => 0, "error" => 1, "message" => "Um erro inesperado aconteceu. Por favor, tente novamente mais tarde.", "registred" => 0]);
+        }
+    }
+
+    public function telav2_adicionarNovaCidade(Request $request)
+    {
+        if (
+            !$request->has("name") || !$request->has("estados_id")
+        ) {
+            return response()->json(["ok" => 0, "error" => 1, "message" => "Um dos campos obrigatórios não está preenchido. Por favor, verifique e envie novamente!", "registred" => 0]);
+        } elseif (
+            $request->input("name") == null || $request->input("name") == "" ||
+            $request->input("estados_id") == null || $request->input("estados_id") == ""
+        ) {
+            return response()->json(["ok" => 0, "error" => 1, "message" => "Um dos campos obrigatórios não está preenchido. Por favor, verifique e envie novamente!", "registred" => 0]);
+        }
+        $estado = Estado::find($request->input("estados_id"));
+        if(!$estado){
+            return response()->json(["ok" => 0, "error" => 1, "message" => "O estado não foi encontrado. Por favor, verifique e tente novamente!", "registred" => 0]);
+        }
+        if($estado->pais_id == 33){
+            return response()->json(["ok" => 0, "error" => 1, "message" => "Este país não permite o cadastro de cidade.", "registred" => 0]);
+        }
+
+        $cidade = new Cidade;
+
+        $temCidade = Cidade::where([["name", "=", mb_strtoupper($request->input("name"))],["estados_id","=",$request->input("estados_id")]])->first();
+        if (count($temCidade) > 0) {
+            return response()->json(["ok" => 0, "error" => 1, "message" => "Esta cidade já está cadastrada! Selecionamos ela para você.", "registred" => 1, "cidade_id" => $temCidade->id, "estados_id" => $temCidade->estado->id, "pais_id" => $temCidade->estado->pais->id]);
+        }
+
+        $cidade->name = mb_strtoupper($request->input("name"));
+        $cidade->estados_id = mb_strtoupper($request->input("estados_id"));
+        $cidade->save();
+        if ($cidade->id > 0) {
+            return response()->json(["ok" => 1, "error" => 0, "cidade_id" => $cidade->id, "estados_id" => $cidade->estado->id, "pais_id" => $cidade->estado->pais->id]);
+        } else {
+            return response()->json(["ok" => 0, "error" => 1, "message" => "Um erro inesperado aconteceu. Por favor, tente novamente mais tarde.", "registred" => 0]);
+        }
+    }
+
+    public function telav2_adicionarNovoClube(Request $request)
+    {
+        if (
+            !$request->has("name") || !$request->has("cidade_id")
+        ) {
+            return response()->json(["ok" => 0, "error" => 1, "message" => "Os campos obrigatórios não estão preenchidos. Por favor, verifique e envie novamente!", "registred" => 0]);
+        } elseif (
+            $request->input("name") == null || $request->input("name") == "" ||
+            $request->input("cidade_id") == null || $request->input("cidade_id") == ""
+        ) {
+            return response()->json(["ok" => 0, "error" => 1, "message" => "Os campos obrigatórios não estão preenchidos. Por favor, verifique e envie novamente!", "registred" => 0]);
+        }
+        $clube = new Clube;
+
+        $temClube = Clube::where([["name", "=", mb_strtoupper($request->input("name"))], ["cidade_id", "=", $request->input("cidade_id")]])->first();
+        if (count($temClube) > 0) {
+            return response()->json(["ok" => 0, "error" => 1, "message" => "Este clube já está cadastrado! Selecionamos ele para você.", "registred" => 1, "clube_id" => $temClube->id, "clube_nome" => $temClube->name, "cidade_nome" => $temClube->cidade->estado->pais->nome."-".$temClube->cidade->name."/".$temClube->cidade->estado->nome]);
+        }
+
+        $clube->name = mb_strtoupper($request->input("name"));
+        $clube->cidade_id = mb_strtoupper($request->input("cidade_id"));
+        $clube->save();
+        if ($clube->id > 0) {
+            return response()->json(["ok" => 1, "error" => 0, "clube_id" => $clube->id, "clube_nome" => $clube->name, "cidade_nome" => $clube->cidade->estado->pais->nome."-".$clube->cidade->name."/".$clube->cidade->estado->nome]);
+        } else {
+            return response()->json(["ok" => 0, "error" => 1, "message" => "Um erro inesperado aconteceu. Por favor, tente novamente mais tarde.", "registred" => 0]);
+        }
+    }
 
     /*
      *
