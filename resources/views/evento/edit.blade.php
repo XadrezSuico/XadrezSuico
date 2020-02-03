@@ -39,7 +39,11 @@
 					\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4,5]) ||
 					\Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])
 				)
-					<a class="btn btn-success" href="{{url("/inscricao/".$evento->id)}}">Nova ou Confirmar Inscrição (Também é Link público para divulgação)</a><br/><br/>
+					@if($evento->e_inscricao_apenas_com_link)
+						<a href="{{url("/inscricao/".$evento->id."?token=".$evento->token)}}" class="btn btn-success">Nova ou Confirmar Inscrição (Também é Link público para divulgação)</a><br/><br/>
+					@else
+						<a href="{{url("/inscricao/".$evento->id)}}" class="btn btn-success">Nova ou Confirmar Inscrição (Também é Link público para divulgação)</a><br/><br/>
+					@endif
 				@endif
 				@if(
 					\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
