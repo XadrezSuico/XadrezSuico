@@ -373,6 +373,9 @@
 						<label for="clube_id">Clube</label>
 						<select id="clube_id" name="clube_id" class="form-control this_is_select2 cadastro_enxadrista_select">
 							<option value="">--- Você pode selecionar um clube ---</option>
+							@foreach(\App\Clube::all() as $clube)
+								<option value="{{$clube->id}}">{{$clube->cidade->estado->pais->name}}-{{$clube->cidade->estado->name}}/{{$clube->cidade->name}} - {{$clube->name}}</option>
+							@endforeach
 						</select>
                     	<button id="clubeNaoCadastradoEnxadrista" onclick="chamaCadastroClube(0)" class="btn btn-success">O meu clube não está cadastrado</button>
 					</div>
@@ -417,6 +420,9 @@
 					<label for="clube_id">Clube</label>
 					<select id="inscricao_clube_id" class="clube_id this_is_select2 form-control">
 						<option value="">--- Você pode escolher um clube ---</option>
+						@foreach(\App\Clube::all() as $clube)
+							<option value="{{$clube->id}}">{{$clube->cidade->estado->pais->name}}-{{$clube->cidade->estado->name}}/{{$clube->cidade->name}} - {{$clube->name}}</option>
+						@endforeach
 					</select>
                     <button id="clubeNaoCadastradoInscricao" onclick="chamaCadastroClube(1)" class="btn btn-success">O meu clube não está cadastrado</button>
 				</div>
@@ -478,6 +484,9 @@
 					<label for="confirmacao_clube_id">Clube</label>
 					<select id="confirmacao_clube_id" class="clube_id this_is_select2 form-control">
 						<option value="">--- Você pode escolher um clube ---</option>
+						@foreach(\App\Clube::all() as $clube)
+							<option value="{{$clube->id}}">{{$clube->cidade->estado->pais->name}}-{{$clube->cidade->estado->name}}/{{$clube->cidade->name}} - {{$clube->name}}</option>
+						@endforeach
 					</select>
                     <button id="clubeNaoCadastradoInscricao" onclick="chamaCadastroClube(2)" class="btn btn-success">O meu clube não está cadastrado</button>
 				</div>
@@ -596,7 +605,31 @@
 			});
 		@endif
 
-		$(".clube_id").select2({
+		$("#clube_id").select2({
+			ajax: {
+				url: '{{url("/inscricao/v2/".$evento->id."/busca/clube")}}',
+				delay: 250,
+				processResults: function (data) {
+					return {
+						results: data.results
+					};
+				}
+			}
+		});
+
+		$("#enxadrista_clube_id").select2({
+			ajax: {
+				url: '{{url("/inscricao/v2/".$evento->id."/busca/clube")}}',
+				delay: 250,
+				processResults: function (data) {
+					return {
+						results: data.results
+					};
+				}
+			}
+		});
+
+		$("#inscricao_clube_id").select2({
 			ajax: {
 				url: '{{url("/inscricao/v2/".$evento->id."/busca/clube")}}',
 				delay: 250,

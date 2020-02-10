@@ -197,12 +197,12 @@ class Enxadrista extends Model
                 }
             } else {
                 if ($evento->usa_fide) {
-                    return $this->showRating(0, $evento->tipo_modalidade)->valor;
+                    if($this->showRating(0, $evento->tipo_modalidade)) return $this->showRating(0, $evento->tipo_modalidade)->valor;
                 } elseif ($evento->usa_lbx) {
-                    return $this->showRating(2, $evento->tipo_modalidade)->valor;
+                    if($this->showRating(2, $evento->tipo_modalidade)) return $this->showRating(2, $evento->tipo_modalidade)->valor;
                 }
                 if ($evento->usa_cbx) {
-                    return $this->showRating(1, $evento->tipo_modalidade)->valor;
+                    if($this->showRating(1, $evento->tipo_modalidade)) return $this->showRating(1, $evento->tipo_modalidade)->valor;
                 }
             }
         }
