@@ -111,26 +111,50 @@
 					<div class="row">
 						<div class="col-md-4">
 							<div class="form-group">
-								<label for="cbx_rating">Rating CBX</label><br/>
-								STD: {{$enxadrista->showRating(1,0)}}<br/>
-								RPD: {{$enxadrista->showRating(1,1)}}<br/>
-								BTZ: {{$enxadrista->showRating(1,2)}}<br/>
+								<label>CBX</label><br/>
+								@if($enxadrista->cbx_id)
+									Nome: @if($enxadrista->encontrado_cbx) <u>{{$enxadrista->cbx_name}}</u> @else <strong>ENXADRISTA NÃO ENCONTRADO</strong> @endif<br/>
+									@if($enxadrista->encontrado_cbx)
+										<label>Rating</label><br/>
+										STD: {{$enxadrista->showRating(1,0)}}<br/>
+										RPD: {{$enxadrista->showRating(1,1)}}<br/>
+										BTZ: {{$enxadrista->showRating(1,2)}}<br/>
+									@endif
+								@else
+									<strong>ID não informado.</strong>
+								@endif
 							</div>
 						</div>
 						<div class="col-md-4">
 							<div class="form-group">
-								<label for="fide_rating">Rating FIDE</label><br/>
-								STD: {{$enxadrista->showRating(0,0)}}<br/>
-								RPD: {{$enxadrista->showRating(0,1)}}<br/>
-								BTZ: {{$enxadrista->showRating(0,2)}}<br/>
+								<label>FIDE</label><br/>
+								@if($enxadrista->fide_id)
+									Nome: @if($enxadrista->encontrado_fide) <u>{{$enxadrista->fide_name}}</u> @else <strong>ENXADRISTA NÃO ENCONTRADO</strong> @endif<br/>
+									@if($enxadrista->encontrado_fide)
+										<label>Rating</label><br/>
+										STD: {{$enxadrista->showRating(0,0)}}<br/>
+										RPD: {{$enxadrista->showRating(0,1)}}<br/>
+										BTZ: {{$enxadrista->showRating(0,2)}}<br/>
+									@endif
+								@else
+									<strong>ID não informado.</strong>
+								@endif
 							</div>
 						</div>
 						<div class="col-md-4">
 							<div class="form-group">
-								<label for="lbx_rating">Rating LBX</label><br/>
-								STD: {{$enxadrista->showRating(2,0)}}<br/>
-								RPD: {{$enxadrista->showRating(2,1)}}<br/>
-								BTZ: {{$enxadrista->showRating(2,2)}}<br/>
+								<label>LBX</label><br/>
+								@if($enxadrista->lbx_id)
+									Nome: @if($enxadrista->encontrado_lbx) <u>{{$enxadrista->lbx_name}}</u> @else <strong>ENXADRISTA NÃO ENCONTRADO</strong> @endif
+									@if($enxadrista->encontrado_lbx)
+										<label>Rating</label><br/>
+										STD: {{$enxadrista->showRating(2,0)}}<br/>
+										RPD: {{$enxadrista->showRating(2,1)}}<br/>
+										BTZ: {{$enxadrista->showRating(2,2)}}<br/>
+									@endif
+								@else
+									<strong>ID não informado.</strong>
+								@endif
 							</div>
 						</div>
 					</div>

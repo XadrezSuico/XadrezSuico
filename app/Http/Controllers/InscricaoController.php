@@ -908,6 +908,26 @@ class InscricaoController extends Controller
         ) {
             return response()->json(["ok" => 0, "error" => 1, "message" => "Um dos campos obrigatórios não está preenchido. Por favor, verifique e envie novamente!<br/><br/><strong>Observação</strong>: TODOS os Campos com <strong>*</strong> SÃO OBRIGATÓRIOS!", "registred" => 0, "ask" => 0]);
         }
+         
+        if(($evento->calcula_cbx && (!$enxadrista->cbx_id || $enxadrista->cbx_id == 0))){
+            return response()->json(["ok" => 0, "error" => 1, "message" => "Para este evento, é obrigatório que informe o ID CBX (ID de Cadastro junto à Confederação Brasileira de Xadrez), e portanto, é necessário que seja informado para poder efetuar a inscrição. Por favor, verifique e envie novamente!<br/><br/><strong>Observação</strong>: TODOS os Campos com <strong>*</strong> SÃO OBRIGATÓRIOS!", "registred" => 0, "ask" => 0]);
+        }
+        if(($evento->calcula_fide && 
+            (
+                (
+                    $enxadrista->pais_id == 33 && (!$enxadrista->cbx_id || $enxadrista->cbx_id == 0)
+                )||(
+                    $enxadrista->pais_id != 33 && (!$enxadrista->fide_id || $enxadrista->fide_id == 0)
+                )
+            )
+        )){
+            if($request->input("pais_id") == 33){
+                return response()->json(["ok" => 0, "error" => 1, "message" => "Para este evento, é obrigatório que jogadores brasileiros informem o ID CBX (ID de Cadastro junto à Confederação Brasileira de Xadrez), e portanto, é necessário que seja informado para poder efetuar a inscrição. Este ID é obrigatório e DEVE SER VÁLIDO, sob pena de remoção da inscrição. Maiores informações podem ser vistas no Passo 4/5 - Cadastros nas Entidades. Por favor, verifique e envie novamente!<br/><br/><strong>Observação</strong>: TODOS os Campos com <strong>*</strong> SÃO OBRIGATÓRIOS!", "registred" => 0, "ask" => 0]);
+            }else{
+                return response()->json(["ok" => 0, "error" => 1, "message" => "Para este evento, é obrigatório que jogadores estrangeiros informem o ID FIDE (ID de Cadastro junto à Federação Internacional de Xadrez), e portanto, é necessário que seja informado para poder efetuar a inscrição. Este ID é obrigatório e DEVE SER VÁLIDO, sob pena de remoção da inscrição. Por favor, verifique e envie novamente!<br/><br/><strong>Observação</strong>: TODOS os Campos com <strong>*</strong> SÃO OBRIGATÓRIOS!", "registred" => 0, "ask" => 0]);
+
+            }
+        }
 
         $validator = \Validator::make($request->all(), [
             'email' => 'required|string|email|max:255',
@@ -1064,6 +1084,11 @@ class InscricaoController extends Controller
         if ($request->has("fide_id")) {
             if ($request->input("fide_id") > 0) {
                 $enxadrista->fide_id = $request->input("fide_id");
+
+                $enxadrista = FIDERatingController::getRating($enxadrista, false, true);
+                if (!$enxadrista->encontrado_fide) {
+                    return response()->json(["ok" => 0, "error" => 1, "message" => "O ID FIDE informado não existe. Por favor, verifique esta informação e tente novamente. Lembrando que esta informação DEVE SER válida e deve corresponder ao seu cadastro!", "registred" => 0, "ask" => 0]);
+                }
             }
         }
         if ($request->has("lbx_id")) {
@@ -1117,6 +1142,21 @@ class InscricaoController extends Controller
             )
             &&
             $enxadrista->howOld() < 130
+            &&
+            (
+                !($evento->calcula_cbx && (!$enxadrista->cbx_id || $enxadrista->cbx_id == 0))
+                ||
+                !(
+                    $evento->calcula_fide &&
+                    (
+                        (
+                            $enxadrista->pais_id == 33 && (!$enxadrista->cbx_id || $enxadrista->cbx_id == 0)
+                        ) || (
+                            $enxadrista->pais_id != 33 && (!$enxadrista->fide_id || $enxadrista->fide_id == 0)
+                        )
+                    )
+                )
+            )
         ){
             return response()->json(["ok" => 0, "error" => 1, "message" => "O enxadrista não necessita de atualização de cadastro.", "registred" => 0, "ask" => 0]);
         }
@@ -1151,6 +1191,27 @@ class InscricaoController extends Controller
         if ($validator->fails()) {
             return response()->json(["ok" => 0, "error" => 1, "message" => "O e-mail é inválido. Por favor, verifique e tente novamente.", "registred" => 0, "ask" => 0]);
         }
+        
+        if (($evento->calcula_cbx && (!$request->input("cbx_id") || $request->input("cbx_id") == 0))) {
+            return response()->json(["ok" => 0, "error" => 1, "message" => "Para este evento, é obrigatório que informe o ID CBX (ID de Cadastro junto à Confederação Brasileira de Xadrez), e portanto, é necessário que seja informado para poder efetuar a inscrição. Por favor, verifique e envie novamente!<br/><br/><strong>Observação</strong>: TODOS os Campos com <strong>*</strong> SÃO OBRIGATÓRIOS!", "registred" => 0, "ask" => 0]);
+        }
+        if (($evento->calcula_fide &&
+            (
+                (
+                    $request->input("pais_id") == 33 && (!$request->input("cbx_id") || $request->input("cbx_id") == 0)
+                ) || (
+                    $request->input("pais_id") != 33 && (!$request->input("fide_id") || $request->input("fide_id") == 0)
+                )
+            )
+        )) {
+            if ($request->input("pais_id") == 33) {
+                return response()->json(["ok" => 0, "error" => 1, "message" => "Para este evento, é obrigatório que jogadores brasileiros informem o ID CBX (ID de Cadastro junto à Confederação Brasileira de Xadrez), e portanto, é necessário que seja informado para poder efetuar a inscrição. Este ID é obrigatório e DEVE SER VÁLIDO, sob pena de remoção da inscrição. Maiores informações podem ser vistas no Passo 4/5 - Cadastros nas Entidades. Por favor, verifique e envie novamente!<br/><br/><strong>Observação</strong>: TODOS os Campos com <strong>*</strong> SÃO OBRIGATÓRIOS!", "registred" => 0, "ask" => 0]);
+            } else {
+                return response()->json(["ok" => 0, "error" => 1, "message" => "Para este evento, é obrigatório que jogadores estrangeiros informem o ID FIDE (ID de Cadastro junto à Federação Internacional de Xadrez), e portanto, é necessário que seja informado para poder efetuar a inscrição. Este ID é obrigatório e DEVE SER VÁLIDO, sob pena de remoção da inscrição. Por favor, verifique e envie novamente!<br/><br/><strong>Observação</strong>: TODOS os Campos com <strong>*</strong> SÃO OBRIGATÓRIOS!", "registred" => 0, "ask" => 0]);
+
+            }
+        }
+
 
         // Algoritmo para eliminar os problemas com espaçamentos duplos ou até triplos.
         $nome_corrigido = "";
@@ -1313,6 +1374,11 @@ class InscricaoController extends Controller
         if ($request->has("fide_id")) {
             if ($request->input("fide_id") > 0) {
                 $enxadrista->fide_id = $request->input("fide_id");
+
+                $enxadrista = FIDERatingController::getRating($enxadrista,false,true);
+                if(!$enxadrista->encontrado_fide){
+                    return response()->json(["ok" => 0, "error" => 1, "message" => "O ID FIDE informado não existe. Por favor, verifique esta informação e tente novamente. Lembrando que esta informação DEVE SER válida e deve corresponder ao seu cadastro!", "registred" => 0, "ask" => 0]);
+                }
             }else{
                 $enxadrista->fide_id = NULL;
             }
