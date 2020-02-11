@@ -314,10 +314,26 @@
 					<div class="alert alert-warning">
 						Caso o(a) enxadrista possua cadastro na CBX (Confederação Brasileira de Xadrez), FIDE (Federação Internacional de Xadrez) ou então na LBX (Liga Brasileira de Xadrez) é indispensável a informação dos códigos referentes a cada entidade para que seja utilizado o Rating do(a) Enxadrista para os Torneios, de acordo com cada Evento.
 					</div>
+					@if($evento->calcula_cbx)
+						<div class="alert alert-danger">
+							Este evento <strong>calcula Rating CBX</strong>, portanto é obrigatória a inserção do ID de Cadastro junto à CBX. Caso ainda não possua, acesse 
+							<a href="http://cbx.com.br/cadastro">http://cbx.com.br/cadastro</a> e efetue o seu cadastro antes de efetuar a inscrição.<br/>
+							<strong>IMPORTANTE!</strong> O cadastro junto a CBX demora até 48 horas úteis para gerar o seu ID.
+						</div>
+					@endif
+					@if($evento->calcula_fide)
+						<div class="alert alert-danger">
+							Este evento <strong>calcula Rating FIDE</strong>, portanto para jogadores Brasileiros é obrigatória a inserção do ID de Cadastro junto à CBX,
+							e no caso de jogadores Estrangeiros, é obrigatório que o mesmo <strong>ID FIDE</strong> para poder jogar este evento.<br/>
+							Caso seja Brasileiro e não possua cadastro junto à CBX, acesse <a href="http://cbx.com.br/cadastro">http://cbx.com.br/cadastro</a>
+							e efetue o seu cadastro antes de efetuar a inscrição.<br/>
+							<strong>IMPORTANTE!</strong> O cadastro junto a CBX demora até 48 horas úteis para gerar o seu ID.
+						</div>
+					@endif
 					<div class="row">
 						<div class="col-md-4">
 							<div class="form-group">
-								<label for="cbx_id">ID CBX</label>
+								<label for="cbx_id">ID CBX <span id="cbx_required" style="display:none">*</span></label>
 								<input name="cbx_id" id="cbx_id" class="form-control cadastro_enxadrista_input" type="text" />
 								É possível efetuar a pesquisa de ID CBX pelo site <a href="http://cbx.com.br" target="_blank">http://cbx.com.br</a> - Barra Lateral Direita - Buscar Jogadores.<br/>
 								<hr/>
@@ -326,7 +342,7 @@
 						</div>
 						<div class="col-md-4">
 							<div class="form-group">
-								<label for="fide_id">ID FIDE</label>
+								<label for="fide_id">ID FIDE <span id="fide_required" style="display:none">*</span></label>
 								<input name="fide_id" id="fide_id" class="form-control cadastro_enxadrista_input" type="text" />
 								É possível efetuar a pesquisa de ID FIDE pelo site <a href="http://ratings.fide.com" target="_blank">http://ratings.fide.com</a> - Search Database - Clique no nome e procure pelo campo "FIDE ID" na página.<br/>
 								<hr/>
@@ -603,6 +619,9 @@
 					Loading.destroy();
 				});
 			});
+			setTimeout(function(){
+				confereCadastrosEntidades();
+			},300);
 		@endif
 
 		$("#clube_id").select2({
@@ -773,6 +792,7 @@
 			buscaTipoDocumentos(function(){
 				Loading.destroy();
 			});
+			confereCadastrosEntidades();
 		});
 
 		$("#pais_id").on("select2:select",function(){
@@ -925,7 +945,9 @@
 			buscaTipoDocumentos(function(){
 				Loading.destroy();
 			});
+			confereCadastrosEntidades();
 		}
+		
 
 		if($("#pais_id").val() > 0){
 			verificaLiberaCadastro(0);
@@ -962,6 +984,7 @@
 					setTimeout(function(){
 						buscaTipoDocumentos();
 					},400);
+					confereCadastrosEntidades();
 				}else{
 					@if(env("PAIS_DEFAULT"))
 						$("#pais_nascimento_id").val({{env("PAIS_DEFAULT")}}).change();
@@ -972,6 +995,7 @@
 					setTimeout(function(){
 						buscaTipoDocumentos();
 					},200);
+					confereCadastrosEntidades();
 				}
 				if(data.fields.cbx_id){
 					$("#cbx_id").val(data.fields.cbx_id);
@@ -1571,6 +1595,7 @@
 					Loading.destroy();
 				});
 			});
+			confereCadastrosEntidades();
 		@endif
 
 		$("#enviar_cadastro").css("display","");
@@ -2211,6 +2236,35 @@
 				}
 			}
 		});
+	}
+
+	function confereCadastrosEntidades(){
+		// Se Calcula FIDE e não CBX
+		@if($evento->calcula_fide && !$evento->calcula_cbx)
+			if($("#pais_nascimento_id").val() == 33){
+				$("#cbx_required").css("display","");
+				$("#fide_required").css("display","none");
+			}else{
+				$("#cbx_required").css("display","none");
+				$("#fide_required").css("display","");
+			}
+		@endif
+		
+		// Se Calcula CBX e não FIDE
+		@if(!$evento->calcula_fide && $evento->calcula_cbx)
+			$("#cbx_required").css("display","");
+			$("#fide_required").css("display","none");
+		@endif
+
+		// Se Calcula CBX e FIDE
+		@if($evento->calcula_fide && $evento->calcula_cbx)
+			$("#cbx_required").css("display","");
+			if($("#pais_nascimento_id").val() == 33){
+				$("#fide_required").css("display","none");
+			}else{
+				$("#fide_required").css("display","");
+			}
+		@endif
 	}
 </script>
 @endsection

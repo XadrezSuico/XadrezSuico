@@ -678,6 +678,18 @@ class InscricaoController extends Controller
                 )
                 ||
                 $enxadrista->howOld() >= 130
+                || 
+                ($evento->calcula_cbx && (!$enxadrista->cbx_id || $enxadrista->cbx_id == 0))
+                ||
+                ($evento->calcula_fide && 
+                    (
+                        (
+                            $enxadrista->pais_id == 33 && (!$enxadrista->cbx_id || $enxadrista->cbx_id == 0)
+                        )||(
+                            $enxadrista->pais_id != 33 && (!$enxadrista->fide_id || $enxadrista->fide_id == 0)
+                        )
+                    )
+                )
             ){
                 $fields = array();
                 // 1/5

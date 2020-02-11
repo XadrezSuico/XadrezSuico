@@ -130,17 +130,30 @@ class EventoGerenciarController extends Controller
         } else {
             $evento->e_inscricao_apenas_com_link = false;
         }
+
         if ($request->has("usa_fide") && !$request->has("usa_lbx")) {
             $evento->usa_fide = true;
         } else {
             $evento->usa_fide = false;
         }
+        if ($request->has("calcula_fide") && !$request->has("usa_lbx")) {
+            $evento->calcula_fide = true;
+        } else {
+            $evento->calcula_fide = false;
+        }
+
 
         if ($request->has("usa_cbx")) {
             $evento->usa_cbx = true;
         } else {
             $evento->usa_cbx = false;
         }
+        if ($request->has("calcula_cbx")) {
+            $evento->calcula_cbx = true;
+        } else {
+            $evento->calcula_cbx = false;
+        }
+
 
         if ($request->has("usa_lbx")) {
             $evento->usa_lbx = true;
