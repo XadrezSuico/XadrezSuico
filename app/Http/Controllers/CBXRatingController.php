@@ -7,7 +7,6 @@ use GuzzleHttp\Client;
 
 class CBXRatingController extends Controller
 {
-    private $codigo_organizacao = 1;
 
     public function updateRatings()
     {
@@ -23,12 +22,26 @@ class CBXRatingController extends Controller
             ->get();
         echo count($enxadristas);
         foreach ($enxadristas as $enxadrista) {
-            echo "Enxadrista #" . $enxadrista->id . " - " . $enxadrista->name;
-            // $html = file_get_contents("http://cbx.com.br/jogador/".$enxadrista->cbx_id);
+            $this->getRating($enxadrista);
+        }
+    }
 
-            $client = new Client;
-            $response = $client->get("http://cbx.com.br/jogador/" . $enxadrista->cbx_id);
-            $html = (string) $response->getBody();
+    public static function getRating($enxadrista, $show_text = true, $return_enxadrista = false){
+        $codigo_organizacao = 1;
+
+
+
+        if($show_text) echo "Enxadrista #" . $enxadrista->id . " - " . $enxadrista->name;
+        // $html = file_get_contents("http://cbx.com.br/jogador/".$enxadrista->cbx_id);
+
+        $client = new Client;
+        $response = $client->get("http://cbx.com.br/jogador/" . $enxadrista->cbx_id);
+        $html = (string) $response->getBody();
+
+        $nome = CBXRatingController::getName($html);
+        if($nome){
+            $enxadrista->encontrado_cbx = true;
+            $enxadrista->cbx_name = $nome;
 
             $explode_table_1 = explode("Evolução Rating", $html);
             if (count($explode_table_1) == 2) {
@@ -41,11 +54,11 @@ class CBXRatingController extends Controller
                         $i = 0;
                         foreach ($explode_lines as $line_brute) {
                             if ($i == 2) {
-                                echo 1;
+                                if($show_text) echo 1;
                                 $line = explode("</tr>", $line_brute);
                                 $columns = explode('<td align="center">', $line[0]);
-                                echo $i . "<br>";
-                                print_r($columns);
+                                if($show_text) echo $i . "<br>";
+                                if($show_text) print_r($columns);
                                 if (count($columns) == 5) {
                                     $j = 0;
 
@@ -59,43 +72,70 @@ class CBXRatingController extends Controller
                                             $rating = $column[0];
                                             switch ($j) {
                                                 case $std:
-                                                    echo "Rating STD: " . $rating;
+                                                    if($show_text) echo "Rating STD: " . $rating;
                                                     $enxadrista->setRating($codigo_organizacao, 0, $rating);
                                                     break;
 
                                                 case $rpd:
-                                                    echo "Rating RPD: " . $rating;
+                                                    if($show_text) echo "Rating RPD: " . $rating;
                                                     $enxadrista->setRating($codigo_organizacao, 1, $rating);
                                                     break;
 
                                                 case $btz:
-                                                    echo "Rating BTZ: " . $rating;
+                                                    if($show_text) echo "Rating BTZ: " . $rating;
                                                     $enxadrista->setRating($codigo_organizacao, 2, $rating);
                                                     break;
                                             }
                                         } else {
-                                            echo "Erro column";
+                                            if($show_text) echo "Erro column";
                                         }
                                         $j++;
                                     }
                                 } else {
-                                    echo "Erro columns " . count($columns);
+                                    if($show_text) echo "Erro columns " . count($columns);
                                 }
                             }
                             $i++;
                         }
                     } else {
-                        echo "Erro explode_table_3";
+                        if($show_text) echo "Erro explode_table_3";
                     }
                 } else {
-                    echo "Erro explode_table_2";
+                    if($show_text) echo "Erro explode_table_2";
                 }
             } else {
-                echo "Erro explode_table_1";
+                if($show_text) echo "Erro explode_table_1";
             }
-            $enxadrista->cbx_last_update = date("Y-m-d H:i:s");
-            $enxadrista->save();
-            echo "<hr/>";
+        } else {
+            if($show_text) echo "Erro name";
+            $enxadrista->encontrado_cbx = false;
         }
+        $enxadrista->cbx_last_update = date("Y-m-d H:i:s");
+        if($return_enxadrista){
+            return $enxadrista;
+        }else{
+            $enxadrista->save();
+        }
+        if($show_text) echo "<hr/>";
+    }
+    
+    private static function getName($html){
+        $explode = explode('<div id="dados-jogador-row1">',$html);
+        if(count($explode) > 1){
+            $explode_2 = explode('<h2>',$explode[1]);
+            if(count($explode_2) > 1){
+                $explode_3 = explode('</h2>',$explode_2[1]);
+                if(count($explode_3) > 1){
+                    if(
+                        trim($explode_3[0]) != NULL &&
+                        trim($explode_3[0]) != "" &&
+                        strlen(trim($explode_3[0])) > 0
+                    ){
+                        return trim($explode_3[0]);
+                    }
+                }
+            }
+        }
+        return false;
     }
 }

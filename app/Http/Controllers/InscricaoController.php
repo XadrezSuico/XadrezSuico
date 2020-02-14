@@ -40,7 +40,7 @@ class InscricaoController extends Controller
                             !$user->hasPermissionEventByPerfil($evento->id, [3, 4]) &&
                             !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [6,7])
                         ) {
-                                return view("inscricao.encerradas", compact("evento"));
+                            return view("inscricao.encerradas", compact("evento"));
                         }
                     }
                     $token = $request->input("token");
@@ -908,11 +908,11 @@ class InscricaoController extends Controller
         ) {
             return response()->json(["ok" => 0, "error" => 1, "message" => "Um dos campos obrigatórios não está preenchido. Por favor, verifique e envie novamente!<br/><br/><strong>Observação</strong>: TODOS os Campos com <strong>*</strong> SÃO OBRIGATÓRIOS!", "registred" => 0, "ask" => 0]);
         }
-         
-        if(($evento->calcula_cbx && (!$enxadrista->cbx_id || $enxadrista->cbx_id == 0))){
+        
+        if((($evento->calcula_cbx || $evento->cbx_required) && (!$enxadrista->cbx_id || $enxadrista->cbx_id == 0))){
             return response()->json(["ok" => 0, "error" => 1, "message" => "Para este evento, é obrigatório que informe o ID CBX (ID de Cadastro junto à Confederação Brasileira de Xadrez), e portanto, é necessário que seja informado para poder efetuar a inscrição. Por favor, verifique e envie novamente!<br/><br/><strong>Observação</strong>: TODOS os Campos com <strong>*</strong> SÃO OBRIGATÓRIOS!", "registred" => 0, "ask" => 0]);
         }
-        if(($evento->calcula_fide && 
+        if((($evento->calcula_fide || $evento->fide_required) && 
             (
                 (
                     $enxadrista->pais_id == 33 && (!$enxadrista->cbx_id || $enxadrista->cbx_id == 0)
@@ -1079,6 +1079,11 @@ class InscricaoController extends Controller
         if ($request->has("cbx_id")) {
             if ($request->input("cbx_id") > 0) {
                 $enxadrista->cbx_id = $request->input("cbx_id");
+
+                $enxadrista = CBXRatingController::getRating($enxadrista, false, true);
+                if (!$enxadrista->encontrado_cbx) {
+                    return response()->json(["ok" => 0, "error" => 1, "message" => "O ID CBX informado não existe. Por favor, verifique esta informação e tente novamente. Lembrando que esta informação DEVE SER válida e deve corresponder ao cadastro deste enxadrista!", "registred" => 0, "ask" => 0]);
+                }
             }
         }
         if ($request->has("fide_id")) {
@@ -1087,13 +1092,18 @@ class InscricaoController extends Controller
 
                 $enxadrista = FIDERatingController::getRating($enxadrista, false, true);
                 if (!$enxadrista->encontrado_fide) {
-                    return response()->json(["ok" => 0, "error" => 1, "message" => "O ID FIDE informado não existe. Por favor, verifique esta informação e tente novamente. Lembrando que esta informação DEVE SER válida e deve corresponder ao seu cadastro!", "registred" => 0, "ask" => 0]);
+                    return response()->json(["ok" => 0, "error" => 1, "message" => "O ID FIDE informado não existe. Por favor, verifique esta informação e tente novamente. Lembrando que esta informação DEVE SER válida e deve corresponder ao cadastro deste enxadrista!", "registred" => 0, "ask" => 0]);
                 }
             }
         }
         if ($request->has("lbx_id")) {
             if ($request->input("lbx_id") > 0) {
                 $enxadrista->lbx_id = $request->input("lbx_id");
+
+                $enxadrista = LBXRatingController::getRating($enxadrista,false,true);
+                if(!$enxadrista->encontrado_lbx){
+                    return response()->json(["ok" => 0, "error" => 1, "message" => "O ID LBX informado não existe. Por favor, verifique esta informação e tente novamente. Lembrando que esta informação DEVE SER válida e deve corresponder ao seu cadastro!", "registred" => 0, "ask" => 0]);
+                }
             }
         }
         $enxadrista->cidade_id = $request->input("cidade_id");
@@ -1144,10 +1154,10 @@ class InscricaoController extends Controller
             $enxadrista->howOld() < 130
             &&
             (
-                !($evento->calcula_cbx && (!$enxadrista->cbx_id || $enxadrista->cbx_id == 0))
+                !(($evento->calcula_cbx || $evento->cbx_required) && (!$enxadrista->cbx_id || $enxadrista->cbx_id == 0))
                 ||
                 !(
-                    $evento->calcula_fide &&
+                    ($evento->calcula_fide || $evento->fide_required) &&
                     (
                         (
                             $enxadrista->pais_id == 33 && (!$enxadrista->cbx_id || $enxadrista->cbx_id == 0)
@@ -1192,10 +1202,10 @@ class InscricaoController extends Controller
             return response()->json(["ok" => 0, "error" => 1, "message" => "O e-mail é inválido. Por favor, verifique e tente novamente.", "registred" => 0, "ask" => 0]);
         }
         
-        if (($evento->calcula_cbx && (!$request->input("cbx_id") || $request->input("cbx_id") == 0))) {
+        if ((($evento->calcula_cbx || $evento->cbx_required) && (!$request->input("cbx_id") || $request->input("cbx_id") == 0))) {
             return response()->json(["ok" => 0, "error" => 1, "message" => "Para este evento, é obrigatório que informe o ID CBX (ID de Cadastro junto à Confederação Brasileira de Xadrez), e portanto, é necessário que seja informado para poder efetuar a inscrição. Por favor, verifique e envie novamente!<br/><br/><strong>Observação</strong>: TODOS os Campos com <strong>*</strong> SÃO OBRIGATÓRIOS!", "registred" => 0, "ask" => 0]);
         }
-        if (($evento->calcula_fide &&
+        if ((($evento->calcula_fide || $evento->fide_required) &&
             (
                 (
                     $request->input("pais_id") == 33 && (!$request->input("cbx_id") || $request->input("cbx_id") == 0)
@@ -1365,6 +1375,11 @@ class InscricaoController extends Controller
         if ($request->has("cbx_id")) {
             if ($request->input("cbx_id") > 0) {
                 $enxadrista->cbx_id = $request->input("cbx_id");
+
+                $enxadrista = CBXRatingController::getRating($enxadrista, false, true);
+                if (!$enxadrista->encontrado_cbx) {
+                    return response()->json(["ok" => 0, "error" => 1, "message" => "O ID CBX informado não existe. Por favor, verifique esta informação e tente novamente. Lembrando que esta informação DEVE SER válida e deve corresponder ao cadastro deste enxadrista!", "registred" => 0, "ask" => 0]);
+                }
             }else{
                 $enxadrista->cbx_id = NULL;
             }
@@ -1388,6 +1403,11 @@ class InscricaoController extends Controller
         if ($request->has("lbx_id")) {
             if ($request->input("lbx_id") > 0) {
                 $enxadrista->lbx_id = $request->input("lbx_id");
+
+                $enxadrista = LBXRatingController::getRating($enxadrista,false,true);
+                if(!$enxadrista->encontrado_lbx){
+                    return response()->json(["ok" => 0, "error" => 1, "message" => "O ID LBX informado não existe. Por favor, verifique esta informação e tente novamente. Lembrando que esta informação DEVE SER válida e deve corresponder ao seu cadastro!", "registred" => 0, "ask" => 0]);
+                }
             }else{
                 $enxadrista->lbx_id = NULL;
             }

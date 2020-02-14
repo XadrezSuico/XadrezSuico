@@ -8,6 +8,13 @@ class WhatsNewController extends Controller
     {
         $news = array();
 
+        // Novidades versão 0.1.0.1
+        $new_0101_betha["name"] = "0.1.0.1 Beta";
+        $new_0101_betha["news"] = array();
+        $new_0101_betha["news"][] = "Alterações nos dados de cadastro do Enxadrista: Agora é solicitado algumas informações como País de Nascimento e Documento a fim de evitar que ocorra cadastro duplicado.";
+        $new_0101_betha["news"][] = "Nova tela de Inscrição Interna e Externa e Confirmação de Inscrições, com diversas melhorias a fim de facilitar o trabalho dos colaboradores do evento.";
+        $news[] = $new_0101_betha;
+
         // Novidades versão 0.1.0.0
         $new_0100_betha["name"] = "0.1.0.0 Beta";
         $new_0100_betha["news"] = array();
@@ -16,6 +23,8 @@ class WhatsNewController extends Controller
         $new_0100_betha["news"][] = "Agora é possível exportar os enxadristas para poder fazer uma correção externa ou então para poder importar em outro sistema, caso necessário. Mas lembrando, que é necessário seguir a legislação vigente para isto em seu país.";
         $new_0100_betha["news"][] = "Template de Torneios: Agora estão vinculados ao Grupo de Evento, e para gerenciar é necessário acessar a Dashboard de Grupo de Evento de que ele foi criado.";
         $new_0100_betha["news"][] = "Permissões: agora todas as permissões estão de fato sendo aplicadas a fim de limitar o acesso a funções e páginas de acordo com o perfil do usuário. Finalização da issue #29.";
+        $new_0100_betha["news"][] = "Alterações nos dados de cadastro do Enxadrista: Agora é solicitado algumas informações como País de Nascimento e Documento a fim de evitar que ocorra cadastro duplicado.";
+        $new_0100_betha["news"][] = "Nova tela de Inscrição Interna e Externa e Confirmação de Inscrições, com diversas melhorias a fim de facilitar o trabalho dos colaboradores do evento.";
         $news[] = $new_0100_betha;
 
         // Novidades versão 0.0.2.1

@@ -320,6 +320,14 @@
 							<a href="http://cbx.com.br/cadastro">http://cbx.com.br/cadastro</a> e efetue o seu cadastro antes de efetuar a inscrição.<br/>
 							<strong>IMPORTANTE!</strong> O cadastro junto a CBX demora até 48 horas úteis para gerar o seu ID.
 						</div>
+					@else
+						@if($evento->cbx_required)
+							<div class="alert alert-danger">
+								Para este evento <strong>é obrigatório a inserção</strong> do ID de Cadastro junto à CBX. Caso ainda não possua, acesse 
+								<a href="http://cbx.com.br/cadastro">http://cbx.com.br/cadastro</a> e efetue o seu cadastro antes de efetuar a inscrição.<br/>
+								<strong>IMPORTANTE!</strong> O cadastro junto a CBX demora até 48 horas úteis para gerar o seu ID.
+							</div>
+						@endif
 					@endif
 					@if($evento->calcula_fide)
 						<div class="alert alert-danger">
@@ -329,6 +337,16 @@
 							e efetue o seu cadastro antes de efetuar a inscrição.<br/>
 							<strong>IMPORTANTE!</strong> O cadastro junto a CBX demora até 48 horas úteis para gerar o seu ID.
 						</div>
+					@else
+						@if($evento->fide_required)
+							<div class="alert alert-danger">
+								Para este evento <strong>é obrigatório</strong> para jogadores Brasileiros a inserção do ID de Cadastro junto à CBX,
+								e no caso de jogadores Estrangeiros, é obrigatório que o mesmo <strong>ID FIDE</strong> para poder jogar este evento.<br/>
+								Caso seja Brasileiro e não possua cadastro junto à CBX, acesse <a href="http://cbx.com.br/cadastro">http://cbx.com.br/cadastro</a>
+								e efetue o seu cadastro antes de efetuar a inscrição.<br/>
+								<strong>IMPORTANTE!</strong> O cadastro junto a CBX demora até 48 horas úteis para gerar o seu ID.
+							</div>
+						@endif
 					@endif
 					<div class="row">
 						<div class="col-md-4">
@@ -2248,22 +2266,51 @@
 				$("#cbx_required").css("display","none");
 				$("#fide_required").css("display","");
 			}
-		@endif
-		
-		// Se Calcula CBX e não FIDE
-		@if(!$evento->calcula_fide && $evento->calcula_cbx)
-			$("#cbx_required").css("display","");
-			$("#fide_required").css("display","none");
-		@endif
-
-		// Se Calcula CBX e FIDE
-		@if($evento->calcula_fide && $evento->calcula_cbx)
-			$("#cbx_required").css("display","");
-			if($("#pais_nascimento_id").val() == 33){
+		@else
+			// Se Calcula CBX e não FIDE
+			@if(!$evento->calcula_fide && $evento->calcula_cbx)
+				$("#cbx_required").css("display","");
 				$("#fide_required").css("display","none");
-			}else{
-				$("#fide_required").css("display","");
-			}
+			@else
+				// Se Calcula CBX e FIDE
+				@if($evento->calcula_fide && $evento->calcula_cbx)
+					$("#cbx_required").css("display","");
+					if($("#pais_nascimento_id").val() == 33){
+						$("#fide_required").css("display","none");
+					}else{
+						$("#fide_required").css("display","");
+					}
+				@else
+					// Se FIDE é Obrigatório e não CBX
+					@if($evento->fide_required && !$evento->cbx_required)
+						if($("#pais_nascimento_id").val() == 33){
+							$("#cbx_required").css("display","");
+							$("#fide_required").css("display","none");
+						}else{
+							$("#cbx_required").css("display","none");
+							$("#fide_required").css("display","");
+						}
+					@else
+						// Se CBX é Obrigatório e não FIDE
+						@if(!$evento->fide_required && $evento->cbx_required)
+							$("#cbx_required").css("display","");
+							$("#fide_required").css("display","none");
+						@else
+							// Se CBX e FIDE são Obrigatórios
+							@if($evento->fide_required && $evento->cbx_required)
+								$("#cbx_required").css("display","");
+								if($("#pais_nascimento_id").val() == 33){
+									$("#fide_required").css("display","none");
+								}else{
+									$("#fide_required").css("display","");
+								}
+							@else
+							
+							@endif
+						@endif
+					@endif
+				@endif
+			@endif
 		@endif
 	}
 </script>
