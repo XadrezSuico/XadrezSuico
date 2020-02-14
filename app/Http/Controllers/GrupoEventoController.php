@@ -107,6 +107,17 @@ class GrupoEventoController extends Controller
         } else {
             $grupo_evento->limite_calculo_geral = null;
         }
+
+        if ($request->has("regulamento_link")) {
+            if ($request->input("regulamento_link") != "") {
+                $grupo_evento->regulamento_link = $request->input("regulamento_link");
+            } else {
+                $grupo_evento->regulamento_link = null;
+            }
+        } else {
+            $grupo_evento->regulamento_link = null;
+        }
+
         if ($request->has("e_pontuacao_resultado_para_geral")) {
             $grupo_evento->e_pontuacao_resultado_para_geral = true;
         } else {

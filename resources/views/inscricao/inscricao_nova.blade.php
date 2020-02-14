@@ -454,8 +454,8 @@
 					</div>
 				@endforeach
 				<div class="form-group">
-					<label><input type="checkbox" id="regulamento_aceito"> Eu aceito o regulamento do {{$evento->grupo_evento->name}} integralmente.</label><br/>
-					<label><input type="checkbox" id="xadrezsuico_aceito"> Eu aceito o termo de uso da Plataforma de Gerenciamento de Circuitos de Xadrez - XadrezSuíço - Implementada pela <u>{{env("IMPLEMENTADO_POR")}}</u>.</label>
+				<label><input type="checkbox" id="regulamento_aceito"> Eu aceito o @if($evento->grupo_evento->regulamento_link) <a href="{{$evento->grupo_evento->regulamento_link}}" target="_blank"> @endif regulamento do  {{$evento->grupo_evento->name}} @if($evento->grupo_evento->regulamento_link) </a> @endif integralmente.</label><br/>
+					<label><input type="checkbox" id="xadrezsuico_aceito"> Eu aceito o <a href="{{url("/termosdeuso")}}" target="_blank">termo de uso</a> e a <a href="{{url("/politicadeprivacidade")}}" target="_blank">política de privacidade</a> da Plataforma de Gerenciamento de Circuitos de Xadrez - XadrezSuíço - Implementada pela <u>{{env("IMPLEMENTADO_POR")}}</u>.</label>
 				</div>
 				<button id="enviar_inscricao" class="btn btn-success">Enviar Inscrição</button>
 				<button id="cancelar_inscricao" class="btn btn-danger">Cancelar Inscrição</button>

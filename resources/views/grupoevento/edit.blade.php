@@ -65,6 +65,10 @@
 									<input name="limite_calculo_geral" id="limite_calculo_geral" class="form-control" type="text" value="{{$grupo_evento->limite_calculo_geral}}" @if(!$user->hasPermissionGlobal() && !$user->hasPermissionGroupEventByPerfil($grupo_evento->id,[7])) disabled="disabled" @endif />
 								</div>
 								<div class="form-group">
+									<label for="regulamento_link">Link do Regulamento</label>
+									<input name="regulamento_link" id="regulamento_link" class="form-control" type="text" value="{{$grupo_evento->regulamento_link}}" @if(!$user->hasPermissionGlobal() && !$user->hasPermissionGroupEventByPerfil($grupo_evento->id,[7])) disabled="disabled" @endif />
+								</div>
+								<div class="form-group">
 									<label for="tipo_ratings_id">Tipo de Rating</label>
 									<select name="tipo_ratings_id" id="tipo_ratings_id" class="form-control width-100" @if(!$user->hasPermissionGlobal() && !$user->hasPermissionGroupEventByPerfil($grupo_evento->id,[7])) disabled="disabled" @endif>
 										<option value="">--- Você pode selecionar um tipo de rating ---</option>

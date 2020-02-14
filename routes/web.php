@@ -346,3 +346,14 @@ Route::group(["prefix"=>"update"],function(){
 
 
 Route::get('/whatsnew', 'WhatsNewController@index')->name('whatsnew');
+
+
+Route::get('/politicadeprivacidade', function () {
+    return view("politicadeprivacidade");
+})->name('politicadeprivacidade');
+
+Route::get('/termosdeuso', function () {
+    return view("termosdeuso");
+})->name('termosdeuso');
+
+
