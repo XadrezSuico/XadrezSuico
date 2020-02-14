@@ -8,6 +8,13 @@ class WhatsNewController extends Controller
     {
         $news = array();
 
+        // Novidades versão 0.1.0.1
+        $new_0101_betha["name"] = "0.1.0.1 Beta";
+        $new_0101_betha["news"] = array();
+        $new_0101_betha["news"][] = "Alterações nos dados de cadastro do Enxadrista: Agora é solicitado algumas informações como País de Nascimento e Documento a fim de evitar que ocorra cadastro duplicado.";
+        $new_0101_betha["news"][] = "Nova tela de Inscrição Interna e Externa e Confirmação de Inscrições, com diversas melhorias a fim de facilitar o trabalho dos colaboradores do evento.";
+        $news[] = $new_0101_betha;
+
         // Novidades versão 0.1.0.0
         $new_0100_betha["name"] = "0.1.0.0 Beta";
         $new_0100_betha["news"] = array();

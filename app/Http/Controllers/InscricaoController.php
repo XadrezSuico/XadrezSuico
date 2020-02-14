@@ -908,11 +908,11 @@ class InscricaoController extends Controller
         ) {
             return response()->json(["ok" => 0, "error" => 1, "message" => "Um dos campos obrigatórios não está preenchido. Por favor, verifique e envie novamente!<br/><br/><strong>Observação</strong>: TODOS os Campos com <strong>*</strong> SÃO OBRIGATÓRIOS!", "registred" => 0, "ask" => 0]);
         }
-         
-        if(($evento->calcula_cbx && (!$enxadrista->cbx_id || $enxadrista->cbx_id == 0))){
+        
+        if((($evento->calcula_cbx || $evento->cbx_required) && (!$enxadrista->cbx_id || $enxadrista->cbx_id == 0))){
             return response()->json(["ok" => 0, "error" => 1, "message" => "Para este evento, é obrigatório que informe o ID CBX (ID de Cadastro junto à Confederação Brasileira de Xadrez), e portanto, é necessário que seja informado para poder efetuar a inscrição. Por favor, verifique e envie novamente!<br/><br/><strong>Observação</strong>: TODOS os Campos com <strong>*</strong> SÃO OBRIGATÓRIOS!", "registred" => 0, "ask" => 0]);
         }
-        if(($evento->calcula_fide && 
+        if((($evento->calcula_fide || $evento->fide_required) && 
             (
                 (
                     $enxadrista->pais_id == 33 && (!$enxadrista->cbx_id || $enxadrista->cbx_id == 0)
@@ -1154,10 +1154,10 @@ class InscricaoController extends Controller
             $enxadrista->howOld() < 130
             &&
             (
-                !($evento->calcula_cbx && (!$enxadrista->cbx_id || $enxadrista->cbx_id == 0))
+                !(($evento->calcula_cbx || $evento->cbx_required) && (!$enxadrista->cbx_id || $enxadrista->cbx_id == 0))
                 ||
                 !(
-                    $evento->calcula_fide &&
+                    ($evento->calcula_fide || $evento->fide_required) &&
                     (
                         (
                             $enxadrista->pais_id == 33 && (!$enxadrista->cbx_id || $enxadrista->cbx_id == 0)
@@ -1202,10 +1202,10 @@ class InscricaoController extends Controller
             return response()->json(["ok" => 0, "error" => 1, "message" => "O e-mail é inválido. Por favor, verifique e tente novamente.", "registred" => 0, "ask" => 0]);
         }
         
-        if (($evento->calcula_cbx && (!$request->input("cbx_id") || $request->input("cbx_id") == 0))) {
+        if ((($evento->calcula_cbx || $evento->cbx_required) && (!$request->input("cbx_id") || $request->input("cbx_id") == 0))) {
             return response()->json(["ok" => 0, "error" => 1, "message" => "Para este evento, é obrigatório que informe o ID CBX (ID de Cadastro junto à Confederação Brasileira de Xadrez), e portanto, é necessário que seja informado para poder efetuar a inscrição. Por favor, verifique e envie novamente!<br/><br/><strong>Observação</strong>: TODOS os Campos com <strong>*</strong> SÃO OBRIGATÓRIOS!", "registred" => 0, "ask" => 0]);
         }
-        if (($evento->calcula_fide &&
+        if ((($evento->calcula_fide || $evento->fide_required) &&
             (
                 (
                     $request->input("pais_id") == 33 && (!$request->input("cbx_id") || $request->input("cbx_id") == 0)

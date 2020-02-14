@@ -112,7 +112,7 @@ class EventoGerenciarController extends Controller
             $evento->maximo_inscricoes_evento = null;
         }
         if ($request->has("data_limite_inscricoes_abertas") && $datetime_data_limite_inscricoes_abertas) {
-            $evento->data_limite_inscricoes_abertas = $datetime_data_limite_inscricoes_abertas->format('Y-m-d H:i');
+            $evento->data_limite_inscricoes_abertas = $datetime_data_limite_inscricoes_abertas->format('Y-m-d H:i').":59";
         } else {
             $evento->data_limite_inscricoes_abertas = null;
         }
@@ -141,6 +141,11 @@ class EventoGerenciarController extends Controller
         } else {
             $evento->calcula_fide = false;
         }
+        if ($request->has("fide_required") && !$request->has("calcula_fide") && !$request->has("usa_lbx")) {
+            $evento->fide_required = true;
+        } else {
+            $evento->fide_required = false;
+        }
 
 
         if ($request->has("usa_cbx")) {
@@ -152,6 +157,11 @@ class EventoGerenciarController extends Controller
             $evento->calcula_cbx = true;
         } else {
             $evento->calcula_cbx = false;
+        }
+        if ($request->has("cbx_required") && !$request->has("calcula_cbx")) {
+            $evento->cbx_required = true;
+        } else {
+            $evento->cbx_required = false;
         }
 
 
