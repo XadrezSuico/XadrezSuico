@@ -17,6 +17,8 @@
         principalmente o gerenciamento de inscrições e exportação de arquivos para importação em softwares de Emparceiramento de Xadrez, e já no pós-evento,
         atua no recebimento do resultado obtido pelos enxadristas e com isto, efetua processamentos para principalmente efetuar o cálculo de pontuação final 
         do circuito e seus critérios de desempate.</p>
-
-    <p>{{env("CIDADE_TERMOS_USO")}}, {{env("DATA_ALTERACAO")}}.
+    <h3>B. Da Atualização deste Documento</h3>
+    <p> Este documento poderá ser atualizado, valendo a partir de 48 horas após a sua publicação. Acesse esta página com alguma frequência para ficar a par deste documento.</p>
+    <br/>
+    <p>{{env("CIDADE_TERMOS_USO")}}, {{env("DATA_ALTERACAO_TERMOS_USO")}}.</p>
 @stop
