@@ -145,7 +145,7 @@
 							<div class="form-group">
 								<label>LBX</label><br/>
 								@if($enxadrista->lbx_id)
-									Nome: @if($enxadrista->encontrado_lbx) <u>{{$enxadrista->lbx_name}}</u> @else <strong>ENXADRISTA NÃO ENCONTRADO</strong> @endif
+									Nome: @if($enxadrista->encontrado_lbx) <u>{{$enxadrista->lbx_name}}</u> @else <strong>ENXADRISTA NÃO ENCONTRADO</strong> @endif<br/>
 									@if($enxadrista->encontrado_lbx)
 										<label>Rating</label><br/>
 										STD: {{$enxadrista->showRating(2,0)}}<br/>
