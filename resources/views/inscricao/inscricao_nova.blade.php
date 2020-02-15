@@ -314,38 +314,97 @@
 					<div class="alert alert-warning">
 						Caso o(a) enxadrista possua cadastro na CBX (Confederação Brasileira de Xadrez), FIDE (Federação Internacional de Xadrez) ou então na LBX (Liga Brasileira de Xadrez) é indispensável a informação dos códigos referentes a cada entidade para que seja utilizado o Rating do(a) Enxadrista para os Torneios, de acordo com cada Evento.
 					</div>
-					@if($evento->calcula_cbx)
+					@if($evento->calcula_cbx && !$evento->calcula_fide && !$evento->cbx_required && !$evento->fide_required)
+						<!-- Calcula CBX -->
 						<div class="alert alert-danger">
 							Este evento <strong>calcula Rating CBX</strong>, portanto é obrigatória a inserção do ID de Cadastro junto à CBX. Caso ainda não possua, acesse 
 							<a href="http://cbx.com.br/cadastro">http://cbx.com.br/cadastro</a> e efetue o seu cadastro antes de efetuar a inscrição.<br/>
-							<strong>IMPORTANTE!</strong> O cadastro junto a CBX demora até 48 horas úteis para gerar o seu ID.
+							<strong>IMPORTANTE!</strong> O cadastro junto a CBX demora até 48 horas úteis para gerar o seu ID.<br/>
+							@if($evento->tipo_modalidade == 0)
+								<strong>TAMBÉM É IMPORTANTE!</strong> Para este evento <strong>É NECESSÁRIO</strong> pagar a ANUIDADE da CBX.
+							@else
+								<strong>TAMBÉM É IMPORTANTE!</strong> Para este evento NÃO É NECESSÁRIO pagar a ANUIDADE da CBX.
+							@endif
 						</div>
 					@else
-						@if($evento->cbx_required)
+						@if(!$evento->calcula_cbx && $evento->calcula_fide && !$evento->cbx_required && !$evento->fide_required)
+							<!-- Calcula FIDE -->
 							<div class="alert alert-danger">
-								Para este evento <strong>é obrigatório a inserção</strong> do ID de Cadastro junto à CBX. Caso ainda não possua, acesse 
-								<a href="http://cbx.com.br/cadastro">http://cbx.com.br/cadastro</a> e efetue o seu cadastro antes de efetuar a inscrição.<br/>
-								<strong>IMPORTANTE!</strong> O cadastro junto a CBX demora até 48 horas úteis para gerar o seu ID.
-							</div>
-						@endif
-					@endif
-					@if($evento->calcula_fide)
-						<div class="alert alert-danger">
-							Este evento <strong>calcula Rating FIDE</strong>, portanto para jogadores Brasileiros é obrigatória a inserção do ID de Cadastro junto à CBX,
-							e no caso de jogadores Estrangeiros, é obrigatório que o mesmo <strong>ID FIDE</strong> para poder jogar este evento.<br/>
-							Caso seja Brasileiro e não possua cadastro junto à CBX, acesse <a href="http://cbx.com.br/cadastro">http://cbx.com.br/cadastro</a>
-							e efetue o seu cadastro antes de efetuar a inscrição.<br/>
-							<strong>IMPORTANTE!</strong> O cadastro junto a CBX demora até 48 horas úteis para gerar o seu ID.
-						</div>
-					@else
-						@if($evento->fide_required)
-							<div class="alert alert-danger">
-								Para este evento <strong>é obrigatório</strong> para jogadores Brasileiros a inserção do ID de Cadastro junto à CBX,
+								Este evento <strong>calcula Rating FIDE</strong>, portanto para jogadores Brasileiros é obrigatória a inserção do ID de Cadastro junto à CBX,
 								e no caso de jogadores Estrangeiros, é obrigatório que o mesmo <strong>ID FIDE</strong> para poder jogar este evento.<br/>
 								Caso seja Brasileiro e não possua cadastro junto à CBX, acesse <a href="http://cbx.com.br/cadastro">http://cbx.com.br/cadastro</a>
 								e efetue o seu cadastro antes de efetuar a inscrição.<br/>
-								<strong>IMPORTANTE!</strong> O cadastro junto a CBX demora até 48 horas úteis para gerar o seu ID.
+								<strong>IMPORTANTE!</strong> O cadastro junto a CBX demora até 48 horas úteis para gerar o seu ID.<br/>
+								@if($evento->tipo_modalidade == 0)
+									<strong>TAMBÉM É IMPORTANTE!</strong> Para este evento <strong>É NECESSÁRIO</strong> pagar a ANUIDADE da CBX.
+								@else
+									<strong>TAMBÉM É IMPORTANTE!</strong> Para este evento NÃO É NECESSÁRIO pagar a ANUIDADE da CBX.
+								@endif
 							</div>
+						@else
+							@if($evento->calcula_cbx && $evento->calcula_fide && !$evento->cbx_required && !$evento->fide_required)
+								<!-- Calcula CBX e FIDE -->
+								<div class="alert alert-danger">
+									Este evento <strong>calcula Rating FIDE</strong>, portanto para jogadores Brasileiros é obrigatória a inserção do ID de Cadastro junto à CBX,
+									e no caso de jogadores Estrangeiros, é obrigatório que o mesmo <strong>ID FIDE</strong> para poder jogar este evento.<br/>
+									Caso seja Brasileiro e não possua cadastro junto à CBX, acesse <a href="http://cbx.com.br/cadastro">http://cbx.com.br/cadastro</a>
+									e efetue o seu cadastro antes de efetuar a inscrição.<br/>
+									<strong>IMPORTANTE!</strong> O cadastro junto a CBX demora até 48 horas úteis para gerar o seu ID.<br/>
+									@if($evento->tipo_modalidade == 0)
+										<strong>TAMBÉM É IMPORTANTE!</strong> Para este evento <strong>É NECESSÁRIO</strong> pagar a ANUIDADE da CBX.
+									@else
+										<strong>TAMBÉM É IMPORTANTE!</strong> Para este evento NÃO É NECESSÁRIO pagar a ANUIDADE da CBX.
+									@endif
+								</div>
+							@else
+								@if(!$evento->calcula_cbx && !$evento->calcula_fide && $evento->cbx_required && !$evento->fide_required)
+									<!-- Obrigatório informar ID CBX -->
+									<div class="alert alert-danger">
+										Para este evento <strong>é obrigatório a inserção</strong> do ID de Cadastro junto à CBX. Caso ainda não possua, acesse 
+										<a href="http://cbx.com.br/cadastro">http://cbx.com.br/cadastro</a> e efetue o seu cadastro antes de efetuar a inscrição.<br/>
+										<strong>IMPORTANTE!</strong> O cadastro junto a CBX demora até 48 horas úteis para gerar o seu ID.<br/>
+										@if($evento->tipo_modalidade == 0)
+											<strong>TAMBÉM É IMPORTANTE!</strong> Para este evento <strong>É NECESSÁRIO</strong> pagar a ANUIDADE da CBX.
+										@else
+											<strong>TAMBÉM É IMPORTANTE!</strong> Para este evento NÃO É NECESSÁRIO pagar a ANUIDADE da CBX.
+										@endif
+									</div>
+								@else
+									@if(!$evento->calcula_cbx && !$evento->calcula_fide && !$evento->cbx_required && $evento->fide_required)
+										<!-- Obrigatório informar ID FIDE -->
+										
+										<div class="alert alert-danger">
+											Para este evento <strong>é obrigatório</strong> para jogadores Brasileiros a inserção do ID de Cadastro junto à CBX,
+											e no caso de jogadores Estrangeiros, é obrigatório que o mesmo <strong>ID FIDE</strong> para poder jogar este evento.<br/>
+											Caso seja Brasileiro e não possua cadastro junto à CBX, acesse <a href="http://cbx.com.br/cadastro">http://cbx.com.br/cadastro</a>
+											e efetue o seu cadastro antes de efetuar a inscrição.<br/>
+											<strong>IMPORTANTE!</strong> O cadastro junto a CBX demora até 48 horas úteis para gerar o seu ID.<br/>
+											@if($evento->tipo_modalidade == 0)
+												<strong>TAMBÉM É IMPORTANTE!</strong> Para este evento <strong>É NECESSÁRIO</strong> pagar a ANUIDADE da CBX.
+											@else
+												<strong>TAMBÉM É IMPORTANTE!</strong> Para este evento NÃO É NECESSÁRIO pagar a ANUIDADE da CBX.
+											@endif
+										</div>
+									@else
+										@if(!$evento->calcula_cbx && !$evento->calcula_fide && $evento->cbx_required && $evento->fide_required)
+											<!-- Obrigatório informar ID CBX e FIDE -->
+
+											<div class="alert alert-danger">
+												Para este evento <strong>é obrigatório</strong> para jogadores Brasileiros a inserção do ID de Cadastro junto à CBX,
+												e no caso de jogadores Estrangeiros, é obrigatório que o mesmo <strong>ID FIDE</strong> para poder jogar este evento.<br/>
+												Caso seja Brasileiro e não possua cadastro junto à CBX, acesse <a href="http://cbx.com.br/cadastro">http://cbx.com.br/cadastro</a>
+												e efetue o seu cadastro antes de efetuar a inscrição.<br/>
+												<strong>IMPORTANTE!</strong> O cadastro junto a CBX demora até 48 horas úteis para gerar o seu ID.<br/>
+												@if($evento->tipo_modalidade == 0)
+													<strong>TAMBÉM É IMPORTANTE!</strong> Para este evento <strong>É NECESSÁRIO</strong> pagar a ANUIDADE da CBX.
+												@else
+													<strong>TAMBÉM É IMPORTANTE!</strong> Para este evento NÃO É NECESSÁRIO pagar a ANUIDADE da CBX.
+												@endif
+											</div>
+										@endif
+									@endif
+								@endif
+							@endif
 						@endif
 					@endif
 					<div class="row">
