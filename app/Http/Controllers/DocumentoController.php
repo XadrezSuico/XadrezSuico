@@ -15,7 +15,7 @@ class DocumentoController extends Controller
         $enxadrista = Enxadrista::find($id);
         if($enxadrista){
             $response = array();
-            $documento = Documento::where([["tipo_documentos_id","=",$tipo_documento_id]])->first();
+            $documento = Documento::where([["tipo_documentos_id","=",$tipo_documento_id],["enxadrista_id","=",$id]])->first();
             if($documento){
                 $array = array();
                 $array["id"] = $documento->tipo_documento->id;
