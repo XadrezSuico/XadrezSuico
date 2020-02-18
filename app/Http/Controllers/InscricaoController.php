@@ -739,6 +739,10 @@ class InscricaoController extends Controller
             $retorno["cidade"]["estado"]["pais"] = array("id"=>$enxadrista->cidade->estado->pais->id,"name"=>$enxadrista->cidade->estado->pais->nome);
             $retorno["clube"] = ($enxadrista->clube) ? array("id"=>$enxadrista->clube->id,"name"=>$enxadrista->clube->name) : array("id" => 0);
             $retorno["categorias"] = array();
+            $categorias = $this->categoriasEnxadrista($evento,$enxadrista);
+            if(count($categorias) == 0){
+                return response()->json(["ok" => 0, "error"=>1, "message" => "Não há categorias que você pode se inscrever neste evento."]);
+            }
             foreach($this->categoriasEnxadrista($evento,$enxadrista) as $categoria){
                 $retorno["categorias"][] = array("id"=>$categoria->categoria->id,"name"=>$categoria->categoria->name);
             }

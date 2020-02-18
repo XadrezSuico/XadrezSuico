@@ -1167,6 +1167,9 @@
 					}else{
 						$("#texto_pesquisa").removeAttr("disabled");
 						$(".permitida_inscricao").removeAttr("disabled","disabled");
+						$("#alertsMessage").html(data.message);
+						$("#alerts").modal();
+						Loading.destroy();
 					}
 				})
 				.fail(function(){
