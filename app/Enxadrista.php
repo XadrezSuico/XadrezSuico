@@ -106,8 +106,8 @@ class Enxadrista extends Model
 
             // Se o número de nomes for 2, então o último coloca no lastname e o primeiro no firstname
             if($total == 2){
-                $this->firstname = $explode_name[0];
-                $this->lastname = $explode_name[1];
+                $this->firstname = mb_convert_case($explode_name[0],MB_CASE_TITLE,"UTF-8");
+                $this->lastname = mb_convert_case($explode_name[1],MB_CASE_TITLE,"UTF-8");
             }else{
                 $first_name = "";
                 $last_name = "";
@@ -158,8 +158,8 @@ class Enxadrista extends Model
                     }
                     $i++;
                 }
-                $this->firstname = $first_name;
-                $this->lastname = $last_name;
+                $this->firstname = mb_convert_case($first_name,MB_CASE_TITLE,"UTF-8");
+                $this->lastname = mb_convert_case($last_name,MB_CASE_TITLE,"UTF-8");
                 echo $this->id."-".$this->firstname. " ". $this->lastname."<br/>";
             }
         }
