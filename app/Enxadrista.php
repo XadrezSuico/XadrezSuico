@@ -160,7 +160,7 @@ class Enxadrista extends Model
                 }
                 $this->firstname = mb_convert_case($first_name,MB_CASE_TITLE,"UTF-8");
                 $this->lastname = mb_convert_case($last_name,MB_CASE_TITLE,"UTF-8");
-                echo $this->id."-".$this->firstname. " ". $this->lastname."<br/>";
+                // echo $this->id."-".$this->firstname. " ". $this->lastname."<br/>";
             }
         }
     }

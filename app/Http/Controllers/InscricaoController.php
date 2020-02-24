@@ -1088,7 +1088,7 @@ class InscricaoController extends Controller
             if ($request->input("cbx_id") > 0) {
                 $enxadrista->cbx_id = $request->input("cbx_id");
 
-                $enxadrista = CBXRatingController::getRating($enxadrista, false, true);
+                $enxadrista = CBXRatingController::getRating($enxadrista, false, true, false);
                 if (!$enxadrista->encontrado_cbx) {
                     return response()->json(["ok" => 0, "error" => 1, "message" => "O ID CBX informado não existe. Por favor, verifique esta informação e tente novamente. Lembrando que esta informação DEVE SER válida e deve corresponder ao cadastro deste enxadrista!", "registred" => 0, "ask" => 0]);
                 }
@@ -1098,7 +1098,7 @@ class InscricaoController extends Controller
             if ($request->input("fide_id") > 0) {
                 $enxadrista->fide_id = $request->input("fide_id");
 
-                $enxadrista = FIDERatingController::getRating($enxadrista, false, true);
+                $enxadrista = FIDERatingController::getRating($enxadrista, false, true, false);
                 if (!$enxadrista->encontrado_fide) {
                     return response()->json(["ok" => 0, "error" => 1, "message" => "O ID FIDE informado não existe. Por favor, verifique esta informação e tente novamente. Lembrando que esta informação DEVE SER válida e deve corresponder ao cadastro deste enxadrista!", "registred" => 0, "ask" => 0]);
                 }
@@ -1108,7 +1108,7 @@ class InscricaoController extends Controller
             if ($request->input("lbx_id") > 0) {
                 $enxadrista->lbx_id = $request->input("lbx_id");
 
-                $enxadrista = LBXRatingController::getRating($enxadrista,false,true);
+                $enxadrista = LBXRatingController::getRating($enxadrista, false, true, false);
                 if(!$enxadrista->encontrado_lbx){
                     return response()->json(["ok" => 0, "error" => 1, "message" => "O ID LBX informado não existe. Por favor, verifique esta informação e tente novamente. Lembrando que esta informação DEVE SER válida e deve corresponder ao seu cadastro!", "registred" => 0, "ask" => 0]);
                 }

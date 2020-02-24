@@ -26,7 +26,7 @@ class LBXRatingController extends Controller
         }
     }
 
-    public static function getRating($enxadrista, $show_text = true, $return_enxadrista = false){
+    public static function getRating($enxadrista, $show_text = true, $return_enxadrista = false, $save_rating = true){
         if(env("LBX_RATING_SERVER",false)){
             $codigo_organizacao = 2;
 
@@ -47,21 +47,21 @@ class LBXRatingController extends Controller
                     $enxadrista->lbx_name = $json->sobrenome.", ".$json->nome;
 
                     if($json->ratings->STD == 0){
-                        $enxadrista->setRating($codigo_organizacao,0,1800);
+                        if($save_rating) $enxadrista->setRating($codigo_organizacao,0,1800);
                     }else{
-                        $enxadrista->setRating($codigo_organizacao,0,$json->ratings->STD);
+                        if($save_rating) $enxadrista->setRating($codigo_organizacao,0,$json->ratings->STD);
                     }
 
                     if($json->ratings->RPD == 0){
-                        $enxadrista->setRating($codigo_organizacao,1,1800);
+                        if($save_rating) $enxadrista->setRating($codigo_organizacao,1,1800);
                     }else{
-                        $enxadrista->setRating($codigo_organizacao,1,$json->ratings->RPD);
+                        if($save_rating) $enxadrista->setRating($codigo_organizacao,1,$json->ratings->RPD);
                     }
 
                     if($json->ratings->BTZ == 0){
-                        $enxadrista->setRating($codigo_organizacao,2,1800);
+                        if($save_rating) $enxadrista->setRating($codigo_organizacao,2,1800);
                     }else{
-                        $enxadrista->setRating($codigo_organizacao,2,$json->ratings->BTZ);
+                        if($save_rating) $enxadrista->setRating($codigo_organizacao,2,$json->ratings->BTZ);
                     }
                 }else{
                     if($show_text) echo "Erro count json";
