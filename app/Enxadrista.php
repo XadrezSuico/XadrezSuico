@@ -5,6 +5,7 @@ namespace App;
 use DateTime;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\Activitylog\Traits\LogsActivity;
+use App\Util\Util;
 
 class Enxadrista extends Model
 {
@@ -72,7 +73,10 @@ class Enxadrista extends Model
     {
         return mb_strtoupper($this->name);
     }
-    public function gerNameSemCaracteresEspeciais()
+    public function gerNameSemCaracteresEspeciais(){
+        return $this->getNameSemCaracteresEspeciais();
+    }
+    public function getNameSemCaracteresEspeciais()
     {
         $str = mb_strtolower($this->name);
         $str = preg_replace('/[áàãâä]/ui', 'a', $str);
@@ -84,8 +88,81 @@ class Enxadrista extends Model
         return mb_strtoupper($str);
     }
 
+    /*
+     * Esta função serve para dividir o nome completo do enxadrista para os campos de Nome e Sobrenome que são usados
+     * pela CBX, FIDE e LBX.
+     */ 
     public function splitName(){
-        
+        if($this->name){
+            // Esta função divide os nome em uma lista dividida pelo espaço...
+            $explode_name = explode(" ",$this->getNameSemCaracteresEspeciais());
+
+            // Conta a quantidade de itens que existem na lista do nome divida pelo espaço
+            $total = count($explode_name);
+
+            $last_name_items = array();
+
+            $explode_name_inverse = array_reverse($explode_name);
+
+            // Se o número de nomes for 2, então o último coloca no lastname e o primeiro no firstname
+            if($total == 2){
+                $this->firstname = $explode_name[0];
+                $this->lastname = $explode_name[1];
+            }else{
+                $first_name = "";
+                $last_name = "";
+
+                $found_last_name = false;
+                $finished_last_name = false;
+                $i = 1;
+                foreach($explode_name_inverse as $this_name){
+                    if($i == 1){
+                        $last_name_items[] = ($total - $i);
+                        $last_name = $this_name;
+                        if(!Util::eGeracaoDeFamilia($this_name)){
+                            $found_last_name = true;
+                        }
+                    }else{
+                        if(!$finished_last_name){
+                            if($found_last_name){
+                                if(Util::ePreposicao($this_name)){
+                                    $last_name = $this_name." ".$last_name;
+                                    $finished_last_name = true;
+                                }else{
+                                    if($first_name == ""){
+                                        $first_name = $this_name;
+                                    }else{
+                                        $first_name = $this_name." ".$first_name;
+                                    }
+                                    $finished_last_name = true;
+                                }
+                            }else{
+                                if(!Util::eGeracaoDeFamilia($this_name)){
+                                    $last_name = $this_name." ".$last_name;
+                                    $found_last_name = true;
+                                }elseif(Util::ePreposicao($this_name)){
+                                    $last_name = $this_name." ".$last_name;
+                                    $finished_last_name = true;
+                                }else{
+                                    if($first_name == ""){
+                                        $first_name = $this_name;
+                                    }else{
+                                        $first_name = $this_name." ".$first_name;
+                                    }
+                                    $finished_last_name = true;
+                                }
+                            }
+                        }else{
+                            $first_name = $this_name." ".$first_name;
+                        }
+                    }
+                    $i++;
+                }
+                $this->firstname = $first_name;
+                $this->lastname = $last_name;
+                echo $this->id."-".$this->firstname. " ". $this->lastname."<br/>";
+            }
+        }
     }
 
     public function setBorn($born)

@@ -233,6 +233,7 @@ Route::group(["prefix"=>"enxadrista"],function(){
 	Route::post('/edit/{id}', 'EnxadristaController@edit_post')->name('enxadrista.edit.post');
 	Route::get('/delete/{id}', 'EnxadristaController@delete')->name('enxadrista.delete');
 	Route::get('/download', 'EnxadristaController@downloadBaseCompleta')->name('enxadrista.download');
+	Route::get('/splits', 'EnxadristaController@updateAllnames')->name('enxadrista.splits');
 	Route::get('/api/searchList', 'EnxadristaController@searchEnxadristasList')->name('enxadrista.api.list');
     Route::group(["prefix"=>"{id}/documentos"],function(){
 	    Route::get('/getDocumento/{tipo_documento_id}', 'DocumentoController@getDocumento')->name('enxadrista.documentos.getDocumento');

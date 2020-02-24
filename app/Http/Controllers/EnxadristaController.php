@@ -333,8 +333,57 @@ class EnxadristaController extends Controller
             }
         }
         $nome_corrigido = trim($nome_corrigido);
-
         $enxadrista->name = $nome_corrigido;
+
+        $split_names = false;
+
+        if(!$request->has("firstname") && !$request->has("lastname")){
+            $enxadrista->splitName();
+        }else{
+            if($request->input("firstname") == "" && $request->input("lastname") == ""){
+                $enxadrista->splitName();
+            }else{
+                $split_names = true;
+            }
+        }
+
+
+
+        if($split_names){
+            // Algoritmo para eliminar os problemas com espaçamentos duplos ou até triplos.
+            $first_nome_corrigido = "";
+
+            $part_first_names = explode(" ", mb_strtoupper($request->input("firstname")));
+            foreach ($part_first_names as $part_name) {
+                if ($part_name != ' ') {
+                    $trim = trim($part_name);
+                    if (strlen($trim) > 0) {
+                        $first_nome_corrigido .= $trim;
+                        $first_nome_corrigido .= " ";
+                    }
+                }
+            }
+            $first_nome_corrigido = trim($first_nome_corrigido);
+
+            // Algoritmo para eliminar os problemas com espaçamentos duplos ou até triplos.
+            $last_nome_corrigido = "";
+
+            $part_last_names = explode(" ", mb_strtoupper($request->input("lastname")));
+            foreach ($part_last_names as $part_name) {
+                if ($part_name != ' ') {
+                    $trim = trim($part_name);
+                    if (strlen($trim) > 0) {
+                        $last_nome_corrigido .= $trim;
+                        $last_nome_corrigido .= " ";
+                    }
+                }
+            }
+            $last_nome_corrigido = trim($last_nome_corrigido);
+
+            $enxadrista->firstname = $first_nome_corrigido;
+            $enxadrista->lastname = $last_nome_corrigido;
+        }
+
         $enxadrista->setBorn($request->input("born"));
         $enxadrista->cidade_id = $request->input("cidade_id");
         $enxadrista->sexos_id = $request->input("sexos_id");
@@ -564,5 +613,23 @@ class EnxadristaController extends Controller
             $retorno["data"][] = $p;
         }
         return response()->json($retorno);
+    }
+
+
+
+    public function updateAllnames(){
+        foreach(Enxadrista::where([
+            ["firstname","=",NULL],
+            ["lastname","=",NULL],
+        ])
+        ->orWhere([
+            ["firstname","=",""],
+            ["lastname","=",""],
+        ])
+        ->get() as $enxadrista){
+            $enxadrista->splitName();
+            $enxadrista->save();
+        }
+        return redirect("/enxadrista");
     }
 }
