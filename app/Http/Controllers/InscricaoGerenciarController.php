@@ -342,6 +342,7 @@ class InscricaoGerenciarController extends Controller
         } else {
             if ($evento->usa_fide) {
                 $texto .= "FIDE;";
+                $texto .= "id FIDE;";
             } elseif ($evento->usa_lbx) {
                 $texto .= "FIDE;";
                 $texto .= "id FIDE;";
@@ -350,7 +351,7 @@ class InscricaoGerenciarController extends Controller
                 $texto .= "Elonac;";
             }
         }
-        $texto .= "DNasc;Cat;Gr;NoClube;Nome Clube;Sobrenome;Nome\r\n";
+        $texto .= "DNasc;Cat;Gr;NoClube;Nome Clube;Sobrenome;Nome;Fonte\r\n";
 
         $i = 1;
 
@@ -363,7 +364,11 @@ class InscricaoGerenciarController extends Controller
         foreach ($inscritos as $inscricao) {
             $texto .= $i++ . ";";
             $texto .= $inscricao->enxadrista->name . ";";
-            $texto .= $inscricao->enxadrista->id . ";";
+            if($evento->calcula_cbx){
+                $texto .= $inscricao->enxadrista->cbx_id . ";";
+            }else{
+                $texto .= $inscricao->enxadrista->id . ";";
+            }
 
             if ($evento->tipo_rating) {
                 if ($inscricao->enxadrista->showRatingInterno($evento->tipo_rating->id)) {
@@ -373,13 +378,14 @@ class InscricaoGerenciarController extends Controller
                 }
             } else {
                 if ($evento->usa_fide) {
-                    $texto .= $inscricao->enxadrista->showRating(0, $evento->tipo_modalidade)->valor . ";";
+                    $texto .= $inscricao->enxadrista->showRating(0, $evento->tipo_modalidade) . ";";
+                    $texto .= $inscricao->enxadrista->fide_id . ";";
                 } elseif ($evento->usa_lbx) {
-                    $texto .= $inscricao->enxadrista->showRating(2, $evento->tipo_modalidade)->valor . ";";
+                    $texto .= $inscricao->enxadrista->showRating(2, $evento->tipo_modalidade) . ";";
                     $texto .= $inscricao->enxadrista->lbx_id . ";";
                 }
                 if ($evento->usa_cbx) {
-                    $texto .= $inscricao->enxadrista->showRating(1, $evento->tipo_modalidade)->valor . ";";
+                    $texto .= $inscricao->enxadrista->showRating(1, $evento->tipo_modalidade) . ";";
                 }
             }
 
@@ -394,23 +400,9 @@ class InscricaoGerenciarController extends Controller
                 $texto .= $inscricao->cidade->name . ";";
             }
 
-            $nome_exp = explode(" ", $inscricao->enxadrista->name);
-            $count_nome = count($nome_exp);
-            $i = 1;
-            foreach ($nome_exp as $n_exp) {
-                if ($i != $count_nome) {
-                    $texto .= $n_exp;
-                }
-                if ($i < $count_nome - 1) {
-                    $texto .= " ";
-                } else {
-                    if ($i == $count_nome) {
-                        $texto .= ";";
-                    }
-                }
-                $i++;
-            }
-            $texto .= $nome_exp[$count_nome - 1] . "\r\n";
+            $texto .= $inscricao->enxadrista->lastname . ";";
+            $texto .= $inscricao->enxadrista->firstname . ";";
+            $texto .= $inscricao->enxadrista->id . "\r\n";
         }
         return $texto;
     }
