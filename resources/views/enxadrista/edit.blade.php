@@ -52,7 +52,8 @@
 					<div class="row">
 						<div class="col-md-12">
 							<div class="alert alert-warning">
-								Os campos de <strong>Primeiros Nomes e Sobrenomes</strong> devem ser preenchidos ou corrigidos conforme <a href="http://www.ligabrasileiradexadrez.com.br/Sistema%20LBX%20de%20Rating.pdf">regulamento do Rating da LBX</a>, mais precisamente referente ao Item 29.b (considerando a questão do nome do enxadrista).
+								Os campos de <strong>Primeiros Nomes e Sobrenomes</strong> devem ser preenchidos ou corrigidos conforme <a href="http://www.ligabrasileiradexadrez.com.br/Sistema%20LBX%20de%20Rating.pdf">regulamento do Rating da LBX</a>, mais precisamente referente ao Item 29.b (considerando a questão do nome do enxadrista).<br/>
+								Esta divisão é realizada automaticamente. Só há a necessidade de efetuar alterações caso não esteja conforme regulamento.
 							</div>
 						</div>
 						<div class="col-md-6">

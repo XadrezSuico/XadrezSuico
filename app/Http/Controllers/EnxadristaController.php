@@ -380,8 +380,8 @@ class EnxadristaController extends Controller
             }
             $last_nome_corrigido = trim($last_nome_corrigido);
 
-            $enxadrista->firstname = $first_nome_corrigido;
-            $enxadrista->lastname = $last_nome_corrigido;
+            $enxadrista->firstname = mb_convert_case($first_nome_corrigido,MB_CASE_TITLE,"UTF-8");
+            $enxadrista->lastname = mb_convert_case($last_nome_corrigido,MB_CASE_TITLE,"UTF-8");
         }
 
         $enxadrista->setBorn($request->input("born"));
