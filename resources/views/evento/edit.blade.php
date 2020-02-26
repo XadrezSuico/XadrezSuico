@@ -26,68 +26,10 @@
 <div class="row">
   <!-- Left col -->
 	<div>
-
-	<section class="col-lg-12 connectedSortable">
-		<div class="box box-primary" id="inscricao">
-			<div class="box-header">
-				<h3 class="box-title">Funções</h3>
-			</div>
-			
-			<div class="box-body">
-				@if(
-					\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
-					\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4,5]) ||
-					\Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])
-				)
-					@if($evento->e_inscricao_apenas_com_link)
-						<a href="{{url("/inscricao/".$evento->id."?token=".$evento->token)}}" class="btn btn-success">Nova ou Confirmar Inscrição (Também é Link público para divulgação)</a><br/><br/>
-					@else
-						<a href="{{url("/inscricao/".$evento->id)}}" class="btn btn-success">Nova ou Confirmar Inscrição (Também é Link público para divulgação)</a><br/><br/>
-					@endif
-				@endif
-				@if(
-					\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
-					\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4]) ||
-					\Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])
-				)
-					<a href="/evento/classificar/{{$evento->id}}" class="btn btn-success">Classificar Evento</a><br/><br/>
-					<a href="{{url("/evento/".$evento->id."/toggleresultados")}}" class="btn btn-warning">@if($evento->mostrar_resultados) Restringir @else Liberar @endif Classificação Pública</a>
-					@if($evento->mostrar_resultados)
-						<a href="{{url("/evento/classificacao/".$evento->id)}}" class="btn btn-default">Visualizar Classificação (Pública)</a>
-					@endif
-				@endif
-				<a href="{{url("/evento/classificacao/".$evento->id)}}/interno" class="btn btn-default">Visualizar Classificação (Interna)</a><br/><br/>
-
-				<a href="{{url("/evento/".$evento->id)}}/inscricoes/list" class="btn btn-default">Visualizar Lista de Inscritos (Completa)</a><br/><br/>
-
-				@if(
-					\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
-					\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4]) ||
-					\Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])
-				)
-					<a href="{{url("/evento/".$evento->id)}}/enxadristas/sm" class="btn btn-success" target="_blank">Baixar Lista de Rating para Uso neste Evento (Para Swiss-Manager)</a><br/><br/>
-				@endif
-
-				@if(
-					\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
-					\Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])
-				)
-					<a href="{{url("/evento/".$evento->id."/toggleclassificavel")}}" class="btn btn-warning">Atual: @if($evento->classificavel) Permitir @else Não Permitir @endif Classificação Geral deste Evento</a>
-					<a href="{{url("/evento/".$evento->id."/togglemanual")}}" class="btn btn-warning">Atual: Resultados @if($evento->e_resultados_manuais) Manuais @else Automáticos @endif</a>
-				@endif<br/><br/>
-				@if($evento->e_inscricao_apenas_com_link)
-					<a href="{{url("/inscricao/".$evento->id."?token=".$evento->token)}}" class="btn btn-default">Link para Inscrição Pública (Inscrições Privadas - Apenas via Link)</a><br/><br/>
-				@else
-					<a href="{{url("/inscricao/".$evento->id)}}" class="btn btn-default">Link para Inscrição Pública</a><br/><br/>
-				@endif
-			</div>
-			<!-- /.box-body -->
-		</div>
-	</section>
-
 		<!-- Nav tabs -->
 		<ul class="nav nav-tabs" role="tablist">
-			<li role="presentation" class="active"><a id="tab_editar_evento" href="#editar_evento" aria-controls="editar_evento" role="tab" data-toggle="tab">Editar Evento</a></li>
+			<li role="presentation" class="active"><a id="tab_funcoes" href="#funcoes" aria-controls="funcoes" role="tab" data-toggle="tab">Funções</a></li>
+			<li role="presentation"><a id="tab_editar_evento" href="#editar_evento" aria-controls="editar_evento" role="tab" data-toggle="tab">Editar Evento</a></li>
 			<li role="presentation"><a id="tab_pagina" href="#pagina" aria-controls="pagina" role="tab" data-toggle="tab">Página</a></li>
 			<li role="presentation"><a id="tab_criterio_desempate" href="#criterio_desempate" aria-controls="criterio_desempate" role="tab" data-toggle="tab">Critério de Desempate</a></li>
 			<li role="presentation"><a id="tab_categoria" href="#categoria" aria-controls="categoria" role="tab" data-toggle="tab">Categoria: Cadastro</a></li>
@@ -98,7 +40,119 @@
 
 		<!-- Tab panes -->
 		<div class="tab-content">
-			<div role="tabpanel" class="tab-pane active" id="editar_evento">
+			<div role="tabpanel" class="tab-pane active" id="funcoes">
+				<br/>
+				<section class="col-lg-12 connectedSortable">
+					<div class="box box-primary" id="inscricao">
+						<div class="box-header">
+							<h3 class="box-title">Funções</h3>
+						</div>
+						
+						<div class="box-body">
+							<h4>Inscrições:</h4>
+							@if(
+								\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
+								\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4,5]) ||
+								\Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])
+							)
+
+								@if($evento->e_inscricao_apenas_com_link)
+									<div class="alert alert-warning alert-dismissible" role="alert">
+										<strong>Aviso!</strong><br/>
+										A inscrição para este evento será efetuada apenas pelo link compartilhado (que é possível acessar logo abaixo).
+									</div>
+								@endif
+								<a href="{{url("/inscricao/".$evento->id."?token=".$evento->token)}}" class="btn btn-bg-green btn-app">
+									<i class="fa fa-plus"></i>
+									Nova ou Confirmar Inscrição
+								</a>
+							@endif
+							<a href="{{url("/inscricao/".$evento->id."?token=".$evento->token)}}" class="btn btn-success btn-app">
+								<i class="fa fa-link"></i>
+								Link para Divulgação
+							</a>
+							<hr/>
+							<h4>Classificação:</h4>
+							@if(
+								\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
+								\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4]) ||
+								\Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])
+							)
+								<a href="/evento/classificar/{{$evento->id}}" class="btn btn-success btn-app">
+									<i class="fa fa-sort"></i>
+									Classificar Evento
+								</a>
+								<a href="{{url("/evento/".$evento->id."/toggleresultados")}}" class="btn btn-warning btn-app">
+									@if($evento->mostrar_resultados) 
+										<i class="fa fa-lock"></i>
+										Restringir 
+									@else 
+										<i class="fa fa-unlock"></i>
+										Liberar 
+									@endif 
+									Classificação Pública
+								</a>
+								@if($evento->mostrar_resultados)
+									<a href="{{url("/evento/classificacao/".$evento->id)}}" class="btn btn-app">
+										<i class="fa fa-eye"></i>
+										Visualizar Classificação (Pública)
+									</a>
+								@endif
+							@endif
+							<a href="{{url("/evento/classificacao/".$evento->id)}}/interno" class="btn btn-app">
+								<i class="fa fa-eye"></i>
+								Visualizar Classificação (Interna)
+							</a>
+							<hr/>
+							<h4>Inscritos:</h4>
+							<a href="{{url("/evento/".$evento->id)}}/inscricoes/list" class="btn btn-app">
+								<i class="fa fa-list"></i>
+								Visualizar Lista de Inscritos (Completa)
+							</a>
+							@if(
+								\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
+								\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4]) ||
+								\Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])
+							)
+								<hr/>
+								<h4>Lista de Rating:</h4>
+								<a href="{{url("/evento/".$evento->id)}}/enxadristas/sm" class="btn btn-app" target="_blank">
+									<i class="fa fa-download"></i>
+									Baixar para Uso neste Evento (Swiss-Manager)
+								</a>
+							@endif
+
+							@if(
+								\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
+								\Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])
+							)
+								<hr/>
+								<h4>Demais Funções:</h4>
+								<a href="{{url("/evento/".$evento->id."/toggleclassificavel")}}" class="btn btn-app">
+									@if($evento->classificavel)
+										<i class="fa fa-lock"></i>
+										Não Permitir
+									@else
+										<i class="fa fa-unlock"></i>
+										Permitir
+									@endif
+									Classificação Geral deste Evento
+								</a>
+								<a href="{{url("/evento/".$evento->id."/togglemanual")}}" class="btn btn-app">
+									@if($evento->e_resultados_manuais) 
+										<i class="fa fa-lock"></i>
+									@else 
+										<i class="fa fa-lock"></i>
+									@endif
+									Resultados @if($evento->e_resultados_manuais) Automáticos @else Manuais @endif
+								</a>
+							@endif<br/><br/>
+						</div>
+						<!-- /.box-body -->
+					</div>
+				</section>
+			</div>
+			<div role="tabpanel" class="tab-pane" id="editar_evento">
 				<br/>
 				<section class="col-lg-12 connectedSortable">
 					<div class="box box-primary" id="inscricao">

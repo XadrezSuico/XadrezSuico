@@ -26,7 +26,7 @@ class FIDERatingController extends Controller
         }
     }
 
-    public static function getRating($enxadrista, $show_text = true, $return_enxadrista = false){
+    public static function getRating($enxadrista, $show_text = true, $return_enxadrista = false, $save_rating = true){
         $codigo_organizacao = 0;
 
 
@@ -69,7 +69,7 @@ class FIDERatingController extends Controller
                                     if (count($exp_std) == 2) {
                                         if (is_int(intval($rating))) {
                                             if (intval($rating) > 0) {
-                                                $enxadrista->setRating($codigo_organizacao, 0, intval($rating));
+                                                if($save_rating) $enxadrista->setRating($codigo_organizacao, 0, intval($rating));
                                             }
                                         } else {
                                             if($show_text) echo "Erro Rating não é inteiro!";
@@ -77,7 +77,7 @@ class FIDERatingController extends Controller
                                     } elseif (count($exp_rpd) == 2) {
                                         if (is_int(intval($rating))) {
                                             if (intval($rating) > 0) {
-                                                $enxadrista->setRating($codigo_organizacao, 1, intval($rating));
+                                                if($save_rating) $enxadrista->setRating($codigo_organizacao, 1, intval($rating));
                                             }
                                         } else {
                                             if($show_text) echo "Erro Rating não é inteiro!";
@@ -85,7 +85,7 @@ class FIDERatingController extends Controller
                                     } elseif (count($exp_btz) == 2) {
                                         if (is_int(intval($rating))) {
                                             if (intval($rating) > 0) {
-                                                $enxadrista->setRating($codigo_organizacao, 2, intval($rating));
+                                                if($save_rating) $enxadrista->setRating($codigo_organizacao, 2, intval($rating));
                                             }
                                         } else {
                                             if($show_text) echo "Erro Rating não é inteiro!";

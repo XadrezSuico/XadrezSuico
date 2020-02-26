@@ -49,6 +49,26 @@
 						<label for="name">Nome Completo *</label>
 						<input name="name" id="name" class="form-control" type="text" value="{{$enxadrista->name}}" @if(!$permitido_edicao) disabled="disabled" @endif />
 					</div>
+					<div class="row">
+						<div class="col-md-12">
+							<div class="alert alert-warning">
+								Os campos de <strong>Primeiros Nomes e Sobrenomes</strong> devem ser preenchidos ou corrigidos conforme <a href="http://www.ligabrasileiradexadrez.com.br/Sistema%20LBX%20de%20Rating.pdf">regulamento do Rating da LBX</a>, mais precisamente referente ao Item 29.b (considerando a questão do nome do enxadrista).<br/>
+								Esta divisão é realizada automaticamente. Só há a necessidade de efetuar alterações caso não esteja conforme regulamento.
+							</div>
+						</div>
+						<div class="col-md-6">
+							<div class="form-group">
+								<label for="firstname">Primeiros Nomes *</label>
+								<input name="firstname" id="firstname" class="form-control" type="text" value="{{$enxadrista->firstname}}" @if(!$permitido_edicao) disabled="disabled" @endif />
+							</div>
+						</div>
+						<div class="col-md-6">
+							<div class="form-group">
+								<label for="lastname">Sobrenomes *</label>
+								<input name="lastname" id="lastname" class="form-control" type="text" value="{{$enxadrista->lastname}}" @if(!$permitido_edicao) disabled="disabled" @endif />
+							</div>
+						</div>
+					</div>
 					<div class="form-group">
 						<label for="born">Data de Nascimento *</label>
 						<input name="born" id="born" class="form-control" type="text" value="{{$enxadrista->getBorn()}}" @if(!$permitido_edicao) disabled="disabled" @endif />

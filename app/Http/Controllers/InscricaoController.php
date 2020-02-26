@@ -1041,38 +1041,40 @@ class InscricaoController extends Controller
         }
 
         $temEnxadrista = Enxadrista::where([["name", "=", $nome_corrigido], ["born", "=", $enxadrista->born]])->first();
-        if (count($temEnxadrista) > 0) {
-            
-            if ($temEnxadrista->estaInscrito($evento->id)) {
-                    return response()->json([
-                        "ok" => 0,
-                        "error" => 1,
-                        "message" => "Você já possui cadastro! Porém, já está inscrito neste evento. Caso queira efetuar alguma alteração, entre em contato com a equipe do evento ou envie uma mensagem de email para o endereço de email para " . env("EMAIL_ALTERACAO", "circuitoxadrezcascavel@gmail.com") . ".",
-                        "registred" => 0,
-                        "ask" => 0,
-                        "enxadrista_id" => $temEnxadrista->id,
-                    ]);
-            }else{
-                if ($temEnxadrista->clube) {
-                    return response()->json([
-                        "ok" => 0,
-                        "error" => 1,
-                        "message" => "Você já possui cadastro! Você será direcionado(a) à próxima etapa da inscrição!",
-                        "registred" => 1,
-                        "ask" => 0,
-                        "esta_inscrito" => false,
-                        "enxadrista_id" => $temEnxadrista->id,
-                    ]);
-                } else {
-                    return response()->json([
-                        "ok" => 0,
-                        "error" => 1,
-                        "message" => "Você já possui cadastro! Você será direcionado(a) à próxima etapa da inscrição!",
-                        "registred" => 1,
-                        "ask" => 0,
-                        "esta_inscrito" => 0,
-                        "enxadrista_id" => $temEnxadrista->id,
-                    ]);
+        if ($temEnxadrista) {
+            if ($temEnxadrista->id) {
+                
+                if ($temEnxadrista->estaInscrito($evento->id)) {
+                        return response()->json([
+                            "ok" => 0,
+                            "error" => 1,
+                            "message" => "Você já possui cadastro! Porém, já está inscrito neste evento. Caso queira efetuar alguma alteração, entre em contato com a equipe do evento ou envie uma mensagem de email para o endereço de email para " . env("EMAIL_ALTERACAO", "circuitoxadrezcascavel@gmail.com") . ".",
+                            "registred" => 0,
+                            "ask" => 0,
+                            "enxadrista_id" => $temEnxadrista->id,
+                        ]);
+                }else{
+                    if ($temEnxadrista->clube) {
+                        return response()->json([
+                            "ok" => 0,
+                            "error" => 1,
+                            "message" => "Você já possui cadastro! Você será direcionado(a) à próxima etapa da inscrição!",
+                            "registred" => 1,
+                            "ask" => 0,
+                            "esta_inscrito" => false,
+                            "enxadrista_id" => $temEnxadrista->id,
+                        ]);
+                    } else {
+                        return response()->json([
+                            "ok" => 0,
+                            "error" => 1,
+                            "message" => "Você já possui cadastro! Você será direcionado(a) à próxima etapa da inscrição!",
+                            "registred" => 1,
+                            "ask" => 0,
+                            "esta_inscrito" => 0,
+                            "enxadrista_id" => $temEnxadrista->id,
+                        ]);
+                    }
                 }
             }
         }
@@ -1088,7 +1090,7 @@ class InscricaoController extends Controller
             if ($request->input("cbx_id") > 0) {
                 $enxadrista->cbx_id = $request->input("cbx_id");
 
-                $enxadrista = CBXRatingController::getRating($enxadrista, false, true);
+                $enxadrista = CBXRatingController::getRating($enxadrista, false, true, false);
                 if (!$enxadrista->encontrado_cbx) {
                     return response()->json(["ok" => 0, "error" => 1, "message" => "O ID CBX informado não existe. Por favor, verifique esta informação e tente novamente. Lembrando que esta informação DEVE SER válida e deve corresponder ao cadastro deste enxadrista!", "registred" => 0, "ask" => 0]);
                 }
@@ -1098,7 +1100,7 @@ class InscricaoController extends Controller
             if ($request->input("fide_id") > 0) {
                 $enxadrista->fide_id = $request->input("fide_id");
 
-                $enxadrista = FIDERatingController::getRating($enxadrista, false, true);
+                $enxadrista = FIDERatingController::getRating($enxadrista, false, true, false);
                 if (!$enxadrista->encontrado_fide) {
                     return response()->json(["ok" => 0, "error" => 1, "message" => "O ID FIDE informado não existe. Por favor, verifique esta informação e tente novamente. Lembrando que esta informação DEVE SER válida e deve corresponder ao cadastro deste enxadrista!", "registred" => 0, "ask" => 0]);
                 }
@@ -1108,7 +1110,7 @@ class InscricaoController extends Controller
             if ($request->input("lbx_id") > 0) {
                 $enxadrista->lbx_id = $request->input("lbx_id");
 
-                $enxadrista = LBXRatingController::getRating($enxadrista,false,true);
+                $enxadrista = LBXRatingController::getRating($enxadrista, false, true, false);
                 if(!$enxadrista->encontrado_lbx){
                     return response()->json(["ok" => 0, "error" => 1, "message" => "O ID LBX informado não existe. Por favor, verifique esta informação e tente novamente. Lembrando que esta informação DEVE SER válida e deve corresponder ao seu cadastro!", "registred" => 0, "ask" => 0]);
                 }

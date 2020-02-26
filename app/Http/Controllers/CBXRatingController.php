@@ -26,7 +26,7 @@ class CBXRatingController extends Controller
         }
     }
 
-    public static function getRating($enxadrista, $show_text = true, $return_enxadrista = false){
+    public static function getRating($enxadrista, $show_text = true, $return_enxadrista = false, $save_rating = true){
         $codigo_organizacao = 1;
 
 
@@ -73,17 +73,17 @@ class CBXRatingController extends Controller
                                             switch ($j) {
                                                 case $std:
                                                     if($show_text) echo "Rating STD: " . $rating;
-                                                    $enxadrista->setRating($codigo_organizacao, 0, $rating);
+                                                    if($save_rating) $enxadrista->setRating($codigo_organizacao, 0, $rating);
                                                     break;
 
                                                 case $rpd:
                                                     if($show_text) echo "Rating RPD: " . $rating;
-                                                    $enxadrista->setRating($codigo_organizacao, 1, $rating);
+                                                    if($save_rating) $enxadrista->setRating($codigo_organizacao, 1, $rating);
                                                     break;
 
                                                 case $btz:
                                                     if($show_text) echo "Rating BTZ: " . $rating;
-                                                    $enxadrista->setRating($codigo_organizacao, 2, $rating);
+                                                    if($save_rating) $enxadrista->setRating($codigo_organizacao, 2, $rating);
                                                     break;
                                             }
                                         } else {
