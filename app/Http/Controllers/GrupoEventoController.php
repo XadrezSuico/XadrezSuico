@@ -69,7 +69,7 @@ class GrupoEventoController extends Controller
     public function edit($id, Request $request)
     {
         $user = Auth::user();
-        if (!$user->hasPermissionGlobal() && !$user->hasPermissionGroupEventByPerfil($id,[7]) && !$user->hasPermissionEventByPerfilByGroupEvent($id,[3,4,5])) {
+        if (!$user->hasPermissionGlobal() && !$user->hasPermissionGroupEventByPerfil($id,[6,7]) && !$user->hasPermissionEventByPerfilByGroupEvent($id,[3,4,5])) {
             return redirect("/grupoevento");
         }
 
