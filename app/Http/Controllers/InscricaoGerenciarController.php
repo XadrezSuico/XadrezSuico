@@ -336,7 +336,7 @@ class InscricaoGerenciarController extends Controller
 
     private function generateTxt($inscricoes, $evento, $torneio)
     {
-        $texto = "No;Nome Completo;ID;";
+        $texto = "No;Nome Completo;ID;FED;";
         if ($evento->tipo_rating) {
             $texto .= "FIDE;";
         } else {
@@ -369,6 +369,7 @@ class InscricaoGerenciarController extends Controller
             }else{
                 $texto .= $inscricao->enxadrista->id . ";";
             }
+            $texto .= $inscricao->enxadrista->pais_nascimento->codigo_iso.";";
 
             if ($evento->tipo_rating) {
                 if ($inscricao->enxadrista->showRatingInterno($evento->tipo_rating->id)) {
@@ -393,10 +394,10 @@ class InscricaoGerenciarController extends Controller
             $texto .= $inscricao->categoria->cat_code . ";";
             $texto .= $inscricao->categoria->code . ";";
             if ($inscricao->clube) {
-                $texto .= $inscricao->clube->id . ";";
+                $texto .= $inscricao->cidade->ibge_id . ";";
                 $texto .= $inscricao->cidade->name . " - " . $inscricao->clube->name . ";";
             } else {
-                $texto .= ";";
+                $texto .= $inscricao->cidade->ibge_id . ";";
                 $texto .= $inscricao->cidade->name . ";";
             }
 

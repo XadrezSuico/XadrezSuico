@@ -33,6 +33,10 @@ class Enxadrista extends Model
     {
         return $this->belongsTo("App\Sexo", "sexos_id", "id");
     }
+    public function pais_nascimento()
+    {
+        return $this->belongsTo("App\Pais", "pais_id", "id");
+    }
     public function documentos()
     {
         return $this->hasMany("App\Documento", "enxadrista_id", "id");
