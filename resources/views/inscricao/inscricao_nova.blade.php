@@ -345,8 +345,8 @@
 							@if($evento->calcula_cbx && $evento->calcula_fide && !$evento->cbx_required && !$evento->fide_required)
 								<!-- Calcula CBX e FIDE -->
 								<div class="alert alert-danger">
-									Este evento <strong>calcula Rating FIDE</strong>, portanto para jogadores Brasileiros é obrigatória a inserção do ID de Cadastro junto à CBX,
-									e no caso de jogadores Estrangeiros, é obrigatório que o mesmo <strong>ID FIDE</strong> para poder jogar este evento.<br/>
+									Este evento <strong>calcula Rating FIDE</strong> e também <strong>calcula Rating CBX</strong>, portanto para jogadores Brasileiros é obrigatória a inserção do ID de Cadastro junto à CBX,
+									e no caso de jogadores Estrangeiros, é obrigatório que o mesmo informe seu <strong>ID FIDE</strong> e também o seu <strong>ID CBX</strong> para poder jogar este evento.<br/>
 									Caso seja Brasileiro e não possua cadastro junto à CBX, acesse <a href="http://cbx.com.br/cadastro">http://cbx.com.br/cadastro</a>
 									e efetue o seu cadastro antes de efetuar a inscrição.<br/>
 									<strong>IMPORTANTE!</strong> O cadastro junto a CBX demora até 48 horas úteis para gerar o seu ID.<br/>
