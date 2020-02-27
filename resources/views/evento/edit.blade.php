@@ -648,7 +648,7 @@
 							<!-- form start -->
 							<form method="post" action="{{url("/evento/".$evento->id."/torneio/add")}}">
 								<div class="box-body">
-								
+									
 								</div>
 								<!-- /.box-body -->
 
