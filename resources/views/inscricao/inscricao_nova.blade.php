@@ -1193,80 +1193,73 @@
 		$(".permitida_inscricao").attr("disabled","disabled");
 		
 		$.getJSON("{{url("/inscricao/v2/".$evento->id."/inscricao/get/")}}/".concat($("#inscricao_id").val()),function(data){
-			$("#enxadrista_id").val(data.enxadrista_id);
-			$("#temporary_confirmacao_categoria_id").val(data.categoria_id);
-			$("#temporary_confirmacao_cidade_id").val(data.cidade_id);
-			$("#temporary_confirmacao_clube_id").val(data.clube_id);
-			$.getJSON("{{url("/inscricao/v2/".$evento->id."/enxadrista")}}/".concat($("#enxadrista_id").val()),function(data){
-				if(data.ok == 1){
-					$("#enxadrista_confirmar_id").html(data.data.id);
-					$("#enxadrista_confirmar_nome").html(data.data.name);
-					$("#enxadrista_confirmar_born").html(data.data.born);
-					$('#confirmacao_categoria_id').html("").trigger('change');
-					for (i = 0; i < data.data.categorias.length; i++) {
-						var newOptionCategoria = new Option(data.data.categorias[i].name, data.data.categorias[i].id, false, false);
-						$('#confirmacao_categoria_id').append(newOptionCategoria).trigger('change');
-						if(data.data.categorias.length == 1){
-							if($("#temporary_confirmacao_categoria_id").val() == data.data.categorias[i].id){
-								$('#confirmacao_categoria_id').val($("#temporary_confirmacao_categoria_id").val()).trigger('change');
-							}else{
-								$('#confirmacao_categoria_id').val(data.data.categorias[i].id).trigger('change');
-							}
-							$("#confirmacao_categoria_id").attr("disabled","disabled").change();
-						}else{
-							if(i+1 == data.data.categorias.length){
-								$('#confirmacao_categoria_id').val($("#temporary_confirmacao_categoria_id").val()).trigger('change');
-							}
-							$("#confirmacao_categoria_id").removeAttr("disabled").change();
-						}
-					}
-					$("#confirmacao_pais_id").val(data.data.cidade.estado.pais.id).change();
-					setTimeout(function(){
-						buscaEstados(2,false,function(){
-							$("#confirmacao_estados_id").val(data.data.cidade.estado.id).change();
-							setTimeout(function(){
-								buscaCidades(2,function(){
-									$("#confirmacao_cidade_id").val(data.data.cidade.id).change();
-									Loading.destroy();
-								});
-							},200);
-						});
-						verificaLiberaCadastro(2);
-					},200);
+			if(data.ok == 1){
+				$("#enxadrista_id").val(data.data.enxadrista_id);
+				$("#temporary_confirmacao_categoria_id").val(data.data.categoria.id);
+				$("#temporary_confirmacao_cidade_id").val(data.data.cidade.id);
+				$("#temporary_confirmacao_clube_id").val(data.data.clube.id);
 
-					if(data.data.clube.id != 0){
-						var newOptionClube = new Option(data.data.clube.name, data.data.clube.id, false, false);
-						$('#confirmacao_clube_id').append(newOptionClube).trigger('change');
-						$("#confirmacao_clube_id").val(data.data.clube.id).change();
+				$("#enxadrista_confirmar_id").html(data.data.id);
+				$("#enxadrista_confirmar_nome").html(data.data.name);
+				$("#enxadrista_confirmar_born").html(data.data.born);
+				$('#confirmacao_categoria_id').html("").trigger('change');
+				for (i = 0; i < data.data.categorias.length; i++) {
+					var newOptionCategoria = new Option(data.data.categorias[i].name, data.data.categorias[i].id, false, false);
+					$('#confirmacao_categoria_id').append(newOptionCategoria).trigger('change');
+					if(data.data.categorias.length == 1){
+						if($("#temporary_confirmacao_categoria_id").val() == data.data.categorias[i].id){
+							$('#confirmacao_categoria_id').val($("#temporary_confirmacao_categoria_id").val()).trigger('change');
+						}else{
+							$('#confirmacao_categoria_id').val(data.data.categorias[i].id).trigger('change');
+						}
+						$("#confirmacao_categoria_id").attr("disabled","disabled").change();
+					}else{
+						if(i+1 == data.data.categorias.length){
+							$('#confirmacao_categoria_id').val($("#temporary_confirmacao_categoria_id").val()).trigger('change');
+						}
+						$("#confirmacao_categoria_id").removeAttr("disabled").change();
 					}
-				
-					$("#form_pesquisa").css("display","none");
-					$("#pesquisa").css("display","none");
-					$("#enxadrista").css("display","none");
-					$("#inscricao").css("display","none");
-					$("#confirmacao").css("display","");
-					
-					if(callback_on_ok){
-						callback_on_ok();
-						setTimeout(function(){
-							$("#enxadrista_id").val("");
-							$("#temporary_confirmacao_categoria_id").val("");
-							$("#temporary_confirmacao_cidade_id").val("");
-							$("#temporary_confirmacao_clube_id").val("");
-						},1000);
-					}
-				}else{
-					$("#texto_pesquisa").removeAttr("disabled");
-					$(".permitida_inscricao").removeAttr("disabled","disabled");
 				}
-			})
-			.fail(function(){
-				$("#alertsMessage").html("Ocorreu um erro inesperado. Por favor, tente novamente mais tarde.");
-				$("#alerts").modal();
+				$("#confirmacao_pais_id").val(data.data.cidade.estado.pais.id).change();
+				setTimeout(function(){
+					buscaEstados(2,false,function(){
+						$("#confirmacao_estados_id").val(data.data.cidade.estado.id).change();
+						setTimeout(function(){
+							buscaCidades(2,function(){
+								$("#confirmacao_cidade_id").val(data.data.cidade.id).change();
+								Loading.destroy();
+							});
+						},200);
+					});
+					verificaLiberaCadastro(2);
+				},200);
+
+				if(data.data.clube.id != 0){
+					var newOptionClube = new Option(data.data.clube.name, data.data.clube.id, false, false);
+					$('#confirmacao_clube_id').append(newOptionClube).trigger('change');
+					$("#confirmacao_clube_id").val(data.data.clube.id).change();
+				}
+			
+				$("#form_pesquisa").css("display","none");
+				$("#pesquisa").css("display","none");
+				$("#enxadrista").css("display","none");
+				$("#inscricao").css("display","none");
+				$("#confirmacao").css("display","");
+				
+				if(callback_on_ok){
+					callback_on_ok();
+					setTimeout(function(){
+						$("#enxadrista_id").val("");
+						$("#temporary_confirmacao_categoria_id").val("");
+						$("#temporary_confirmacao_cidade_id").val("");
+						$("#temporary_confirmacao_clube_id").val("");
+					},1000);
+				}
+			}else{
 				$("#texto_pesquisa").removeAttr("disabled");
 				$(".permitida_inscricao").removeAttr("disabled","disabled");
-				Loading.destroy();
-			});
+			}
+
 		})
 		.fail(function(){
 			$("#alertsMessage").html("Ocorreu um erro inesperado. Por favor, tente novamente mais tarde.");

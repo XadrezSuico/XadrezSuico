@@ -1470,11 +1470,32 @@ class InscricaoController extends Controller
         
         $inscricao = Inscricao::find($inscricao_id);
         if ($inscricao) {
-            if ($inscricao->clube) {
-                return response()->json(["ok" => 1, "error" => 0, "enxadrista_id" => $inscricao->enxadrista->id, "cidade_id" => $inscricao->cidade->id, "categoria_id" => $inscricao->categoria->id, "clube_id" => $inscricao->clube->id]);
-            } else {
-                return response()->json(["ok" => 1, "error" => 0, "enxadrista_id" => $inscricao->enxadrista->id, "cidade_id" => $inscricao->cidade->id, "categoria_id" => $inscricao->categoria->id, "clube_id" => 0]);
+            
+            $retorno = array();
+            $retorno["id"] = $inscricao->enxadrista->id;
+            $retorno["name"] = $inscricao->enxadrista->name;
+            $retorno["born"] = $inscricao->enxadrista->getBorn();
+            $retorno["cidade"] = array("id"=>$inscricao->cidade->id,"name"=>$inscricao->cidade->name);
+            $retorno["cidade"]["estado"] = array("id"=>$inscricao->cidade->estado->id,"name"=>$inscricao->cidade->estado->nome);
+            $retorno["cidade"]["estado"]["pais"] = array("id"=>$inscricao->cidade->estado->pais->id,"name"=>$inscricao->cidade->estado->pais->nome);
+            $retorno["clube"] = ($inscricao->clube) ? array("id"=>$inscricao->clube->id,"name"=>$inscricao->clube->name) : array("id" => 0);
+            $retorno["categoria"] = array("id"=>$inscricao->categoria->id,"name"=>$inscricao->categoria->name);
+            $retorno["categorias"] = array();
+            $categorias = $this->categoriasEnxadrista($evento,$inscricao->enxadrista);
+            if(count($categorias) == 0){
+                return response()->json(["ok" => 0, "error"=>1, "message" => "Não há categorias que você pode se inscrever neste evento."]);
             }
+            foreach($categorias as $categoria){
+                $retorno["categorias"][] = array("id"=>$categoria->categoria->id,"name"=>$categoria->categoria->name);
+            }
+            return response()->json(["ok" => 1, "error"=>0, "data" => $retorno]);
+
+
+            // if ($inscricao->clube) {
+            //     return response()->json(["ok" => 1, "error" => 0, "enxadrista_id" => $inscricao->enxadrista->id, "cidade_id" => $inscricao->cidade->id, "categoria_id" => $inscricao->categoria->id, "clube_id" => $inscricao->clube->id]);
+            // } else {
+            //     return response()->json(["ok" => 1, "error" => 0, "enxadrista_id" => $inscricao->enxadrista->id, "cidade_id" => $inscricao->cidade->id, "categoria_id" => $inscricao->categoria->id, "clube_id" => 0]);
+            // }
         } else {
             return response()->json(["ok" => 0, "error" => 1, "message" => "Não há enxadrista com esse código!"]);
         }
