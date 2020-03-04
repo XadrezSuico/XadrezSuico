@@ -10,19 +10,21 @@ class LBXRatingController extends Controller
 {
     public function updateRatings()
     {
-        $enxadristas = Enxadrista::where([
-            ["lbx_id", "!=", null],
-            ["lbx_last_update", "<", date("Y-m-d") . " 00:00:00"],
-        ])
-            ->orWhere([
+        if(!(date("j") == 1 && date("G") == 0)){
+            $enxadristas = Enxadrista::where([
                 ["lbx_id", "!=", null],
-                ["lbx_last_update", "=", null],
+                ["lbx_last_update", "<", date("Y-m-d") . " 00:00:00"],
             ])
-            ->limit(3)
-            ->get();
-        echo count($enxadristas);
-        foreach ($enxadristas as $enxadrista) {
-            $this->getRating($enxadrista);
+                ->orWhere([
+                    ["lbx_id", "!=", null],
+                    ["lbx_last_update", "=", null],
+                ])
+                ->limit(3)
+                ->get();
+            echo count($enxadristas);
+            foreach ($enxadristas as $enxadrista) {
+                $this->getRating($enxadrista);
+            }
         }
     }
 
