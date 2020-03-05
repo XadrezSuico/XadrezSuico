@@ -61,16 +61,28 @@
 										<strong>Aviso!</strong><br/>
 										A inscrição para este evento será efetuada apenas pelo link compartilhado (que é possível acessar logo abaixo).
 									</div>
+									<a href="{{url("/inscricao/".$evento->id."?token=".$evento->token)}}" class="btn btn-bg-green btn-app">
+										<i class="fa fa-plus"></i>
+										Nova ou Confirmar Inscrição
+									</a>
+								@else
+									<a href="{{url("/inscricao/".$evento->id)}}" class="btn btn-bg-green btn-app">
+										<i class="fa fa-plus"></i>
+										Nova ou Confirmar Inscrição
+									</a>
 								@endif
-								<a href="{{url("/inscricao/".$evento->id."?token=".$evento->token)}}" class="btn btn-bg-green btn-app">
-									<i class="fa fa-plus"></i>
-									Nova ou Confirmar Inscrição
+							@endif
+							@if($evento->e_inscricao_apenas_com_link)
+								<a href="{{url("/inscricao/".$evento->id."?token=".$evento->token)}}" class="btn btn-success btn-app">
+									<i class="fa fa-link"></i>
+									Link para Divulgação
+								</a>
+							@else
+								<a href="{{url("/inscricao/".$evento->id)}}" class="btn btn-success btn-app">
+									<i class="fa fa-link"></i>
+									Link para Divulgação
 								</a>
 							@endif
-							<a href="{{url("/inscricao/".$evento->id."?token=".$evento->token)}}" class="btn btn-success btn-app">
-								<i class="fa fa-link"></i>
-								Link para Divulgação
-							</a>
 							<hr/>
 							<h4>Classificação:</h4>
 							@if(
@@ -633,22 +645,39 @@
 			<div role="tabpanel" class="tab-pane" id="torneio">
 				<br/>
 				@if(
-					(\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
-					\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4]) ||
-					\Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7]))
-					&& env("NOVO_TORNEIO",false)
+					(
+						\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
+						\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4]) ||
+						\Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])
+					)
 				)
 					<section class="col-lg-12 connectedSortable">
 					
 						<!-- Torneio -->
-						<div class="box box-primary">
+						<div class="box box-primary collapsed-box">
 							<div class="box-header">
 								<h3 class="box-title">Novo Torneio</h3>
+								<div class="pull-right box-tools">
+									<button type="button" class="btn btn-primary btn-sm pull-right" data-widget="collapse" data-toggle="tooltip" title="" style="margin-right: 5px;" data-original-title="Collapse">
+										<i class="fa fa-plus"></i></button>
+								</div>
 							</div>
 							<!-- form start -->
-							<form method="post" action="{{url("/evento/".$evento->id."/torneio/add")}}">
+							<form method="post" action="{{url("/evento/".$evento->id."/torneios/new")}}">
 								<div class="box-body">
-									
+									<div class="form-group">
+										<label for="name">Nome</label>
+										<input name="name" id="name" class="form-control" type="text" />
+									</div>
+									<div class="form-group">
+										<label for="tipo_torneio_id">Tipo de Torneio</label>
+										<select id="tipo_torneio_id" name="tipo_torneio_id" class="form-control">
+											<option value="">-- Selecione --</option>
+											@foreach(\App\TipoTorneio::all() as $tipo_torneio)
+												<option value="{{$tipo_torneio->id}}">{{$tipo_torneio->name}}</option>
+											@endforeach
+										</select>
+									</div>
 								</div>
 								<!-- /.box-body -->
 

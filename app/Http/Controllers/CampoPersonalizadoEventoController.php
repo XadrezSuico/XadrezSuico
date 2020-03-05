@@ -102,6 +102,11 @@ class CampoPersonalizadoEventoController extends Controller
         } else {
             $campo->is_active = false;
         }
+        if ($request->has("is_required")) {
+            $campo->is_required = true;
+        } else {
+            $campo->is_required = false;
+        }
         $campo->save();
 
         return redirect("/evento/" . $evento->id . "/campos/dashboard/" . $campo->id);

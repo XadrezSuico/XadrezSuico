@@ -54,6 +54,9 @@
 						</select>
 					</div>
 					<div class="form-group">
+						<label><input type="checkbox" id="is_required" name="is_required" @if($campo->is_required) checked="checked" @endif> Requerido</label>
+					</div>
+					<div class="form-group">
 						<label><input type="checkbox" id="is_active" name="is_active" @if($campo->is_active) checked="checked" @endif> Campo Ativo</label>
 					</div>
 				</div>

@@ -801,7 +801,7 @@ class InscricaoController extends Controller
             ) {
                 return response()->json(["ok" => 0, "error" => 1, "message" => "Um dos campos obrigatórios não está preenchido. Por favor, verifique e envie novamente!<br/><br/><strong>Observação</strong>: TODOS os Campos com <strong>*</strong> SÃO OBRIGATÓRIOS!", "registred" => 0]);
             } elseif (
-                $request->input("campo_personalizado_" . $campo->id) == null || $request->input("campo_personalizado_" . $campo->id) == ""
+                $request->input("campo_personalizado_" . $campo->id) == null || $request->input("campo_personalizado_" . $campo->id) == "" || $request->input("campo_personalizado_" . $campo->id) == "null" || !is_int($request->input("campo_personalizado_" . $campo->id))
             ) {
                 return response()->json(["ok" => 0, "error" => 1, "message" => "Um dos campos obrigatórios não está preenchido. Por favor, verifique e envie novamente!<br/><br/><strong>Observação</strong>: TODOS os Campos com <strong>*</strong> SÃO OBRIGATÓRIOS!", "registred" => 0]);
             }
@@ -856,11 +856,15 @@ class InscricaoController extends Controller
         foreach ($evento->campos() as $campo) {
             if ($request->has("campo_personalizado_" . $campo->id)) {
                 if ($request->input("campo_personalizado_" . $campo->id) != "") {
-                    $opcao_inscricao = new CampoPersonalizadoOpcaoInscricao;
-                    $opcao_inscricao->inscricao_id = $inscricao->id;
-                    $opcao_inscricao->opcaos_id = $request->input("campo_personalizado_" . $campo->id);
-                    $opcao_inscricao->campo_personalizados_id = $campo->id;
-                    $opcao_inscricao->save();
+                    if ($request->input("campo_personalizado_" . $campo->id) != NULL) {
+                        if ($request->input("campo_personalizado_" . $campo->id) != "null") {
+                            $opcao_inscricao = new CampoPersonalizadoOpcaoInscricao;
+                            $opcao_inscricao->inscricao_id = $inscricao->id;
+                            $opcao_inscricao->opcaos_id = $request->input("campo_personalizado_" . $campo->id);
+                            $opcao_inscricao->campo_personalizados_id = $campo->id;
+                            $opcao_inscricao->save();
+                        }
+                    }
                 }
             }
         }

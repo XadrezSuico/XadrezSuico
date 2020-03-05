@@ -17,10 +17,9 @@
         @if(
             \Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
             \Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4]) ||
-						\Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])
+			\Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])
         )
-            <li role="presentation"><a href="{{url("/evento/inscricao/".$evento->id)}}">Nova Inscrição</a></li>
-            <li role="presentation"><a href="{{url("/evento/inscricao/".$evento->id."/confirmacao")}}">Confirmar Inscrições</a></li>
+            <li role="presentation"><a href="{{url("/inscricao/".$evento->id)}}">Nova Inscrição ou Confirmar Inscrições</a></li>
         @endif
     </ul>
 
