@@ -31,26 +31,44 @@
                         <th>#</th>
                         <th>Nome</th>
                         @if($evento->tipo_rating) <th>Rating</th> @endif
-                        @if($evento->usa_fide) <th>FIDE</th> @endif
-                        @if($evento->usa_cbx) <th>CBX</th> @endif
-                        @if($evento->usa_lbx) <th>LBX</th> @endif
+                        @if($evento->usa_fide) 
+                            <th>ID FIDE</th>
+                            <th>Rating FIDE</th>
+                        @endif
+                        @if($evento->usa_cbx) 
+                            <th>ID CBX</th>
+                            <th>Rating CBX</th>
+                        @endif
+                        @if($evento->usa_lbx)
+                            <th>ID LBX</th>
+                            <th>Rating LBX</th>
+                        @endif
                         <th>Categoria</th>
                         <th>Cidade</th>
                         <th>Clube</th>
                         <th>Confirmado?</th>
                         <th>Data e Hora</th>
-                        <th width="20%">Opções</th>
+                        <th>Opções</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach($inscricoes as $inscricao)
                         <tr>
                             <td>{{$inscricao->id}}</td>
-                            <td>#{{$inscricao->enxadrista->id}} - {{$inscricao->enxadrista->name}}</td>
+                            <td>#{{$inscricao->enxadrista->id}} - <a href="{{url("/enxadrista/edit/".$inscricao->enxadrista->id)}}" target="_blank">{{$inscricao->enxadrista->name}}</a></td>
                             @if($evento->tipo_rating) <td>@if($inscricao->enxadrista->ratings()->where([["tipo_ratings_id","=",$evento->tipo_rating->tipo_ratings_id]])->count() > 0) {{$inscricao->enxadrista->ratings()->where([["tipo_ratings_id","=",$evento->tipo_rating->tipo_ratings_id]])->first()->valor}} @else Não Há @endif</td> @endif
-                            @if($evento->usa_fide) <td>{{$inscricao->enxadrista->showRating(0,$evento->tipo_modalidade)}}</td> @endif
-                            @if($evento->usa_cbx) <td>{{$inscricao->enxadrista->showRating(1,$evento->tipo_modalidade)}}</td> @endif
-                            @if($evento->usa_lbx) <td>{{$inscricao->enxadrista->showRating(2,$evento->tipo_modalidade)}}</td> @endif
+                            @if($evento->usa_fide) 
+                                <td>{{$inscricao->enxadrista->fide_id}}</td> 
+                                <td>{{$inscricao->enxadrista->showRating(0,$evento->tipo_modalidade)}}</td> 
+                            @endif
+                            @if($evento->usa_cbx) 
+                                <td>{{$inscricao->enxadrista->cbx_id}}</td> 
+                                <td>{{$inscricao->enxadrista->showRating(1,$evento->tipo_modalidade)}}</td> 
+                            @endif
+                            @if($evento->usa_lbx) 
+                                <td>{{$inscricao->enxadrista->lbx_id}}</td> 
+                                <td>{{$inscricao->enxadrista->showRating(2,$evento->tipo_modalidade)}}</td> 
+                            @endif
                             <td>{{$inscricao->categoria->name}}</td>
                             <td>{{$inscricao->cidade->name}}</td>
                             <td>@if($inscricao->clube) {{$inscricao->clube->name}} @else Sem Clube @endif</td>

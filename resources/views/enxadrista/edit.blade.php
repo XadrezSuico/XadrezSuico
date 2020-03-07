@@ -196,6 +196,17 @@
 								<label for="lbx_id">ID LBX</label>
 								<input name="lbx_id" id="lbx_id" class="form-control" type="text" value="{{$enxadrista->lbx_id}}" @if(!$permitido_edicao) disabled="disabled" @endif />
 							</div>
+							@if(!$enxadrista->lbx_id)
+									Pesquisa pelo Nome Completo:<br/>
+									@foreach($json_lbx as $row)
+										ID: {{$row->id}}<br/>
+										Nome: {{$row->sobrenome}}, {{$row->nome}}<br/>
+										FED: {{$row->fed}}<br/>
+										Cidade: {{$row->codigo_cidade}} - {{$row->nome_cidade}}<br/>
+										Data de Nascimento: {{$row->nascimento}}<br/>
+										<hr/>
+									@endforeach
+							@endif
 						</div>
 					</div>
 					<hr/>

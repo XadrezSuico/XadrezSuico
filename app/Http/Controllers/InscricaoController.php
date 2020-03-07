@@ -1128,6 +1128,17 @@ class InscricaoController extends Controller
         }
         $enxadrista->save();
 
+        
+        if ($enxadrista->encontrado_cbx) {
+            CBXRatingController::getRating($enxadrista, false, false);
+        }
+        if ($enxadrista->encontrado_fide) {
+            FIDERatingController::getRating($enxadrista, false, false);
+        }
+        if ($enxadrista->encontrado_lbx) {
+            LBXRatingController::getRating($enxadrista, false, false);
+        }
+
         foreach($documentos as $documento){
             $documento->enxadrista_id = $enxadrista->id;
             $documento->save();

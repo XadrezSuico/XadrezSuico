@@ -203,6 +203,14 @@
 									</select>
 								</div>
 								<div class="form-group">
+									<label for="exportacao_sm_modelo">Tipo de Exportação - Swiss Manager *</label>
+									<select name="exportacao_sm_modelo" id="exportacao_sm_modelo" class="form-control width-100" @if(!\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() && !\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4]) && !\Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])) disabled="disabled" @endif>
+										<option value="0">Padrão XadrezSuíço</option>
+										<option value="1">FIDE</option>
+										<option value="2">LBX</option>
+									</select>
+								</div>
+								<div class="form-group">
 									<label for="cidade_id">Cidade *</label>
 									<select name="cidade_id" id="cidade_id" class="form-control width-100" @if(!\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() && !\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4]) && !\Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])) disabled="disabled" @endif>
 										<option value="">--- Selecione ---</option>
@@ -893,6 +901,7 @@
     	CKEDITOR.replace('texto');
 		$("#torneio_template_id").select2();
 		$("#tipo_modalidade").select2();
+		$("#exportacao_sm_modelo").select2();
 		$("#categoria_id").select2();
 		$("#criterio_desempate_id").select2();
 		$("#criterio_desempate_geral_id").select2();
@@ -902,6 +911,7 @@
 		$("#cidade_id").select2();
 		$("#cidade_id").val([{{$evento->cidade_id}}]).change();
 		$("#tipo_modalidade").val([{{$evento->tipo_modalidade}}]).change();
+		$("#exportacao_sm_modelo").val([{{$evento->exportacao_sm_modelo}}]).change();
 		@if($evento->tipo_rating)
 			$("#tipo_ratings_id").val([{{$evento->tipo_rating->tipo_ratings_id}}]).change();
 		@endif

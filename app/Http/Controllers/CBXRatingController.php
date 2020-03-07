@@ -12,13 +12,13 @@ class CBXRatingController extends Controller
     {
         $enxadristas = Enxadrista::where([
             ["cbx_id", "!=", null],
-            ["cbx_last_update", "<", date("Y-m-d") . " 00:00:00"],
+            ["cbx_last_update", "<", date("Y-m") . "-01 00:00:00"],
         ])
             ->orWhere([
                 ["cbx_id", "!=", null],
                 ["cbx_last_update", "=", null],
             ])
-            ->limit(3)
+            ->limit(5)
             ->get();
         echo count($enxadristas);
         foreach ($enxadristas as $enxadrista) {
@@ -110,7 +110,7 @@ class CBXRatingController extends Controller
             if($show_text) echo "Erro name";
             $enxadrista->encontrado_cbx = false;
         }
-        $enxadrista->cbx_last_update = date("Y-m-d H:i:s");
+        if($save_rating) $enxadrista->cbx_last_update = date("Y-m-d H:i:s");
         if($return_enxadrista){
             return $enxadrista;
         }else{

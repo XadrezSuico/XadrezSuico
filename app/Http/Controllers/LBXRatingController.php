@@ -13,13 +13,13 @@ class LBXRatingController extends Controller
         if(!(date("j") == 1 && date("G") == 0)){
             $enxadristas = Enxadrista::where([
                 ["lbx_id", "!=", null],
-                ["lbx_last_update", "<", date("Y-m-d") . " 00:00:00"],
+                ["lbx_last_update", "<", date("Y-m") . "-01 00:00:00"],
             ])
                 ->orWhere([
                     ["lbx_id", "!=", null],
                     ["lbx_last_update", "=", null],
                 ])
-                ->limit(3)
+                ->limit(10)
                 ->get();
             echo count($enxadristas);
             foreach ($enxadristas as $enxadrista) {
@@ -73,7 +73,7 @@ class LBXRatingController extends Controller
                 if($show_text) echo "Erro json";
                 $enxadrista->encontrado_lbx = false;
             }
-            $enxadrista->lbx_last_update = date("Y-m-d H:i:s");
+            if($save_rating) $enxadrista->lbx_last_update = date("Y-m-d H:i:s");
             if($return_enxadrista){
                 return $enxadrista;
             }else{

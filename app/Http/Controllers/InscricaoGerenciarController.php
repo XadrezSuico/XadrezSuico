@@ -336,6 +336,157 @@ class InscricaoGerenciarController extends Controller
 
     private function generateTxt($inscricoes, $evento, $torneio)
     {
+        switch($evento->exportacao_sm_modelo){
+            case 1:
+                // FIDE
+                return $this->generateTxt_1($inscricoes, $evento, $torneio);
+            case 2:
+                // LBX
+                return $this->generateTxt_2($inscricoes, $evento, $torneio);
+            default:
+                // Padrão XadrezSuíço
+                return $this->generateTxt_0($inscricoes, $evento, $torneio);
+        }
+    }
+
+    private function generateTxt_0($inscricoes, $evento, $torneio){
+        $texto = "No;Nome Completo;ID;FED;";
+        if ($evento->tipo_rating) {
+            $texto .= "FIDE;";
+        } else {
+            if ($evento->usa_fide) {
+                $texto .= "FIDE;";
+                $texto .= "id FIDE;";
+            } elseif ($evento->usa_lbx) {
+                $texto .= "FIDE;";
+                $texto .= "id FIDE;";
+            }
+            if ($evento->usa_cbx) {
+                $texto .= "Elonac;";
+            }
+        }
+        $texto .= "DNasc;Cat;Gr;NoClube;Nome Clube;Sobrenome;Nome;Fonte\r\n";
+
+        $i = 1;
+
+        $inscritos = array();
+        foreach ($inscricoes as $inscricao) {
+            $inscritos[] = $inscricao;
+        }
+        usort($inscritos, array("App\Http\Controllers\InscricaoGerenciarController", "cmp_obj"));
+
+        foreach ($inscritos as $inscricao) {
+            $texto .= $i++ . ";";
+            $texto .= $inscricao->enxadrista->name . ";";
+            if($evento->calcula_cbx){
+                $texto .= $inscricao->enxadrista->cbx_id . ";";
+            }else{
+                $texto .= $inscricao->enxadrista->id . ";";
+            }
+            $texto .= $inscricao->enxadrista->pais_nascimento->codigo_iso.";";
+
+            if ($evento->tipo_rating) {
+                if ($inscricao->enxadrista->showRatingInterno($evento->tipo_rating->id)) {
+                    $texto .= $inscricao->enxadrista->showRatingInterno($evento->tipo_rating->id) . ";";
+                } else {
+                    $texto .= $evento->tipo_rating->tipo_rating->showRatingRegraIdade($inscricao->enxadrista->howOld(), $evento) . ";";
+                }
+            } else {
+                if ($evento->usa_fide) {
+                    $texto .= $inscricao->enxadrista->showRating(0, $evento->tipo_modalidade) . ";";
+                    $texto .= $inscricao->enxadrista->fide_id . ";";
+                } elseif ($evento->usa_lbx) {
+                    $texto .= $inscricao->enxadrista->showRating(2, $evento->tipo_modalidade) . ";";
+                    $texto .= $inscricao->enxadrista->lbx_id . ";";
+                }
+                if ($evento->usa_cbx) {
+                    $texto .= $inscricao->enxadrista->showRating(1, $evento->tipo_modalidade) . ";";
+                }
+            }
+
+            $texto .= $inscricao->enxadrista->getBornToSM() . ";";
+            $texto .= $inscricao->categoria->cat_code . ";";
+            $texto .= $inscricao->categoria->code . ";";
+            if ($inscricao->clube) {
+                $texto .= $inscricao->cidade->ibge_id . ";";
+                $texto .= $inscricao->cidade->name . " - " . $inscricao->clube->name . ";";
+            } else {
+                $texto .= $inscricao->cidade->ibge_id . ";";
+                $texto .= $inscricao->cidade->name . ";";
+            }
+
+            $texto .= $inscricao->enxadrista->lastname . ";";
+            $texto .= $inscricao->enxadrista->firstname . ";";
+            $texto .= $inscricao->enxadrista->id . "\r\n";
+        }
+        return $texto;
+    }
+
+    private function generateTxt_1($inscricoes, $evento, $torneio){
+        $texto = "No;Nome Completo;ID;FED;FIDE;id FIDE;";
+        if ($evento->usa_cbx) {
+            $texto .= "Elonac;";
+        }
+        $texto .= "Sexo;DNasc;Cat;Gr;NoClube;Nome Clube;Sobrenome;Nome;Fonte\r\n";
+
+        $i = 1;
+
+        $inscritos = array();
+        foreach ($inscricoes as $inscricao) {
+            $inscritos[] = $inscricao;
+        }
+        usort($inscritos, array("App\Http\Controllers\InscricaoGerenciarController", "cmp_obj"));
+
+        foreach ($inscritos as $inscricao) {
+            $explode_fide_name = explode(",",$inscricao->enxadrista->fide_name);
+
+            $texto .= $i++ . ";";
+            $texto .= $inscricao->enxadrista->name . ";";
+            $texto .= $inscricao->enxadrista->cbx_id . ";";
+            $texto .= $inscricao->enxadrista->pais_nascimento->codigo_iso.";";
+
+            if ($evento->tipo_rating) {
+                if ($inscricao->enxadrista->showRatingInterno($evento->tipo_rating->id)) {
+                    $texto .= $inscricao->enxadrista->showRatingInterno($evento->tipo_rating->id) . ";";
+                } else {
+                    $texto .= $evento->tipo_rating->tipo_rating->showRatingRegraIdade($inscricao->enxadrista->howOld(), $evento) . ";";
+                }
+            } else {
+                if ($evento->usa_fide) {
+                    $texto .= $inscricao->enxadrista->showRating(0, $evento->tipo_modalidade) . ";";
+                    $texto .= $inscricao->enxadrista->fide_id . ";";
+                } elseif ($evento->usa_lbx) {
+                    $texto .= $inscricao->enxadrista->showRating(2, $evento->tipo_modalidade) . ";";
+                    $texto .= $inscricao->enxadrista->lbx_id . ";";
+                }
+                if ($evento->usa_cbx) {
+                    $texto .= $inscricao->enxadrista->showRating(1, $evento->tipo_modalidade) . ";";
+                }
+            }
+            if($inscricao->enxadrista->sexo->abbr == "F"){
+                $texto .= "f;";
+            }else{
+                $texto .= ";";
+            }
+            $texto .= $inscricao->enxadrista->getBornToSM() . ";";
+            $texto .= $inscricao->categoria->cat_code . ";";
+            $texto .= $inscricao->categoria->code . ";";
+            if ($inscricao->clube) {
+                $texto .= $inscricao->clube->id . ";";
+                $texto .= $inscricao->cidade->name . " - " . $inscricao->clube->name . ";";
+            } else {
+                $texto .= ";";
+                $texto .= $inscricao->cidade->name . ";";
+            }
+
+            $texto .= ((count($explode_fide_name) > 1) ? $explode_fide_name[0] : $inscricao->enxadrista->lastname) . ";";
+            $texto .= ((count($explode_fide_name) > 1) ? $explode_fide_name[1] : $inscricao->enxadrista->firstname) . ";";
+            $texto .= $inscricao->enxadrista->id . "\r\n";
+        }
+        return $texto;
+    }
+
+    private function generateTxt_2($inscricoes, $evento, $torneio){
         $texto = "No;Nome Completo;ID;FED;";
         if ($evento->tipo_rating) {
             $texto .= "FIDE;";

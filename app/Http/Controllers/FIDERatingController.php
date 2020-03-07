@@ -12,13 +12,13 @@ class FIDERatingController extends Controller
     {
         $enxadristas = Enxadrista::where([
             ["fide_id", "!=", null],
-            ["fide_last_update", "<", date("Y-m-d") . " 00:00:00"],
+            ["fide_last_update", "<", date("Y-m") . "-01 00:00:00"],
         ])
             ->orWhere([
                 ["fide_id", "!=", null],
                 ["fide_last_update", "=", null],
             ])
-            ->limit(3)
+            ->limit(5)
             ->get();
         echo count($enxadristas);
         foreach ($enxadristas as $enxadrista) {
@@ -112,7 +112,7 @@ class FIDERatingController extends Controller
         }else{
             $enxadrista->encontrado_fide = false;
         }
-        $enxadrista->fide_last_update = date("Y-m-d H:i:s");
+        if($save_rating) $enxadrista->fide_last_update = date("Y-m-d H:i:s");
         if($return_enxadrista){
             return $enxadrista;
         }else{
