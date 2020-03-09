@@ -28,7 +28,19 @@ class InscricaoController extends Controller
         $sexos = Sexo::all();
         $token = "";
         $user = Auth::user();
+        $permite_confirmacao = false;
         if ($evento) {
+
+        
+            if (
+                $user->hasPermissionGlobal() ||
+                $user->hasPermissionEventByPerfil($evento->id, [4, 5]) ||
+                $user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [6,7])
+            ) {
+                $permite_confirmacao = true;
+            }
+
+
             if ($evento->e_inscricao_apenas_com_link) {
                 if ($evento->inscricaoLiberada($request->input("token"))) {
                     if ($evento->inscricoes_encerradas()) {
@@ -37,14 +49,14 @@ class InscricaoController extends Controller
                         }
                         if (
                             !$user->hasPermissionGlobal() &&
-                            !$user->hasPermissionEventByPerfil($evento->id, [3, 4]) &&
+                            !$user->hasPermissionEventByPerfil($evento->id, [3, 4, 5]) &&
                             !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [6,7])
                         ) {
                             return view("inscricao.encerradas", compact("evento"));
                         }
                     }
                     $token = $request->input("token");
-                    return view("inscricao.inscricao_nova", compact("evento", "sexos", "token","user"));
+                    return view("inscricao.inscricao_nova", compact("evento", "sexos", "token","user","permite_confirmacao"));
                 } else {
                     return view("inscricao.naopermitida");
                 }
@@ -55,19 +67,20 @@ class InscricaoController extends Controller
                     }
                     if (
                         !$user->hasPermissionGlobal() &&
-                        !$user->hasPermissionEventByPerfil($evento->id, [3, 4]) &&
+                        !$user->hasPermissionEventByPerfil($evento->id, [3, 4, 5]) &&
                         !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [6,7])
                     ) {
                         return view("inscricao.encerradas", compact("evento"));
                     }
                 }
-                return view("inscricao.inscricao_nova", compact("evento", "sexos","user"));
+                return view("inscricao.inscricao_nova", compact("evento", "sexos","user","permite_confirmacao"));
             }
         } else {
             return view("inscricao.naoha");
         }
     }
 
+    /*
     public function visualizar_inscricoes($id)
     {
         $evento = Evento::find($id);
@@ -507,7 +520,7 @@ class InscricaoController extends Controller
         }
         return response()->json(["results" => $results, "pagination" => true]);
     }
-
+    */
 
 
 
@@ -560,7 +573,7 @@ class InscricaoController extends Controller
                 
                 if (
                     $user->hasPermissionGlobal() ||
-                    $user->hasPermissionEventByPerfil($evento->id, [3, 4]) ||
+                    $user->hasPermissionEventByPerfil($evento->id, [3, 4, 5]) ||
                     $user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [6,7])
                 ) {
                     // Sem Inscrição
@@ -733,6 +746,9 @@ class InscricaoController extends Controller
             $retorno = array();
             $retorno["id"] = $enxadrista->id;
             $retorno["name"] = $enxadrista->name;
+            $retorno["cbx_id"] = $enxadrista->cbx_id;
+            $retorno["fide_id"] = $enxadrista->fide_id;
+            $retorno["lbx_id"] = $enxadrista->lbx_id;
             $retorno["born"] = $enxadrista->getBorn();
             $retorno["cidade"] = array("id"=>$enxadrista->cidade->id,"name"=>$enxadrista->cidade->name);
             $retorno["cidade"]["estado"] = array("id"=>$enxadrista->cidade->estado->id,"name"=>$enxadrista->cidade->estado->nome);
@@ -755,7 +771,9 @@ class InscricaoController extends Controller
 
 
     public function telav2_adicionarNovaInscricao($evento_id,Request $request)
-    {
+    {   
+        $user = Auth::user();
+
         $evento = Evento::find($evento_id);
 
         if (
@@ -765,7 +783,7 @@ class InscricaoController extends Controller
         } elseif (
             !$request->has("xadrezsuico_aceito")
         ) {
-            return response()->json(["ok" => 0, "error" => 1, "message" => "Você deve aceitar o termo de uso da plataforma XadrezSuíço!", "registred" => 0]);
+            return response()->json(["ok" => 0, "error" => 1, "message" => "Você deve aceitar o termo de uso e política de privacidade da plataforma XadrezSuíço!", "registred" => 0]);
         } elseif (
             !$request->has("enxadrista_id") ||
             !$request->has("categoria_id") ||
@@ -787,7 +805,17 @@ class InscricaoController extends Controller
         $evento = Evento::find($request->input("evento_id"));
 
         if ($evento->inscricoes_encerradas(true)) {
-            return response()->json(["ok" => 0, "error" => 1, "message" => env("MENSAGEM_FIM_INSCRICOES", "O prazo de inscrições antecipadas se esgotou ou então o limite de inscritos se completou. As inscrições poderão ser feitas no local do evento conforme regulamento.")]);
+            if($user){
+                if (
+                    !$user->hasPermissionGlobal() &&
+                    !$user->hasPermissionEventByPerfil($evento->id, [3, 4, 5]) &&
+                    !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [6,7])
+                ) {
+                    return response()->json(["ok" => 0, "error" => 1, "message" => env("MENSAGEM_FIM_INSCRICOES", "O prazo de inscrições antecipadas se esgotou ou então o limite de inscritos se completou. As inscrições poderão ser feitas no local do evento conforme regulamento.")]);
+                }
+            }else{
+                return response()->json(["ok" => 0, "error" => 1, "message" => env("MENSAGEM_FIM_INSCRICOES", "O prazo de inscrições antecipadas se esgotou ou então o limite de inscritos se completou. As inscrições poderão ser feitas no local do evento conforme regulamento.")]);
+            }
         }
 
         if ($evento->e_inscricao_apenas_com_link) {
@@ -851,6 +879,23 @@ class InscricaoController extends Controller
         }
         $inscricao->regulamento_aceito = true;
         $inscricao->xadrezsuico_aceito = true;
+        
+        if($user){
+            if (
+                $user->hasPermissionGlobal() ||
+                $user->hasPermissionEventByPerfil($evento->id, [4, 5]) ||
+                $user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [6,7])
+            ) {
+                if($request->has("inscricao_confirmada")){
+                    $inscricao->confirmado = true;
+                }
+                if($request->has("atualizar_cadastro")){
+                    $enxadrista->clube_id = $inscricao->clube_id;
+                    $enxadrista->cidade_id = $inscricao->cidade_id;
+                    $enxadrista->save();
+                }
+            }
+        }
         $inscricao->save();
 
         foreach ($evento->campos() as $campo) {
@@ -874,6 +919,8 @@ class InscricaoController extends Controller
             $text = "Olá " . $enxadrista->name . "!<br/>";
             $text .= "Você está recebendo este email para confirmar a inscrição no Evento '" . $evento->name . "'.<br/>";
             $text .= "Informações:<br/>";
+            $text .= "ID da Inscrição: " . $inscricao->id . "<br/>";
+            $text .= "ID do Cadastro de Enxadrista: " . $inscricao->enxadrista->id . "<br/>";
             $text .= "Cidade: " . $inscricao->cidade->name . "<br/>";
             $text .= "Clube: " . (($inscricao->clube) ? $inscricao->clube->name : "Sem Clube") . "<br/>";
             $text .= "Categoria: " . $inscricao->categoria->name . "<br/>";
@@ -895,7 +942,14 @@ class InscricaoController extends Controller
     
     public function telav2_adicionarNovoEnxadrista($evento_id,Request $request)
     {
+        $user = Auth::user();
         $evento = Evento::find($evento_id);
+
+        if (
+            !$request->has("xadrezsuico_aceito")
+        ) {
+            return response()->json(["ok" => 0, "error" => 1, "message" => "Você deve aceitar o termo de uso e política de privacidade da plataforma XadrezSuíço!"]);
+        }
 
         if (
             !$request->has("name") ||
@@ -1142,6 +1196,23 @@ class InscricaoController extends Controller
         foreach($documentos as $documento){
             $documento->enxadrista_id = $enxadrista->id;
             $documento->save();
+        }
+
+        
+        if ($enxadrista->email) {
+            // EMAIL PARA O ENXADRISTA CADASTRADO
+            $text = "Olá " . $enxadrista->name . "!<br/>";
+            $text .= "Esta é uma confirmação do seu cadastro no Sistema XadrezSuíço implementado pela ".env("IMPLEMENTADO_POR")."<br/>";
+            $text .= "O seu ID de Cadastro é <strong><u>".$enxadrista->id."</u></strong> e você poderá utilizar ele para encontrar seu cadastro para inscrição no Sistema XadrezSuíço implementado pela ".env("IMPLEMENTADO_POR")." e também para poder efetuar a sua confirmação nos eventos que foi utilizado esta implementação do sistema.<br/>";
+            $text .= "Recomendamos que você mantenha salvo este ID/Código de Cadastro para poder agilizar o processo de confirmação ou inscrição.<br/>";
+            $text .= "Além disso, você receberá neste e-mail as confirmações de inscrições efetuadas nesta implementação do Sistema XadrezSuíço.<br/>";
+            $text .= "Atenciosamente.";
+           EmailController::scheduleEmail(
+                $enxadrista->email,
+                "Sistema XadrezSuíço (".env("IMPLEMENTADO_POR").") - Cadastro de Enxadrista Realizado - Enxadrista: " . $enxadrista->name,
+                $text,
+                $enxadrista
+            );
         }
 
         if ($enxadrista->id > 0) {
@@ -1489,6 +1560,9 @@ class InscricaoController extends Controller
             $retorno = array();
             $retorno["id"] = $inscricao->enxadrista->id;
             $retorno["name"] = $inscricao->enxadrista->name;
+            $retorno["cbx_id"] = $inscricao->enxadrista->cbx_id;
+            $retorno["fide_id"] = $inscricao->enxadrista->fide_id;
+            $retorno["lbx_id"] = $inscricao->enxadrista->lbx_id;
             $retorno["born"] = $inscricao->enxadrista->getBorn();
             $retorno["cidade"] = array("id"=>$inscricao->cidade->id,"name"=>$inscricao->cidade->name);
             $retorno["cidade"]["estado"] = array("id"=>$inscricao->cidade->estado->id,"name"=>$inscricao->cidade->estado->nome);

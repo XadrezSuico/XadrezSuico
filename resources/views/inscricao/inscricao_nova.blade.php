@@ -472,6 +472,9 @@
 						</select>
                     	<button id="clubeNaoCadastradoEnxadrista" onclick="chamaCadastroClube(0)" class="btn btn-success">O meu clube não está cadastrado</button>
 					</div>
+					<div class="form-group">
+						<label><input type="checkbox" id="enxadrista_xadrezsuico_aceito"> Eu aceito o <a href="{{url("/termosdeuso")}}" target="_blank">termo de uso</a> e a <a href="{{url("/politicadeprivacidade")}}" target="_blank">política de privacidade</a> da Plataforma de Gerenciamento de Circuitos de Xadrez - XadrezSuíço - Implementada pela <u>{{env("IMPLEMENTADO_POR")}}</u>.</label>
+					</div>
 				</div>
 			</div>
 			<div id="inscricao" style="display:none">
@@ -479,6 +482,9 @@
 				<h4>ID: <span id="enxadrista_mostrar_id">Carregando...</span></h4>
 				<h4>Nome Completo: <span id="enxadrista_mostrar_nome">Carregando...</span></h4>
 				<h4>Data de Nascimento: <span id="enxadrista_mostrar_born">Carregando...</span></h4>
+				<h4>ID CBX: <span id="enxadrista_mostrar_id_cbx">Carregando...</span></h4>
+				<h4>ID FIDE: <span id="enxadrista_mostrar_id_fide">Carregando...</span></h4>
+				<h4>ID LBX: <span id="enxadrista_mostrar_id_lbx">Carregando...</span></h4>
 				<hr/>
 				<div class="form-group">
 					<label for="inscricao_categoria_id">Categoria *</label>
@@ -530,10 +536,17 @@
 						</select>
 					</div>
 				@endforeach
-				<div class="form-group">
-				<label><input type="checkbox" id="regulamento_aceito"> Eu aceito o @if($evento->grupo_evento->regulamento_link) <a href="{{$evento->grupo_evento->regulamento_link}}" target="_blank"> @endif regulamento do  {{$evento->grupo_evento->name}} @if($evento->grupo_evento->regulamento_link) </a> @endif integralmente.</label><br/>
-					<label><input type="checkbox" id="xadrezsuico_aceito"> Eu aceito o <a href="{{url("/termosdeuso")}}" target="_blank">termo de uso</a> e a <a href="{{url("/politicadeprivacidade")}}" target="_blank">política de privacidade</a> da Plataforma de Gerenciamento de Circuitos de Xadrez - XadrezSuíço - Implementada pela <u>{{env("IMPLEMENTADO_POR")}}</u>.</label>
-				</div>
+				@if($permite_confirmacao)
+					<div class="form-group">
+							<label><input type="checkbox" id="inscricao_confirmar"> Inscrição Confirmada</label><br/>
+							<label><input type="checkbox" id="inscricao_atualizar"> Atualizar Cadastro (Cidade e Clube)</label><br/>
+					</div>
+				@else
+					<div class="form-group">
+						<label><input type="checkbox" id="regulamento_aceito"> Eu aceito o @if($evento->grupo_evento->regulamento_link) <a href="{{$evento->grupo_evento->regulamento_link}}" target="_blank"> @endif regulamento do  {{$evento->grupo_evento->name}} @if($evento->grupo_evento->regulamento_link) </a> @endif integralmente.</label><br/>
+						<label><input type="checkbox" id="xadrezsuico_aceito"> Eu aceito o <a href="{{url("/termosdeuso")}}" target="_blank">termo de uso</a> e a <a href="{{url("/politicadeprivacidade")}}" target="_blank">política de privacidade</a> da Plataforma de Gerenciamento de Circuitos de Xadrez - XadrezSuíço - Implementada pela <u>{{env("IMPLEMENTADO_POR")}}</u>.</label>
+					</div>
+				@endif
 				<button id="enviar_inscricao" class="btn btn-success">Enviar Inscrição</button>
 				<button id="cancelar_inscricao" class="btn btn-danger">Cancelar Inscrição</button>
 			</div>
@@ -542,6 +555,9 @@
 				<h4>ID: <span id="enxadrista_confirmar_id">Carregando...</span></h4>
 				<h4>Nome Completo: <span id="enxadrista_confirmar_nome">Carregando...</span></h4>
 				<h4>Data de Nascimento: <span id="enxadrista_confirmar_born">Carregando...</span></h4>
+				<h4>ID CBX: <span id="enxadrista_confirmar_id_cbx">Carregando...</span></h4>
+				<h4>ID FIDE: <span id="enxadrista_confirmar_id_fide">Carregando...</span></h4>
+				<h4>ID LBX: <span id="enxadrista_confirmar_id_lbx">Carregando...</span></h4>
 				<hr/>
 				<input type="hidden" id="enxadrista_id" />
 				<div class="form-group">
@@ -584,7 +600,7 @@
                     <button id="clubeNaoCadastradoInscricao" onclick="chamaCadastroClube(2)" class="btn btn-success">O meu clube não está cadastrado</button>
 				</div>
 				<div class="form-group">
-					<label><input type="checkbox" id="atualizar_cadastro_confirmacao"> Atualizar Cadastro</label><br/>
+					<label><input type="checkbox" id="atualizar_cadastro_confirmacao"> Atualizar Cadastro (Cidade e Clube)</label><br/>
 				</div>
 				<button id="confirmar_inscricao" class="btn btn-success">Confirmar Inscrição</button>
 				<button id="cancelar_confirmacao" class="btn btn-danger">Cancelar Confirmação</button>
@@ -839,8 +855,8 @@
 				$("#alerts").modal();
 			}else{
 				$("#barra_progresso_cadastro").css("width","100%");
+				zeraCadastro(true,false);
 				selectEnxadrista($("#enxadrista_id").val(),function(){
-					zeraCadastro(false,false);
 					$("#asksMessage_jaInscrito").val("");
 				});
 				$("#asks").modal('hide');
@@ -1092,7 +1108,10 @@
 							$("#estados_id").val($("#temporary_estados_id").val()).change();	
 							setTimeout(function(){
 								buscaCidades(0,function(){
-									$("#cidade_id").val($("#temporary_cidade_id").val()).change();	
+									$("#cidade_id").val($("#temporary_cidade_id").val()).change();
+									setTimeout(function(){
+										Loading.destroy();
+									},500);	
 								});
 							},200);
 						});
@@ -1104,7 +1123,6 @@
 				$("#enxadrista").css("display","");
 				$("#enxadrista_footer").css("display","");
 				$("#inscricao").css("display","none");
-				Loading.destroy();
 				$("#alertsMessage").html(data.message);
 				$("#alerts").modal();
 			}else{
@@ -1125,6 +1143,9 @@
 						$("#enxadrista_mostrar_id").html(data.data.id);
 						$("#enxadrista_mostrar_nome").html(data.data.name);
 						$("#enxadrista_mostrar_born").html(data.data.born);
+						$("#enxadrista_mostrar_id_cbx").html(data.data.cbx_id);
+						$("#enxadrista_mostrar_id_fide").html(data.data.fide_id);
+						$("#enxadrista_mostrar_id_lbx").html(data.data.lbx_id);
 						$('#inscricao_categoria_id').html("").trigger('change');
 						for (i = 0; i < data.data.categorias.length; i++) {
 							var newOptionCategoria = new Option(data.data.categorias[i].name, data.data.categorias[i].id, false, false);
@@ -1143,7 +1164,9 @@
 								setTimeout(function(){
 									buscaCidades(1,function(){
 										$("#inscricao_cidade_id").val(data.data.cidade.id).change();
-										Loading.destroy();
+										setTimeout(function(){
+											Loading.destroy();
+										},500);	
 									});
 								},200);
 							});
@@ -1202,6 +1225,9 @@
 				$("#enxadrista_confirmar_id").html(data.data.id);
 				$("#enxadrista_confirmar_nome").html(data.data.name);
 				$("#enxadrista_confirmar_born").html(data.data.born);
+				$("#enxadrista_confirmar_id_cbx").html(data.data.cbx_id);
+				$("#enxadrista_confirmar_id_fide").html(data.data.fide_id);
+				$("#enxadrista_confirmar_id_lbx").html(data.data.lbx_id);
 				$('#confirmacao_categoria_id').html("").trigger('change');
 				for (i = 0; i < data.data.categorias.length; i++) {
 					var newOptionCategoria = new Option(data.data.categorias[i].name, data.data.categorias[i].id, false, false);
@@ -1227,7 +1253,6 @@
 						setTimeout(function(){
 							buscaCidades(2,function(){
 								$("#confirmacao_cidade_id").val(data.data.cidade.id).change();
-								Loading.destroy();
 							});
 						},200);
 					});
@@ -1253,6 +1278,7 @@
 						$("#temporary_confirmacao_categoria_id").val("");
 						$("#temporary_confirmacao_cidade_id").val("");
 						$("#temporary_confirmacao_clube_id").val("");
+						Loading.destroy();
 					},1000);
 				}
 			}else{
@@ -1504,12 +1530,24 @@
 
 	function enviarInscricao(){
 		var data = "evento_id={{$evento->id}}&enxadrista_id=".concat($("#enxadrista_id").val()).concat("&categoria_id=").concat($("#inscricao_categoria_id").val()).concat("&cidade_id=").concat($("#inscricao_cidade_id").val()).concat("&clube_id=").concat($("#inscricao_clube_id").val());
-		if($("#regulamento_aceito").is(":checked")){
+		@if($permite_confirmacao)
 			data = data.concat("&regulamento_aceito=true");
-		}		
-		if($("#xadrezsuico_aceito").is(":checked")){
 			data = data.concat("&xadrezsuico_aceito=true");
-		}
+
+			if($("#inscricao_confirmar").is(":checked")){
+				data = data.concat("&inscricao_confirmada=true");
+			}
+			if($("#inscricao_atualizar").is(":checked")){
+				data = data.concat("&atualizar_cadastro=true");
+			}
+		@else
+			if($("#regulamento_aceito").is(":checked")){
+				data = data.concat("&regulamento_aceito=true");
+			}		
+			if($("#xadrezsuico_aceito").is(":checked")){
+				data = data.concat("&xadrezsuico_aceito=true");
+			}
+		@endif
 		@foreach($evento->campos() as $campo)
 			data = data.concat("&campo_personalizado_{{$campo->id}}=").concat($("#campo_personalizado_{{$campo->id}}").val());
 		@endforeach
@@ -1530,7 +1568,12 @@
 					$("#texto_pesquisa").val("");
 					$("#pesquisa div").html("");
 					$("#inscricao").boxWidget('collapse');
-					$("#successMessage").html("<strong>Sua inscrição foi efetuada com sucesso!</strong>");
+					$("#successMessage").html("<strong>Sua inscrição foi efetuada com sucesso!</strong><hr/>");
+					$("#successMessage").html($("#successMessage").html().concat("Você receberá em no máximo 30 minutos uma mensagem no endereço de e-mail do cadastro com a confirmação da inscrição para este evento.<hr/>"));
+					@if($evento->e_permite_visualizar_lista_inscritos_publica)
+						$("#successMessage").html($("#successMessage").html().concat("Caso não receba o e-mail, confira na lista de inscritos (Acessível no topo desta página em 'Visualizar Lista de Inscrições') e verifique se lá consta o nome do(a) enxadrista em questão."));
+						$("#successMessage").html($("#successMessage").html().concat("Caso não apareça, tente novamente o processo de inscrição ou entre em contato com a organização."));
+					@endif
 					$("#success").modal();
 				}else{
 					$("#alertsMessage").html(data.message);
@@ -1731,6 +1774,10 @@
 			.concat("&clube_id=").concat($("#clube_id").val())
 			.concat("&evento_id=").concat({{$evento->id}});
 
+		if($("#enxadrista_xadrezsuico_aceito").is(":checked")){
+			data = data.concat("&xadrezsuico_aceito=true");
+		}
+
 		if(tipo_documentos){
 			for(var i = 0; i < tipo_documentos.length; i++){
 				if($("#tipo_documento_".concat(tipo_documentos[i].id)).val() != ""){
@@ -1747,10 +1794,10 @@
 			success: function(data){
 				if(data.ok == 1){
 					$("#barra_progresso_cadastro").css("width","100%");
+					zeraCadastro(true,false);
 					selectEnxadrista(data.enxadrista_id,function(){
 						$("#successMessage").html("<strong>O cadastro do enxadrista foi efetuado com sucesso!</strong>");
 						$("#success").modal();
-						zeraCadastro(false,false);
 					});
 				}else{
 					if(data.ask == 1){
@@ -1763,8 +1810,8 @@
 						$("#asksMessage_jaInscrito").val(data.esta_inscrito);
 						$("#asks").modal();
 					}else if(data.registred == 1){
+						zeraCadastro(true,false);
 						selectEnxadrista(data.enxadrista_id,function(){
-							zeraCadastro(false,false);
 							$("#alertsMessage").html(data.message);
 							$("#alerts").modal();
 						});
@@ -1810,10 +1857,10 @@
 			success: function(data){
 				if(data.ok == 1){
 					$("#barra_progresso_cadastro").css("width","100%");
+					zeraCadastro(true,false);
 					selectEnxadrista(data.enxadrista_id,function(){
 						$("#successMessage").html("<strong>A atualização de cadastro do enxadrista foi efetuada com sucesso!</strong>");
 						$("#success").modal();
-						zeraCadastro(false);
 						Loading.destroy();
 					});
 				}else{
@@ -1828,9 +1875,9 @@
 						$("#asks").modal();
 						Loading.destroy();
 					}else if(data.registred == 1){
+						zeraCadastro(true,false);
 						selectEnxadrista(data.enxadrista_id,function(){
 							$("#barra_progresso_cadastro").css("width","100%");
-							zeraCadastro(false,false);
 							$("#alertsMessage").html(data.message);
 							$("#alerts").modal();
 							Loading.destroy();
