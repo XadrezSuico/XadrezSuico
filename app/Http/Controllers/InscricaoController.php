@@ -31,13 +31,14 @@ class InscricaoController extends Controller
         $permite_confirmacao = false;
         if ($evento) {
 
-        
-            if (
-                $user->hasPermissionGlobal() ||
-                $user->hasPermissionEventByPerfil($evento->id, [4, 5]) ||
-                $user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [6,7])
-            ) {
-                $permite_confirmacao = true;
+            if($user){
+                if (
+                    $user->hasPermissionGlobal() ||
+                    $user->hasPermissionEventByPerfil($evento->id, [4, 5]) ||
+                    $user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [6,7])
+                ) {
+                    $permite_confirmacao = true;
+                }
             }
 
 
@@ -1546,6 +1547,9 @@ class InscricaoController extends Controller
     {
         $user = Auth::user();
         $evento = Evento::find($id);
+        if (!$user) {
+            return response()->json(["ok" => 0, "error" => 1, "message" => "Você não possui permissão para fazer isto.", "registred" => 0]);
+        }
         if (
             !$user->hasPermissionGlobal() &&
             !$user->hasPermissionEventByPerfil($evento->id, [4,5]) &&
