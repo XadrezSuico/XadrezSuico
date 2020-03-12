@@ -81,7 +81,7 @@ class InscricaoController extends Controller
         }
     }
 
-    /*
+    
     public function visualizar_inscricoes($id)
     {
         $evento = Evento::find($id);
@@ -92,7 +92,7 @@ class InscricaoController extends Controller
         }
         return redirect("/inscricao/" . $id);
     }
-
+    /*
     public function adicionarNovaInscricao(Request $request)
     {
         if (
@@ -828,11 +828,13 @@ class InscricaoController extends Controller
             if (
                 !$request->has("campo_personalizado_" . $campo->id)
             ) {
-                return response()->json(["ok" => 0, "error" => 1, "message" => "Um dos campos obrigatórios não está preenchido. Por favor, verifique e envie novamente!<br/><br/><strong>Observação</strong>: TODOS os Campos com <strong>*</strong> SÃO OBRIGATÓRIOS!", "registred" => 0]);
+                return response()->json(["ok" => 0, "error" => 1, "message" => "Um dos campos obrigatórios não está preenchido. Por favor, verifique e envie novamente!<br/>Erro: Campo Personalizado 1.<br/><br/><strong>Observação</strong>: TODOS os Campos com <strong>*</strong> SÃO OBRIGATÓRIOS!", "registred" => 0]);
             } elseif (
-                $request->input("campo_personalizado_" . $campo->id) == null || $request->input("campo_personalizado_" . $campo->id) == "" || $request->input("campo_personalizado_" . $campo->id) == "null" || !is_int($request->input("campo_personalizado_" . $campo->id))
+                $request->input("campo_personalizado_" . $campo->id) == null ||
+                $request->input("campo_personalizado_" . $campo->id) == "" ||
+                $request->input("campo_personalizado_" . $campo->id) == "null"
             ) {
-                return response()->json(["ok" => 0, "error" => 1, "message" => "Um dos campos obrigatórios não está preenchido. Por favor, verifique e envie novamente!<br/><br/><strong>Observação</strong>: TODOS os Campos com <strong>*</strong> SÃO OBRIGATÓRIOS!", "registred" => 0]);
+                return response()->json(["ok" => 0, "error" => 1, "message" => "Um dos campos obrigatórios não está preenchido. Por favor, verifique e envie novamente!<br/>Erro: Campo Personalizado 2.<br/><br/><strong>Observação</strong>: TODOS os Campos com <strong>*</strong> SÃO OBRIGATÓRIOS!", "registred" => 0]);
             }
         }
 
