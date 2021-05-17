@@ -47,7 +47,7 @@
 						<div class="box-header">
 							<h3 class="box-title">Funções</h3>
 						</div>
-						
+
 						<div class="box-body">
 							<h4>Inscrições:</h4>
 							@if(
@@ -95,13 +95,13 @@
 									Classificar Evento
 								</a>
 								<a href="{{url("/evento/".$evento->id."/toggleresultados")}}" class="btn btn-warning btn-app">
-									@if($evento->mostrar_resultados) 
+									@if($evento->mostrar_resultados)
 										<i class="fa fa-lock"></i>
-										Restringir 
-									@else 
+										Restringir
+									@else
 										<i class="fa fa-unlock"></i>
-										Liberar 
-									@endif 
+										Liberar
+									@endif
 									Classificação Pública
 								</a>
 								@if($evento->mostrar_resultados)
@@ -151,9 +151,9 @@
 									Classificação Geral deste Evento
 								</a>
 								<a href="{{url("/evento/".$evento->id."/togglemanual")}}" class="btn btn-app">
-									@if($evento->e_resultados_manuais) 
+									@if($evento->e_resultados_manuais)
 										<i class="fa fa-lock"></i>
-									@else 
+									@else
 										<i class="fa fa-lock"></i>
 									@endif
 									Resultados @if($evento->e_resultados_manuais) Automáticos @else Manuais @endif
@@ -172,14 +172,14 @@
 							<h3 class="box-title">Editar Evento</h3>
 						</div>
 						<!-- form start -->
-						
+
 					@if(
 						\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
 						\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4]) ||
 						\Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])
 					)
 						<form method="post">
-					@endif	
+					@endif
 							<div class="box-body">
 								<div class="form-group">
 									<label for="evento_name">Nome *</label>
@@ -234,6 +234,10 @@
 								<div class="form-group">
 									<label for="maximo_inscricoes_evento">Número Máximo de Inscrições Permitidas no Evento</label>
 									<input name="maximo_inscricoes_evento" id="maximo_inscricoes_evento" class="form-control" type="text" value="{{$evento->maximo_inscricoes_evento}}" @if(!\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() && !\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4]) && !\Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])) disabled="disabled" @endif />
+								</div>
+								<div class="form-group">
+									<label for="orientacao_pos_inscricao">Orientações Pós-Inscrição</label>
+									<textarea class="form-control" id="orientacao_pos_inscricao" name="orientacao_pos_inscricao" placeholder="Texto com as Orientações Pós-Inscrição" @if(!\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() && !\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4]) && !\Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])) disabled="disabled" @endif >{{$evento->orientacao_pos_inscricao}}</textarea>
 								</div>
 								<div class="form-group">
 									<label><input type="checkbox" id="e_permite_visualizar_lista_inscritos_publica" name="e_permite_visualizar_lista_inscritos_publica" @if($evento->e_permite_visualizar_lista_inscritos_publica) checked="checked" @endif @if(!\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() && !\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4]) && !\Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])) disabled="disabled" @endif > Permite a visualização da lista de inscrições de forma pública?</label>
@@ -301,26 +305,26 @@
 							<h3 class="box-title">Página</h3>
 						</div>
 						<!-- form start -->
-						
+
 					@if(
 						\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
 						\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4]) ||
 						\Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])
 					)
 						<form method="post" action="{{url("/evento/".$evento->id."/pagina")}}" enctype="multipart/form-data">
-					@endif	
+					@endif
 							<div class="box-body">
 								<div class="form-group">
 									<label for="imagem">Imagem</label>
 									@if($evento->pagina)
 										@if($evento->pagina->imagem)
 											<br/><img src="data:image/png;base64, {!!$evento->pagina->imagem!!}" width="100%" style="max-width: 400px"/>
-											@if(\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() || \Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4]) || \Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])) 
+											@if(\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() || \Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4]) || \Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7]))
 												<label><input type="checkbox" name="remover_imagem" /> Remover Imagem?</label>
 											@endif
 										@endif
 									@endif
-									@if(\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() || \Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4]) || \Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])) 
+									@if(\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() || \Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4]) || \Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7]))
 										<input type="file" id="imagem" name="imagem">
 										@if ($errors->has('imagem'))
 											<span class="help-block">
@@ -329,10 +333,10 @@
 										@endif
 									@endif
 								</div>
-								
+
 								<div class="form-group">
 									<label for="texto">Texto</label>
-									<textarea class="form-control" id="texto" name="texto" placeholder="Texto sobre o Evento" @if(!\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() && !\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4]) && !\Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])) disabled="disabled" @endif >@if($evento->pagina){{$evento->pagina->texto}}@endif</textarea>				
+									<textarea class="form-control" id="texto" name="texto" placeholder="Texto sobre o Evento" @if(!\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() && !\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4]) && !\Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])) disabled="disabled" @endif >@if($evento->pagina){{$evento->pagina->texto}}@endif</textarea>
 								</div>
 							</div>
 							<!-- /.box-body -->
@@ -403,7 +407,7 @@
 									</div>
 									<div class="form-group">
 										<label for="prioridade">Prioridade</label>
-										<input name="prioridade" id="prioridade" class="form-control" type="number" />						
+										<input name="prioridade" id="prioridade" class="form-control" type="number" />
 									</div>
 								</div>
 								<!-- /.box-body -->
@@ -414,7 +418,7 @@
 								</div>
 							</form>
 						</div>
-					</section>	
+					</section>
 				@endif
 				<section class="col-lg-6 connectedSortable">
 					<div class="box box-primary">
@@ -458,9 +462,9 @@
 							</div>
 							<!-- /.box-body -->
 					</div>
-				</section>	
+				</section>
 			</div>
-			
+
 			<div role="tabpanel" class="tab-pane" id="categoria">
 				<br/>
 				<section class="col-lg-12 connectedSortable">
@@ -561,7 +565,7 @@
 							</div>
 							<!-- /.box-body -->
 					</div>
-				</section>	
+				</section>
 			</div>
 			<div role="tabpanel" class="tab-pane" id="categorias_relacionadas">
 				<section class="col-lg-12 connectedSortable">
@@ -648,7 +652,7 @@
 							</div>
 							<!-- /.box-body -->
 					</div>
-				</section>	
+				</section>
 			</div>
 			<div role="tabpanel" class="tab-pane" id="torneio">
 				<br/>
@@ -660,7 +664,7 @@
 					)
 				)
 					<section class="col-lg-12 connectedSortable">
-					
+
 						<!-- Torneio -->
 						<div class="box box-primary collapsed-box">
 							<div class="box-header">
@@ -695,7 +699,7 @@
 								</div>
 							</form>
 						</div>
-					</section>	
+					</section>
 				@endif
 				<section class="col-lg-12 connectedSortable">
 					<div class="box box-primary">
@@ -751,7 +755,7 @@
 													@endif
 												</td>
 												<td>
-												
+
 													@if(
 														\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
 														\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4]) ||
@@ -782,9 +786,9 @@
 							</div>
 							<!-- /.box-body -->
 					</div>
-				</section>	
+				</section>
 			</div>
-			
+
 			<div role="tabpanel" class="tab-pane" id="campo_personalizado">
 				<br/>
 				<section class="col-lg-12 connectedSortable">
@@ -881,7 +885,7 @@
 							</div>
 							<!-- /.box-body -->
 					</div>
-				</section>	
+				</section>
 			</div>
 		</div>
 
@@ -899,6 +903,7 @@
 <script type="text/javascript">
   $(document).ready(function(){
     	CKEDITOR.replace('texto');
+    	CKEDITOR.replace('orientacao_pos_inscricao');
 		$("#torneio_template_id").select2();
 		$("#tipo_modalidade").select2();
 		$("#exportacao_sm_modelo").select2();

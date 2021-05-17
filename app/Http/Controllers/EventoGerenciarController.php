@@ -131,6 +131,15 @@ class EventoGerenciarController extends Controller
         } else {
             $evento->e_inscricao_apenas_com_link = false;
         }
+        if ($request->has("orientacao_pos_inscricao")) {
+            if ($request->input("orientacao_pos_inscricao") != "") {
+                $evento->orientacao_pos_inscricao = $request->input("orientacao_pos_inscricao");
+            } else {
+                $evento->orientacao_pos_inscricao = null;
+            }
+        } else {
+            $evento->orientacao_pos_inscricao = null;
+        }
 
         if ($request->has("usa_fide") && !$request->has("usa_lbx")) {
             $evento->usa_fide = true;
