@@ -274,6 +274,10 @@ class InscricaoController extends Controller
                     )
                 )
                 ||
+                ($evento->is_lichess && $enxadrista->lichess_username == NULL || $enxadrista->lichess_username == "")
+                ||
+                ($evento->is_chess_com && $enxadrista->chess_com_username == NULL || $enxadrista->chess_com_username == "")
+                ||
                 $enxadrista->last_cadastral_update == NULL
                 ||
                 $enxadrista->last_cadastral_update <= "01-01-".date("Y")." 00:00:00"
@@ -305,8 +309,12 @@ class InscricaoController extends Controller
                     }
                 }
                 $fields["clube_id"] = $enxadrista->clube_id;
-                $fields["clube"]["id"] = $enxadrista->clube->id;
-                $fields["clube"]["name"] = $enxadrista->clube->cidade->name."/".$enxadrista->clube->name;
+                $fields["clube"]["id"] = "";
+                $fields["clube"]["name"] = "";
+                if($enxadrista->clube){
+                    $fields["clube"]["id"] = $enxadrista->clube->id;
+                    $fields["clube"]["name"] = $enxadrista->clube->cidade->name."/".$enxadrista->clube->name;
+                }
 
 
                 return response()->json(["ok" => 0, "error" => 1, "message" => "Antes de efetuar a inscrição, é necessária fazer uma atualização cadastral, por favor, preencha os dados cadastrais obrigatórios para continuar.", "necessita_atualizacao" => 1, "fields"=>$fields]);
@@ -581,6 +589,13 @@ class InscricaoController extends Controller
 
             }
         }
+        if ((($evento->is_lichess) && (!$request->has("lichess_username") || $request->input("lichess_username") == ""))) {
+            return response()->json(["ok" => 0, "error" => 1, "message" => "Para este evento, é obrigatório que possua cadastro e informe o nome de usuário do enxadrista na plataforma Lichess.org e portanto, é necessário que seja informado para poder efetuar a inscrição. Por favor, verifique e envie novamente!<br/><br/><strong>Observação</strong>: TODOS os Campos com <strong>*</strong> SÃO OBRIGATÓRIOS!", "registred" => 0, "ask" => 0]);
+        }
+        if ((($evento->is_chess_com) && (!$request->has("chess_com_username") || $request->input("chess_com_username") == ""))) {
+            return response()->json(["ok" => 0, "error" => 1, "message" => "Para este evento, é obrigatório que possua cadastro e informe o nome de usuário do enxadrista na plataforma Chess.com e portanto, é necessário que seja informado para poder efetuar a inscrição. Por favor, verifique e envie novamente!<br/><br/><strong>Observação</strong>: TODOS os Campos com <strong>*</strong> SÃO OBRIGATÓRIOS!", "registred" => 0, "ask" => 0]);
+        }
+
 
         $validator = \Validator::make($request->all(), [
             'email' => 'required|string|email|max:255',
@@ -862,6 +877,10 @@ class InscricaoController extends Controller
                 )
             )
             &&
+            ($evento->is_lichess && $enxadrista->lichess_username != NULL && $enxadrista->lichess_username != "")
+            &&
+            ($evento->is_chess_com && $enxadrista->chess_com_username != NULL && $enxadrista->chess_com_username != "")
+            &&
             $enxadrista->last_cadastral_update >= "01-01-".date("Y")." 00:00:00"
         ){
             return response()->json(["ok" => 0, "error" => 1, "message" => "O enxadrista não necessita de atualização de cadastro.", "registred" => 0, "ask" => 0]);
@@ -917,6 +936,13 @@ class InscricaoController extends Controller
 
             }
         }
+        if ((($evento->is_lichess) && (!$request->has("lichess_username") || $request->input("lichess_username") == ""))) {
+            return response()->json(["ok" => 0, "error" => 1, "message" => "Para este evento, é obrigatório que possua cadastro e informe o nome de usuário do enxadrista na plataforma Lichess.org e portanto, é necessário que seja informado para poder efetuar a inscrição. Por favor, verifique e envie novamente!<br/><br/><strong>Observação</strong>: TODOS os Campos com <strong>*</strong> SÃO OBRIGATÓRIOS!", "registred" => 0, "ask" => 0]);
+        }
+        if ((($evento->is_chess_com) && (!$request->has("chess_com_username") || $request->input("chess_com_username") == ""))) {
+            return response()->json(["ok" => 0, "error" => 1, "message" => "Para este evento, é obrigatório que possua cadastro e informe o nome de usuário do enxadrista na plataforma Chess.com e portanto, é necessário que seja informado para poder efetuar a inscrição. Por favor, verifique e envie novamente!<br/><br/><strong>Observação</strong>: TODOS os Campos com <strong>*</strong> SÃO OBRIGATÓRIOS!", "registred" => 0, "ask" => 0]);
+        }
+
 
 
         // Algoritmo para eliminar os problemas com espaçamentos duplos ou até triplos.

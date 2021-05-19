@@ -33,6 +33,9 @@
 		.this_is_select2, .select2{
 			width: 100% !important;
 		}
+        #successMessage a{
+            color: #fff !important;
+        }
 	</style>
 @endsection
 
@@ -439,7 +442,7 @@
 							<div class="form-group">
 								<label for="lichess_username">Nome de Usuário - Lichess.org <span id="lichess_required" style="display:none">*</span></label>
 								<input name="lichess_username" id="lichess_username" class="form-control cadastro_enxadrista_input" type="text" />
-								Site: <a href="http://lichess.org" target="_blank">http://lichess.org</a>.<br/>
+								Site da Plataforma: <a href="http://lichess.org" target="_blank">http://lichess.org</a>.<br/>
 								<hr/>
 								{{-- Caso possua alguma dúvida sobre como encontrar, confira o vídeo tutorial <a href="https://youtu.be/csFzNDomNcw" target="_blank">clicando aqui</a>. --}}
 							</div>
@@ -448,7 +451,7 @@
 							<div class="form-group">
 								<label for="chess_com_username">Nome de Usuário - Chess.com <span id="chess_com_required" style="display:none">*</span></label>
 								<input name="chess_com_username" id="chess_com_username" class="form-control cadastro_enxadrista_input" type="text" />
-								Site: <a href="http://chess.com" target="_blank">http://chess.com</a>.<br/>
+								Site da Plataforma: <a href="http://chess.com" target="_blank">http://chess.com</a>.<br/>
 								<hr/>
 								{{-- Caso possua alguma dúvida sobre como encontrar, confira o vídeo tutorial <a href="https://youtu.be/14PxrkqXtiA" target="_blank">clicando aqui</a>. --}}
 							</div>
@@ -1615,7 +1618,8 @@
 					@endif
                     @if($evento->orientacao_pos_inscricao != NULL)
 					    $("#successMessage").html("<strong>Orientações pós-inscrição: </strong>");
-					    $("#successMessage").html($("#successMessage").html().concat("{!!$evento->orientacao_pos_inscricao!!}<hr/>"));
+					    $("#successMessage").html($("#successMessage").html().concat("{!!preg_replace( "/\"/", "\\\"", preg_replace( "/\r|\n/", "", $evento->orientacao_pos_inscricao))!!}"));
+					    $("#successMessage").html($("#successMessage").html().concat("<hr/>"));
 					@endif
 					$("#success").modal();
 				}else{
@@ -2461,6 +2465,16 @@
 				@endif
 			@endif
 		@endif
+		@if($evento->is_lichess)
+			$("#lichess_required").css("display","");
+        @else
+			$("#lichess_required").css("display","none");
+        @endif
+		@if($evento->is_chess_com)
+			$("#chess_com_required").css("display","");
+        @else
+			$("#chess_com_required").css("display","none");
+        @endif
 	}
 </script>
 @endsection

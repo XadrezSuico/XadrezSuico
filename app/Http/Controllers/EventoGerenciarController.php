@@ -180,6 +180,16 @@ class EventoGerenciarController extends Controller
         } else {
             $evento->usa_lbx = false;
         }
+        if ($request->has("is_lichess")) {
+            $evento->is_lichess = true;
+        } else {
+            $evento->is_lichess = false;
+        }
+        if ($request->has("is_chess_com")) {
+            $evento->is_chess_com = true;
+        } else {
+            $evento->is_chess_com = false;
+        }
 
         $evento->save();
 
