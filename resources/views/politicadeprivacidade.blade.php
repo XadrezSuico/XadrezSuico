@@ -36,7 +36,7 @@
     </ul>
     <br/>
     <h3>C. Qual o tratamento dos dados que coletamos?</h3>
-    <p>Os dados de cadastro do enxadrista (contidos em B.1) são utilizados para:</p>
+    <p>Os dados que coletamos são utilizados para:</p>
     <ul>
         <li>Identificação e Garantia de Cadastro Único do(a) Enxadrista: Há uma validação que considera alguns dados, como Documento e Nome, que fazem com que o enxadrista não acabe efetuando cadastros duplicados dentro do sistema.</li>
         <li>Gerenciamento de Torneio: Os dados são utilizados para que o enxadrista possa ser inscrito na categoria correta e também para identificação do enxadrista dentro dos torneios realizados com os dados da plataforma.</li>
@@ -51,11 +51,11 @@
     <h3>E. Do aceite</h3>
     <p>Considerando os dados e tratamentos dispostos neste documento e a aplicação dos mesmos, o aceite é efetuado durante o processo de cadastro no sistema de forma completa, não sendo possível aceitar parcialmente o presente.</p>
 
-    <h3>F. Da atualização do presente documento</h3>
-    <p>Caso ocorra alguma atualização no presente documento, o mesmo será encaminhado por e-mail o qual aguardará retorno de não aceite durante o período de 30 dias corridos, o qual, caso não haja manifestação, será considerado como aceito.</p>
+    <h3>F. Da plataforma</h3>
+    <p>O XadrezSuíço é uma plataforma de código aberto, onde é possível qualquer indivíduo efetuar o download e fazer a sua própria implementação. Além disso, você pode ter acesso ao código-fonte para auditar como a plataforma funciona e conhecer como é operada. Para isso acesse o repositório da mesma no github: <a href="https://github.com/xadrezsuico/xadrezsuico">https://github.com/xadrezsuico/xadrezsuico</a>.</p>
 
-    <h3>G. Da Atualização deste Documento</h3>
-    <p> Este documento poderá ser atualizado, valendo a partir de 48 horas após a sua publicação. Acesse esta página com alguma frequência para ficar a par deste documento.</p>
+    <h3>G. Da atualização do presente documento</h3>
+    <p>Caso ocorra alguma atualização no presente documento, o mesmo será encaminhado por e-mail o qual aguardará retorno de não aceite durante o período de 30 dias corridos, o qual, caso não haja manifestação, será considerado como aceito.</p>
     <br/>
     <p>{{env("CIDADE_POLITICA_PRIVACIDADE")}}, {{env("DATA_ALTERACAO_POLITICA_PRIVACIDADE")}}.</p>
 @stop
