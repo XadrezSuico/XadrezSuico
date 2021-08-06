@@ -55,7 +55,7 @@
     <p>O XadrezSuíço é uma plataforma de código aberto, onde é possível qualquer indivíduo efetuar o download e fazer a sua própria implementação. Além disso, você pode ter acesso ao código-fonte para auditar como a plataforma funciona e conhecer como é operada. Para isso acesse o repositório da mesma no github: <a href="https://github.com/xadrezsuico/xadrezsuico">https://github.com/xadrezsuico/xadrezsuico</a>.</p>
 
     <h3>G. Da atualização do presente documento</h3>
-    <p>Caso ocorra alguma atualização no presente documento, o mesmo será encaminhado por e-mail o qual aguardará retorno de não aceite durante o período de 30 dias corridos, o qual, caso não haja manifestação, será considerado como aceito.</p>
+    <p>Caso ocorra alguma atualização no presente documento, o mesmo será encaminhado por e-mail o qual aguardará retorno de não aceite durante o período de 30 dias corridos, o qual, caso não haja manifestação, será considerado como aceito. Para aceites após a data de publicação, entra em vigor assim que efetuado o aceite.</p>
     <br/>
     <p>{{env("CIDADE_POLITICA_PRIVACIDADE")}}, {{env("DATA_ALTERACAO_POLITICA_PRIVACIDADE")}}.</p>
 @stop
