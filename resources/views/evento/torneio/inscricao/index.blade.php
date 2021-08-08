@@ -31,11 +31,14 @@
                         <th>#</th>
                         <th>Nome</th>
                         @if($evento->tipo_rating) <th>Rating</th> @endif
-                        @if($evento->usa_fide) 
+                        @if($evento->is_lichess) <th>Usuário Lichess.org</th> @endif
+                        @if($evento->is_lichess_integration) <th>Inscrito Lichess.org?</th> @endif
+                        @if($evento->is_chess_com) <th>Usuário Chess.com</th> @endif
+                        @if($evento->usa_fide)
                             <th>ID FIDE</th>
                             <th>Rating FIDE</th>
                         @endif
-                        @if($evento->usa_cbx) 
+                        @if($evento->usa_cbx)
                             <th>ID CBX</th>
                             <th>Rating CBX</th>
                         @endif
@@ -57,17 +60,20 @@
                             <td>{{$inscricao->id}}</td>
                             <td>#{{$inscricao->enxadrista->id}} - <a href="{{url("/enxadrista/edit/".$inscricao->enxadrista->id)}}" target="_blank">{{$inscricao->enxadrista->name}}</a></td>
                             @if($evento->tipo_rating) <td>@if($inscricao->enxadrista->ratings()->where([["tipo_ratings_id","=",$evento->tipo_rating->tipo_ratings_id]])->count() > 0) {{$inscricao->enxadrista->ratings()->where([["tipo_ratings_id","=",$evento->tipo_rating->tipo_ratings_id]])->first()->valor}} @else Não Há @endif</td> @endif
-                            @if($evento->usa_fide) 
-                                <td>{{$inscricao->enxadrista->fide_id}}</td> 
-                                <td>{{$inscricao->enxadrista->showRating(0,$evento->tipo_modalidade)}}</td> 
+                            @if($evento->is_lichess) <td>{{$inscricao->enxadrista->lichess_username}}</td> @endif
+                            @if($evento->is_lichess_integration) <td>@if($inscricao->enxadrista->is_lichess_found) Sim @else <strong><span style="color:red">Não</span></strong> @endif</td> @endif
+                            @if($evento->is_chess_com) <td>{{$inscricao->enxadrista->chess_com_username}}</td> @endif
+                            @if($evento->usa_fide)
+                                <td>{{$inscricao->enxadrista->fide_id}}</td>
+                                <td>{{$inscricao->enxadrista->showRating(0,$evento->tipo_modalidade)}}</td>
                             @endif
-                            @if($evento->usa_cbx) 
-                                <td>{{$inscricao->enxadrista->cbx_id}}</td> 
-                                <td>{{$inscricao->enxadrista->showRating(1,$evento->tipo_modalidade)}}</td> 
+                            @if($evento->usa_cbx)
+                                <td>{{$inscricao->enxadrista->cbx_id}}</td>
+                                <td>{{$inscricao->enxadrista->showRating(1,$evento->tipo_modalidade)}}</td>
                             @endif
-                            @if($evento->usa_lbx) 
-                                <td>{{$inscricao->enxadrista->lbx_id}}</td> 
-                                <td>{{$inscricao->enxadrista->showRating(2,$evento->tipo_modalidade)}}</td> 
+                            @if($evento->usa_lbx)
+                                <td>{{$inscricao->enxadrista->lbx_id}}</td>
+                                <td>{{$inscricao->enxadrista->showRating(2,$evento->tipo_modalidade)}}</td>
                             @endif
                             <td>{{$inscricao->categoria->name}}</td>
                             <td>{{$inscricao->cidade->name}}</td>
@@ -75,7 +81,7 @@
                             <td>@if($inscricao->confirmado) Sim @else Não @endif</td>
                             <td>{{$inscricao->getCreatedAt()}}</td>
                             <td>
-                            
+
                                 @if(
                                     \Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
                                     \Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4]) ||

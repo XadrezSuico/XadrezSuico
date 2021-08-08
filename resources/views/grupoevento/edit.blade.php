@@ -34,7 +34,7 @@
 		<ul class="nav nav-tabs" role="tablist">
 			<li role="presentation" class="active"><a id="tab_editar_evento" href="#editar_evento" aria-controls="editar_evento" role="tab" data-toggle="tab">Editar Grupo de Evento</a></li>
 			<li role="presentation"><a id="tab_evento" href="#evento" aria-controls="evento" role="tab" data-toggle="tab">Eventos</a></li>
-			@if($user->hasPermissionGlobal() || $user->hasPermissionGroupEventByPerfil($grupo_evento->id,[7]))			
+			@if($user->hasPermissionGlobal() || $user->hasPermissionGroupEventByPerfil($grupo_evento->id,[7]))
 				<li role="presentation"><a id="tab_template_torneio" href="#template_torneio" aria-controls="template_torneio" role="tab" data-toggle="tab">Template de Torneio</a></li>
 				<li role="presentation"><a id="tab_criterio_desempate" href="#criterio_desempate" aria-controls="criterio_desempate" role="tab" data-toggle="tab">Critério de Desempate</a></li>
 				<li role="presentation"><a id="tab_criterio_desempate_geral" href="#criterio_desempate_geral" aria-controls="criterio_desempate_geral" role="tab" data-toggle="tab">Critério de Desempate Geral</a></li>
@@ -154,7 +154,7 @@
 							</form>
 						</div>
 					</section>
-				@endif	
+				@endif
 				<section class=" @if($user->hasPermissionGlobal() || $user->hasPermissionGroupEventByPerfil($grupo_evento->id,[7])) col-md-6 col-lg-8 @else col-md-12 col-lg-12 @endif connectedSortable">
 					<div class="box box-primary">
 						<div class="box-header">
@@ -183,7 +183,13 @@
 												<tr>
 													<td>{{$evento->id}}</td>
 													<td>{{$evento->name}}</td>
-													<td>{{$evento->getDataInicio()}}<br/>{{$evento->getDataFim()}}</td>
+													<td>
+                                                        @if($evento->getDataInicio() == $evento->getDataFim())
+                                                            {{$evento->getDataInicio()}}
+                                                        @else
+                                                            {{$evento->getDataInicio()}}<br/>{{$evento->getDataFim()}}
+                                                        @endif
+                                                    </td>
 													<td>{{$evento->cidade->name}} - {{$evento->local}}</td>
 													<td>
 														Total: {{$evento->quantosInscritos()}}<br/>
@@ -215,9 +221,9 @@
 							</div>
 							<!-- /.box-body -->
 					</div>
-				</section>	
+				</section>
 			</div>
-			@if($user->hasPermissionGlobal() || $user->hasPermissionGroupEventByPerfil($grupo_evento->id,[7]))			
+			@if($user->hasPermissionGlobal() || $user->hasPermissionGroupEventByPerfil($grupo_evento->id,[7]))
 				<div role="tabpanel" class="tab-pane" id="template_torneio">
 					<br/>
 					<section class="col-lg-12 connectedSortable">
@@ -279,7 +285,7 @@
 								</div>
 								<!-- /.box-body -->
 						</div>
-					</section>	
+					</section>
 				</div>
 				<div role="tabpanel" class="tab-pane" id="criterio_desempate">
 					<br/>
@@ -320,7 +326,7 @@
 									</div>
 									<div class="form-group">
 										<label for="prioridade">Prioridade</label>
-										<input name="prioridade" id="prioridade" class="form-control" type="number" />						
+										<input name="prioridade" id="prioridade" class="form-control" type="number" />
 									</div>
 								</div>
 								<!-- /.box-body -->
@@ -331,7 +337,7 @@
 								</div>
 							</form>
 						</div>
-					</section>	
+					</section>
 					<section class="col-lg-6 connectedSortable">
 						<div class="box box-primary">
 							<div class="box-header">
@@ -368,7 +374,7 @@
 								</div>
 								<!-- /.box-body -->
 						</div>
-					</section>	
+					</section>
 				</div>
 				<div role="tabpanel" class="tab-pane" id="criterio_desempate_geral">
 					<br/>
@@ -391,7 +397,7 @@
 									</div>
 									<div class="form-group">
 										<label for="prioridade_geral">Prioridade</label>
-										<input name="prioridade" id="prioridade_geral" class="form-control" type="number" />						
+										<input name="prioridade" id="prioridade_geral" class="form-control" type="number" />
 									</div>
 								</div>
 								<!-- /.box-body -->
@@ -402,7 +408,7 @@
 								</div>
 							</form>
 						</div>
-					</section>	
+					</section>
 					<section class="col-lg-6 connectedSortable">
 						<div class="box box-primary">
 							<div class="box-header">
@@ -435,7 +441,7 @@
 								</div>
 								<!-- /.box-body -->
 						</div>
-					</section>	
+					</section>
 				</div>
 				<div role="tabpanel" class="tab-pane" id="categoria">
 					<br/>
@@ -517,7 +523,7 @@
 								</div>
 								<!-- /.box-body -->
 						</div>
-					</section>	
+					</section>
 				</div>
 				<div role="tabpanel" class="tab-pane" id="pontuacao">
 					<br/>
@@ -531,11 +537,11 @@
 								<div class="box-body">
 									<div class="form-group">
 										<label for="posicao">Posição</label>
-										<input name="posicao" id="posicao" class="form-control" type="number" />						
+										<input name="posicao" id="posicao" class="form-control" type="number" />
 									</div>
 									<div class="form-group">
 										<label for="pontuacao">Pontuação</label>
-										<input name="pontuacao" id="pontuacao" class="form-control" type="number" />						
+										<input name="pontuacao" id="pontuacao" class="form-control" type="number" />
 									</div>
 								</div>
 								<!-- /.box-body -->
@@ -546,7 +552,7 @@
 								</div>
 							</form>
 						</div>
-					</section>	
+					</section>
 					<section class="col-lg-6 connectedSortable">
 						<div class="box box-primary">
 							<div class="box-header">
@@ -579,7 +585,7 @@
 								</div>
 								<!-- /.box-body -->
 						</div>
-					</section>	
+					</section>
 				</div>
 				<div role="tabpanel" class="tab-pane" id="campo_personalizado">
 					<br/>
@@ -660,7 +666,7 @@
 								</div>
 								<!-- /.box-body -->
 						</div>
-					</section>	
+					</section>
 				</div>
 			@endif
 		</div>

@@ -206,7 +206,12 @@
 			@endforeach<br/>
 			<strong>Cidade:</strong> {{$evento->cidade->name}}<br/>
 			<strong>Local:</strong> {{$evento->local}}<br/>
-			<strong>Data:</strong> {{$evento->getDataInicio()}}<br/>
+			<strong>Data:</strong>
+            @if($evento->getDataInicio() == $evento->getDataFim())
+                {{$evento->getDataInicio()}}
+            @else
+                {{$evento->getDataInicio()}} - {{$evento->getDataFim()}}
+            @endif<br/>
 			<strong>Maiores informações em:</strong> <a href="{{$evento->link}}" target="_blank">{{$evento->link}}</a><br/>
 			@if($evento->maximo_inscricoes_evento)
 				<hr/>
@@ -443,6 +448,7 @@
 								<label for="lichess_username">Nome de Usuário - Lichess.org <span id="lichess_required" style="display:none">*</span></label>
 								<input name="lichess_username" id="lichess_username" class="form-control cadastro_enxadrista_input" type="text" />
 								Site da Plataforma: <a href="http://lichess.org" target="_blank">http://lichess.org</a>.<br/>
+                                Tutorial para Cadastro no Lichess.org: <a href="https://youtu.be/FtXj5dHI-Mg" target="_blank">https://youtu.be/FtXj5dHI-Mg</a>
 								<hr/>
 								{{-- Caso possua alguma dúvida sobre como encontrar, confira o vídeo tutorial <a href="https://youtu.be/csFzNDomNcw" target="_blank">clicando aqui</a>. --}}
 							</div>
@@ -452,6 +458,7 @@
 								<label for="chess_com_username">Nome de Usuário - Chess.com <span id="chess_com_required" style="display:none">*</span></label>
 								<input name="chess_com_username" id="chess_com_username" class="form-control cadastro_enxadrista_input" type="text" />
 								Site da Plataforma: <a href="http://chess.com" target="_blank">http://chess.com</a>.<br/>
+                                Tutorial para Cadastro no Chess.com: <a href="https://youtu.be/H9eJW1Z3qzQ" target="_blank">https://youtu.be/H9eJW1Z3qzQ</a>
 								<hr/>
 								{{-- Caso possua alguma dúvida sobre como encontrar, confira o vídeo tutorial <a href="https://youtu.be/14PxrkqXtiA" target="_blank">clicando aqui</a>. --}}
 							</div>
