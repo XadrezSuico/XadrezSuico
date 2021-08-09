@@ -15,6 +15,8 @@ use App\Torneio;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
+use App\Http\Controllers\LichessIntegrationController;
+
 class TorneioController extends Controller
 {
     public function __construct()
@@ -778,14 +780,14 @@ class TorneioController extends Controller
                                             $exp_meio = explode("½", $line[($fields["Val+/-"])]);
                                             $exp_virgula = explode(",", $line[($fields["Val+/-"])]);
 
-                                            $retornos[] = date("d/m/Y H:i:s") . " - Criando a movimentação do rating desta etapa. Modificação:" . ((count($exp_meio) > 1) ? $exp_meio[0] . ".5" : (count($exp_virgula) > 1) ? $exp_virgula[0] . "." . $exp_virgula[1] : $exp_virgula[0]) . ".";
+                                            $retornos[] = date("d/m/Y H:i:s") . " - Criando a movimentação do rating desta etapa. Modificação: " . (count($exp_meio) > 1) ? $exp_meio[0] . ".5" : ((count($exp_virgula) > 1) ? $exp_virgula[0] . "." . $exp_virgula[1] : $exp_virgula[0]) . ".";
 
                                             $movimentacao = new MovimentacaoRating;
                                             $movimentacao->tipo_ratings_id = $rating->tipo_ratings_id;
                                             $movimentacao->ratings_id = $rating->id;
                                             $movimentacao->torneio_id = $torneio->id;
                                             $movimentacao->inscricao_id = $inscricao->id;
-                                            $movimentacao->valor = (count($exp_meio) > 1) ? $exp_meio[0] . ".5" : (count($exp_virgula) > 1) ? $exp_virgula[0] . "." . $exp_virgula[1] : $exp_virgula[0];
+                                            $movimentacao->valor = (count($exp_meio) > 1) ? $exp_meio[0] . ".5" : ((count($exp_virgula) > 1) ? $exp_virgula[0] . "." . $exp_virgula[1] : $exp_virgula[0]);
                                             $movimentacao->is_inicial = false;
                                             $movimentacao->save();
                                             $retornos[] = date("d/m/Y H:i:s") . " - Movimentação salva. Calculando e atualizando rating do enxadrista.";
@@ -821,13 +823,13 @@ class TorneioController extends Controller
                                             $exp_meio = explode("½", $line[($fields["Val+/-"])]);
                                             $exp_virgula = explode(",", $line[($fields["Val+/-"])]);
 
-                                            $retornos[] = date("d/m/Y H:i:s") . " - Criando a movimentação do rating desta etapa. Modificação:" . ((count($exp_meio) > 1) ? $exp_meio[0] . ".5" : (count($exp_virgula) > 1) ? $exp_virgula[0] . "." . $exp_virgula[1] : $exp_virgula[0]) . ".";
+                                            $retornos[] = date("d/m/Y H:i:s") . " - Criando a movimentação do rating desta etapa. Modificação:" . (count($exp_meio) > 1) ? $exp_meio[0] . ".5" : ((count($exp_virgula) > 1) ? $exp_virgula[0] . "." . $exp_virgula[1] : $exp_virgula[0]) . ".";
                                             $movimentacao = new MovimentacaoRating;
                                             $movimentacao->tipo_ratings_id = $rating->tipo_ratings_id;
                                             $movimentacao->ratings_id = $rating->id;
                                             $movimentacao->torneio_id = $torneio->id;
                                             $movimentacao->inscricao_id = $inscricao->id;
-                                            $movimentacao->valor = (count($exp_meio) > 1) ? $exp_meio[0] . ".5" : (count($exp_virgula) > 1) ? $exp_virgula[0] . "." . $exp_virgula[1] : $exp_virgula[0];
+                                            $movimentacao->valor = (count($exp_meio) > 1) ? $exp_meio[0] . ".5" : ((count($exp_virgula) > 1) ? $exp_virgula[0] . "." . $exp_virgula[1] : $exp_virgula[0]);
                                             $movimentacao->is_inicial = false;
                                             $movimentacao->save();
                                             $rating->calcular();
@@ -859,5 +861,58 @@ class TorneioController extends Controller
         $retornos[] = date("d/m/Y H:i:s") . " - Fim do Processamento";
         $evento = $torneio->evento;
         return view("evento.torneio.resultadosretorno", compact("retornos", "torneio", "evento"));
+    }
+
+    /*
+     *
+     * LICHESS INTEGRATION
+     * 
+     */ 
+    public function check_players_in($id, $torneio_id)
+    {
+        $evento = Evento::find($id);
+        $user = Auth::user();
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionEventByPerfil($evento->id, [4]) &&
+            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
+        ) {
+            return redirect("/evento/dashboard/" . $evento->id);
+        }
+        
+        $torneio = Torneio::find($torneio_id);
+        if($torneio->evento->is_lichess_integration){
+            if($torneio->evento->lichess_tournament_id){
+
+                $lichess_integration_controller = new LichessIntegrationController;
+                $retorno = $lichess_integration_controller->getSwissResults($torneio->evento->lichess_tournament_id);
+                if($retorno["ok"] == 1){
+                    foreach(explode("\n",$retorno["data"]) as $lichess_player_raw){
+                        $lichess_player = json_decode(trim($lichess_player_raw));
+                        if($lichess_player){
+                            $inscricao_count = $torneio->inscricoes()->whereHas("enxadrista",function($q1) use ($lichess_player){
+                                $q1->where([
+                                    ["lichess_username","=",$lichess_player->username]
+                                ]);
+                            })->count();
+                            if($inscricao_count > 0){
+                                $inscricao = $torneio->inscricoes()->whereHas("enxadrista",function($q1) use ($lichess_player){
+                                    $q1->where([
+                                        ["lichess_username","=",$lichess_player->username]
+                                    ]);
+                                })->first();
+
+                                $inscricao->is_lichess_found = true;
+                                $inscricao->save();
+                            }
+                        }
+                    }
+                }         
+                $torneio->lichess_last_update = date("Y-m-d H:i:s");
+                $torneio->save();
+            }
+        }
+        
+        return redirect("/evento/dashboard/" . $evento->id . "/?tab=torneio");
     }
 }

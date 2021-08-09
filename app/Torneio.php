@@ -5,6 +5,8 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\Activitylog\Traits\LogsActivity;
 
+use DateTime;
+
 class Torneio extends Model
 {
     use LogsActivity;
@@ -60,6 +62,10 @@ class Torneio extends Model
     {
         return $this->inscricoes()->where([["confirmado", "=", false]])->count();
     }
+    public function getCountLichessConfirmadosnoTorneio()
+    {
+        return $this->inscricoes()->where([["is_lichess_found", "=", true]])->count();
+    }
     public function getCountCriterios()
     {
         if ($this->evento->criterios()->count() > 0) {
@@ -108,6 +114,13 @@ class Torneio extends Model
         }
 
         return $this->evento->grupo_evento->criterios()->where([["tipo_torneio_id", "=", $this->tipo_torneio_id]])->orderBy("prioridade", "ASC")->get();
+    }
+    public function getLastLichessPlayersUpdate(){
+        $datetime = DateTime::createFromFormat('Y-m-d H:i:s', $this->lichess_last_update);
+        if ($datetime) {
+            return $datetime->format("d/m/Y H:i:s");
+        }
+        return "Não houve atualização ainda.";
     }
     public function findByTagCategoria($tag)
     {

@@ -195,6 +195,12 @@
 														Total: {{$evento->quantosInscritos()}}<br/>
 														Confirmados: {{$evento->quantosInscritosConfirmados()}}<br/>
                                     					Presentes: {{$evento->quantosInscritosPresentes()}}
+														@if($evento->is_lichess_integration)
+														    <hr/>
+															<strong>Torneio Lichess.org</strong><br/>
+															Inscritos: <strong>{{$evento->quantosInscritosConfirmadosLichess()}}</strong><br/>
+															Não Inscritos: <strong>{{$evento->quantosInscritosFaltamLichess()}}</strong>
+														@endif
 													</td>
 													<td>
 													    @if(

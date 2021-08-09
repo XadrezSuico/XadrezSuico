@@ -270,6 +270,19 @@
 									<label><input type="checkbox" id="is_lichess" name="is_lichess" @if($evento->is_lichess) checked="checked" @endif @if(!\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() && !\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4]) && !\Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])) disabled="disabled" @endif > Necessita usuário da plataforma Lichess.org</label>
 								</div>
 								<div class="form-group">
+									<label><input type="checkbox" id="is_lichess_integration" name="is_lichess_integration" @if($evento->is_lichess_integration) checked="checked" @endif @if(!\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() && !\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4]) && !\Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])) disabled="disabled" @endif > Usa Integração com o Lichess.org</label>
+								</div>
+								<div class="form-group">
+									<label for="lichess_team_id">Lichess.org: ID do Time/Equipe</label>
+                                    <input name="lichess_team_id" id="lichess_team_id" class="form-control" type="text" value="{{$evento->lichess_team_id}}" @if(!\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() && !\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4]) && !\Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])) disabled="disabled" @endif />
+                                    <small><strong>Importante!</strong> Aqui vai o ID do Time no Lichess. Vale constar que para que um torneio tenha integração com o XadrezSuíço é necessário que seja efetuado por um time/equipe que XadrezSuíço tenha permissões. Segue exemplo de onde encontrar o ID do Time: https://lichess.org/team/<strong>circuito-sesc-de-xadrez-2021</strong></small>
+                                </div>
+								<div class="form-group">
+									<label for="lichess_tournament_id">Lichess.org: ID do Torneio</label>
+                                    <input name="lichess_tournament_id" id="lichess_tournament_id" class="form-control" type="text" value="{{$evento->lichess_tournament_id}}" @if(!\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() && !\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4]) && !\Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])) disabled="disabled" @endif />
+                                    <small><strong>Importante!</strong> Aqui vai o ID do Torneio no Lichess. Vale constar que para que um torneio tenha integração com o XadrezSuíço é necessário que seja efetuado por um time/equipe que XadrezSuíço tenha permissões. Segue exemplo de onde encontrar o ID do Torneio: https://lichess.org/swiss/<strong>ZDig8Z5Y</strong></small>
+								</div>
+								<div class="form-group">
 									<label><input type="checkbox" id="is_chess_com" name="is_chess_com" @if($evento->is_chess_com) checked="checked" @endif @if(!\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() && !\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4]) && !\Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])) disabled="disabled" @endif > Necessita usuário da plataforma Chess.com</label>
 								</div>
 								<hr/>
@@ -742,6 +755,12 @@
 													Confirmados: {{$torneio->getCountInscritosConfirmados()}}<br/>
 													Não Confirmados: {{$torneio->getCountInscritosNaoConfirmados()}}<br/>
 													Presentes: <strong>{{$torneio->quantosInscritosPresentes()}}</strong>
+                                                    @if($evento->is_lichess_integration)
+                                                        <hr/>
+                                                        <strong>Torneio Lichess.org</strong><br/>
+                                                        Inscritos: <strong>{{$torneio->getCountLichessConfirmadosnoTorneio()}}</strong><br/>
+                                                        Não Inscritos: <strong>{{$torneio->getCountInscritos() - $torneio->getCountLichessConfirmadosnoTorneio()}}</strong>
+                                                    @endif
 												</td>
 												<td>
 													@if($torneio->hasCriteriosDesempateNasInscricoes())
@@ -784,6 +803,12 @@
 													<a class="btn btn-success" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/inscricoes/relatorio/inscricoes/alfabetico")}}" role="button" target="_blank">Imprimir Inscrições (Alfabético)</a><br/>
 													<a class="btn btn-success" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/inscricoes/relatorio/inscricoes/alfabetico/cidade")}}" role="button" target="_blank">Imprimir Inscrições (Alfabético por Cidade/Clube)</a><br/>
 													@if($torneio->isDeletavel()) <a class="btn btn-danger" href="{{url("/evento/".$evento->id."/torneios/delete/".$torneio->id)}}" role="button">Apagar</a> @endif
+                                                    @if($torneio->evento->is_lichess_integration)
+                                                        <hr/>
+                                                        <strong>Opções Lichess.org</strong>
+														<a class="btn btn-success" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/lichess/check_players_in")}}" role="button" target="_blank">Conferir Inscrições no Torneio do Lichess.org</a><br/>
+                                                        Última Atualização: {{$torneio->getLastLichessPlayersUpdate()}}
+                                                    @endif
 												</td>
 											</tr>
 										@endforeach

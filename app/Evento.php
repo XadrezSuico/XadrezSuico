@@ -205,6 +205,22 @@ class Evento extends Model
     {
         return $this->quantosInscritosConfirmados() - $this->quantosInscritosConfirmadosWOs();
     }
+    public function quantosInscritosConfirmadosLichess()
+    {
+        $total = 0;
+        foreach ($this->torneios->all() as $torneio) {
+            $total += $torneio->inscricoes()->where([["is_lichess_found", "=", true]])->count();
+        }
+        return $total;
+    }
+    public function quantosInscritosFaltamLichess()
+    {
+        $total = 0;
+        foreach ($this->torneios->all() as $torneio) {
+            $total += $torneio->inscricoes()->count();
+        }
+        return $total - $this->quantosInscritosConfirmadosLichess();
+    }
     public function estaLotado()
     {
         if ($this->maximo_inscricoes_evento) {

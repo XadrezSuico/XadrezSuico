@@ -152,10 +152,15 @@ Route::group(["prefix"=>"evento"],function(){
 	    Route::get('/{torneio_id}/resultados', 'TorneioController@formResults')->name('evento.torneios.resultados');
 	    Route::post('/{torneio_id}/resultados', 'TorneioController@sendResultsTxt')->name('evento.torneios.resultados.post');
         
+        Route::group(["prefix"=>"{torneio_id}/lichess"],function(){
+	        Route::get('/check_players_in', 'TorneioController@check_players_in')->name('evento.torneios.lichess.check_players_in');
+        });
+
         Route::group(["prefix"=>"{torneio_id}/categoria"],function(){
             Route::post('/add', 'TorneioController@categoria_add')->name('evento.torneios.categoria.add');
             Route::get('/remove/{categoria_torneio_id}', 'TorneioController@categoria_remove')->name('evento.torneios.categoria.remove');
         });
+
         Route::group(["prefix"=>"{torneio_id}/inscricoes"],function(){
 	        Route::get('/', 'InscricaoGerenciarController@index')->name('evento.torneios.inscricoes.index');
             Route::get('/edit/{inscricao_id}', 'InscricaoGerenciarController@edit')->name('evento.torneios.inscricao.edit');
