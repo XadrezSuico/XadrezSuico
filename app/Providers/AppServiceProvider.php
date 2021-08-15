@@ -39,7 +39,7 @@ class AppServiceProvider extends ServiceProvider
                 $user = Auth::user();
                 $event->menu->add("ACESSO RESTRITO");
                 if(
-                    $user->hasPermissionGlobal() || 
+                    $user->hasPermissionGlobal() ||
                     $user->hasPermissionGlobalbyPerfil([9])
                 ){
                     $event->menu->add([
@@ -48,10 +48,10 @@ class AppServiceProvider extends ServiceProvider
                         'icon' => 'user'
                     ]);
                 }
-                
+
                 if(
-                    $user->hasPermissionGlobal() || 
-                    $user->hasPermissionEventsByPerfil([3,4,5]) || 
+                    $user->hasPermissionGlobal() ||
+                    $user->hasPermissionEventsByPerfil([3,4,5]) ||
                     $user->hasPermissionGroupEventsByPerfil([6,7])
                 ){
                     $event->menu->add([
@@ -62,7 +62,7 @@ class AppServiceProvider extends ServiceProvider
                 }
                 $event->menu->add("ADMINSTRAÇÃO");
                 if(
-                    $user->hasPermissionGlobal() || 
+                    $user->hasPermissionGlobal() ||
                     $user->hasPermissionGlobalbyPerfil([8])
                 ){
                     $event->menu->add([
@@ -88,6 +88,11 @@ class AppServiceProvider extends ServiceProvider
                         'text' => 'Tipo de Rating',
                         'url'  => '/tiporating',
                         'icon' => 'star'
+                    ]);
+                    $event->menu->add([
+                        'text' => 'Template de E-mail',
+                        'url'  => '/emailtemplate',
+                        'icon' => 'envelope'
                     ]);
                 }
                 if(
