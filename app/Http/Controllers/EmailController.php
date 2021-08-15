@@ -3,6 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Email;
+use App\Enum\EmailType;
+
+use App\Helper\EmailTemplateHelper;
+
 use App\Mail\EmailSend;
 use Illuminate\Support\Facades\Mail;
 
@@ -14,6 +18,23 @@ class EmailController extends Controller
         $schedule_email->email = $email;
         $schedule_email->subject = $subject;
         $schedule_email->text = $text;
+        if ($enxadrista != null) {
+            $schedule_email->enxadrista_id = $enxadrista->id;
+        }
+        $schedule_email->save();
+        return true;
+    }
+
+    public static function schedule($email, $object, $email_type, $enxadrista = null)
+    {
+        // aqui vai a chamada para o Helper
+        $emailTemplateHelper = new EmailTemplateHelper;
+        $email_template = $emailTemplateHelper->generate($email_type,$object);
+
+        $schedule_email = new Email;
+        $schedule_email->email = $email;
+        $schedule_email->subject = $email_template->subject;
+        $schedule_email->text = $email_template->message;
         if ($enxadrista != null) {
             $schedule_email->enxadrista_id = $enxadrista->id;
         }

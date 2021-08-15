@@ -52,7 +52,7 @@ class SeedEmailTemplates extends Migration
         $email_template_2->message .= "ID do Cadastro de Enxadrista: {enxadrista.id}<br/>";
         $email_template_2->message .= "Cidade: {cidade.name}<br/>";
         $email_template_2->message .= "Clube: {clube.name}<br/>";
-        $email_template_2->message .= "Categoria: {categoria.name}<hr/>";
+        $email_template_2->message .= "Categoria: {categoria.name}";
 
         $email_template_2->save();
 

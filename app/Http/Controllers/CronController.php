@@ -6,6 +6,9 @@ use App\Torneio;
 use App\Evento;
 use App\Inscricao;
 
+use App\Enum\EmailType;
+
+
 class CronController extends Controller
 {
     public function index()
@@ -49,13 +52,19 @@ class CronController extends Controller
                             if(!$inscricao->is_lichess_found){
 
                                 // EMAIL PARA O ENXADRISTA SOLICITANTE
-                                $text = "Olá " . $inscricao->enxadrista->name . "!<br/>";
-                                $text .= "Você está recebendo este email para pois efetuou inscrição no Evento '" . $inscricao->torneio->evento->name . "', e sua <strong>inscrição foi confirmada no Lichess.org</strong>.<br/>";
-                                $text .= "Lembrando que é necessário que no horário do torneio esteja logado no Lichess.org e esteja com o torneio aberto: Segue link para facilitar o acesso: <a href=\"https://lichess.org/swiss/".$inscricao->torneio->evento->lichess_tournament_id."\">https://lichess.org/swiss/".$inscricao->torneio->evento->lichess_tournament_id."</a>.<br/>";
-                                EmailController::scheduleEmail(
+                                // $text = "Olá " . $inscricao->enxadrista->name . "!<br/>";
+                                // $text .= "Você está recebendo este email para pois efetuou inscrição no Evento '" . $inscricao->torneio->evento->name . "', e sua <strong>inscrição foi confirmada no Lichess.org</strong>.<br/>";
+                                // $text .= "Lembrando que é necessário que no horário do torneio esteja logado no Lichess.org e esteja com o torneio aberto: Segue link para facilitar o acesso: <a href=\"https://lichess.org/swiss/".$inscricao->torneio->evento->lichess_tournament_id."\">https://lichess.org/swiss/".$inscricao->torneio->evento->lichess_tournament_id."</a>.<br/>";
+                                // EmailController::scheduleEmail(
+                                //     $inscricao->enxadrista->email,
+                                //     $inscricao->torneio->evento->name . " - Inscrição Completa - Enxadrista: " . $inscricao->enxadrista->name,
+                                //     $text,
+                                //     $inscricao->enxadrista
+                                // );
+                                EmailController::schedule(
                                     $inscricao->enxadrista->email,
-                                    $inscricao->torneio->evento->name . " - Inscrição Completa - Enxadrista: " . $inscricao->enxadrista->name,
-                                    $text,
+                                    $inscricao,
+                                    EmailType::AvisoNecessidadeInscricaoLichess,
                                     $inscricao->enxadrista
                                 );
                             }
@@ -83,18 +92,24 @@ class CronController extends Controller
                         ["is_lichess_found","=",false]
                     ])->get() as $inscricao){
                         // EMAIL PARA O ENXADRISTA SOLICITANTE
-                        $text = "Olá " . $inscricao->enxadrista->name . "!<br/>";
-                        $text .= "Você está recebendo este email para pois efetuou inscrição no Evento '" . $inscricao->torneio->evento->name . "', porém <strong>ainda não se inscreveu no torneio do Lichess.org</strong>.<br/>";
-                        $text .= "Você necessita efetuar a inscrição, pois sem efetuar a inscrição junto ao Torneio do Lichess.org, você não poderá jogar o torneio e inclusive terá sua inscrição cancelada.<br/>";
-                        if($evento->orientacao_pos_inscricao != NULL){
-                            $text .= "<strong>Segue Orientações Pós-Inscrição:</strong><br/>";
-                            $text .= $evento->orientacao_pos_inscricao . "<hr/>";
-                        }
-                        $text .= "Lembre-se: Você tem até :".$inscricao->torneio->evento->getDataFimInscricoesOnline()." para efetuar estes passos, pois senão terá sua inscrição cancelada e não poderá jogar o evento.<br/>";
-                        EmailController::scheduleEmail(
+                        // $text = "Olá " . $inscricao->enxadrista->name . "!<br/>";
+                        // $text .= "Você está recebendo este email para pois efetuou inscrição no Evento '" . $inscricao->torneio->evento->name . "', porém <strong>ainda não se inscreveu no torneio do Lichess.org</strong>.<br/>";
+                        // $text .= "Você necessita efetuar a inscrição, pois sem efetuar a inscrição junto ao Torneio do Lichess.org, você não poderá jogar o torneio e inclusive terá sua inscrição cancelada.<br/>";
+                        // if($evento->orientacao_pos_inscricao != NULL){
+                        //     $text .= "<strong>Segue Orientações Pós-Inscrição:</strong><br/>";
+                        //     $text .= $evento->orientacao_pos_inscricao . "<hr/>";
+                        // }
+                        // $text .= "Lembre-se: Você tem até :".$inscricao->torneio->evento->getDataFimInscricoesOnline()." para efetuar estes passos, pois senão terá sua inscrição cancelada e não poderá jogar o evento.<br/>";
+                        // EmailController::scheduleEmail(
+                        //     $inscricao->enxadrista->email,
+                        //     $evento->name . " - IMPORTANTE! - Inscrição no Torneio do Lichess.org - Enxadrista: " . $inscricao->enxadrista->name,
+                        //     $text,
+                        //     $inscricao->enxadrista
+                        // );
+                        EmailController::schedule(
                             $inscricao->enxadrista->email,
-                            $evento->name . " - IMPORTANTE! - Inscrição no Torneio do Lichess.org - Enxadrista: " . $inscricao->enxadrista->name,
-                            $text,
+                            $inscricao,
+                            EmailType::ConfirmacaoInscricaoLichess,
                             $inscricao->enxadrista
                         );
                     }

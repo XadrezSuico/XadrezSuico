@@ -21,6 +21,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\MessageBag;
 use Maatwebsite\Excel\Facades\Excel;
 
+use App\Enum\EmailType;
+
 class EventoGerenciarController extends Controller
 {
     public function __construct()
@@ -497,16 +499,18 @@ class EventoGerenciarController extends Controller
         $evento = Evento::find($evento_id);
         if($evento){
             foreach(EmailTemplate::where([["grupo_evento_id","=",$evento->grupo_evento->id]])->get() as $template){
-                if($evento->email_templates()->where([
-                    ["email_type","=",$template->email_type]
-                ])->count() == 0){
-                    $email_template = new EmailTemplate;
-                    $email_template->name = $template->name;
-                    $email_template->subject = $template->subject;
-                    $email_template->message = $template->message;
-                    $email_template->email_type = $template->email_type;
-                    $email_template->evento_id = $evento->id;
-                    $email_template->save();
+                if(EmailType::get($template->email_type)["is_general"] == 0){
+                    if($evento->email_templates()->where([
+                        ["email_type","=",$template->email_type]
+                    ])->count() == 0){
+                        $email_template = new EmailTemplate;
+                        $email_template->name = $template->name;
+                        $email_template->subject = $template->subject;
+                        $email_template->message = $template->message;
+                        $email_template->email_type = $template->email_type;
+                        $email_template->evento_id = $evento->id;
+                        $email_template->save();
+                    }
                 }
             }
         }

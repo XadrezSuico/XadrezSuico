@@ -15,6 +15,8 @@ use App\Torneio;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
+use App\Enum\EmailType;
+
 use App\Http\Controllers\LichessIntegrationController;
 
 class TorneioController extends Controller
@@ -50,7 +52,7 @@ class TorneioController extends Controller
         ) {
             return redirect("/evento/dashboard/" . $evento->id);
         }
-        
+
         $tipos_torneio = TipoTorneio::all();
         return view('evento.torneio.new', compact("evento", "tipos_torneio"));
     }
@@ -65,7 +67,7 @@ class TorneioController extends Controller
         ) {
             return redirect("/evento/dashboard/" . $evento->id);
         }
-        
+
         $torneio = new Torneio;
         $torneio->name = $request->input("name");
         $torneio->tipo_torneio_id = $request->input("tipo_torneio_id");
@@ -84,7 +86,7 @@ class TorneioController extends Controller
         ) {
             return redirect("/evento/dashboard/" . $evento->id);
         }
-        
+
         $torneio = Torneio::find($torneio_id);
         $tipos_torneio = TipoTorneio::all();
         $categorias = Categoria::where([
@@ -107,7 +109,7 @@ class TorneioController extends Controller
         ) {
             return redirect("/evento/dashboard/" . $evento->id);
         }
-        
+
         $torneio = Torneio::find($torneio_id);
         $torneio->name = $request->input("name");
         $torneio->tipo_torneio_id = $request->input("tipo_torneio_id");
@@ -125,7 +127,7 @@ class TorneioController extends Controller
         ) {
             return redirect("/evento/dashboard/" . $evento->id);
         }
-        
+
         $torneio = Torneio::find($torneio_id);
 
         if ($torneio->isDeletavel()) {
@@ -144,7 +146,7 @@ class TorneioController extends Controller
         ) {
             return redirect("/evento/dashboard/" . $evento->id);
         }
-        
+
         $torneio = Torneio::find($torneio_id);
         $torneios = $torneio->evento->torneios()->where([["id", "!=", $torneio->id]])->get();
         return view('evento.torneio.union', compact("torneio", "torneios", "evento"));
@@ -166,7 +168,7 @@ class TorneioController extends Controller
         ) {
             return redirect("/evento/dashboard/" . $id);
         }
-        
+
         $torneio_base = Torneio::find($torneio_id);
         $torneio_a_ser_unido = Torneio::find($request->input("torneio_a_ser_unido"));
 
@@ -207,7 +209,7 @@ class TorneioController extends Controller
         ) {
             return redirect("/evento/dashboard/" . $evento->id);
         }
-        
+
         $torneio = Torneio::find($torneio_id);
         $categoria_torneio = new CategoriaTorneio;
         $categoria_torneio->torneio_id = $torneio_id;
@@ -230,7 +232,7 @@ class TorneioController extends Controller
         ) {
             return redirect("/evento/dashboard/" . $evento->id);
         }
-        
+
         $torneio = Torneio::find($torneio_id);
         $categoria_torneio = CategoriaTorneio::find($categoria_torneio_id);
         $categoria_torneio->delete();
@@ -252,7 +254,7 @@ class TorneioController extends Controller
         ) {
             return redirect("/evento/dashboard/" . $evento->id);
         }
-        
+
         $torneio = Torneio::find($torneio_id);
         $evento = $torneio->evento;
         return view("evento.torneio.resultados", compact("evento", "torneio"));
@@ -285,7 +287,7 @@ class TorneioController extends Controller
         ) {
             return redirect("/evento/dashboard/" . $evento->id);
         }
-        
+
         $retornos = array();
         $torneio = Torneio::find($torneio_id);
         $retornos[] = date("d/m/Y H:i:s") . " - Início do Processamento para o torneio de #" . $torneio->id . " - '" . $torneio->name . "' do Evento '" . $torneio->evento->name . "'";
@@ -435,7 +437,7 @@ class TorneioController extends Controller
         ) {
             return redirect("/evento/dashboard/" . $evento->id);
         }
-        
+
         $retornos = array();
         $torneio = Torneio::find($torneio_id);
         $retornos[] = date("d/m/Y H:i:s") . " - Início do Processamento para o torneio de #" . $torneio->id . " - '" . $torneio->name . "' do Evento '" . $torneio->evento->name . "'";
@@ -630,7 +632,7 @@ class TorneioController extends Controller
         ) {
             return redirect("/evento/dashboard/" . $evento->id);
         }
-        
+
         $retornos = array();
         $torneio = Torneio::find($torneio_id);
         $retornos[] = date("d/m/Y H:i:s") . " - Início do Processamento para o torneio de #" . $torneio->id . " - '" . $torneio->name . "' do Evento '" . $torneio->evento->name . "'";
@@ -866,8 +868,8 @@ class TorneioController extends Controller
     /*
      *
      * LICHESS INTEGRATION
-     * 
-     */ 
+     *
+     */
     public function check_players_in($id, $torneio_id)
     {
         $evento = Evento::find($id);
@@ -879,7 +881,7 @@ class TorneioController extends Controller
         ) {
             return redirect("/evento/dashboard/" . $evento->id);
         }
-        
+
         $torneio = Torneio::find($torneio_id);
         if($torneio->evento->is_lichess_integration){
             if($torneio->evento->lichess_tournament_id){
@@ -905,28 +907,34 @@ class TorneioController extends Controller
                                 if(!$inscricao->is_lichess_found){
 
                                     // EMAIL PARA O ENXADRISTA SOLICITANTE
-                                    $text = "Olá " . $inscricao->enxadrista->name . "!<br/>";
-                                    $text .= "Você está recebendo este email para pois efetuou inscrição no Evento '" . $inscricao->torneio->evento->name . "', e sua <strong>inscrição foi confirmada no Lichess.org</strong>.<br/>";
-                                    $text .= "Lembrando que é necessário que no horário do torneio esteja logado no Lichess.org e esteja com o torneio aberto: Segue link para facilitar o acesso: <a href=\"https://lichess.org/swiss/".$inscricao->torneio->evento->lichess_tournament_id."\">https://lichess.org/swiss/".$inscricao->torneio->evento->lichess_tournament_id."</a>.<br/>";
-                                    EmailController::scheduleEmail(
+                                    // $text = "Olá " . $inscricao->enxadrista->name . "!<br/>";
+                                    // $text .= "Você está recebendo este email para pois efetuou inscrição no Evento '" . $inscricao->torneio->evento->name . "', e sua <strong>inscrição foi confirmada no Lichess.org</strong>.<br/>";
+                                    // $text .= "Lembrando que é necessário que no horário do torneio esteja logado no Lichess.org e esteja com o torneio aberto: Segue link para facilitar o acesso: <a href=\"https://lichess.org/swiss/".$inscricao->torneio->evento->lichess_tournament_id."\">https://lichess.org/swiss/".$inscricao->torneio->evento->lichess_tournament_id."</a>.<br/>";
+                                    // EmailController::scheduleEmail(
+                                    //     $inscricao->enxadrista->email,
+                                    //     $evento->name . " - Inscrição Completa - Enxadrista: " . $inscricao->enxadrista->name,
+                                    //     $text,
+                                    //     $inscricao->enxadrista
+                                    // );
+                                    EmailController::schedule(
                                         $inscricao->enxadrista->email,
-                                        $evento->name . " - Inscrição Completa - Enxadrista: " . $inscricao->enxadrista->name,
-                                        $text,
+                                        $inscricao,
+                                        EmailType::AvisoNecessidadeInscricaoLichess,
                                         $inscricao->enxadrista
                                     );
                                 }
-                                
+
                                 $inscricao->is_lichess_found = true;
                                 $inscricao->save();
                             }
                         }
                     }
-                }         
+                }
                 $torneio->lichess_last_update = date("Y-m-d H:i:s");
                 $torneio->save();
             }
         }
-        
+
         return redirect("/evento/dashboard/" . $evento->id . "/?tab=torneio");
     }
 }

@@ -20,6 +20,8 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Util\Util;
 use Illuminate\Http\Request;
 
+use App\Enum\EmailType;
+
 class InscricaoController extends Controller
 {
     public function inscricao($id, Request $request)
@@ -507,34 +509,40 @@ class InscricaoController extends Controller
 
         if ($enxadrista->email) {
             // EMAIL PARA O ENXADRISTA SOLICITANTE
-            if($evento->is_lichess_integration){
-                $text = "Olá " . $enxadrista->name . "!<br/>";
-                $text .= "Parabéns! você iniciou a inscrição no Evento '" . $evento->name . "'.<br/>";
-                $text .= $evento->orientacao_pos_inscricao . "<hr/>";
-                $text .= "Informações:<br/>";
-                $text .= "ID da Inscrição: " . $inscricao->id . "<br/>";
-                $text .= "ID do Cadastro de Enxadrista: " . $inscricao->enxadrista->id . "<br/>";
-                $text .= "Cidade: " . $inscricao->cidade->name . "<br/>";
-                $text .= "Clube: " . (($inscricao->clube) ? $inscricao->clube->name : "Sem Clube") . "<br/>";
-                $text .= "Categoria: " . $inscricao->categoria->name . "<hr/>";
-            }else{
-                $text = "Olá " . $enxadrista->name . "!<br/>";
-                $text .= "Você está recebendo este email para confirmar a inscrição no Evento '" . $evento->name . "'.<br/>";
-                $text .= "Informações:<br/>";
-                $text .= "ID da Inscrição: " . $inscricao->id . "<br/>";
-                $text .= "ID do Cadastro de Enxadrista: " . $inscricao->enxadrista->id . "<br/>";
-                $text .= "Cidade: " . $inscricao->cidade->name . "<br/>";
-                $text .= "Clube: " . (($inscricao->clube) ? $inscricao->clube->name : "Sem Clube") . "<br/>";
-                $text .= "Categoria: " . $inscricao->categoria->name . "<hr/>";
-                if($evento->orientacao_pos_inscricao != NULL){
-                    $text .= "<strong>Orientações Pós-Inscrição:</strong><br/>";
-                    $text .= $evento->orientacao_pos_inscricao . "<hr/>";
-                }
-            }
-            EmailController::scheduleEmail(
+            // if($evento->is_lichess_integration){
+            //     $text = "Olá " . $enxadrista->name . "!<br/>";
+            //     $text .= "Parabéns! você iniciou a inscrição no Evento '" . $evento->name . "'.<br/>";
+            //     $text .= $evento->orientacao_pos_inscricao . "<hr/>";
+            //     $text .= "Informações:<br/>";
+            //     $text .= "ID da Inscrição: " . $inscricao->id . "<br/>";
+            //     $text .= "ID do Cadastro de Enxadrista: " . $inscricao->enxadrista->id . "<br/>";
+            //     $text .= "Cidade: " . $inscricao->cidade->name . "<br/>";
+            //     $text .= "Clube: " . (($inscricao->clube) ? $inscricao->clube->name : "Sem Clube") . "<br/>";
+            //     $text .= "Categoria: " . $inscricao->categoria->name . "<hr/>";
+            // }else{
+            //     $text = "Olá " . $enxadrista->name . "!<br/>";
+            //     $text .= "Você está recebendo este email para confirmar a inscrição no Evento '" . $evento->name . "'.<br/>";
+            //     $text .= "Informações:<br/>";
+            //     $text .= "ID da Inscrição: " . $inscricao->id . "<br/>";
+            //     $text .= "ID do Cadastro de Enxadrista: " . $inscricao->enxadrista->id . "<br/>";
+            //     $text .= "Cidade: " . $inscricao->cidade->name . "<br/>";
+            //     $text .= "Clube: " . (($inscricao->clube) ? $inscricao->clube->name : "Sem Clube") . "<br/>";
+            //     $text .= "Categoria: " . $inscricao->categoria->name . "<hr/>";
+            //     if($evento->orientacao_pos_inscricao != NULL){
+            //         $text .= "<strong>Orientações Pós-Inscrição:</strong><br/>";
+            //         $text .= $evento->orientacao_pos_inscricao . "<hr/>";
+            //     }
+            // }
+            // EmailController::scheduleEmail(
+            //     $enxadrista->email,
+            //     $evento->name . " - Inscrição Recebida - Enxadrista: " . $enxadrista->name,
+            //     $text,
+            //     $enxadrista
+            // );
+            EmailController::schedule(
                 $enxadrista->email,
-                $evento->name . " - Inscrição Recebida - Enxadrista: " . $enxadrista->name,
-                $text,
+                $inscricao,
+                EmailType::ConfirmacaoInscricao,
                 $enxadrista
             );
         }
@@ -826,16 +834,22 @@ class InscricaoController extends Controller
 
         if ($enxadrista->email) {
             // EMAIL PARA O ENXADRISTA CADASTRADO
-            $text = "Olá " . $enxadrista->name . "!<br/>";
-            $text .= "Esta é uma confirmação do seu cadastro no Sistema XadrezSuíço implementado pela ".env("IMPLEMENTADO_POR")."<br/>";
-            $text .= "O seu ID de Cadastro é <strong><u>".$enxadrista->id."</u></strong> e você poderá utilizar ele para encontrar seu cadastro para inscrição no Sistema XadrezSuíço implementado pela ".env("IMPLEMENTADO_POR")." e também para poder efetuar a sua confirmação nos eventos que foi utilizado esta implementação do sistema.<br/>";
-            $text .= "Recomendamos que você mantenha salvo este ID/Código de Cadastro para poder agilizar o processo de confirmação ou inscrição.<br/>";
-            $text .= "Além disso, você receberá neste e-mail as confirmações de inscrições efetuadas nesta implementação do Sistema XadrezSuíço.<br/>";
-            $text .= "Atenciosamente.";
-           EmailController::scheduleEmail(
+            // $text = "Olá " . $enxadrista->name . "!<br/>";
+            // $text .= "Esta é uma confirmação do seu cadastro no Sistema XadrezSuíço implementado pela ".env("IMPLEMENTADO_POR")."<br/>";
+            // $text .= "O seu ID de Cadastro é <strong><u>".$enxadrista->id."</u></strong> e você poderá utilizar ele para encontrar seu cadastro para inscrição no Sistema XadrezSuíço implementado pela ".env("IMPLEMENTADO_POR")." e também para poder efetuar a sua confirmação nos eventos que foi utilizado esta implementação do sistema.<br/>";
+            // $text .= "Recomendamos que você mantenha salvo este ID/Código de Cadastro para poder agilizar o processo de confirmação ou inscrição.<br/>";
+            // $text .= "Além disso, você receberá neste e-mail as confirmações de inscrições efetuadas nesta implementação do Sistema XadrezSuíço.<br/>";
+            // $text .= "Atenciosamente.";
+            // EmailController::scheduleEmail(
+            //     $enxadrista->email,
+            //     "Sistema XadrezSuíço (".env("IMPLEMENTADO_POR").") - Cadastro de Enxadrista Realizado - Enxadrista: " . $enxadrista->name,
+            //     $text,
+            //     $enxadrista
+            // );
+            EmailController::schedule(
                 $enxadrista->email,
-                "Sistema XadrezSuíço (".env("IMPLEMENTADO_POR").") - Cadastro de Enxadrista Realizado - Enxadrista: " . $enxadrista->name,
-                $text,
+                $enxadrista,
+                EmailType::CadastroEnxadrista,
                 $enxadrista
             );
         }

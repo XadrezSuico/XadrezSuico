@@ -25,6 +25,8 @@ use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
+use App\Enum\EmailType;
+
 class GrupoEventoController extends Controller
 {
     public function __construct()
@@ -438,16 +440,18 @@ class GrupoEventoController extends Controller
         $grupo_evento = GrupoEvento::find($grupo_evento_id);
         if($grupo_evento){
             foreach(EmailTemplate::whereNull("grupo_evento_id")->whereNull("evento_id")->get() as $template){
-                if($grupo_evento->email_templates()->where([
-                    ["email_type","=",$template->email_type]
-                ])->count() == 0){
-                    $email_template = new EmailTemplate;
-                    $email_template->name = $template->name;
-                    $email_template->subject = $template->subject;
-                    $email_template->message = $template->message;
-                    $email_template->email_type = $template->email_type;
-                    $email_template->grupo_evento_id = $grupo_evento->id;
-                    $email_template->save();
+                if(EmailType::get($template->email_type)["is_general"] == 0){
+                    if($grupo_evento->email_templates()->where([
+                        ["email_type","=",$template->email_type]
+                    ])->count() == 0){
+                        $email_template = new EmailTemplate;
+                        $email_template->name = $template->name;
+                        $email_template->subject = $template->subject;
+                        $email_template->message = $template->message;
+                        $email_template->email_type = $template->email_type;
+                        $email_template->grupo_evento_id = $grupo_evento->id;
+                        $email_template->save();
+                    }
                 }
             }
         }
