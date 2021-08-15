@@ -46,13 +46,13 @@
 			@endif
 			<strong>Categorias:</strong><br/>
 			@foreach($evento->categorias->all() as $categoria)
-				{{$categoria->categoria->name}}, 
+				{{$categoria->categoria->name}},
 			@endforeach<br/>
 			<strong>Cidade:</strong> {{$evento->cidade->name}}<br/>
 			<strong>Local:</strong> {{$evento->local}}<br/>
 			<strong>Data:</strong> {{$evento->getDataInicio()}}<br/>
 			<strong>Maiores informações em:</strong> <a href="{{$evento->link}}" target="_blank">{{$evento->link}}</a><br/>
-			@if($evento->maximo_inscricoes_evento) 
+			@if($evento->maximo_inscricoes_evento)
 				<hr/>
 				<strong>Total de Inscritos até o presente momento:</strong> {{$evento->quantosInscritos()}}.<br/>
 				<strong>Limite de Inscritos:</strong> {{$evento->maximo_inscricoes_evento}}.<br/>
@@ -72,10 +72,10 @@
 			<table id="tabela" class="table-responsive table-condensed table-striped" style="width: 100%">
                 <thead>
                     <tr>
-                        <th>#</th>
                         <th>Código Enxadrista</th>
                         <th>Nome do Enxadrista</th>
                         <th>Data de Nascimento</th>
+                        @if($evento->is_lichess_integration) <th>Inscrito Lichess.org?</th> @endif
                         <th>Categoria Inscrição</th>
                         <th>Cidade</th>
                         <th>Clube</th>
@@ -84,10 +84,10 @@
                 <tbody>
                     @foreach($evento->getInscricoes() as $inscricao)
                         <tr>
-                            <td>{{$inscricao->id}}</td>
                             <td>{{$inscricao->enxadrista->id}}</td>
                             <td>{{$inscricao->enxadrista->getNomePublico()}}</td>
                             <td>{{$inscricao->enxadrista->getNascimentoPublico()}}</td>
+                            @if($evento->is_lichess_integration) <td>@if($inscricao->is_lichess_found) Sim @else <strong><span style="color:red">Não</span></strong> @endif</td> @endif
                             <td>{{$inscricao->categoria->name}}</td>
                             <td>{{$inscricao->cidade->name}}</td>
                             <td>@if($inscricao->clube) {{$inscricao->clube->name}} @else - @endif</td>

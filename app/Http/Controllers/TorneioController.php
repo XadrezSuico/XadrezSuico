@@ -902,6 +902,20 @@ class TorneioController extends Controller
                                     ]);
                                 })->first();
 
+                                if(!$inscricao->is_lichess_found){
+
+                                    // EMAIL PARA O ENXADRISTA SOLICITANTE
+                                    $text = "Olá " . $inscricao->enxadrista->name . "!<br/>";
+                                    $text .= "Você está recebendo este email para pois efetuou inscrição no Evento '" . $inscricao->torneio->evento->name . "', e sua <strong>inscrição foi confirmada no Lichess.org</strong>.<br/>";
+                                    $text .= "Lembrando que é necessário que no horário do torneio esteja logado no Lichess.org e esteja com o torneio aberto: Segue link para facilitar o acesso: <a href=\"https://lichess.org/swiss/".$inscricao->torneio->evento->lichess_tournament_id."\">https://lichess.org/swiss/".$inscricao->torneio->evento->lichess_tournament_id."</a>.<br/>";
+                                    EmailController::scheduleEmail(
+                                        $inscricao->enxadrista->email,
+                                        $evento->name . " - Inscrição Completa - Enxadrista: " . $inscricao->enxadrista->name,
+                                        $text,
+                                        $inscricao->enxadrista
+                                    );
+                                }
+                                
                                 $inscricao->is_lichess_found = true;
                                 $inscricao->save();
                             }

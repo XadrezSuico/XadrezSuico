@@ -65,7 +65,7 @@
                         @endif
                         <li>
                             @if(!\Illuminate\Support\Facades\Auth::check())
-                                <a href="{{url("/login")}}"> <i class="fa fa-fw fa-sign-in"></i> Login</a>
+                                <a href="{{url("/login")}}"> <i class="fa fa-fw fa-sign-in"></i> Acesso Interno (Login)</a>
                             @else
                                 @if(config('adminlte.logout_method') == 'GET' || !config('adminlte.logout_method') && version_compare(\Illuminate\Foundation\Application::VERSION, '5.3.0', '<'))
                                     <a href="{{ url(config('adminlte.logout_url', 'auth/logout')) }}">
@@ -141,9 +141,9 @@
                             <span aria-hidden="true">&times;</span>
                             </button>
                             @if($errors->first("type") == "success")
-                                <strong>Tudo certo!</strong> 
+                                <strong>Tudo certo!</strong>
                             @else
-                                <strong>Opa! Deu erro!</strong> 
+                                <strong>Opa! Deu erro!</strong>
                             @endif <br/>
                             {{ $errors->first("alerta") }}
                         </div>

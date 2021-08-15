@@ -22,7 +22,7 @@ class CronController extends Controller
         })
         ->where(function($q1){
             $q1->whereNull("lichess_last_update");
-            $q1->orWhere([["lichess_last_update",">=",date("Y-m-d H:i:s",time() - (60*60*6))]]);
+            $q1->orWhere([["lichess_last_update","<=",date("Y-m-d H:i:s",time() - (60*60*6))]]);
         })
         ->limit(5)
         ->get();
@@ -46,6 +46,20 @@ class CronController extends Controller
                                 ]);
                             })->first();
 
+                            if(!$inscricao->is_lichess_found){
+
+                                // EMAIL PARA O ENXADRISTA SOLICITANTE
+                                $text = "Olá " . $inscricao->enxadrista->name . "!<br/>";
+                                $text .= "Você está recebendo este email para pois efetuou inscrição no Evento '" . $inscricao->torneio->evento->name . "', e sua <strong>inscrição foi confirmada no Lichess.org</strong>.<br/>";
+                                $text .= "Lembrando que é necessário que no horário do torneio esteja logado no Lichess.org e esteja com o torneio aberto: Segue link para facilitar o acesso: <a href=\"https://lichess.org/swiss/".$inscricao->torneio->evento->lichess_tournament_id."\">https://lichess.org/swiss/".$inscricao->torneio->evento->lichess_tournament_id."</a>.<br/>";
+                                EmailController::scheduleEmail(
+                                    $inscricao->enxadrista->email,
+                                    $inscricao->torneio->evento->name . " - Inscrição Completa - Enxadrista: " . $inscricao->enxadrista->name,
+                                    $text,
+                                    $inscricao->enxadrista
+                                );
+                            }
+
                             $inscricao->is_lichess_found = true;
                             $inscricao->save();
                         }
@@ -54,11 +68,11 @@ class CronController extends Controller
             }
             $torneio->lichess_last_update = date("Y-m-d H:i:s");
             $torneio->save();
-        }  
+        }
     }
 
     public function evento_players_not_in_lichess_schedule_email(){
-        if(date("H:i") == "06:00"){
+        if(date("H:i") == "08:00"){
             $eventos = Evento::where([
                 ["is_lichess_integration","=",true],
                 ["data_limite_inscricoes_abertas",">=",date("Y-m-d H:i:s")],
@@ -86,6 +100,6 @@ class CronController extends Controller
                     }
                 }
             }
-        }  
+        }
     }
 }

@@ -203,7 +203,7 @@
 										Nome: {{$row->sobrenome}}, {{$row->nome}}<br/>
 										FED: {{$row->fed}}<br/>
 										Cidade: {{$row->codigo_cidade}} - {{$row->nome_cidade}}<br/>
-										Data de Nascimento: {{$row->nascimento}}<br/>
+										@if(isset($row->nascimento)) Data de Nascimento: {{$row->nascimento}}<br/> @endif
 										<hr/>
 									@endforeach
 							@endif
@@ -249,7 +249,7 @@
 					<button type="submit" class="btn btn-success">Enviar</button>
 					<input type="hidden" name="_token" value="{{ csrf_token() }}">
 				</div>
-      		 </form> 
+      		 </form>
 			@endif
 	</div>
 
@@ -338,8 +338,8 @@
 		});
   	});
 
-  
-  
+
+
 	function buscaEstados(buscaCidade,callback){
 		$('#estados_id').html("").trigger('change');
 		$.getJSON("{{url("/estado/search")}}/".concat($("#pais_id").val()),function(data){
@@ -385,7 +385,7 @@
 			}
 		});
 	}
-	
+
 	function buscaTipoDocumentos(callback){
 		if($("#pais_nascimento_id").val() > 0){
 			$('#documentos').html("");

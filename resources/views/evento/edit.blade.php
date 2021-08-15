@@ -806,7 +806,7 @@
                                                     @if($torneio->evento->is_lichess_integration)
                                                         <hr/>
                                                         <strong>Opções Lichess.org</strong>
-														<a class="btn btn-success" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/lichess/check_players_in")}}" role="button" target="_blank">Conferir Inscrições no Torneio do Lichess.org</a><br/>
+														<a class="btn btn-success" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/lichess/check_players_in")}}" role="button">Conferir Inscrições no Torneio do Lichess.org</a><br/>
                                                         Última Atualização: {{$torneio->getLastLichessPlayersUpdate()}}
                                                     @endif
 												</td>

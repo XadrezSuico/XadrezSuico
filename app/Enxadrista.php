@@ -95,7 +95,7 @@ class Enxadrista extends Model
     /*
      * Esta função serve para dividir o nome completo do enxadrista para os campos de Nome e Sobrenome que são usados
      * pela CBX, FIDE e LBX.
-     */ 
+     */
     public function splitName(){
         if($this->name){
             // Esta função divide os nome em uma lista dividida pelo espaço...
@@ -185,6 +185,16 @@ class Enxadrista extends Model
         $datetime = DateTime::createFromFormat('Y-m-d', $this->born);
         if ($datetime) {
             return $datetime->format("d/m/Y");
+        } else {
+            return false;
+        }
+
+    }
+    public function getBornLGPD()
+    {
+        $datetime = DateTime::createFromFormat('Y-m-d', $this->born);
+        if ($datetime) {
+            return "**/**/".$datetime->format("Y");
         } else {
             return false;
         }
@@ -407,7 +417,7 @@ class Enxadrista extends Model
 
     public function getNascimentoPublico()
     {
-        return $this->getBorn();
+        return $this->getBornLGPD();
     }
 
     public function getNomePrivado()
