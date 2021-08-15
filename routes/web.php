@@ -119,7 +119,7 @@ Route::group(["prefix"=>"evento"],function(){
     Route::get('/{id}/resultados/{categoria_id}/interno', 'EventoGerenciarController@resultados')->name('evento.resultados.interno');
 	Route::get('/{id}/inscricoes/list', 'EventoGerenciarController@visualizar_inscricoes')->name('evento.inscricoes.list');
 	Route::get('/{id}/enxadristas/sm', 'EventoGerenciarController@downloadListaManagerParaEvento')->name('evento.enxadristas.sm');
-    
+
 
 
     // Novas Inscrições
@@ -151,7 +151,7 @@ Route::group(["prefix"=>"evento"],function(){
 	    Route::get('/delete/{torneio_id}', 'TorneioController@delete')->name('evento.torneios.delete');
 	    Route::get('/{torneio_id}/resultados', 'TorneioController@formResults')->name('evento.torneios.resultados');
 	    Route::post('/{torneio_id}/resultados', 'TorneioController@sendResultsTxt')->name('evento.torneios.resultados.post');
-        
+
         Route::group(["prefix"=>"{torneio_id}/lichess"],function(){
 	        Route::get('/check_players_in', 'TorneioController@check_players_in')->name('evento.torneios.lichess.check_players_in');
         });
@@ -180,7 +180,7 @@ Route::group(["prefix"=>"evento"],function(){
         Route::post('/add', 'EventoGerenciarController@categoria_add')->name('evento.categoria.add');
         Route::get('/remove/{categoria_evento_id}', 'EventoGerenciarController@categoria_remove')->name('evento.categoria.remove');
     });
-    
+
     Route::group(["prefix"=>"{evento_id}/categorias"],function(){
         Route::get('/', 'CategoriaEventoController@index')->name('evento.categorias.index');
         Route::get('/new', 'CategoriaEventoController@new')->name('evento.categorias.new');
@@ -193,7 +193,7 @@ Route::group(["prefix"=>"evento"],function(){
             Route::get('/remove/{categoria_sexo_id}', 'CategoriaEventoController@sexo_remove')->name('evento.categorias.sexo.remove');
         });
     });
-    
+
     Route::group(["prefix"=>"{evento_id}/campos"],function(){
         Route::post('/new', 'CampoPersonalizadoEventoController@new_post')->name('evento.campos.new.post');
         Route::get('/dashboard/{id}', 'CampoPersonalizadoEventoController@dashboard')->name('evento.campos.dashboard');
@@ -252,6 +252,12 @@ Route::group(["prefix"=>"sexo"],function(){
 	Route::get('/edit/{id}', 'SexoController@edit')->name('sexo.edit');
 	Route::post('/edit/{id}', 'SexoController@edit_post')->name('sexo.edit.post');
 	Route::get('/delete/{id}', 'SexoController@delete')->name('sexo.delete');
+});
+
+Route::group(["prefix"=>"emailtemplate"],function(){
+	Route::get('/', 'EmailTemplateController@index')->name('emailtemplate.index');
+	Route::get('/edit/{id}', 'EmailTemplateController@edit')->name('emailtemplate.edit');
+	Route::post('/edit/{id}', 'EmailTemplateController@edit_post')->name('emailtemplate.edit.post');
 });
 
 Route::group(["prefix"=>"grupoevento"],function(){

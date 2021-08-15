@@ -60,6 +60,11 @@ class GrupoEvento extends Model
         return $this->hasMany("App\Pontuacao", "grupo_evento_id", "id");
     }
 
+    public function email_templates()
+    {
+        return $this->hasMany("App\EmailTemplate", "grupo_evento_id", "id");
+    }
+
     // public function campos() {
     //     return $this->hasMany("App\CampoPersonalizadoGrupoEvento","grupo_evento_id","id");
     // }

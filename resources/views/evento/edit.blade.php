@@ -36,7 +36,8 @@
 			<li role="presentation"><a id="tab_categorias_relacionadas" href="#categorias_relacionadas" aria-controls="categorias_relacionadas" role="tab" data-toggle="tab">Categorias Relacionadas</a></li>
 			<li role="presentation"><a id="tab_torneio" href="#torneio" aria-controls="torneio" role="tab" data-toggle="tab">Torneios</a></li>
 			<li role="presentation"><a id="tab_campo_personalizado" href="#campo_personalizado" aria-controls="campo_personalizado" role="tab" data-toggle="tab">Campos Personalizados Adicionais</a></li>
-		</ul>
+            <li role="presentation"><a id="tab_email_template" href="#email_template" aria-controls="email_template" role="tab" data-toggle="tab">Templates de E-mail</a></li>
+        </ul>
 
 		<!-- Tab panes -->
 		<div class="tab-content">
@@ -918,6 +919,42 @@
 					</div>
 				</section>
 			</div>
+            <div role="tabpanel" class="tab-pane" id="email_template">
+                <br/>
+                <section class="col-lg-12 connectedSortable">
+                    <div class="box box-primary">
+                        <div class="box-header">
+                            <h3 class="box-title">Templates de E-mail</h3>
+                        </div>
+                        <!-- form start -->
+                            <div class="box-body">
+                                <table id="tabela_email_templates" class="table-responsive table-condensed table-striped" style="width: 100%">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Nome</th>
+                                            <th>Assunto do E-mail</th>
+                                            <th width="20%">Opções</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach($evento->email_templates->all() as $template)
+                                            <tr>
+                                                <td>{{$template->id}}</td>
+                                                <td>{{$template->name}}</td>
+                                                <td>{{$template->subject}}</td>
+                                                <td>
+                                                    <a class="btn btn-default" href="{{url("/emailtemplate/edit/".$template->id)}}" role="button">Editar</a>
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                            <!-- /.box-body -->
+                    </div>
+                </section>
+            </div>
 		</div>
 
 	</div>

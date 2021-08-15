@@ -11,10 +11,10 @@ class EmailType
     );
 
     public function list(){
-        return $this->list;
+        return $this->types;
     }
 
     public function get($id){
-        return $this->list[($id)];
+        return $this->types[($id)];
     }
 }

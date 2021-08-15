@@ -41,6 +41,7 @@
 				<li role="presentation"><a id="tab_categoria" href="#categoria" aria-controls="categoria" role="tab" data-toggle="tab">Categoria</a></li>
 				<li role="presentation"><a id="tab_pontuacao" href="#pontuacao" aria-controls="pontuacao" role="tab" data-toggle="tab">Pontuação</a></li>
 				<li role="presentation"><a id="tab_campo_personalizado" href="#campo_personalizado" aria-controls="campo_personalizado" role="tab" data-toggle="tab">Campo Personalizado</a></li>
+				<li role="presentation"><a id="tab_email_template" href="#email_template" aria-controls="email_template" role="tab" data-toggle="tab">Templates de E-mail</a></li>
 			@endif
 		</ul>
 
@@ -665,6 +666,42 @@
 														<a class="btn btn-success" href="{{url("/grupoevento/".$grupo_evento->id."/campos/dashboard/".$campo->id)}}" role="button"><i class="fa fa-dashboard"></i></a>
 														@if($campo->isDeletavel()) <a class="btn btn-danger" href="{{url("/grupoevento/".$grupo_evento->id."/campos/delete/".$campo->id)}}" role="button"><i class="fa fa-times"></i></a> @endif
 													</td>
+												</tr>
+											@endforeach
+										</tbody>
+									</table>
+								</div>
+								<!-- /.box-body -->
+						</div>
+					</section>
+				</div>
+				<div role="tabpanel" class="tab-pane" id="email_template">
+					<br/>
+					<section class="col-lg-12 connectedSortable">
+						<div class="box box-primary">
+							<div class="box-header">
+								<h3 class="box-title">Templates de E-mail</h3>
+							</div>
+							<!-- form start -->
+								<div class="box-body">
+									<table id="tabela_email_templates" class="table-responsive table-condensed table-striped" style="width: 100%">
+										<thead>
+											<tr>
+												<th>#</th>
+                                                <th>Nome</th>
+                                                <th>Assunto do E-mail</th>
+												<th width="20%">Opções</th>
+											</tr>
+										</thead>
+										<tbody>
+											@foreach($grupo_evento->email_templates->all() as $template)
+												<tr>
+                                                    <td>{{$template->id}}</td>
+                                                    <td>{{$template->name}}</td>
+                                                    <td>{{$template->subject}}</td>
+                                                    <td>
+                                                        <a class="btn btn-default" href="{{url("/emailtemplate/edit/".$template->id)}}" role="button">Editar</a>
+                                                    </td>
 												</tr>
 											@endforeach
 										</tbody>

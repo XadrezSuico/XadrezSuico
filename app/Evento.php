@@ -76,6 +76,11 @@ class Evento extends Model
         }
     }
 
+    public function email_templates()
+    {
+        return $this->hasMany("App\EmailTemplate", "evento_id", "id");
+    }
+
     public function campos()
     {
         // if($this->hasMany("App\CampoPersonalizadoEvento","evento_id","id")->count() > 0){

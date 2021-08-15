@@ -20,6 +20,7 @@ use App\TipoTorneio;
 use App\Torneio;
 use App\TorneioTemplate;
 use App\TorneioTemplateGrupoEvento;
+use App\EmailTemplate;
 use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -87,6 +88,9 @@ class GrupoEventoController extends Controller
         } else {
             $tab = null;
         }
+
+        $this->importEmailTemplates($grupo_evento->id);
+
         return view('grupoevento.edit', compact("grupo_evento", "torneio_templates", "categorias", "criterios_desempate", "tipos_torneio", "softwares", "criterios_desempate_geral", "tipos_rating", "cidades", "tab", "user"));
     }
     public function edit_post($id, Request $request)
@@ -425,5 +429,27 @@ class GrupoEventoController extends Controller
         }
 
         return redirect("/grupoevento/dashboard/" . $grupo_evento->id . "?tab=evento");
+    }
+
+
+
+
+    private function importEmailTemplates($grupo_evento_id){
+        $grupo_evento = GrupoEvento::find($grupo_evento_id);
+        if($grupo_evento){
+            foreach(EmailTemplate::whereNull("grupo_evento_id")->whereNull("evento_id")->get() as $template){
+                if($grupo_evento->email_templates()->where([
+                    ["email_type","=",$template->email_type]
+                ])->count() == 0){
+                    $email_template = new EmailTemplate;
+                    $email_template->name = $template->name;
+                    $email_template->subject = $template->subject;
+                    $email_template->message = $template->message;
+                    $email_template->email_type = $template->email_type;
+                    $email_template->grupo_evento_id = $grupo_evento->id;
+                    $email_template->save();
+                }
+            }
+        }
     }
 }

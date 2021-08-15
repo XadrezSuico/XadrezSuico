@@ -14,6 +14,7 @@ use App\Software;
 use App\TipoRating;
 use App\TipoRatingEvento;
 use App\TipoTorneio;
+use App\EmailTemplate;
 use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -70,6 +71,7 @@ class EventoGerenciarController extends Controller
         } else {
             $tab = null;
         }
+        $this->importEmailTemplates($evento->id);
         return view('evento.edit', compact("evento", "categorias", "criterios_desempate", "tipos_torneio", "softwares", "tipos_rating", "cidades", "tab"));
     }
 
@@ -486,5 +488,27 @@ class EventoGerenciarController extends Controller
         $enxadristasView = new EnxadristasFromView();
         $enxadristasView->setEvento($id);
         return Excel::download($enxadristasView, 'xadrezSuico_evento_' . $id . '_lista_enxadristas_' . date('d-m-Y--H-i-s') . '.xlsx');
+    }
+
+
+
+
+    private function importEmailTemplates($evento_id){
+        $evento = Evento::find($evento_id);
+        if($evento){
+            foreach(EmailTemplate::where([["grupo_evento_id","=",$evento->grupo_evento->id]])->get() as $template){
+                if($evento->email_templates()->where([
+                    ["email_type","=",$template->email_type]
+                ])->count() == 0){
+                    $email_template = new EmailTemplate;
+                    $email_template->name = $template->name;
+                    $email_template->subject = $template->subject;
+                    $email_template->message = $template->message;
+                    $email_template->email_type = $template->email_type;
+                    $email_template->evento_id = $evento->id;
+                    $email_template->save();
+                }
+            }
+        }
     }
 }

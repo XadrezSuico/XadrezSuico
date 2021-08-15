@@ -3,7 +3,7 @@
 @section("title", "Editar Sexo")
 
 @section('content_header')
-  <h1>Editar Cidade</h1>
+  <h1>Editar Sexo</h1>
 @stop
 
 
@@ -61,7 +61,7 @@
 <script type="text/javascript" src="{{url("/js/jquery.mask.min.js")}}"></script>
 <script type="text/javascript">
   $(document).ready(function(){
-		
+
   });
 </script>
 @endsection

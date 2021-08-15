@@ -29,7 +29,7 @@
                         <tr>
                             <td>{{$template->id}}</td>
                             <td>{{$template->name}}</td>
-                            <td>{{$template->abbr}}</td>
+                            <td>{{$template->subject}}</td>
                             <td>
                                 <a class="btn btn-default" href="{{url("/emailtemplate/edit/".$template->id)}}" role="button">Editar</a>
                             </td>

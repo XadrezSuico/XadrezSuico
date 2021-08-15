@@ -15,4 +15,8 @@ class TipoRatingGrupoEvento extends Model
 
     protected static $logAttributes = ['*'];
 
+    public function grupo_evento()
+    {
+        return $this->belongsTo("App\GrupoEvento", "grupo_evento_id", "id");
+    }
 }
