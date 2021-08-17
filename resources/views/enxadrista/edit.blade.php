@@ -208,6 +208,18 @@
 									@endforeach
 							@endif
 						</div>
+						<div class="col-md-4">
+							<div class="form-group">
+								<label for="lichess_username">Nome de Usuário - Lichess.org</label>
+								<input name="lichess_username" id="lichess_username" class="form-control" type="text"value="{{$enxadrista->lichess_username}}" @if(!$permitido_edicao) disabled="disabled" @endif />
+							</div>
+						</div>
+						<div class="col-md-4">
+							<div class="form-group">
+								<label for="chess_com_username">Nome de Usuário - Chess.com</label>
+								<input name="chess_com_username" id="chess_com_username" class="form-control" type="text"value="{{$enxadrista->chess_com_username}}" @if(!$permitido_edicao) disabled="disabled" @endif />
+							</div>
+						</div>
 					</div>
 					<hr/>
 					<h4>Vínculo do Enxadrista</h4>

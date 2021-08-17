@@ -5,6 +5,10 @@ namespace App;
 use DateTime;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\Activitylog\Traits\LogsActivity;
+use Illuminate\Support\Str;
+
+use Log;
+
 
 class Inscricao extends Model
 {
@@ -19,6 +23,46 @@ class Inscricao extends Model
     public $timestamps = true;
     protected $primaryKey = 'id';
     protected $table = 'inscricao';
+
+
+    public static function boot()
+    {
+        parent::boot();
+
+        self::creating(function($model){
+            Log::debug("self::creating");
+            if($model->uuid == NULL){
+                Log::debug("generating uuid");
+                $model->uuid = Str::uuid();
+                Log::debug("uuid: ".$model->uuid);
+            }
+        });
+
+        // self::created(function($model){
+        //     // ... code here
+        // });
+
+        self::updating(function($model){
+            Log::debug("self::updating");
+            if($model->uuid == NULL){
+                Log::debug("generating uuid");
+                $model->uuid = Str::uuid();
+                Log::debug("uuid: ".$model->uuid);
+            }
+        });
+
+        // self::updated(function($model){
+        //     // ... code here
+        // });
+
+        // self::deleting(function($model){
+        //     // ... code here
+        // });
+
+        // self::deleted(function($model){
+        //     // ... code here
+        // });
+    }
 
     public function enxadrista()
     {

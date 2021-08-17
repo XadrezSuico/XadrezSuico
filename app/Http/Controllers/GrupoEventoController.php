@@ -438,9 +438,10 @@ class GrupoEventoController extends Controller
 
     private function importEmailTemplates($grupo_evento_id){
         $grupo_evento = GrupoEvento::find($grupo_evento_id);
+        $email_type = new EmailType;
         if($grupo_evento){
             foreach(EmailTemplate::whereNull("grupo_evento_id")->whereNull("evento_id")->get() as $template){
-                if(EmailType::get($template->email_type)["is_general"] == 0){
+                if($email_type->get($template->email_type)["is_general"] == 0){
                     if($grupo_evento->email_templates()->where([
                         ["email_type","=",$template->email_type]
                     ])->count() == 0){

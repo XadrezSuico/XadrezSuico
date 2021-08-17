@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+use Illuminate\Support\Str;
 
 use App\Torneio;
 use App\Evento;
@@ -16,6 +17,7 @@ class CronController extends Controller
         EmailController::sendScheduledEmails();
         $this->evento_check_players_in();
         $this->evento_players_not_in_lichess_schedule_email();
+        $this->generateUuidOnInscricao();
     }
 
     public function evento_check_players_in(){
@@ -64,7 +66,7 @@ class CronController extends Controller
                                 EmailController::schedule(
                                     $inscricao->enxadrista->email,
                                     $inscricao,
-                                    EmailType::AvisoNecessidadeInscricaoLichess,
+                                    EmailType::ConfirmacaoInscricaoLichess,
                                     $inscricao->enxadrista
                                 );
                             }
@@ -81,7 +83,7 @@ class CronController extends Controller
     }
 
     public function evento_players_not_in_lichess_schedule_email(){
-        if(date("H:i") == "08:00"){
+        if(date("H:i") == "12:50"){
             $eventos = Evento::where([
                 ["is_lichess_integration","=",true],
                 ["data_limite_inscricoes_abertas",">=",date("Y-m-d H:i:s")],
@@ -109,12 +111,19 @@ class CronController extends Controller
                         EmailController::schedule(
                             $inscricao->enxadrista->email,
                             $inscricao,
-                            EmailType::ConfirmacaoInscricaoLichess,
+                            EmailType::AvisoNecessidadeInscricaoLichess,
                             $inscricao->enxadrista
                         );
                     }
                 }
             }
+        }
+    }
+
+    public function generateUuidOnInscricao(){
+        foreach(Inscricao::whereNull("uuid")->get() as $inscricao){
+            $inscricao->uuid = Str::uuid();
+            $inscricao->save();
         }
     }
 }

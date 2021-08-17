@@ -919,7 +919,7 @@ class TorneioController extends Controller
                                     EmailController::schedule(
                                         $inscricao->enxadrista->email,
                                         $inscricao,
-                                        EmailType::AvisoNecessidadeInscricaoLichess,
+                                        EmailType::ConfirmacaoInscricaoLichess,
                                         $inscricao->enxadrista
                                     );
                                 }

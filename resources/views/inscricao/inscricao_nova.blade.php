@@ -1,10 +1,9 @@
 @extends('adminlte::page')
 
-@section("title", "Efetuar Nova Inscrição")
+@section("title", "Efetuar Inscrição")
 
 @section('content_header')
-  <h1>Efetuar Nova Inscrição</h1>
-  </ol>
+  <h1>Efetuar Inscrição</h1>
 @stop
 
 
@@ -171,8 +170,6 @@
 </div>
 <!-- Main row -->
 <ul class="nav nav-pills">
-  <li role="presentation"><a href="/inscricao/{{$evento->id}}">Nova Inscrição</a></li>
-  @if($evento->e_permite_visualizar_lista_inscritos_publica) <li role="presentation"><a href="/inscricao/visualizar/{{$evento->id}}">Visualizar Lista de Inscrições</a></li> @endif
   @if(\Illuminate\Support\Facades\Auth::check())
   	@if(
 		\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
@@ -195,8 +192,16 @@
 		</div>
 
 		<div class="box-body">
+            <button type="button" id="go_to_inscricao" class="btn btn-lg btn-success btn-block">
+                <strong>Inscreva-se</strong>
+            </button><br/>
+            @if($evento->e_permite_visualizar_lista_inscritos_publica)
+                <a href="{{url("/inscricao/visualizar/".$evento->id)}}" class="btn btn-lg btn-info btn-block">
+                    Visualizar Lista de Inscrições
+                </a><br/>
+            @endif
 			@if($evento->pagina)
-				@if($evento->pagina->imagem) <img src="data:image/png;base64, {!!$evento->pagina->imagem!!}" width="100%" style="max-width: 800px"/> <br/> @endif
+				@if($evento->pagina->imagem) <div style="width: 100%; text-align: center;"><img src="data:image/png;base64, {!!$evento->pagina->imagem!!}" width="100%" style="max-width: 800px"/></div> <br/> @endif
 				@if($evento->pagina->texto) {!!$evento->pagina->texto!!} <br/> @endif
 				@if($evento->pagina->imagem || $evento->pagina->texto) <hr/> @endif
 			@endif
@@ -1052,6 +1057,12 @@
 		$("#cadastrarClube").on("click",function(){
 			salvarCadastroClube();
 		});
+		$("#go_to_inscricao").on("click",function(){
+			goToInscricao();
+		});
+        @if($go_to_inscricao)
+            goToInscricao();
+        @endif
   	});
 
 	function novoEnxadrista(){
@@ -2483,5 +2494,10 @@
 			$("#chess_com_required").css("display","none");
         @endif
 	}
+    function goToInscricao(){
+        $('html, body').stop().animate({
+            'scrollTop': $("#processo_inscricao").offset().top
+        }, 600, 'swing');
+    }
 </script>
 @endsection

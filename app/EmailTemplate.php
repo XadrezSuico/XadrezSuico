@@ -29,6 +29,6 @@ class EmailTemplate extends Model
 
     public function getEmailType(){
         $enum = new EmailType;
-        return $enum->get($this->email_type);
+        return $enum->get($this->email_type)["name"];
     }
 }

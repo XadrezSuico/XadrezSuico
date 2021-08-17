@@ -184,6 +184,10 @@
                     <div class="form-group">
                         <label><input type="checkbox" id="atualizar_cadastro" name="atualizar_cadastro"> Atualizar Cadastro</label>
                     </div>
+                    <hr/>
+                    <a href="{{url("/inscricao/".$inscricao->uuid."/lichess")}}" class="btn btn-lg btn-success btn-block">
+                        <strong>Link para Inscrição no Torneio do Lichess.org - Para encaminhar para o enxadrista se inscrever.</strong>
+                    </a><br/>
                 @endif
 				<div class="form-group">
 					<label><input type="checkbox" id="desconsiderar_pontuacao_geral" name="desconsiderar_pontuacao_geral" @if(!$permitido_edicao) disabled="disabled" @endif @if($inscricao->desconsiderar_pontuacao_geral) checked="checked" @endif> Desconsiderar Inscrição para Pontuação Geral</label>
@@ -213,7 +217,7 @@
 		function setInscricaoSelects(){
             $.getJSON("{{url("/evento/inscricao/".$evento->id."/confirmacao/getInfo/".$inscricao->id)}}",function(data){
                 if(data.ok == 1){
-                    
+
                     $("#categoria_id").html('<option value="">--- Selecione uma Categoria ---</option>');
                     $("#categoria_id").select2({
                         ajax: {
@@ -260,7 +264,7 @@
 					}
 				}
 			});
-			
+
 			$("#clube_id").select2({
 				ajax: {
 					url: '{{url("/evento/inscricao/".$evento->id."/busca/clube")}}',
@@ -352,7 +356,7 @@
                     }else{
                         if(data.registred == 1){
                             $("#novoClube").modal("hide");
-                            
+
                             var newOptionclube = new Option(data.clube.name, data.clube.id, false, false);
                             $('#'.concat(select_id)).append(newOptionclube).trigger('change');
                             $("#".concat(select_id)).val(data.clube.id).change();
@@ -364,7 +368,7 @@
             });
         }
 
-        
+
         $("#born").mask('00/00/0000');
         setInscricaoSelects();
 

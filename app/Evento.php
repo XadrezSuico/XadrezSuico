@@ -290,6 +290,19 @@ class Evento extends Model
         }
     }
 
+    public function getLichessTeamLink(){
+        if($this->lichess_team_id){
+            return "http://lichess.org/team/".$this->lichess_team_id;
+        }
+        return "-";
+    }
+    public function getLichessTournamentLink(){
+        if($this->lichess_tournament_id){
+            return "http://lichess.org/swiss/".$this->lichess_tournament_id;
+        }
+        return "-";
+    }
+
     public function isDeletavel()
     {
         if ($this->id != null) {

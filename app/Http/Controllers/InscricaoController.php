@@ -59,7 +59,13 @@ class InscricaoController extends Controller
                         }
                     }
                     $token = $request->input("token");
-                    return view("inscricao.inscricao_nova", compact("evento", "sexos", "token","user","permite_confirmacao"));
+
+                    $go_to_inscricao = false;
+                    if($request->has("inscrever")){
+                        $go_to_inscricao = true;
+                    }
+
+                    return view("inscricao.inscricao_nova", compact("evento", "sexos", "token","user","permite_confirmacao","go_to_inscricao"));
                 } else {
                     return view("inscricao.naopermitida");
                 }
@@ -76,7 +82,13 @@ class InscricaoController extends Controller
                         return view("inscricao.encerradas", compact("evento"));
                     }
                 }
-                return view("inscricao.inscricao_nova", compact("evento", "sexos","user","permite_confirmacao"));
+
+                $go_to_inscricao = false;
+                if($request->has("inscrever")){
+                    $go_to_inscricao = true;
+                }
+
+                return view("inscricao.inscricao_nova", compact("evento", "sexos","user","permite_confirmacao","go_to_inscricao"));
             }
         } else {
             return view("inscricao.naoha");
@@ -132,7 +144,7 @@ class InscricaoController extends Controller
             $item = array();
             $item["id"] = $enxadrista->id;
             $item["name"] = "<strong>#".$enxadrista->id." - ".$enxadrista->name . "</strong>";
-            $item["text"] = $enxadrista->getBorn() . " | ".$enxadrista->cidade->name;
+            $item["text"] = $enxadrista->getNascimentoPublico() . " | ".$enxadrista->cidade->name;
             $item["permitida_inscricao"] = true;
             if($enxadrista->clube){
                 $item["text"] .= " | Clube: ".$enxadrista->clube->name;
@@ -438,10 +450,13 @@ class InscricaoController extends Controller
         if (!$torneio) {
             return response()->json(["ok" => 0, "error" => 1, "message" => "Ocorreu um erro inesperado de pesquisa de Torneio. Por favor, tente novamente mais tarde."]);
         }
+        $temInscricao_count = $evento->torneios()->whereHas("inscricoes", function ($q) use ($request) {
+            $q->where([["enxadrista_id", "=", $request->input("enxadrista_id")]]);
+        })->count();
         $temInscricao = $evento->torneios()->whereHas("inscricoes", function ($q) use ($request) {
             $q->where([["enxadrista_id", "=", $request->input("enxadrista_id")]]);
         })->first();
-        if (count($temInscricao) > 0) {
+        if ($temInscricao_count > 0) {
             $inscricao = Inscricao::where([["enxadrista_id", "=", $request->input("enxadrista_id")], ["torneio_id", "=", $temInscricao->id]])->first();
             return response()->json(["ok" => 0, "error" => 1, "message" => "Você já possui inscrição para este evento!<br/> Categoria: " . $inscricao->categoria->name . "<br/> Caso queira efetuar alguma alteração, favor enviar via email para " . env("EMAIL_ALTERACAO", "circuitoxadrezcascavel@gmail.com") . "."]);
         }

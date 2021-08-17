@@ -77,6 +77,14 @@ Route::group(["prefix"=>"inscricao"],function(){
         Route::post('/{id}/estado/novo', 'InscricaoController@telav2_adicionarNovoEstado')->name('inscricao.v2.estado.novo');
         Route::post('/{id}/clube/novo', 'InscricaoController@telav2_adicionarNovoClube')->name('inscricao.v2.clube.novo');
     });
+    Route::group(["prefix" => "{uuid}/lichess"], function () {
+        Route::get('/', 'InscricaoLichessController@index')->name('evento.inscricao.lichess.index');
+        Route::get('/redirect', 'InscricaoLichessController@redirect')->name('evento.inscricao.lichess.redirect');
+        Route::get('/callback', 'InscricaoLichessController@callback')->name('evento.inscricao.lichess.callback');
+        Route::get('/confirm', 'InscricaoLichessController@confirm')->name('evento.inscricao.lichess.confirm');
+        Route::get('/clear', 'InscricaoLichessController@clear')->name('evento.inscricao.lichess.clear');
+    });
+
 });
 
 Route::group(["prefix"=>"rating"],function(){

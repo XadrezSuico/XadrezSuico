@@ -118,21 +118,38 @@ class EmailTemplateHelper
         $text = str_replace("{cidade.estado.pais.name}",$inscricao->cidade->estado->pais->nome,$text);
         $text = str_replace("{cidade.estado.pais.iso}",$inscricao->cidade->estado->pais->codigo_iso,$text);
 
-        // Clube
-        $text = str_replace("{clube.id}",$inscricao->clube->id,$text);
-        $text = str_replace("{clube.name}",$inscricao->clube->name,$text);
-        // Clube -> Cidade
-        $text = str_replace("{clube.cidade.id}",$inscricao->clube->cidade->id,$text);
-        $text = str_replace("{clube.cidade.name}",$inscricao->clube->cidade->name,$text);
-        // Clube -> Cidade -> Estado
-        $text = str_replace("{clube.cidade.estado.id}",$inscricao->clube->cidade->estado->id,$text);
-        $text = str_replace("{clube.cidade.estado.name}",$inscricao->clube->cidade->estado->nome,$text);
-        $text = str_replace("{clube.cidade.estado.uf}",$inscricao->clube->cidade->estado->abbr,$text);
-        // Clube -> Cidade -> Estado -> País
-        $text = str_replace("{clube.cidade.estado.pais.id}",$inscricao->clube->cidade->estado->pais->id,$text);
-        $text = str_replace("{clube.cidade.estado.pais.name}",$inscricao->clube->cidade->estado->pais->nome,$text);
-        $text = str_replace("{clube.cidade.estado.pais.iso}",$inscricao->clube->cidade->estado->pais->codigo_iso,$text);
+        if($inscricao->clube){
+            // Clube
+            $text = str_replace("{clube.id}",$inscricao->clube->id,$text);
+            $text = str_replace("{clube.name}",$inscricao->clube->name,$text);
+            // Clube -> Cidade
+            $text = str_replace("{clube.cidade.id}",$inscricao->clube->cidade->id,$text);
+            $text = str_replace("{clube.cidade.name}",$inscricao->clube->cidade->name,$text);
+            // Clube -> Cidade -> Estado
+            $text = str_replace("{clube.cidade.estado.id}",$inscricao->clube->cidade->estado->id,$text);
+            $text = str_replace("{clube.cidade.estado.name}",$inscricao->clube->cidade->estado->nome,$text);
+            $text = str_replace("{clube.cidade.estado.uf}",$inscricao->clube->cidade->estado->abbr,$text);
+            // Clube -> Cidade -> Estado -> País
+            $text = str_replace("{clube.cidade.estado.pais.id}",$inscricao->clube->cidade->estado->pais->id,$text);
+            $text = str_replace("{clube.cidade.estado.pais.name}",$inscricao->clube->cidade->estado->pais->nome,$text);
+            $text = str_replace("{clube.cidade.estado.pais.iso}",$inscricao->clube->cidade->estado->pais->codigo_iso,$text);
+        }else{
+            // Clube
+            $text = str_replace("{clube.id}","-",$text);
+            $text = str_replace("{clube.name}","Sem Clube",$text);
+            // Clube -> Cidade
+            $text = str_replace("{clube.cidade.id}","-",$text);
+            $text = str_replace("{clube.cidade.name}","-",$text);
+            // Clube -> Cidade -> Estado
+            $text = str_replace("{clube.cidade.estado.id}","-",$text);
+            $text = str_replace("{clube.cidade.estado.name}","-",$text);
+            $text = str_replace("{clube.cidade.estado.uf}","-",$text);
+            // Clube -> Cidade -> Estado -> País
+            $text = str_replace("{clube.cidade.estado.pais.id}","-",$text);
+            $text = str_replace("{clube.cidade.estado.pais.name}","-",$text);
+            $text = str_replace("{clube.cidade.estado.pais.iso}","-",$text);
 
+        }
         // Torneio
         $text = str_replace("{torneio.id}",$inscricao->torneio->id,$text);
         $text = str_replace("{torneio.name}",$inscricao->torneio->name,$text);
@@ -145,8 +162,9 @@ class EmailTemplateHelper
         $text = str_replace("{evento.data.inscricoes}",$inscricao->torneio->evento->getDataFimInscricoesOnline(),$text);
         $text = str_replace("{evento.local}",$inscricao->torneio->evento->local,$text);
         $text = str_replace("{evento.link}",$inscricao->torneio->evento->local,$text);
-        $text = str_replace("{evento.lichess.tournament}","https://lichess.org/swiss/".$inscricao->torneio->evento->lichess_team_id,$text);
-        $text = str_replace("{evento.lichess.team}","https://lichess.org/team/".$inscricao->torneio->evento->lichess_tournament_id,$text);
+        $text = str_replace("{evento.lichess.team}","https://lichess.org/team/".$inscricao->torneio->evento->lichess_team_id,$text);
+        $text = str_replace("{evento.lichess.tournament}","https://lichess.org/swiss/".$inscricao->torneio->evento->lichess_tournament_id,$text);
+        $text = str_replace("{evento.lichess.inscricao}",url("/inscricao/".$inscricao->uuid."/lichess"),$text);
         // Evento -> Cidade
         $text = str_replace("{evento.cidade.id}",$inscricao->torneio->evento->cidade->id,$text);
         $text = str_replace("{evento.cidade.name}",$inscricao->torneio->evento->cidade->name,$text);
@@ -157,7 +175,6 @@ class EmailTemplateHelper
         // Evento -> Cidade -> Estado -> País
         $text = str_replace("{evento.cidade.estado.pais.id}",$inscricao->torneio->evento->cidade->estado->pais->id,$text);
         $text = str_replace("{evento.cidade.estado.pais.name}",$inscricao->torneio->evento->cidade->estado->pais->nome,$text);
-        $text = str_replace("{evento.link}",$inscricao->torneio->evento->local,$text);
         $text = str_replace("{evento.cidade.estado.pais.iso}",$inscricao->torneio->evento->cidade->estado->pais->codigo_iso,$text);
 
         // Grupo de Evento
@@ -186,7 +203,7 @@ class EmailTemplateHelper
         $text = str_replace("{enxadrista.fide.name}",$enxadrista->fide_name,$text);
 
         $text = str_replace("{enxadrista.lbx.id}",$enxadrista->lbx_id,$text);
-        $text = str_replace("{enxadrista.born}",$enxadrista->getBorn(),$text);
+        $text = str_replace("{enxadrista.lbx.name}",$enxadrista->lbx_name,$text);
 
         $text = str_replace("{enxadrista.chess_com.username}",$enxadrista->chess_com_username,$text);
         $text = str_replace("{enxadrista.lichess.username}",$enxadrista->lichess_username,$text);
@@ -213,21 +230,38 @@ class EmailTemplateHelper
         $text = str_replace("{enxadrista.cidade.estado.pais.name}",$enxadrista->cidade->estado->pais->nome,$text);
         $text = str_replace("{enxadrista.cidade.estado.pais.iso}",$enxadrista->cidade->estado->pais->codigo_iso,$text);
 
-        // Enxadrista -> Clube
-        $text = str_replace("{enxadrista.clube.id}",$enxadrista->clube->id,$text);
-        $text = str_replace("{enxadrista.clube.name}",$enxadrista->clube->name,$text);
-        // Enxadrista -> Clube -> Cidade
-        $text = str_replace("{enxadrista.clube.cidade.id}",$enxadrista->clube->cidade->id,$text);
-        $text = str_replace("{enxadrista.clube.cidade.name}",$enxadrista->clube->cidade->name,$text);
-        // Enxadrista -> Clube -> Cidade -> Estado
-        $text = str_replace("{enxadrista.clube.cidade.estado.id}",$enxadrista->clube->cidade->estado->id,$text);
-        $text = str_replace("{enxadrista.clube.cidade.estado.name}",$enxadrista->clube->cidade->estado->nome,$text);
-        $text = str_replace("{enxadrista.clube.cidade.estado.uf}",$enxadrista->clube->cidade->estado->abbr,$text);
-        // Enxadrista -> Clube -> Cidade -> Estado -> País
-        $text = str_replace("{enxadrista.clube.cidade.estado.pais.id}",$enxadrista->clube->cidade->estado->pais->id,$text);
-        $text = str_replace("{enxadrista.clube.cidade.estado.pais.name}",$enxadrista->clube->cidade->estado->pais->nome,$text);
-        $text = str_replace("{enxadrista.clube.cidade.estado.pais.iso}",$enxadrista->clube->cidade->estado->pais->codigo_iso,$text);
+        if($enxadrista->clube){
+            // Enxadrista -> Clube
+            $text = str_replace("{enxadrista.clube.id}",$enxadrista->clube->id,$text);
+            $text = str_replace("{enxadrista.clube.name}",$enxadrista->clube->name,$text);
+            // Enxadrista -> Clube -> Cidade
+            $text = str_replace("{enxadrista.clube.cidade.id}",$enxadrista->clube->cidade->id,$text);
+            $text = str_replace("{enxadrista.clube.cidade.name}",$enxadrista->clube->cidade->name,$text);
+            // Enxadrista -> Clube -> Cidade -> Estado
+            $text = str_replace("{enxadrista.clube.cidade.estado.id}",$enxadrista->clube->cidade->estado->id,$text);
+            $text = str_replace("{enxadrista.clube.cidade.estado.name}",$enxadrista->clube->cidade->estado->nome,$text);
+            $text = str_replace("{enxadrista.clube.cidade.estado.uf}",$enxadrista->clube->cidade->estado->abbr,$text);
+            // Enxadrista -> Clube -> Cidade -> Estado -> País
+            $text = str_replace("{enxadrista.clube.cidade.estado.pais.id}",$enxadrista->clube->cidade->estado->pais->id,$text);
+            $text = str_replace("{enxadrista.clube.cidade.estado.pais.name}",$enxadrista->clube->cidade->estado->pais->nome,$text);
+            $text = str_replace("{enxadrista.clube.cidade.estado.pais.iso}",$enxadrista->clube->cidade->estado->pais->codigo_iso,$text);
+        }else{
+           // Enxadrista -> Clube
+            $text = str_replace("{enxadrista.clube.id}", "-", $text);
+            $text = str_replace("{enxadrista.clube.name}", "Sem Clube", $text);
+            // Enxadrista -> Clube -> Cidade
+            $text = str_replace("{enxadrista.clube.cidade.id}", "-", $text);
+            $text = str_replace("{enxadrista.clube.cidade.name}", "-", $text);
+            // Enxadrista -> Clube -> Cidade -> Estado
+            $text = str_replace("{enxadrista.clube.cidade.estado.id}", "-", $text);
+            $text = str_replace("{enxadrista.clube.cidade.estado.name}", "-", $text);
+            $text = str_replace("{enxadrista.clube.cidade.estado.uf}", "-", $text);
+            // Enxadrista -> Clube -> Cidade -> Estado -> País
+            $text = str_replace("{enxadrista.clube.cidade.estado.pais.id}", "-", $text);
+            $text = str_replace("{enxadrista.clube.cidade.estado.pais.name}", "-", $text);
+            $text = str_replace("{enxadrista.clube.cidade.estado.pais.iso}", "-", $text);
 
+        }
 
         return $text;
     }

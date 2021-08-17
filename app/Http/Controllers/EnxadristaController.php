@@ -95,7 +95,7 @@ class EnxadristaController extends Controller
                     return redirect()->back()->withErrors($messageBag);
                 }
                 if(
-                    $request->input("tipo_documento_".$tipo_documento_pais->tipo_documento->id) == "" || 
+                    $request->input("tipo_documento_".$tipo_documento_pais->tipo_documento->id) == "" ||
                     $request->input("tipo_documento_".$tipo_documento_pais->tipo_documento->id) == NULL
                 ){
                     $messageBag = new MessageBag;
@@ -107,10 +107,10 @@ class EnxadristaController extends Controller
             }
             if($request->has("tipo_documento_".$tipo_documento_pais->tipo_documento->id)){
                 if(
-                    $request->input("tipo_documento_".$tipo_documento_pais->tipo_documento->id) != "" && 
+                    $request->input("tipo_documento_".$tipo_documento_pais->tipo_documento->id) != "" &&
                     $request->input("tipo_documento_".$tipo_documento_pais->tipo_documento->id) != NULL
                 ){
-                    
+
                     $temEnxadrista = Enxadrista::whereHas("documentos",function($q1) use($request, $tipo_documento_pais){
                         if($tipo_documento_pais->tipo_documento->id == 1){
                             $q1->where([
@@ -198,6 +198,16 @@ class EnxadristaController extends Controller
                     $enxadrista->lbx_id = $request->input("lbx_id");
                 }
             }
+            if ($request->has("lichess_username")) {
+                if ($request->input("lichess_username")) {
+                    $enxadrista->lichess_username = $request->input("lichess_username");
+                }
+            }
+            if ($request->has("chess_com_username")) {
+                if ($request->input("chess_com_username")) {
+                    $enxadrista->chess_com_username = $request->input("chess_com_username");
+                }
+            }
 
             $enxadrista->save();
 
@@ -254,7 +264,7 @@ class EnxadristaController extends Controller
         }
 
         $enxadrista = Enxadrista::find($id);
-        
+
         $documentos = array();
 
         foreach(TipoDocumentoPais::where([["pais_id","=",$request->input("pais_nascimento_id")]])->get() as $tipo_documento_pais){
@@ -267,7 +277,7 @@ class EnxadristaController extends Controller
                     return redirect()->back()->withErrors($messageBag);
                 }
                 if(
-                    $request->input("tipo_documento_".$tipo_documento_pais->tipo_documento->id) == "" || 
+                    $request->input("tipo_documento_".$tipo_documento_pais->tipo_documento->id) == "" ||
                     $request->input("tipo_documento_".$tipo_documento_pais->tipo_documento->id) == NULL
                 ){
                     $messageBag = new MessageBag;
@@ -279,10 +289,10 @@ class EnxadristaController extends Controller
             }
             if($request->has("tipo_documento_".$tipo_documento_pais->tipo_documento->id)){
                 if(
-                    $request->input("tipo_documento_".$tipo_documento_pais->tipo_documento->id) != "" && 
+                    $request->input("tipo_documento_".$tipo_documento_pais->tipo_documento->id) != "" &&
                     $request->input("tipo_documento_".$tipo_documento_pais->tipo_documento->id) != NULL
                 ){
-                    
+
                     $temEnxadrista = Enxadrista::where([
                         ["id","!=",$enxadrista->id]
                     ])
@@ -438,12 +448,30 @@ class EnxadristaController extends Controller
         } else {
             $enxadrista->lbx_id = null;
         }
+        if ($request->has("lichess_username")) {
+            if ($request->input("lichess_username")) {
+                $enxadrista->lichess_username = $request->input("lichess_username");
+            } else {
+                $enxadrista->lichess_username = null;
+            }
+        } else {
+            $enxadrista->lichess_username = null;
+        }
+        if ($request->has("chess_com_username")) {
+            if ($request->input("chess_com_username")) {
+                $enxadrista->chess_com_username = $request->input("chess_com_username");
+            } else {
+                $enxadrista->chess_com_username = null;
+            }
+        } else {
+            $enxadrista->chess_com_username = null;
+        }
         $enxadrista->save();
 
         foreach($enxadrista->documentos->all() as $documento){
             $documento->delete();
         }
-        
+
         foreach($documentos as $documento){
             $documento->save();
         }

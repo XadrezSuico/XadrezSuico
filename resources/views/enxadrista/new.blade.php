@@ -115,6 +115,18 @@
 								<input name="lbx_id" id="lbx_id" class="form-control" type="text" />
 							</div>
 						</div>
+						<div class="col-md-4">
+							<div class="form-group">
+								<label for="lichess_username">Nome de Usuário - Lichess.org</label>
+								<input name="lichess_username" id="lichess_username" class="form-control" type="text" />
+							</div>
+						</div>
+						<div class="col-md-4">
+							<div class="form-group">
+								<label for="chess_com_username">Nome de Usuário - Chess.com</label>
+								<input name="chess_com_username" id="chess_com_username" class="form-control" type="text" />
+							</div>
+						</div>
 					</div>
 					<hr/>
 					<h4>Vínculo do Enxadrista</h4>
@@ -224,7 +236,7 @@
 		},300);
 	});
 
-  
+
 	function buscaEstados(buscaCidade,callback){
 		$('#estados_id').html("").trigger('change');
 		$.getJSON("{{url("/estado/search")}}/".concat($("#pais_id").val()),function(data){
