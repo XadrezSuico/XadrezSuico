@@ -237,7 +237,7 @@
 		<div class="box-body">
 			<div id="form_pesquisa">
 				<div class="alert alert-success" role="alert">
-					<strong><h4>O processo para inscrição mudou... e para melhor!</h4></strong><br/>
+					@if(rand(0,4) == 4) <strong><h4>O processo para inscrição mudou... e para melhor!</h4></strong><br/> @endif
 					Comece digitando o nome do(a) enxadrista, e caso o(a) mesmo(a) já possua cadastro, ele irá aparecer logo abaixo em "Resultado da Pesquisa", aí é só clicar no nome do(a) mesmo(a) e continuar o processo.<br/>
 					Caso ele(a) não apareça na lista, clique em "O(a) enxadrista não aparece na lista" para efetuar o cadastro dele(a).
 				</div>
@@ -1628,17 +1628,32 @@
 					$("#texto_pesquisa").val("");
 					$("#pesquisa div").html("");
 					$("#inscricao").boxWidget('collapse');
-					$("#successMessage").html("<strong>Sua inscrição foi efetuada com sucesso!</strong><hr/>");
-					$("#successMessage").html($("#successMessage").html().concat("Você receberá em no máximo 30 minutos uma mensagem no endereço de e-mail do cadastro com a confirmação da inscrição para este evento.<hr/>"));
-					@if($evento->e_permite_visualizar_lista_inscritos_publica)
-						$("#successMessage").html($("#successMessage").html().concat("Caso não receba o e-mail, confira na lista de inscritos (Acessível no topo desta página em 'Visualizar Lista de Inscrições') e verifique se lá consta o nome do(a) enxadrista em questão."));
-						$("#successMessage").html($("#successMessage").html().concat("Caso não apareça, tente novamente o processo de inscrição ou entre em contato com a organização."));
-					@endif
-                    @if($evento->orientacao_pos_inscricao != NULL)
-					    $("#successMessage").html("<strong>Orientações pós-inscrição: </strong>");
-					    $("#successMessage").html($("#successMessage").html().concat("{!!preg_replace( "/\"/", "\\\"", preg_replace( "/\r|\n/", "", $evento->orientacao_pos_inscricao))!!}"));
-					    $("#successMessage").html($("#successMessage").html().concat("<hr/>"));
-					@endif
+                    if(data.is_lichess_integration == 1){
+                        $("#successMessage").html("<strong>Sua inscrição foi efetuada no XadrezSuíço com sucesso!</strong><hr/>");
+                        $("#successMessage").html($("#successMessage").html().concat("Você receberá em no máximo 30 minutos uma mensagem no endereço de e-mail do cadastro com a confirmação do preenchimento do formulário. Proceda com a inscrição no Lichess.org:<hr/>"));
+                        $("#successMessage").html($("#successMessage").html().concat("<a href=\"").concat(data.lichess_process_link).concat("\" class=\"btn btn-lg btn-success btn-block\" target=\"_blank\">Continue sua inscrição para o Torneio do Lichess.org</a><hr/>"));
+                        @if($evento->e_permite_visualizar_lista_inscritos_publica)
+                            //$("#successMessage").html($("#successMessage").html().concat("Caso não receba o e-mail, confira na lista de inscritos (Acessível no topo desta página em 'Visualizar Lista de Inscrições') e verifique se lá consta o nome do(a) enxadrista em questão."));
+                            //$("#successMessage").html($("#successMessage").html().concat("Caso não apareça, tente novamente o processo de inscrição ou entre em contato com a organização."));
+                        @endif
+                        @if($evento->orientacao_pos_inscricao != NULL)
+                            $("#successMessage").html($("#successMessage").html().concat("<br/><strong>Orientações pós-inscrição: </strong>"));
+                            $("#successMessage").html($("#successMessage").html().concat("{!!preg_replace( "/\"/", "\\\"", preg_replace( "/\r|\n/", "", $evento->orientacao_pos_inscricao))!!}"));
+                            $("#successMessage").html($("#successMessage").html().concat("<hr/>"));
+                        @endif
+                    }else{
+                        $("#successMessage").html("<strong>Sua inscrição foi efetuada com sucesso!</strong><hr/>");
+                        $("#successMessage").html($("#successMessage").html().concat("Você receberá em no máximo 30 minutos uma mensagem no endereço de e-mail do cadastro com a confirmação da inscrição para este evento.<hr/>"));
+                        @if($evento->e_permite_visualizar_lista_inscritos_publica)
+                            //$("#successMessage").html($("#successMessage").html().concat("Caso não receba o e-mail, confira na lista de inscritos (Acessível no topo desta página em 'Visualizar Lista de Inscrições') e verifique se lá consta o nome do(a) enxadrista em questão."));
+                            //$("#successMessage").html($("#successMessage").html().concat("Caso não apareça, tente novamente o processo de inscrição ou entre em contato com a organização."));
+                        @endif
+                        @if($evento->orientacao_pos_inscricao != NULL)
+                            $("#successMessage").html($("#successMessage").html().concat("<br/><strong>Orientações pós-inscrição: </strong>"));
+                            $("#successMessage").html($("#successMessage").html().concat("{!!preg_replace( "/\"/", "\\\"", preg_replace( "/\r|\n/", "", $evento->orientacao_pos_inscricao))!!}"));
+                            $("#successMessage").html($("#successMessage").html().concat("<hr/>"));
+                        @endif
+                    }
 					$("#success").modal();
 				}else{
 					$("#alertsMessage").html(data.message);

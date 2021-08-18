@@ -86,7 +86,7 @@ class SeedEmailTemplates extends Migration
         $email_template_4->message .= "Você está recebendo este email para pois efetuou inscrição no Evento '{evento.name}', porém <strong>ainda não se inscreveu no torneio do Lichess.org</strong>.<br/>";
         $email_template_4->message .= "Você necessita efetuar a inscrição, pois sem efetuar a inscrição junto ao Torneio do Lichess.org, você não poderá jogar o torneio e inclusive terá sua inscrição cancelada.<br/>";
         $email_template_4->message .= "O processo é simples: Entre na Equipe do Evento no Lichess.org ({evento.lichess.team}) e depois se inscreva no Torneio ({evento.lichess.tournament}).<br/>";
-        $email_template_4->message .= "Lembre-se: Você tem até {evento.fim_inscricoes} para efetuar estes passos, pois senão terá sua inscrição cancelada e não poderá jogar o evento.<br/>";
+        $email_template_4->message .= "Lembre-se: Você tem até {evento.data.inscricoes} para efetuar estes passos, pois senão terá sua inscrição cancelada e não poderá jogar o evento.<br/>";
 
         $email_template_4->save();
 

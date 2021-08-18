@@ -101,6 +101,7 @@ class EmailTemplateHelper
     private function fillInscricaoFields($text, $inscricao){
         // Inscrição
         $text = str_replace("{inscricao.id}",$inscricao->id,$text);
+        $text = str_replace("{inscricao.lichess}",$inscricao->getLichessProcessLink(),$text);
 
         // Categoria
         $text = str_replace("{categoria.id}",$inscricao->categoria->id,$text);

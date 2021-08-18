@@ -185,9 +185,11 @@
                         <label><input type="checkbox" id="atualizar_cadastro" name="atualizar_cadastro"> Atualizar Cadastro</label>
                     </div>
                     <hr/>
-                    <a href="{{url("/inscricao/".$inscricao->uuid."/lichess")}}" class="btn btn-lg btn-success btn-block">
-                        <strong>Link para Inscrição no Torneio do Lichess.org - Para encaminhar para o enxadrista se inscrever.</strong>
-                    </a><br/>
+                    @if($inscricao->torneio->evento->is_lichess_integration)
+                        <a href="{{$inscricao->getLichessProcessLink()}}" class="btn btn-lg btn-success btn-block">
+                            <strong>Link para Inscrição no Torneio do Lichess.org - Para encaminhar para o enxadrista se inscrever.</strong>
+                        </a><br/>
+                    @endif
                 @endif
 				<div class="form-group">
 					<label><input type="checkbox" id="desconsiderar_pontuacao_geral" name="desconsiderar_pontuacao_geral" @if(!$permitido_edicao) disabled="disabled" @endif @if($inscricao->desconsiderar_pontuacao_geral) checked="checked" @endif> Desconsiderar Inscrição para Pontuação Geral</label>

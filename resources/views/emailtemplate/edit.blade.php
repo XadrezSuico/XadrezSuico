@@ -78,6 +78,7 @@
             <h3>Inscrição</h3>
             <ul>
                 <li><strong>{inscricao.id}</strong> - ID da Inscrição</li>
+                <li><strong>{inscricao.lichess}</strong> - Link para Prosseguir com a Inscrição no Lichess.org</li>
             </ul>
 
             <h3>Categoria da Inscrição</h3>

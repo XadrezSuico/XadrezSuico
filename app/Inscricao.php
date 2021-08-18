@@ -105,6 +105,10 @@ class Inscricao extends Model
         return $opcao;
     }
 
+    public function getLichessProcessLink(){
+        return url("/inscricao/".$this->uuid."/lichess");
+    }
+
     public function isDeletavel()
     {
         if ($this->id != null) {

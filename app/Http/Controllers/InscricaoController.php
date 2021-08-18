@@ -563,7 +563,10 @@ class InscricaoController extends Controller
         }
 
         if ($inscricao->id > 0) {
-            return response()->json(["ok" => 1, "error" => 0]);
+            if($inscricao->torneio->evento->is_lichess_integration){
+            return response()->json(["ok" => 1, "error" => 0, "is_lichess_integration" => 1, "lichess_process_link" => $inscricao->getLichessProcessLink()]);
+            }
+            return response()->json(["ok" => 1, "error" => 0, "is_lichess_integration" => 0]);
         } else {
             return response()->json(["ok" => 0, "error" => 1, "message" => "Um erro inesperado aconteceu. Por favor, tente novamente mais tarde."]);
         }

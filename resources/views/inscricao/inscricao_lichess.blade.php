@@ -73,7 +73,7 @@
             <hr/>
             @switch($passo)
                 @case(1)
-                    <h3>É hora de efetuar sua Inscrição no Torneio do Lichess.org. Para logar com sua conta do Lichess.org, clique no botão abaixo:</h3>
+                    <h3>É hora de efetuar sua Inscrição no Torneio do Lichess.org. Clique no botão abaixo para ser redirecionado ao Lichess para efetuar login no Lichess e fornecer acesso ao XadrezSuíço:</h3>
                     <a href="{{url("/inscricao/".$inscricao->uuid."/lichess/redirect")}}" class="btn btn-lg btn-success btn-block">
                         <strong>Logar no Lichess.org</strong>
                     </a><br/>
@@ -84,7 +84,7 @@
                     <ol>
                         <li>O usuário do Lichess.org de seu cadastro será atualizado para <strong>{{$username}}</strong>;</li>
                         <li>Você será inserido no time <strong>{{$inscricao->torneio->evento->getLichessTeamLink()}}</strong>;</li>
-                        <li>Você será inscrito no torneio <strong>{{$inscricao->torneio->evento->getLichessTournamentLink()}}</strong>.</li>
+                        <li>Após isto, você será direcionado para o Torneio (<strong>{{$inscricao->torneio->evento->getLichessTournamentLink()}}</strong>) para que finalize sua inscrição.</li>
                     </ol>
                     <h3>Você confirma esse procedimento?</h3>
                     <a href="{{url("/inscricao/".$inscricao->uuid."/lichess/confirm")}}" class="btn btn-lg btn-success btn-block">
