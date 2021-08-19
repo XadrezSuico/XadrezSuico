@@ -885,6 +885,7 @@ class TorneioController extends Controller
         $torneio = Torneio::find($torneio_id);
         if($torneio->evento->is_lichess_integration){
             if($torneio->evento->lichess_tournament_id){
+                $players_not_found = array();
 
                 $lichess_integration_controller = new LichessIntegrationController;
                 $retorno = $lichess_integration_controller->getSwissResults($torneio->evento->lichess_tournament_id);
@@ -894,13 +895,13 @@ class TorneioController extends Controller
                         if($lichess_player){
                             $inscricao_count = $torneio->inscricoes()->whereHas("enxadrista",function($q1) use ($lichess_player){
                                 $q1->where([
-                                    ["lichess_username","=",$lichess_player->username]
+                                    ["lichess_username","=",mb_strtolower($lichess_player->username)]
                                 ]);
                             })->count();
                             if($inscricao_count > 0){
                                 $inscricao = $torneio->inscricoes()->whereHas("enxadrista",function($q1) use ($lichess_player){
                                     $q1->where([
-                                        ["lichess_username","=",$lichess_player->username]
+                                        ["lichess_username","=",mb_strtolower($lichess_player->username)]
                                     ]);
                                 })->first();
 
@@ -926,15 +927,25 @@ class TorneioController extends Controller
 
                                 $inscricao->is_lichess_found = true;
                                 $inscricao->save();
+                            }else{
+                                $players_not_found[] = $lichess_player->username;
                             }
                         }
                     }
                 }
                 $torneio->lichess_last_update = date("Y-m-d H:i:s");
                 $torneio->save();
+
+                activity()
+                    ->performedOn($torneio)
+                    ->causedBy(Auth::user())
+                    ->log("Lichess.org - Não encontrados como inscritos: ".json_encode($players_not_found));
+
             }
         }
 
         return redirect("/evento/dashboard/" . $evento->id . "/?tab=torneio");
     }
+
+
 }
