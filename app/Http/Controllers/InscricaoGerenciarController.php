@@ -16,6 +16,9 @@ use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Auth;
 
+use Twilio\Rest\Client;
+
+
 class InscricaoGerenciarController extends Controller
 {
     public function __construct()
@@ -231,7 +234,7 @@ class InscricaoGerenciarController extends Controller
         ) {
             return redirect("/evento/dashboard/".$evento->id);
         }
-        
+
         $torneio = Torneio::find($torneio_id);
         $inscricao = Inscricao::find($inscricao_id);
         if ($inscricao->confirmado) {
@@ -252,7 +255,7 @@ class InscricaoGerenciarController extends Controller
         ) {
             return redirect("/evento/dashboard/".$evento->id);
         }
-        
+
         $torneio = Torneio::find($torneio_id);
         $inscricao = Inscricao::find($inscricao_id);
         if ($inscricao->isDeletavel()) {
@@ -275,7 +278,7 @@ class InscricaoGerenciarController extends Controller
         ) {
             return redirect("/evento/dashboard/".$evento->id);
         }
-        
+
         $torneio = Torneio::find($torneio_id);
         $inscricoes = $torneio->inscricoes()->where([["confirmado", "=", true]])->get();
 
@@ -310,7 +313,7 @@ class InscricaoGerenciarController extends Controller
         ) {
             return redirect("/evento/dashboard/".$evento->id);
         }
-        
+
         $torneio = Torneio::find($torneio_id);
         $inscricoes = $torneio->inscricoes()->get();
 
@@ -630,7 +633,7 @@ class InscricaoGerenciarController extends Controller
         ) {
             return redirect("/evento/dashboard/".$evento->id);
         }
-        
+
         $torneio = Torneio::find($torneio_id);
         $inscricoes = $torneio->inscricoes()->get();
 
@@ -654,7 +657,7 @@ class InscricaoGerenciarController extends Controller
         ) {
             return redirect("/evento/dashboard/".$evento->id);
         }
-        
+
         $torneio = Torneio::find($torneio_id);
         $inscricoes = $torneio->inscricoes()->get();
 
@@ -678,7 +681,7 @@ class InscricaoGerenciarController extends Controller
         ) {
             return redirect("/evento/dashboard/".$evento->id);
         }
-        
+
         $torneio = Torneio::find($torneio_id);
         $inscricoes = $torneio->inscricoes()->get();
 
@@ -702,7 +705,7 @@ class InscricaoGerenciarController extends Controller
         ) {
             return redirect("/evento/dashboard/".$evento->id);
         }
-        
+
         $sexos = Sexo::all();
         if ($evento) {
             return view("inscricao.gerenciar.inscricao", compact("evento", "sexos"));
@@ -722,7 +725,7 @@ class InscricaoGerenciarController extends Controller
         ) {
             return response()->json(["ok" => 0, "error" => 1, "message" => "Você não possui permissão para fazer isto.", "registred" => 0]);
         }
-        
+
         if (
             !$request->has("enxadrista_id") ||
             !$request->has("categoria_id") ||
@@ -861,7 +864,7 @@ class InscricaoGerenciarController extends Controller
         ) {
             return response()->json(["ok" => 0, "error" => 1, "message" => "Você não possui permissão para fazer isto.", "registred" => 0]);
         }
-        
+
         if (
             !$request->has("name") ||
             !$request->has("born") ||
@@ -980,7 +983,7 @@ class InscricaoGerenciarController extends Controller
         ) {
             return response()->json(["ok" => 0, "error" => 1, "message" => "Você não possui permissão para fazer isto.", "registred" => 0]);
         }
-        
+
         if (
             !$request->has("name")
         ) {
@@ -1017,7 +1020,7 @@ class InscricaoGerenciarController extends Controller
         ) {
             return response()->json(["ok" => 0, "error" => 1, "message" => "Você não possui permissão para fazer isto.", "registred" => 0]);
         }
-        
+
         if (
             !$request->has("name") || !$request->has("cidade_id")
         ) {
@@ -1056,7 +1059,7 @@ class InscricaoGerenciarController extends Controller
         ) {
             return response()->json(["results" => [], "pagination" => true]);
         }
-        
+
         $enxadristas = Enxadrista::where([
             ["name", "like", "%" . $request->input("q") . "%"],
         ])->orderBy("name", "ASC")->get();
@@ -1083,7 +1086,7 @@ class InscricaoGerenciarController extends Controller
         ) {
             return response()->json(["ok" => 0, "error" => 1, "message" => "Você não possui permissão para fazer isto.", "registred" => 0]);
         }
-        
+
         $enxadrista = Enxadrista::find($enxadrista_id);
         if ($enxadrista) {
             if ($enxadrista->clube) {
@@ -1107,7 +1110,7 @@ class InscricaoGerenciarController extends Controller
         ) {
             return response()->json(["results" => [], "pagination" => true]);
         }
-        
+
         $enxadrista = Enxadrista::find($request->input("enxadrista_id"));
         $categorias = $evento->categorias()->whereHas("categoria", function ($QUERY) use ($request, $enxadrista) {
             $QUERY->where([
@@ -1167,7 +1170,7 @@ class InscricaoGerenciarController extends Controller
         ) {
             return response()->json(["results" => [], "pagination" => true]);
         }
-        
+
         $cidades = Cidade::where([
             ["name", "like", "%" . $request->input("q") . "%"],
         ])->get();
@@ -1189,7 +1192,7 @@ class InscricaoGerenciarController extends Controller
         ) {
             return response()->json(["results" => [], "pagination" => true]);
         }
-        
+
         $clubes = Clube::where([
             ["name", "like", "%" . $request->input("q") . "%"],
         ])->orWhere(function ($q) use ($request) {
@@ -1217,7 +1220,7 @@ class InscricaoGerenciarController extends Controller
         ) {
             return redirect("/evento/dashboard/".$evento->id);
         }
-        
+
         if ($evento) {
             return view("inscricao.gerenciar.confirmar", compact("evento"));
         } else {
@@ -1235,7 +1238,7 @@ class InscricaoGerenciarController extends Controller
         ) {
             return response()->json(["results" => [], "pagination" => true]);
         }
-        
+
         $inscricoes = Inscricao::where(function ($q1) use ($id, $request) {
             $q1->whereHas("enxadrista", function ($q2) use ($request) {
                 $q2->where([
@@ -1271,7 +1274,7 @@ class InscricaoGerenciarController extends Controller
         ) {
             return response()->json(["ok" => 0, "error" => 1, "message" => "Você não possui permissão para fazer isto.", "registred" => 0]);
         }
-        
+
         $inscricao = Inscricao::find($inscricao_id);
         if ($inscricao) {
             if ($inscricao->clube) {
@@ -1295,7 +1298,7 @@ class InscricaoGerenciarController extends Controller
         ) {
             return response()->json(["ok" => 0, "error" => 1, "message" => "Você não possui permissão para fazer isto.", "registred" => 0]);
         }
-        
+
         if (
             !$request->has("inscricao_id") || !$request->has("categoria_id") || !$request->has("cidade_id") || !$request->has("evento_id")
         ) {
@@ -1398,5 +1401,45 @@ class InscricaoGerenciarController extends Controller
                 return response()->json(["ok" => 0, "error" => 1, "message" => "Um erro inesperado aconteceu. Por favor, tente novamente mais tarde.", "updated" => 0]);
             }
         }
+    }
+
+
+
+    public function sendWhatsappMessage($id, $torneio_id, $inscricao_id)
+    {
+
+        $user = Auth::user();
+        $evento = Evento::find($id);
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionEventByPerfil($evento->id, [3, 4]) &&
+            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [6,7])
+        ) {
+            return redirect("/evento/dashboard/".$evento->id);
+        }
+
+        $torneio = Torneio::find($torneio_id);
+        $inscricao = Inscricao::find($inscricao_id);
+
+        if(!$inscricao->is_whatsapp_sent){
+            $sid = env("TWILIO_SID");
+            $token = env("TWILIO_TOKEN");
+            if($sid && $token){
+                $twilio = new Client($sid, $token);
+
+                $message = $twilio->messages
+                    ->create("whatsapp:+554598547889", // to
+                        array(
+                            "from" => "whatsapp:+14155238886",
+                            "body" => "Your appointment is coming up on July 21 at 3PM",
+                        )
+                    );
+
+                print($message->sid);
+            }
+
+        }
+
+        return redirect("/evento/".$evento->id."/torneios/".$torneio->id."/inscricoes");
     }
 }

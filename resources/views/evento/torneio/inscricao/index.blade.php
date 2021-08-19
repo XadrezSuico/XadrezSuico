@@ -31,7 +31,7 @@
                         <th>#</th>
                         <th>Nome</th>
                         @if($evento->tipo_rating) <th>Rating</th> @endif
-                        @if($evento->is_lichess) <th>Usuário Lichess.org</th> @endif
+                        @if($evento->is_lichess || $evento->is_lichess_integration) <th>Usuário Lichess.org</th> @endif
                         @if($evento->is_lichess_integration) <th>Inscrito Lichess.org?</th> @endif
                         @if($evento->is_chess_com) <th>Usuário Chess.com</th> @endif
                         @if($evento->usa_fide)
@@ -60,7 +60,7 @@
                             <td>{{$inscricao->id}}</td>
                             <td>#{{$inscricao->enxadrista->id}} - <a href="{{url("/enxadrista/edit/".$inscricao->enxadrista->id)}}" target="_blank">{{$inscricao->enxadrista->name}}</a></td>
                             @if($evento->tipo_rating) <td>@if($inscricao->enxadrista->ratings()->where([["tipo_ratings_id","=",$evento->tipo_rating->tipo_ratings_id]])->count() > 0) {{$inscricao->enxadrista->ratings()->where([["tipo_ratings_id","=",$evento->tipo_rating->tipo_ratings_id]])->first()->valor}} @else Não Há @endif</td> @endif
-                            @if($evento->is_lichess) <td>{{$inscricao->enxadrista->lichess_username}}</td> @endif
+                            @if($evento->is_lichess || $evento->is_lichess_integration) <td>{{$inscricao->enxadrista->lichess_username}}</td> @endif
                             @if($evento->is_lichess_integration) <td>@if($inscricao->is_lichess_found) Sim @else <strong><span style="color:red">Não</span></strong> @endif</td> @endif
                             @if($evento->is_chess_com) <td>{{$inscricao->enxadrista->chess_com_username}}</td> @endif
                             @if($evento->usa_fide)
@@ -79,7 +79,7 @@
                             <td>{{$inscricao->cidade->name}}</td>
                             <td>@if($inscricao->clube) {{$inscricao->clube->name}} @else Sem Clube @endif</td>
                             <td>@if($inscricao->confirmado) Sim @else Não @endif</td>
-                            <td>{{$inscricao->getCreatedAt()}}</td>
+                            <td  data-sort='{{$inscricao->created_at}}'>{{$inscricao->getCreatedAt()}}</td>
                             <td>
 
                                 @if(
@@ -87,6 +87,18 @@
                                     \Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4]) ||
 						            \Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])
                                 )
+                                    @if($inscricao->torneio->evento->is_lichess_integration)
+                                        @if(!$inscricao->is_lichess_found)
+                                            <a href="https://api.whatsapp.com/send?phone=55{{$inscricao->enxadrista->celular}}&text=Olá {{$inscricao->enxadrista->name}}! Você preencheu sua inscrição para o {{$inscricao->torneio->evento->name}}, mas falta prosseguir com sua inscrição no Lichess.org. Favor seguir os passos em: {{$inscricao->getLichessProcessLink()}}. Este link serve para se inscrever na etapa no Lichess.org e vincular à sua inscrição do formulário. Qualquer dúvida, estamos à disposição." class="btn btn-success" target="_blank">
+                                                <strong>Enviar Mensagem no Whatsapp sobre a Inscrição no Lichess.org</strong>
+                                            </a><br/>
+                                            @if(!$inscricao->is_whatsapp_sent)
+                                                @if(env("TWILIO_SID",false) && env("TWILIO_TOKEN",false))
+                                                    <a class="btn btn-default" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/inscricoes/whatsapp/".$inscricao->id)}}" role="button">Enviar Alerta Via Whatsapp</a>
+                                                @endif
+                                            @endif
+                                        @endif
+                                    @endif
                                     @if($inscricao->confirmado) <a class="btn btn-default" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/inscricoes/unconfirm/".$inscricao->id)}}" role="button">Desconfirmar</a> @endif
                                     <a class="btn btn-default" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/inscricoes/edit/".$inscricao->id)}}" role="button">Editar</a>
                                     @if($inscricao->isDeletavel()) <a class="btn btn-danger" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/inscricoes/delete/".$inscricao->id)}}" role="button">Apagar</a> @endif

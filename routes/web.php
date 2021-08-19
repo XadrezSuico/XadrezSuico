@@ -180,6 +180,8 @@ Route::group(["prefix"=>"evento"],function(){
 	        Route::get('/relatorio/inscricoes/alfabetico', 'InscricaoGerenciarController@report_list_subscriptions_alf')->name('evento.torneios.inscricoes.relatorio.inscritos.alf');
 	        Route::get('/relatorio/inscricoes/alfabetico/cidade', 'InscricaoGerenciarController@report_list_subscriptions_cidade_alf')->name('evento.torneios.inscricoes.relatorio.inscritos.alf.cidade');
 	        Route::get('/sm/all', 'InscricaoGerenciarController@list_to_manager_all')->name('evento.torneios.inscricoes.sm.all');
+            Route::get('/whatsapp/{inscricao_id}', 'InscricaoGerenciarController@sendWhatsappMessage')->name('evento.torneios.inscricao.whatspp');
+
         });
     });
 

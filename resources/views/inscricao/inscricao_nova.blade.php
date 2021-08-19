@@ -921,6 +921,13 @@
 			confereCadastrosEntidades();
 		});
 
+		$("#clube_pais_id").on("select2:select",function(){
+			Loading.enable(loading_default_animation,10000);
+			verificaLiberaCadastro(-1);
+			buscaEstados(-1,function(){
+				buscaCidades(-1,false);
+			})
+		});
 		$("#pais_id").on("select2:select",function(){
 			Loading.enable(loading_default_animation,10000);
 			verificaLiberaCadastro(0);
@@ -943,6 +950,10 @@
 			})
 		});
 
+		$("#clube_estados_id").on("select2:select",function(){
+			Loading.enable(loading_default_animation,800);
+			buscaCidades(-1,false);
+		});
 		$("#estados_id").on("select2:select",function(){
 			Loading.enable(loading_default_animation,800);
 			buscaCidades(0,false);
