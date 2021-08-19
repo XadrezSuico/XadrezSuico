@@ -162,14 +162,22 @@ class InscricaoLichessController extends Controller
                         $username = $user_response->body->username;
 
 
-                        $inscricao->enxadrista->lichess_username = $username;
+                        $inscricao->enxadrista->lichess_username = mb_strtolower($username);
                         $inscricao->enxadrista->save();
 
-
-                        $team_response = \Httpful\Request::post('https://lichess.org/team/'.$inscricao->torneio->evento->lichess_team_id.'/join')
-                            ->expectsJson()
-                            ->addHeader('Authorization', "Bearer " . $request->session()->get('lichess_token', ""))
-                            ->send();
+                        if($inscricao->torneio->evento->lichess_team_password){
+                            $team_response = \Httpful\Request::post('https://lichess.org/team/'.$inscricao->torneio->evento->lichess_team_id.'/join')
+                                ->sendsType(\Httpful\Mime::FORM)
+                                ->body('password=' . $inscricao->torneio->evento->lichess_team_password)
+                                ->expectsJson()
+                                ->addHeader('Authorization', "Bearer " . $request->session()->get('lichess_token', ""))
+                                ->send();
+                        }else{
+                            $team_response = \Httpful\Request::post('https://lichess.org/team/'.$inscricao->torneio->evento->lichess_team_id.'/join')
+                                ->expectsJson()
+                                ->addHeader('Authorization', "Bearer " . $request->session()->get('lichess_token', ""))
+                                ->send();
+                        }
                         if($team_response->code == 200){
                             return redirect($inscricao->torneio->evento->getLichessTournamentLink());
 

@@ -450,7 +450,7 @@ class EnxadristaController extends Controller
         }
         if ($request->has("lichess_username")) {
             if ($request->input("lichess_username")) {
-                $enxadrista->lichess_username = $request->input("lichess_username");
+                $enxadrista->lichess_username = mb_strtolower($request->input("lichess_username"));
             } else {
                 $enxadrista->lichess_username = null;
             }
@@ -459,7 +459,7 @@ class EnxadristaController extends Controller
         }
         if ($request->has("chess_com_username")) {
             if ($request->input("chess_com_username")) {
-                $enxadrista->chess_com_username = $request->input("chess_com_username");
+                $enxadrista->chess_com_username = mb_strtolower($request->input("chess_com_username"));
             } else {
                 $enxadrista->chess_com_username = null;
             }

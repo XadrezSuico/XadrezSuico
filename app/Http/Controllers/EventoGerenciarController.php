@@ -202,6 +202,16 @@ class EventoGerenciarController extends Controller
                 $evento->lichess_team_id = NULL;
             }
 
+            if($request->has("lichess_team_password")){
+                if($request->input("lichess_team_password") != ""){
+                    $evento->lichess_team_password = $request->input("lichess_team_password");
+                }else{
+                    $evento->lichess_team_password = NULL;
+                }
+            }else{
+                $evento->lichess_team_password = NULL;
+            }
+
             if($request->has("lichess_tournament_id")){
                 if($request->input("lichess_tournament_id") != ""){
                     $evento->lichess_tournament_id = $request->input("lichess_tournament_id");
@@ -211,10 +221,22 @@ class EventoGerenciarController extends Controller
             }else{
                 $evento->lichess_tournament_id = NULL;
             }
+
+            if($request->has("lichess_tournament_password")){
+                if($request->input("lichess_tournament_password") != ""){
+                    $evento->lichess_tournament_password = $request->input("lichess_tournament_password");
+                }else{
+                    $evento->lichess_tournament_password = NULL;
+                }
+            }else{
+                $evento->lichess_tournament_password = NULL;
+            }
         } else {
             $evento->is_lichess_integration = false;
             $evento->lichess_team_id = NULL;
+            $evento->lichess_team_password = NULL;
             $evento->lichess_tournament_id = NULL;
+            $evento->lichess_tournament_password = NULL;
         }
         if ($request->has("is_chess_com")) {
             $evento->is_chess_com = true;

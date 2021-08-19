@@ -311,7 +311,7 @@ class InscricaoController extends Controller
                 $fields["lbx_id"] = $enxadrista->lbx_id;
 
                 $fields["chess_com_username"] = $enxadrista->chess_com_username;
-                $fields["lichess_username"] = $enxadrista->lichess_username;
+                $fields["lichess_username"] = mb_strtolower($enxadrista->lichess_username);
                 // 5/5
                 if($enxadrista->cidade){
                     if($enxadrista->cidade->estado){
@@ -351,7 +351,7 @@ class InscricaoController extends Controller
             $retorno["fide_id"] = $enxadrista->fide_id;
             $retorno["lbx_id"] = $enxadrista->lbx_id;
             $retorno["chess_com_username"] = $enxadrista->chess_com_username;
-            $retorno["lichess_username"] = $enxadrista->lichess_username;
+            $retorno["lichess_username"] = mb_strtolower($enxadrista->lichess_username);
             $retorno["born"] = $enxadrista->getBorn();
             $retorno["cidade"] = array("id"=>$enxadrista->cidade->id,"name"=>$enxadrista->cidade->name);
             $retorno["cidade"]["estado"] = array("id"=>$enxadrista->cidade->estado->id,"name"=>$enxadrista->cidade->estado->nome);
@@ -821,7 +821,7 @@ class InscricaoController extends Controller
         }
         if ($request->has("lichess_username")) {
             if ($request->input("lichess_username") != "") {
-                $enxadrista->lichess_username = $request->input("lichess_username");
+                $enxadrista->lichess_username = mb_strtolower($request->input("lichess_username"));
             }
         }
         $enxadrista->cidade_id = $request->input("cidade_id");
@@ -1187,7 +1187,7 @@ class InscricaoController extends Controller
         }
         if ($request->has("lichess_username")) {
             if ($request->input("lichess_username") != "") {
-                $enxadrista->lichess_username = $request->input("lichess_username");
+                $enxadrista->lichess_username = mb_strtolower($request->input("lichess_username"));
             }
         }
         $enxadrista->cidade_id = $request->input("cidade_id");
