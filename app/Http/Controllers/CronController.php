@@ -5,6 +5,7 @@ use Illuminate\Support\Str;
 
 use App\Torneio;
 use App\Evento;
+use App\Enxadrista;
 use App\Inscricao;
 
 use App\Enum\EmailType;
@@ -18,6 +19,7 @@ class CronController extends Controller
         $this->evento_check_players_in();
         $this->evento_players_not_in_lichess_schedule_email();
         $this->generateUuidOnInscricao();
+        $this->generateConvertLichessChessComToLowerOnEnxadrista();
     }
 
     public function evento_check_players_in(){
@@ -41,13 +43,13 @@ class CronController extends Controller
                     if($lichess_player){
                         $inscricao_count = $torneio->inscricoes()->whereHas("enxadrista",function($q1) use ($lichess_player){
                             $q1->where([
-                                ["lichess_username","=",$lichess_player->username]
+                                ["lichess_username","=",mb_strtolower($lichess_player->username)]
                             ]);
                         })->count();
                         if($inscricao_count > 0){
                             $inscricao = $torneio->inscricoes()->whereHas("enxadrista",function($q1) use ($lichess_player){
                                 $q1->where([
-                                    ["lichess_username","=",$lichess_player->username]
+                                    ["lichess_username","=",mb_strtolower($lichess_player->username)]
                                 ]);
                             })->first();
 
@@ -125,5 +127,16 @@ class CronController extends Controller
             $inscricao->uuid = Str::uuid();
             $inscricao->save();
         }
+    }
+    public function generateConvertLichessChessComToLowerOnEnxadrista(){
+        foreach(Enxadrista::whereNotNull("lichess_username")->get() as $enxadrista){
+            $enxadrista->lichess_username = mb_strtolower($enxadrista->lichess_username);
+            $enxadrista->save();
+        }
+        foreach (Enxadrista::whereNotNull("chess_com_username")->get() as $enxadrista) {
+            $enxadrista->chess_com_username = mb_strtolower($enxadrista->chess_com_username);
+            $enxadrista->save();
+        }
+
     }
 }
