@@ -6,6 +6,7 @@ use App\CampoPersonalizadoOpcaoInscricao;
 use App\Categoria;
 use App\Cidade;
 use App\Clube;
+use App\CriterioDesempate;
 use App\Enxadrista;
 use App\Evento;
 use App\Inscricao;

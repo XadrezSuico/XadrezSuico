@@ -162,6 +162,8 @@ Route::group(["prefix"=>"evento"],function(){
 
         Route::group(["prefix"=>"{torneio_id}/lichess"],function(){
 	        Route::get('/check_players_in', 'TorneioController@check_players_in')->name('evento.torneios.lichess.check_players_in');
+	        Route::get('/get_results', 'TorneioController@lichess_get_results')->name('evento.torneios.lichess.lichess_get_results');
+	        Route::get('/remove_lichess_players_not_found', 'TorneioController@remove_lichess_players_not_found')->name('evento.torneios.lichess.remove_lichess_players_not_found');
         });
 
         Route::group(["prefix"=>"{torneio_id}/categoria"],function(){

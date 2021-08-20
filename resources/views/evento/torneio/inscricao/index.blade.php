@@ -32,7 +32,10 @@
                         <th>Nome</th>
                         @if($evento->tipo_rating) <th>Rating</th> @endif
                         @if($evento->is_lichess || $evento->is_lichess_integration) <th>Usuário Lichess.org</th> @endif
-                        @if($evento->is_lichess_integration) <th>Inscrito Lichess.org?</th> @endif
+                        @if($evento->is_lichess_integration)
+                            <th>Está no Time do Lichess.org?</th>
+                            <th>Inscrito Lichess.org?</th>
+                        @endif
                         @if($evento->is_chess_com) <th>Usuário Chess.com</th> @endif
                         @if($evento->usa_fide)
                             <th>ID FIDE</th>
@@ -61,7 +64,10 @@
                             <td>#{{$inscricao->enxadrista->id}} - <a href="{{url("/enxadrista/edit/".$inscricao->enxadrista->id)}}" target="_blank">{{$inscricao->enxadrista->name}}</a></td>
                             @if($evento->tipo_rating) <td>@if($inscricao->enxadrista->ratings()->where([["tipo_ratings_id","=",$evento->tipo_rating->tipo_ratings_id]])->count() > 0) {{$inscricao->enxadrista->ratings()->where([["tipo_ratings_id","=",$evento->tipo_rating->tipo_ratings_id]])->first()->valor}} @else Não Há @endif</td> @endif
                             @if($evento->is_lichess || $evento->is_lichess_integration) <td>{{$inscricao->enxadrista->lichess_username}}</td> @endif
-                            @if($evento->is_lichess_integration) <td>@if($inscricao->is_lichess_found) Sim @else <strong><span style="color:red">Não</span></strong> @endif</td> @endif
+                            @if($evento->is_lichess_integration)
+                                <td>@if($inscricao->is_lichess_team_found) Sim @else <strong><span style="color:red">Não</span></strong> @endif</td>
+                                <td>@if($inscricao->is_lichess_found) Sim @else <strong><span style="color:red">Não</span></strong> @endif</td>
+                            @endif
                             @if($evento->is_chess_com) <td>{{$inscricao->enxadrista->chess_com_username}}</td> @endif
                             @if($evento->usa_fide)
                                 <td>{{$inscricao->enxadrista->fide_id}}</td>

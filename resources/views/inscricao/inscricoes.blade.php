@@ -39,8 +39,13 @@
 		</div>
 
 		<div class="box-body">
+			@if($evento->e_permite_visualizar_lista_inscritos_publica)
+                <a href="{{url("/inscricao/".$evento->id)}}" class="btn btn-lg btn-info btn-block">
+                    Voltar ao Formulário de Inscrição
+                </a><br/>
+            @endif
 			@if($evento->pagina)
-				@if($evento->pagina->imagem) <img src="data:image/png;base64, {!!$evento->pagina->imagem!!}" width="100%" style="max-width: 800px"/> <br/> @endif
+				@if($evento->pagina->imagem) <div style="width: 100%; text-align: center;"><img src="data:image/png;base64, {!!$evento->pagina->imagem!!}" width="100%" style="max-width: 800px"/></div> <br/> @endif
 				@if($evento->pagina->texto) {!!$evento->pagina->texto!!} <br/> @endif
 				@if($evento->pagina->imagem || $evento->pagina->texto) <hr/> @endif
 			@endif
@@ -50,7 +55,12 @@
 			@endforeach<br/>
 			<strong>Cidade:</strong> {{$evento->cidade->name}}<br/>
 			<strong>Local:</strong> {{$evento->local}}<br/>
-			<strong>Data:</strong> {{$evento->getDataInicio()}}<br/>
+			<strong>Data:</strong>
+            @if($evento->getDataInicio() == $evento->getDataFim())
+                {{$evento->getDataInicio()}}
+            @else
+                {{$evento->getDataInicio()}} - {{$evento->getDataFim()}}
+            @endif<br/>
 			<strong>Maiores informações em:</strong> <a href="{{$evento->link}}" target="_blank">{{$evento->link}}</a><br/>
 			@if($evento->maximo_inscricoes_evento)
 				<hr/>
@@ -59,7 +69,10 @@
 				<hr/>
 			@endif
 			@if($evento->getDataFimInscricoesOnline()) <h3><strong>Inscrições antecipadas até:</strong> {{$evento->getDataFimInscricoesOnline()}}.</h3>@endif
-		</div>
+            @if($evento->is_lichess_integration)
+                Informações do Lichess.org são atualizadas a cada 6 horas.
+            @endif
+        </div>
 	</div>
 	<div class="box box-primary">
 		<div class="box-header">
@@ -75,7 +88,11 @@
                         <th>Código Enxadrista</th>
                         <th>Nome do Enxadrista</th>
                         <th>Data de Nascimento</th>
-                        @if($evento->is_lichess_integration) <th>Inscrito Lichess.org?</th> @endif
+                        @if($evento->is_lichess_integration)
+                            <th>Inscrito Lichess.org?</th>
+                            <th>Rating Lichess.org</th>
+                            <th>Posição Inicial (Parcial)</th>
+                        @endif
                         <th>Categoria Inscrição</th>
                         <th>Cidade</th>
                         <th>Clube</th>
@@ -87,7 +104,11 @@
                             <td>{{$inscricao->enxadrista->id}}</td>
                             <td>{{$inscricao->enxadrista->getNomePublico()}}</td>
                             <td>{{$inscricao->enxadrista->getNascimentoPublico()}}</td>
-                            @if($evento->is_lichess_integration) <td>@if($inscricao->is_lichess_found) Sim @else <strong><span style="color:red">Não</span></strong> @endif</td> @endif
+                            @if($evento->is_lichess_integration)
+                                <td>@if($inscricao->is_lichess_found) Sim @else <strong><span style="color:red">Não</span></strong>@endif</td>
+                                <td>@if($inscricao->lichess_rating) {{$inscricao->lichess_rating}} @else - @endif</td>
+                                <td>@if($inscricao->lichess_start_position) {{$inscricao->lichess_start_position}} @else - @endif</td>
+                            @endif
                             <td>{{$inscricao->categoria->name}}</td>
                             <td>{{$inscricao->cidade->name}}</td>
                             <td>@if($inscricao->clube) {{$inscricao->clube->name}} @else - @endif</td>

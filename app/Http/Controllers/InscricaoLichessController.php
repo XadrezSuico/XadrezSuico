@@ -17,21 +17,14 @@ class InscricaoLichessController extends Controller
         $passo = 1;
         $inscricao = Inscricao::where([["uuid","=",$uuid]])->first();
         if ($inscricao) {
+            if (!$inscricao->torneio->evento->isLichessDelayToEnter()) {
+                $request->session()->forget('state');
+                $request->session()->forget('uuid');
+                $request->session()->forget('lichess_token');
+                $request->session()->forget('lichess_token_timeout');
+            }
             if(!$inscricao->torneio->evento->is_lichess_integration){
                 return redirect("/inscricao/".$$inscricao->torneio->evento->id);
-            }
-            if ($inscricao->torneio->evento->inscricoes_encerradas()) {
-                $evento = $inscricao->torneio->evento;
-                if(!$user){
-                    return view("inscricao.encerradas", compact("evento"));
-                }
-                if (
-                    !$user->hasPermissionGlobal() &&
-                    !$user->hasPermissionEventByPerfil($evento->id, [3, 4, 5]) &&
-                    !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [6,7])
-                ) {
-                    return view("inscricao.encerradas", compact("evento"));
-                }
             }
             if($inscricao->is_lichess_found){
                 $passo = 3;
@@ -68,19 +61,6 @@ class InscricaoLichessController extends Controller
         if ($inscricao) {
             if(!$inscricao->torneio->evento->is_lichess_integration){
                 return redirect("/inscricao/".$$inscricao->torneio->evento->id);
-            }
-            if ($inscricao->torneio->evento->inscricoes_encerradas()) {
-                $evento = $inscricao->torneio->evento;
-                if(!$user){
-                    return view("inscricao.encerradas", compact("evento"));
-                }
-                if (
-                    !$user->hasPermissionGlobal() &&
-                    !$user->hasPermissionEventByPerfil($evento->id, [3, 4, 5]) &&
-                    !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [6,7])
-                ) {
-                    return view("inscricao.encerradas", compact("evento"));
-                }
             }
 
             $request->session()->put('state', $state = $this->base64url_encode(pack('H*',bin2hex(openssl_random_pseudo_bytes(32)))));
@@ -138,18 +118,13 @@ class InscricaoLichessController extends Controller
             if(!$inscricao->torneio->evento->is_lichess_integration){
                 return redirect("/inscricao/".$$inscricao->torneio->evento->id);
             }
-            if ($inscricao->torneio->evento->inscricoes_encerradas()) {
-                $evento = $inscricao->torneio->evento;
-                if(!$user){
-                    return view("inscricao.encerradas", compact("evento"));
-                }
-                if (
-                    !$user->hasPermissionGlobal() &&
-                    !$user->hasPermissionEventByPerfil($evento->id, [3, 4, 5]) &&
-                    !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [6,7])
-                ) {
-                    return view("inscricao.encerradas", compact("evento"));
-                }
+            if (!$inscricao->torneio->evento->isLichessDelayToEnter()) {
+                $request->session()->forget('state');
+                $request->session()->forget('uuid');
+                $request->session()->forget('lichess_token');
+                $request->session()->forget('lichess_token_timeout');
+
+                return redirect("/inscricao/" . $uuid . "/lichess");
             }
 
             if($request->session()->has('lichess_token') && $request->session()->has('lichess_token_timeout')){

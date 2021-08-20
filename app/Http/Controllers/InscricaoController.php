@@ -22,6 +22,8 @@ use Illuminate\Http\Request;
 
 use App\Enum\EmailType;
 
+use Log;
+
 class InscricaoController extends Controller
 {
     public function inscricao($id, Request $request)
@@ -816,12 +818,20 @@ class InscricaoController extends Controller
         }
         if ($request->has("chess_com_username")) {
             if ($request->input("chess_com_username") != "") {
-                $enxadrista->chess_com_username = $request->input("chess_com_username");
+                if ($this->checkChessComUser($request->input("chess_com_username"))) {
+                    $enxadrista->chess_com_username = mb_strtolower($request->input("chess_com_username"));
+                }else{
+                    return response()->json(["ok" => 0, "error" => 1, "message" => "O usuário do Chess.com não existe. Por favor, verifique esta informação e tente novamente. Lembrando que esta informação DEVE SER válida e deve corresponder ao seu cadastro!", "registred" => 0, "ask" => 0]);
+                }
             }
         }
         if ($request->has("lichess_username")) {
             if ($request->input("lichess_username") != "") {
-                $enxadrista->lichess_username = mb_strtolower($request->input("lichess_username"));
+                if ($this->checkLichessUser($request->input("lichess_username"))) {
+                    $enxadrista->lichess_username = mb_strtolower($request->input("lichess_username"));
+                }else{
+                    return response()->json(["ok" => 0, "error" => 1, "message" => "O usuário do Lichess.org não existe. Por favor, verifique esta informação e tente novamente. Lembrando que esta informação DEVE SER válida e deve corresponder ao seu cadastro!", "registred" => 0, "ask" => 0]);
+                }
             }
         }
         $enxadrista->cidade_id = $request->input("cidade_id");
@@ -1182,12 +1192,20 @@ class InscricaoController extends Controller
         }
         if ($request->has("chess_com_username")) {
             if ($request->input("chess_com_username") != "") {
-                $enxadrista->chess_com_username = $request->input("chess_com_username");
+                if ($this->checkChessComUser($request->input("chess_com_username"))) {
+                    $enxadrista->chess_com_username = mb_strtolower($request->input("chess_com_username"));
+                }else{
+                    return response()->json(["ok" => 0, "error" => 1, "message" => "O usuário do Chess.com não existe. Por favor, verifique esta informação e tente novamente. Lembrando que esta informação DEVE SER válida e deve corresponder ao seu cadastro!", "registred" => 0, "ask" => 0]);
+                }
             }
         }
         if ($request->has("lichess_username")) {
             if ($request->input("lichess_username") != "") {
-                $enxadrista->lichess_username = mb_strtolower($request->input("lichess_username"));
+                if ($this->checkLichessUser($request->input("lichess_username"))) {
+                    $enxadrista->lichess_username = mb_strtolower($request->input("lichess_username"));
+                }else{
+                    return response()->json(["ok" => 0, "error" => 1, "message" => "O usuário do Lichess.org não existe. Por favor, verifique esta informação e tente novamente. Lembrando que esta informação DEVE SER válida e deve corresponder ao seu cadastro!", "registred" => 0, "ask" => 0]);
+                }
             }
         }
         $enxadrista->cidade_id = $request->input("cidade_id");
@@ -1581,5 +1599,53 @@ class InscricaoController extends Controller
             $results[] = $categoria;
         }
         return $results;
+    }
+
+
+    public function checkChessComUser($username){
+        $response = \Httpful\Request::get('https://api.chess.com/pub/player/'.mb_strtolower($username))
+            ->send();
+            Log::debug("ChessCom User: ".mb_strtolower($username));
+            Log::debug("ChessCom Uri: ".'https://api.chess.com/pub/player/'.mb_strtolower($username));
+            Log::debug("ChessCom code: ".$response->code);
+        if($response->code == 200){
+            return true;
+        }
+        return false;
+    }
+    public function checkChessComUser_api(Request $request){
+        if($request->has("username")){
+            if($request->input("username") != ""){
+                if($this->checkChessComUser($request->input("username"))){
+                    return response()->json(["ok" => 1, "error" => 0]);
+                }else{
+                    return response()->json(["ok" => 0, "error" => 1, "message" => "Usuário não encontrado."]);
+                }
+            }
+        }
+        return response()->json(["ok"=>0,"error"=>1]);
+    }
+
+
+    public function checkLichessUser($username){
+        $response = \Httpful\Request::get('https://lichess.org/api/user/'.$username)
+            ->expectsJson()
+            ->send();
+        if($response->code == 200){
+            return true;
+        }
+        return false;
+    }
+    public function checkLichessUser_api(Request $request){
+        if($request->has("username")){
+            if($request->input("username") != ""){
+                if($this->checkLichessUser($request->input("username"))){
+                    return response()->json(["ok" => 1, "error" => 0]);
+                }else{
+                    return response()->json(["ok" => 0, "error" => 1, "message" => "Usuário não encontrado."]);
+                }
+            }
+        }
+        return response()->json(["ok"=>0,"error"=>1]);
     }
 }

@@ -868,7 +868,7 @@
 		});
 
 		$("#enviar_atualizacao").on("click",function(){
-			Loading.enable(loading_default_animation, 10000);
+			Loading.enable(loading_default_animation, 30000);
 
 			enviarAtualizacaoEnxadrista();
 		});
@@ -1052,6 +1052,7 @@
 		});
 
 		$("#enviar_cadastro").on("click",function(){
+		    Loading.enable(loading_default_animation,10000);
 			enviarNovoEnxadrista();
 		});
 
@@ -1891,6 +1892,7 @@
 					selectEnxadrista(data.enxadrista_id,function(){
 						$("#successMessage").html("<strong>O cadastro do enxadrista foi efetuado com sucesso!</strong>");
 						$("#success").modal();
+						Loading.destroy();
 					});
 				}else{
 					if(data.ask == 1){
@@ -1902,15 +1904,18 @@
 						$("#enxadrista_id").val(data.enxadrista_id);
 						$("#asksMessage_jaInscrito").val(data.esta_inscrito);
 						$("#asks").modal();
+						Loading.destroy();
 					}else if(data.registred == 1){
 						zeraCadastro(true,false);
 						selectEnxadrista(data.enxadrista_id,function(){
 							$("#alertsMessage").html(data.message);
 							$("#alerts").modal();
+						    Loading.destroy();
 						});
 					}else{
 						$("#alertsMessage").html(data.message);
 						$("#alerts").modal();
+						Loading.destroy();
 					}
 				}
 			}

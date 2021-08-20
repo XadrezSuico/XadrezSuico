@@ -7,6 +7,16 @@ use GuzzleHttp\Client;
 
 class LichessIntegrationController extends Controller
 {
+    public function getUserData($token){
+        $user_response = \Httpful\Request::get('https://lichess.org/api/account')
+                ->expectsJson()
+                ->addHeader('Authorization', "Bearer " . $token)
+                ->send();
+        if ($user_response->code == 200) {
+            return array("ok"=>1,"error"=>0,"data"=>$user_response->body);
+        }
+        return array("ok"=>0,"error"=>1,"message"=>"Torneio não encontrado.");
+    }
     public function getSwissResults($tournament_id){
         $client = new Client;
         $response = $client->get("https://lichess.org/api/swiss/".$tournament_id."/results");
@@ -15,5 +25,25 @@ class LichessIntegrationController extends Controller
             return array("ok"=>1,"error"=>0,"data"=>$html);
         }
         return array("ok"=>0,"error"=>1,"message"=>"Torneio não encontrado.");
+    }
+    public function getTeamMembers($team_id){
+        $response = \Httpful\Request::get("https://lichess.org/api/team/".$team_id."/users")
+                ->addHeader('Authorization', "Bearer " . env("LICHESS_TOKEN",""))
+                ->send();
+        if($response->code == 200){
+            return array("ok"=>1,"error"=>0,"data"=>$response->body);
+        }
+        return array("ok"=>0,"error"=>1,"message"=>"Time não encontrado.");
+    }
+
+
+    public function removeMemberFromTeam($team_id,$user_id){
+        $response = \Httpful\Request::post("https://lichess.org/team/".$team_id."/kick/".$user_id)
+            ->addHeader('Authorization', "Bearer " . env("LICHESS_TOKEN",""))
+            ->send();
+        if($response->code == 200){
+            return array("ok"=>1,"error"=>0);
+        }
+        return array("ok"=>0,"error"=>1,"message"=>"Algo deu errado.");
     }
 }

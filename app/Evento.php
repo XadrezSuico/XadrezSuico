@@ -303,6 +303,13 @@ class Evento extends Model
         return "-";
     }
 
+    public function isLichessDelayToEnter(){
+        if(strtotime($this->data_limite_inscricoes_abertas) <= time() - (60*60*12)){
+            return false;
+        }
+        return true;
+    }
+
     public function isDeletavel()
     {
         if ($this->id != null) {

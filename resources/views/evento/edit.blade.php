@@ -277,6 +277,7 @@
 									<label for="lichess_team_id">Lichess.org: ID do Time/Equipe</label>
                                     <input name="lichess_team_id" id="lichess_team_id" class="form-control" type="text" value="{{$evento->lichess_team_id}}" @if(!\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() && !\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4]) && !\Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])) disabled="disabled" @endif />
                                     <small><strong>Importante!</strong> Aqui vai o ID do Time no Lichess. Vale constar que para que um torneio tenha integração com o XadrezSuíço é necessário que seja efetuado por um time/equipe que XadrezSuíço tenha permissões. Segue exemplo de onde encontrar o ID do Time: https://lichess.org/team/<strong>circuito-sesc-de-xadrez-2021</strong></small>
+                                    @if($evento->lichess_team_id) <br/><a href="https://lichess.org/team/{{$evento->lichess_team_id}}" target="_blank">Link do Time</a> @endif
                                 </div>
                                 @if(\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() || \Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4]) || \Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7]))
                                     <div class="form-group">
@@ -289,7 +290,8 @@
 									<label for="lichess_tournament_id">Lichess.org: ID do Torneio</label>
                                     <input name="lichess_tournament_id" id="lichess_tournament_id" class="form-control" type="text" value="{{$evento->lichess_tournament_id}}" @if(!\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() && !\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4]) && !\Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])) disabled="disabled" @endif />
                                     <small><strong>Importante!</strong> Aqui vai o ID do Torneio no Lichess. Vale constar que para que um torneio tenha integração com o XadrezSuíço é necessário que seja efetuado por um time/equipe que XadrezSuíço tenha permissões. Segue exemplo de onde encontrar o ID do Torneio: https://lichess.org/swiss/<strong>ZDig8Z5Y</strong></small>
-								</div>
+                                    @if($evento->lichess_tournament_id) <br/><a href="https://lichess.org/swiss/{{$evento->lichess_tournament_id}}" target="_blank">Link do Torneio</a> @endif
+                                </div>
                                 @if(\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() || \Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4]) || \Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7]))
                                     <div class="form-group">
                                         <label for="lichess_tournament_password">Lichess.org: Senha para a Inscrição no Torneio</label>
@@ -820,9 +822,11 @@
 													@if($torneio->isDeletavel()) <a class="btn btn-danger" href="{{url("/evento/".$evento->id."/torneios/delete/".$torneio->id)}}" role="button">Apagar</a> @endif
                                                     @if($torneio->evento->is_lichess_integration)
                                                         <hr/>
-                                                        <strong>Opções Lichess.org</strong>
+                                                        <strong>Opções Lichess.org</strong><br/>
 														<a class="btn btn-success" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/lichess/check_players_in")}}" role="button">Conferir Inscrições no Torneio do Lichess.org</a><br/>
                                                         Última Atualização: {{$torneio->getLastLichessPlayersUpdate()}}
+														@if($torneio->evento->data_inicio <= date("Y-m-d")) <a class="btn btn-success" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/lichess/get_results")}}" role="button">Inserir Resultados do Torneio do Lichess.org</a><br/> @endif
+														@if(!$torneio->evento->isLichessDelayToEnter()) <a class="btn btn-danger" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/lichess/remove_lichess_players_not_found")}}" role="button">REMOVER os Players do Lichess.org que NÃO foram encontrados</a><br/> @endif
                                                     @endif
 												</td>
 											</tr>

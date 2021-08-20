@@ -53,20 +53,30 @@
 		</div>
 
 		<div class="box-body">
+			@if($evento->e_permite_visualizar_lista_inscritos_publica)
+                <a href="{{url("/inscricao/visualizar/".$evento->id)}}" class="btn btn-lg btn-info btn-block">
+                    Visualizar Lista de Inscrições
+                </a><br/>
+            @endif
 			@if($evento->pagina)
-				@if($evento->pagina->imagem) <img src="data:image/png;base64, {!!$evento->pagina->imagem!!}" width="100%" style="max-width: 800px"/> <br/> @endif
+				@if($evento->pagina->imagem) <div style="width: 100%; text-align: center;"><img src="data:image/png;base64, {!!$evento->pagina->imagem!!}" width="100%" style="max-width: 800px"/></div> <br/> @endif
 				@if($evento->pagina->texto) {!!$evento->pagina->texto!!} <br/> @endif
 				@if($evento->pagina->imagem || $evento->pagina->texto) <hr/> @endif
 			@endif
 			<strong>Categorias:</strong><br/>
 			@foreach($evento->categorias->all() as $categoria)
-				{{$categoria->categoria->name}}, 
+				{{$categoria->categoria->name}},
 			@endforeach<br/>
 			<strong>Cidade:</strong> {{$evento->cidade->name}}<br/>
 			<strong>Local:</strong> {{$evento->local}}<br/>
-			<strong>Data:</strong> {{$evento->getDataInicio()}}<br/>
+			<strong>Data:</strong>
+            @if($evento->getDataInicio() == $evento->getDataFim())
+                {{$evento->getDataInicio()}}
+            @else
+                {{$evento->getDataInicio()}} - {{$evento->getDataFim()}}
+            @endif<br/>
 			<strong>Maiores informações em:</strong> <a href="{{$evento->link}}" target="_blank">{{$evento->link}}</a><br/>
-			@if($evento->maximo_inscricoes_evento) 
+			@if($evento->maximo_inscricoes_evento)
 				<hr/>
 				<strong>Total de Inscritos até o presente momento:</strong> {{$evento->quantosInscritos()}}.<br/>
 				<strong>Limite de Inscritos:</strong> {{$evento->maximo_inscricoes_evento}}.<br/>

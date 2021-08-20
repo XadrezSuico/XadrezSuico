@@ -73,26 +73,34 @@
             <hr/>
             @switch($passo)
                 @case(1)
-                    <h3>É hora de efetuar sua Inscrição no Torneio do Lichess.org. Clique no botão abaixo para ser redirecionado ao Lichess para efetuar login no Lichess e fornecer acesso ao XadrezSuíço:</h3>
-                    <a href="{{url("/inscricao/".$inscricao->uuid."/lichess/redirect")}}" class="btn btn-lg btn-success btn-block">
-                        <strong>Logar no Lichess.org</strong>
-                    </a><br/>
+                    @if($inscricao->torneio->evento->isLichessDelayToEnter())
+                        <h3>É hora de efetuar sua Inscrição no Torneio do Lichess.org. Clique no botão abaixo para ser redirecionado ao Lichess para efetuar login e fornecer acesso ao XadrezSuíço:</h3>
+                        <a href="{{url("/inscricao/".$inscricao->uuid."/lichess/redirect")}}" class="btn btn-lg btn-success btn-block">
+                            <strong>Logar no Lichess.org</strong>
+                        </a><br/>
+                    @else
+                        <h3>Não é mais possível vincular sua inscrição para jogar este torneio.</h3>
+                    @endif
                     @break
                 @case(2)
-                    <h2>Ótimo, <strong>{{$username}}</strong>!</h2>
-                    <h3>Quando você clicar no botão abaixo entenda o que vai acontecer:</h3>
-                    <ol>
-                        <li>O usuário do Lichess.org de seu cadastro será atualizado para <strong>{{$username}}</strong>;</li>
-                        <li>Você será inserido no time <strong>{{$inscricao->torneio->evento->getLichessTeamLink()}}</strong>;</li>
-                        <li>Após isto, você será direcionado para o Torneio (<strong>{{$inscricao->torneio->evento->getLichessTournamentLink()}}</strong>) para que finalize sua inscrição.</li>
-                    </ol>
-                    <h3>Você confirma esse procedimento?</h3>
-                    <a href="{{url("/inscricao/".$inscricao->uuid."/lichess/confirm")}}" class="btn btn-lg btn-success btn-block">
-                        <strong>Sim, me inscreva no Torneio do Lichess.org.</strong>
-                    </a><br/>
-                    <a href="{{url("/inscricao/".$inscricao->uuid."/lichess/clear")}}" class="btn btn-lg btn-danger btn-block">
-                        <strong>Não, me leve novamente para efetuar o login no Lichess.org</strong>
-                    </a><br/>
+                    @if($inscricao->torneio->evento->isLichessDelayToEnter())
+                        <h2>Ótimo, <strong>{{$username}}</strong>!</h2>
+                        <h3>Quando você clicar no botão abaixo entenda o que vai acontecer:</h3>
+                        <ol>
+                            <li>O usuário do Lichess.org de seu cadastro será atualizado para <strong>{{$username}}</strong>;</li>
+                            <li>Você será inserido no time <strong>{{$inscricao->torneio->evento->getLichessTeamLink()}}</strong>;</li>
+                            <li>Após isto, você será direcionado para o Torneio (<strong>{{$inscricao->torneio->evento->getLichessTournamentLink()}}</strong>) para que finalize sua inscrição.</li>
+                        </ol>
+                        <h3>Você confirma esse procedimento?</h3>
+                        <a href="{{url("/inscricao/".$inscricao->uuid."/lichess/confirm")}}" class="btn btn-lg btn-success btn-block">
+                            <strong>Sim, me inscreva no Torneio do Lichess.org.</strong>
+                        </a><br/>
+                        <a href="{{url("/inscricao/".$inscricao->uuid."/lichess/clear")}}" class="btn btn-lg btn-danger btn-block">
+                            <strong>Não, me leve novamente para efetuar o login no Lichess.org</strong>
+                        </a><br/>
+                    @else
+                        <h3>Não é mais possível vincular sua inscrição para jogar este torneio.</h3>
+                    @endif
                     @break
                 @case(3)
                     <h2>Tudo certo, <strong>{{$inscricao->enxadrista->lichess_username}}</strong>!</h2>

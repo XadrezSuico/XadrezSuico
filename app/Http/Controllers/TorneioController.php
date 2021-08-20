@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Categoria;
 use App\CategoriaTorneio;
+use App\CriterioDesempate;
 use App\Enxadrista;
 use App\Evento;
 use App\Inscricao;
@@ -925,6 +926,8 @@ class TorneioController extends Controller
                                     );
                                 }
 
+                                $inscricao->lichess_rating = $lichess_player->rating;
+                                $inscricao->lichess_start_position = $lichess_player->rank;
                                 $inscricao->is_lichess_found = true;
                                 $inscricao->save();
                             }else{
@@ -941,6 +944,172 @@ class TorneioController extends Controller
                     ->causedBy(Auth::user())
                     ->log("Lichess.org - Não encontrados como inscritos: ".json_encode($players_not_found));
 
+
+                $players_not_found = array();
+                $retorno_team = $lichess_integration_controller->getTeamMembers($torneio->evento->lichess_team_id);
+                if($retorno_team["ok"] == 1){
+                    $token_user = $lichess_integration_controller->getUserData(env("LICHESS_TOKEN",""));
+                    foreach(explode("\n",$retorno_team["data"]) as $lichess_player_raw){
+                        $lichess_player = json_decode(trim($lichess_player_raw));
+                        if($lichess_player){
+                            $inscricao_count = $torneio->inscricoes()->whereHas("enxadrista",function($q1) use ($lichess_player){
+                                $q1->where([
+                                    ["lichess_username","=",mb_strtolower($lichess_player->username)]
+                                ]);
+                            })->count();
+                            if($inscricao_count > 0){
+                                $inscricao = $torneio->inscricoes()->whereHas("enxadrista",function($q1) use ($lichess_player){
+                                    $q1->where([
+                                        ["lichess_username","=",mb_strtolower($lichess_player->username)]
+                                    ]);
+                                })->first();
+
+
+                                $inscricao->is_lichess_team_found = true;
+                                $inscricao->save();
+                            }else{
+                                if($token_user["data"]->username != $lichess_player->username){
+                                    $players_not_found[] = $lichess_player->username;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                activity()
+                    ->performedOn($torneio)
+                    ->causedBy(Auth::user())
+                    ->log("Lichess.org - Usuários Não Encontrados no Time: ".json_encode($players_not_found));
+
+            }
+        }
+
+        return redirect("/evento/dashboard/" . $evento->id . "/?tab=torneio");
+    }
+
+
+    public function lichess_get_results($id, $torneio_id)
+    {
+        $evento = Evento::find($id);
+        $user = Auth::user();
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionEventByPerfil($evento->id, [4]) &&
+            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
+        ) {
+            return redirect("/evento/dashboard/" . $evento->id);
+        }
+
+        $torneio = Torneio::find($torneio_id);
+        if($torneio->evento->is_lichess_integration){
+            if($torneio->evento->lichess_tournament_id){
+                $criterio_lichess_tiebreak = CriterioDesempate::where([["is_lichess","=",true]])->first();
+
+                $lichess_integration_controller = new LichessIntegrationController;
+                $retorno = $lichess_integration_controller->getSwissResults($torneio->evento->lichess_tournament_id);
+                if($retorno["ok"] == 1){
+                    foreach(explode("\n",$retorno["data"]) as $lichess_player_raw){
+                        $lichess_player = json_decode(trim($lichess_player_raw));
+                        if($lichess_player){
+                            $inscricao_count = $torneio->inscricoes()->whereHas("enxadrista",function($q1) use ($lichess_player){
+                                $q1->where([
+                                    ["lichess_username","=",mb_strtolower($lichess_player->username)]
+                                ]);
+                            })->count();
+                            if($inscricao_count > 0){
+                                $inscricao = $torneio->inscricoes()->whereHas("enxadrista",function($q1) use ($lichess_player){
+                                    $q1->where([
+                                        ["lichess_username","=",mb_strtolower($lichess_player->username)]
+                                    ]);
+                                })->first();
+
+                                $inscricao->pontos = $lichess_player->points;
+
+                                $inscricao->is_lichess_found = true;
+                                $inscricao->confirmado = true;
+                                $inscricao->save();
+
+                                $inscricao_criterio = $inscricao->criterios_desempate()->where([
+                                    ["criterio_desempate_id","=",$criterio_lichess_tiebreak->id]
+                                ])->first();
+                                if(!$inscricao_criterio){
+                                    $inscricao_criterio = new InscricaoCriterioDesempate;
+                                    $inscricao_criterio->inscricao_id = $inscricao->id;
+                                    $inscricao_criterio->criterio_desempate_id = $criterio_lichess_tiebreak->id;
+                                }
+                                $inscricao_criterio->valor = $lichess_player->tieBreak;
+                                $inscricao_criterio->save();
+
+                            }
+                        }
+                    }
+                }
+
+                $torneio->lichess_last_update = date("Y-m-d H:i:s");
+                $torneio->save();
+
+                activity()
+                    ->performedOn($torneio)
+                    ->causedBy(Auth::user())
+                    ->log("Resultados importados para o torneio.");
+
+            }
+        }
+
+        return redirect("/evento/dashboard/" . $evento->id . "/?tab=torneio");
+    }
+
+    public function remove_lichess_players_not_found($id, $torneio_id)
+    {
+        $evento = Evento::find($id);
+        $user = Auth::user();
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionEventByPerfil($evento->id, [4]) &&
+            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
+        ) {
+            return redirect("/evento/dashboard/" . $evento->id);
+        }
+
+        $torneio = Torneio::find($torneio_id);
+        if($torneio->evento->is_lichess_integration){
+            if($torneio->evento->lichess_tournament_id){
+                $players_not_found = array();
+
+                $lichess_integration_controller = new LichessIntegrationController;
+
+                $token_user = $lichess_integration_controller->getUserData(env("LICHESS_TOKEN",""));
+
+                if($token_user){
+                    if($token_user["ok"]){
+                        $retorno = $lichess_integration_controller->getTeamMembers($torneio->evento->lichess_team_id);
+                        if($retorno["ok"] == 1){
+                            foreach(explode("\n",$retorno["data"]) as $lichess_player_raw){
+                                $lichess_player = json_decode(trim($lichess_player_raw));
+                                if($lichess_player){
+                                    $inscricao_count = $torneio->inscricoes()->whereHas("enxadrista",function($q1) use ($lichess_player){
+                                        $q1->where([
+                                            ["lichess_username","=",mb_strtolower($lichess_player->username)]
+                                        ]);
+                                    })->count();
+                                    if($inscricao_count == 0){
+                                        if($token_user["data"]->username != $lichess_player->username){
+                                            $players_not_found[] = $lichess_player->username;
+                                            $lichess_integration_controller->removeMemberFromTeam($torneio->evento->lichess_team_id, $lichess_player->username);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        $torneio->save();
+
+                        activity()
+                            ->performedOn($torneio)
+                            ->causedBy(Auth::user())
+                            ->log("Lichess.org - Usuários Removidos do Time: ".json_encode($players_not_found));
+
+                    }
+                }
             }
         }
 
