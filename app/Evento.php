@@ -304,6 +304,7 @@ class Evento extends Model
     }
 
     public function isLichessDelayToEnter(){
+        return true;
         if(strtotime($this->data_limite_inscricoes_abertas) <= time() - (60*60*12)){
             return false;
         }

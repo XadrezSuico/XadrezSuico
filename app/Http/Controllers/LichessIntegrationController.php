@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use GuzzleHttp\Client;
 
+use Log;
+
 class LichessIntegrationController extends Controller
 {
     public function getUserData($token){
@@ -38,10 +40,13 @@ class LichessIntegrationController extends Controller
 
 
     public function removeMemberFromTeam($team_id,$user_id){
-        $response = \Httpful\Request::post("https://lichess.org/team/".$team_id."/kick/".$user_id)
+        Log::debug("removeMemberFromTeam: "."https://lichess.org/team/".trim($team_id)."/kick/".trim($user_id));
+        $response = \Httpful\Request::post("https://lichess.org/team/".trim($team_id)."/kick/".trim($user_id))
             ->addHeader('Authorization', "Bearer " . env("LICHESS_TOKEN",""))
             ->send();
+            Log::debug("removeMemberFromTeam-code: ".$response->code);
         if($response->code == 200){
+            Log::debug("removeMemberFromTeam-body: ".$response->raw_body);
             return array("ok"=>1,"error"=>0);
         }
         return array("ok"=>0,"error"=>1,"message"=>"Algo deu errado.");

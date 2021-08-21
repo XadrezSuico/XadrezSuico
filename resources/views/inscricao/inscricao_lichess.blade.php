@@ -87,9 +87,9 @@
                         <h2>Ótimo, <strong>{{$username}}</strong>!</h2>
                         <h3>Quando você clicar no botão abaixo entenda o que vai acontecer:</h3>
                         <ol>
-                            <li>O usuário do Lichess.org de seu cadastro será atualizado para <strong>{{$username}}</strong>;</li>
-                            <li>Você será inserido no time <strong>{{$inscricao->torneio->evento->getLichessTeamLink()}}</strong>;</li>
-                            <li>Após isto, você será direcionado para o Torneio (<strong>{{$inscricao->torneio->evento->getLichessTournamentLink()}}</strong>) para que finalize sua inscrição.</li>
+                            <li><h4>O cadastro de <strong>{{$inscricao->enxadrista->name}}</strong> será atualizado para <strong>{{$username}}</strong>;</h4></li>
+                            <li><h4>Você será inserido no time <strong>{{$inscricao->torneio->evento->getLichessTeamLink()}}</strong>;</h4></li>
+                            <li><h4>Após isto, você será direcionado para o Torneio (<strong>{{$inscricao->torneio->evento->getLichessTournamentLink()}}</strong>) para que finalize sua inscrição.</h4></li>
                         </ol>
                         <h3>Você confirma esse procedimento?</h3>
                         <a href="{{url("/inscricao/".$inscricao->uuid."/lichess/confirm")}}" class="btn btn-lg btn-success btn-block">

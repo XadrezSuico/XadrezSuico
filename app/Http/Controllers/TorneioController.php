@@ -20,6 +20,8 @@ use App\Enum\EmailType;
 
 use App\Http\Controllers\LichessIntegrationController;
 
+use Log;
+
 class TorneioController extends Controller
 {
     public function __construct()
@@ -1060,6 +1062,62 @@ class TorneioController extends Controller
     }
 
     public function remove_lichess_players_not_found($id, $torneio_id)
+    {
+        $evento = Evento::find($id);
+        $user = Auth::user();
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionEventByPerfil($evento->id, [4]) &&
+            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
+        ) {
+            return redirect("/evento/dashboard/" . $evento->id);
+        }
+
+        $torneio = Torneio::find($torneio_id);
+        if($torneio->evento->is_lichess_integration){
+            if($torneio->evento->lichess_tournament_id){
+                $players_not_found = array();
+
+                $lichess_integration_controller = new LichessIntegrationController;
+
+                $token_user = $lichess_integration_controller->getUserData(env("LICHESS_TOKEN",""));
+
+                if($token_user){
+                    if($token_user["ok"]){
+                        $retorno = $lichess_integration_controller->getTeamMembers($torneio->evento->lichess_team_id);
+                        if($retorno["ok"] == 1){
+                            foreach(explode("\n",$retorno["data"]) as $lichess_player_raw){
+                                $lichess_player = json_decode(trim($lichess_player_raw));
+                                if($lichess_player){
+                                    $inscricao_count = $torneio->inscricoes()->whereHas("enxadrista",function($q1) use ($lichess_player){
+                                        $q1->where([
+                                            ["lichess_username","=",mb_strtolower($lichess_player->username)]
+                                        ]);
+                                    })->count();
+                                    if($inscricao_count == 0){
+                                        if($token_user["data"]->username != $lichess_player->username){
+                                            $players_not_found[] = $lichess_player->username;
+                                            $lichess_integration_controller->removeMemberFromTeam($torneio->evento->lichess_team_id, $lichess_player->username);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        $torneio->save();
+
+                        activity()
+                            ->performedOn($torneio)
+                            ->causedBy(Auth::user())
+                            ->log("Lichess.org - Usuários Removidos do Time: ".json_encode($players_not_found));
+
+                    }
+                }
+            }
+        }
+
+        return redirect("/evento/dashboard/" . $evento->id . "/?tab=torneio");
+    }
+    public function remove_lichess_players_not_found_on_team($id, $torneio_id)
     {
         $evento = Evento::find($id);
         $user = Auth::user();
