@@ -25,7 +25,7 @@ class CategoriaGrupoEventoController extends Controller
         ) {
             return redirect("/grupoevento/dashboard/".$grupo_evento->id);
         }
-        
+
 
         $categorias = $grupo_evento->categorias->all();
         return view('grupoevento.categoria.index', compact("categorias", "grupo_evento"));
@@ -39,7 +39,7 @@ class CategoriaGrupoEventoController extends Controller
         ) {
             return redirect("/grupoevento/dashboard/".$grupo_evento->id);
         }
-        
+
 
         return view('grupoevento.categoria.new', compact("grupo_evento"));
     }
@@ -53,7 +53,7 @@ class CategoriaGrupoEventoController extends Controller
         ) {
             return redirect("/grupoevento/dashboard/".$grupo_evento->id);
         }
-        
+
 
 
         $categoria = new Categoria;
@@ -81,7 +81,7 @@ class CategoriaGrupoEventoController extends Controller
         ) {
             return redirect("/grupoevento/dashboard/".$grupo_evento->id);
         }
-        
+
 
         $categoria = Categoria::find($id);
         $sexos = Sexo::all();
@@ -97,7 +97,7 @@ class CategoriaGrupoEventoController extends Controller
         ) {
             return redirect("/grupoevento/dashboard/".$grupo_evento->id);
         }
-        
+
 
 
         $categoria = Categoria::find($id);
@@ -110,6 +110,16 @@ class CategoriaGrupoEventoController extends Controller
             $categoria->nao_classificar = true;
         } else {
             $categoria->nao_classificar = false;
+        }
+
+        if ($request->has("categoria_classificadora_id")) {
+            if ($request->input("categoria_classificadora_id") != "") {
+                $categoria->categoria_classificadora_id = $request->input("categoria_classificadora_id");
+            } else {
+                $categoria->categoria_classificadora_id = null;
+            }
+        } else {
+            $categoria->categoria_classificadora_id = null;
         }
         $categoria->save();
 
@@ -125,7 +135,7 @@ class CategoriaGrupoEventoController extends Controller
         ) {
             return redirect("/grupoevento/dashboard/".$grupo_evento->id);
         }
-        
+
 
         $categoria = Categoria::find($id);
 
@@ -145,7 +155,7 @@ class CategoriaGrupoEventoController extends Controller
         ) {
             return redirect("/grupoevento/dashboard/".$grupo_evento->id);
         }
-        
+
 
         $categoria = Categoria::find($id);
 
@@ -165,7 +175,7 @@ class CategoriaGrupoEventoController extends Controller
         ) {
             return redirect("/grupoevento/dashboard/".$grupo_evento->id);
         }
-        
+
 
         $categoria = Categoria::find($id);
 

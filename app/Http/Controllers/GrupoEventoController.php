@@ -124,6 +124,17 @@ class GrupoEventoController extends Controller
             $grupo_evento->regulamento_link = null;
         }
 
+
+        if ($request->has("grupo_evento_classificador_id")) {
+            if ($request->input("grupo_evento_classificador_id") != "") {
+                $grupo_evento->grupo_evento_classificador_id = $request->input("grupo_evento_classificador_id");
+            } else {
+                $grupo_evento->grupo_evento_classificador_id = null;
+            }
+        } else {
+            $grupo_evento->grupo_evento_classificador_id = null;
+        }
+
         if ($request->has("e_pontuacao_resultado_para_geral")) {
             $grupo_evento->e_pontuacao_resultado_para_geral = true;
         } else {
@@ -417,7 +428,7 @@ class GrupoEventoController extends Controller
             $torneio = new Torneio;
             $torneio->name = ($torneio_template->torneio_name) ? $torneio_template->torneio_name : $torneio_template->name;
             $torneio->evento_id = $evento->id;
-            $torneio->tipo_torneio_id = 1;
+            $torneio->tipo_torneio_id = $torneio_template->tipo_torneio_id;
             $torneio->torneio_template_id = $torneio_template->id;
             $torneio->save();
 
@@ -428,6 +439,8 @@ class GrupoEventoController extends Controller
                 $categoria_torneio->torneio_id = $torneio->id;
                 $categoria_torneio->save();
             }
+
+            TorneioController::generateRodadasDefault($torneio->id);
         }
 
         return redirect("/grupoevento/dashboard/" . $grupo_evento->id . "?tab=evento");

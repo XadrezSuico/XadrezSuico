@@ -13,6 +13,9 @@ use App\MovimentacaoRating;
 use App\Rating;
 use App\TipoTorneio;
 use App\Torneio;
+use App\Rodada;
+use App\Emparceiramento;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -116,6 +119,7 @@ class TorneioController extends Controller
         $torneio = Torneio::find($torneio_id);
         $torneio->name = $request->input("name");
         $torneio->tipo_torneio_id = $request->input("tipo_torneio_id");
+
         $torneio->save();
         return redirect("/evento/" . $evento->id . "/torneios/edit/" . $torneio->id);
     }
@@ -893,6 +897,7 @@ class TorneioController extends Controller
                 $lichess_integration_controller = new LichessIntegrationController;
                 $retorno = $lichess_integration_controller->getSwissResults($torneio->evento->lichess_tournament_id);
                 if($retorno["ok"] == 1){
+                    $torneio->setAllInscricoesNotFound();
                     foreach(explode("\n",$retorno["data"]) as $lichess_player_raw){
                         $lichess_player = json_decode(trim($lichess_player_raw));
                         if($lichess_player){
@@ -908,18 +913,8 @@ class TorneioController extends Controller
                                     ]);
                                 })->first();
 
-                                if(!$inscricao->is_lichess_found){
-
+                                if(!$inscricao->is_lichess_found && ($inscricao->is_lichess_found != $inscricao->is_last_lichess_found)){
                                     // EMAIL PARA O ENXADRISTA SOLICITANTE
-                                    // $text = "Olá " . $inscricao->enxadrista->name . "!<br/>";
-                                    // $text .= "Você está recebendo este email para pois efetuou inscrição no Evento '" . $inscricao->torneio->evento->name . "', e sua <strong>inscrição foi confirmada no Lichess.org</strong>.<br/>";
-                                    // $text .= "Lembrando que é necessário que no horário do torneio esteja logado no Lichess.org e esteja com o torneio aberto: Segue link para facilitar o acesso: <a href=\"https://lichess.org/swiss/".$inscricao->torneio->evento->lichess_tournament_id."\">https://lichess.org/swiss/".$inscricao->torneio->evento->lichess_tournament_id."</a>.<br/>";
-                                    // EmailController::scheduleEmail(
-                                    //     $inscricao->enxadrista->email,
-                                    //     $evento->name . " - Inscrição Completa - Enxadrista: " . $inscricao->enxadrista->name,
-                                    //     $text,
-                                    //     $inscricao->enxadrista
-                                    // );
                                     EmailController::schedule(
                                         $inscricao->enxadrista->email,
                                         $inscricao,
@@ -929,10 +924,14 @@ class TorneioController extends Controller
                                 }
 
                                 $inscricao->lichess_rating = $lichess_player->rating;
-                                $inscricao->lichess_start_position = $lichess_player->rank;
+                                $inscricao->start_position = $lichess_player->rank;
                                 $inscricao->is_lichess_found = true;
+                                $inscricao->is_last_lichess_found = true;
                                 $inscricao->save();
                             }else{
+                                $inscricao->is_lichess_found = false;
+                                $inscricao->is_last_lichess_found = false;
+                                $inscricao->save();
                                 $players_not_found[] = $lichess_player->username;
                             }
                         }
@@ -1010,6 +1009,7 @@ class TorneioController extends Controller
                 $lichess_integration_controller = new LichessIntegrationController;
                 $retorno = $lichess_integration_controller->getSwissResults($torneio->evento->lichess_tournament_id);
                 if($retorno["ok"] == 1){
+                $torneio->setAllInscricoesNotFound();
                     foreach(explode("\n",$retorno["data"]) as $lichess_player_raw){
                         $lichess_player = json_decode(trim($lichess_player_raw));
                         if($lichess_player){
@@ -1172,6 +1172,53 @@ class TorneioController extends Controller
         }
 
         return redirect("/evento/dashboard/" . $evento->id . "/?tab=torneio");
+    }
+
+
+
+
+
+    public static function generateRodadasDefault($torneio_id){
+        $torneio = Torneio::find($torneio_id);
+        if($torneio){
+            if($torneio->tipo_torneio->id == 3){
+                // GERANDO RODADAS PARA A ESTRUTURA DE CHAVE DE SEMI FINAL E FINAL (SEM DISPUTA DE 3o)
+                /*
+                 *       J1 --|                                               |-- J2
+                 *            |----(VENCEDOR J1 X J4) X (VENCEDOR J2 X J3)----|
+                 *       J4 --|                                               |-- J3
+                 *
+                 */
+
+                $rodada_1 = new Rodada;
+                $rodada_1->torneio_id = $torneio->id;
+                $rodada_1->numero = 1;
+                $rodada_1->save();
+
+                $emparceiramento_1 = new Emparceiramento;
+                $emparceiramento_1->rodadas_id = $rodada_1->id;
+                $emparceiramento_1->numero_a = 1;
+                $emparceiramento_1->numero_b = 4;
+                $emparceiramento_1->save();
+
+                $emparceiramento_2 = new Emparceiramento;
+                $emparceiramento_2->rodadas_id = $rodada_1->id;
+                $emparceiramento_2->numero_a = 2;
+                $emparceiramento_2->numero_b = 3;
+                $emparceiramento_2->save();
+
+                $rodada_2 = new Rodada;
+                $rodada_2->torneio_id = $torneio->id;
+                $rodada_2->numero = 2;
+                $rodada_2->save();
+
+                $emparceiramento_3 = new Emparceiramento;
+                $emparceiramento_3->rodadas_id = $rodada_2->id;
+                $emparceiramento_3->numero_a = "J1xJ4";
+                $emparceiramento_3->numero_b = "J2xJ3";
+                $emparceiramento_3->save();
+            }
+        }
     }
 
 

@@ -194,6 +194,11 @@
 				<div class="form-group">
 					<label><input type="checkbox" id="desconsiderar_pontuacao_geral" name="desconsiderar_pontuacao_geral" @if(!$permitido_edicao) disabled="disabled" @endif @if($inscricao->desconsiderar_pontuacao_geral) checked="checked" @endif> Desconsiderar Inscrição para Pontuação Geral</label>
 				</div>
+                @if($inscricao->torneio->evento->classifica)
+                    <div class="form-group">
+                        <label><input type="checkbox" id="desconsiderar_classificado" name="desconsiderar_classificado" @if(!$permitido_edicao) disabled="disabled" @endif @if($inscricao->desconsiderar_classificado) checked="checked" @endif> Desconsiderar Classificado para o Evento que este classifica</label>
+                    </div>
+                @endif
 			</div>
 			<!-- /.box-body -->
 

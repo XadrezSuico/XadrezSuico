@@ -38,6 +38,7 @@ class CronController extends Controller
             $lichess_integration_controller = new LichessIntegrationController;
             $retorno = $lichess_integration_controller->getSwissResults($torneio->evento->lichess_tournament_id);
             if($retorno["ok"] == 1){
+                $torneio->setAllInscricoesNotFound();
                 foreach(explode("\n",$retorno["data"]) as $lichess_player_raw){
                     $lichess_player = json_decode(trim($lichess_player_raw));
                     if($lichess_player){
@@ -52,8 +53,9 @@ class CronController extends Controller
                                     ["lichess_username","=",mb_strtolower($lichess_player->username)]
                                 ]);
                             })->first();
+                            $inscricao->disableLogging();
 
-                            if(!$inscricao->is_lichess_found){
+                            if(!$inscricao->is_lichess_found && ($inscricao->is_lichess_found != $inscricao->is_last_lichess_found)){
 
                                 // EMAIL PARA O ENXADRISTA SOLICITANTE
                                 EmailController::schedule(
@@ -65,7 +67,11 @@ class CronController extends Controller
                             }
 
                             $inscricao->is_lichess_found = true;
+                            $inscricao->is_last_lichess_found = true;
                             $inscricao->save();
+                        }else{
+                            $inscricao->is_lichess_found = false;
+                            $inscricao->is_last_lichess_found = false;
                         }
                     }
                 }
@@ -102,16 +108,19 @@ class CronController extends Controller
     public function generateUuidOnInscricao(){
         foreach(Inscricao::whereNull("uuid")->get() as $inscricao){
             $inscricao->uuid = Str::uuid();
+            $inscricao->disableLogging();
             $inscricao->save();
         }
     }
     public function generateConvertLichessChessComToLowerOnEnxadrista(){
         foreach(Enxadrista::whereNotNull("lichess_username")->get() as $enxadrista){
             $enxadrista->lichess_username = mb_strtolower($enxadrista->lichess_username);
+            $enxadrista->disableLogging();
             $enxadrista->save();
         }
         foreach (Enxadrista::whereNotNull("chess_com_username")->get() as $enxadrista) {
             $enxadrista->chess_com_username = mb_strtolower($enxadrista->chess_com_username);
+            $enxadrista->disableLogging();
             $enxadrista->save();
         }
 

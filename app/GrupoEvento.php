@@ -20,6 +20,18 @@ class GrupoEvento extends Model
     protected $primaryKey = 'id';
     protected $table = 'grupo_evento';
 
+    // AQUELE Grupo de Evento CLASSIFICA PARA ESTE Grupo de Evento
+    public function classificador()
+    {
+        return $this->belongsTo("App\GrupoEvento", "grupo_evento_classificador_id", "id");
+    }
+
+    // ESTE Grupo de Evento CLASSIFICA PARA AQUELE Grupo de Evento
+    public function classifica()
+    {
+        return $this->hasOne("App\GrupoEvento", "grupo_evento_classificador_id", "id");
+    }
+
     public function eventos()
     {
         return $this->hasMany("App\Evento", "grupo_evento_id", "id");
@@ -121,5 +133,39 @@ class GrupoEvento extends Model
         ])
             ->orderBy("data_inicio", "ASC")
             ->get();
+    }
+
+
+    public function enxadristaJaInscritoEmOutroEvento($evento_id, $enxadrista_id){
+        $evento = $this->eventos()->where([["id","=",$evento_id]])->first();
+        $eventos_count = $this->eventos()->whereHas("torneios",function($q1) use ($enxadrista_id){
+            $q1->whereHas("inscricoes",function($q2) use ($enxadrista_id){
+                $q2->whereHas("enxadrista",function($q3) use ($enxadrista_id){
+                    $q3->where([["id","=",$enxadrista_id]]);
+                });
+            });
+        })
+        ->where([
+            ["id","!=",$evento_id]
+        ])
+        ->where(function($q1) use ($evento){
+            $q1->where([
+                ["data_inicio","=",$evento->data_inicio]
+            ]);
+            $q1->orWhere([
+                ["data_fim","=",$evento->data_fim]
+            ]);
+            $q1->orWhere([
+                ["data_inicio",">=",$evento->data_fim],
+                ["data_fim","=<",$evento->data_fim]
+            ]);
+        })
+        ->count();
+
+        if($eventos_count > 0){
+            return true;
+        }
+
+        return false;
     }
 }

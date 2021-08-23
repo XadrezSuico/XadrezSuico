@@ -18,4 +18,14 @@ class TipoTorneio extends Model
     public $timestamps = true;
     protected $primaryKey = 'id';
     protected $table = 'tipo_torneio';
+
+    public function torneios()
+    {
+        return $this->hasMany("App\Torneio", "tipo_torneio_id", "id");
+    }
+
+    public function templates()
+    {
+        return $this->hasMany("App\TorneioTemplate", "tipo_torneio_id", "id");
+    }
 }

@@ -119,6 +119,7 @@ Route::group(["prefix"=>"evento"],function(){
     Route::get('/delete/{id}', 'EventoGerenciarController@delete')->name('evento.delete');
     Route::get('/classificar/{id}', 'EventoGerenciarController@classificar')->name('evento.classificar');
     Route::get('/classificacao/{id}', 'EventoController@classificacao')->name('evento.classificacao');
+    Route::get('/acompanhar/{id}', 'EventoController@acompanhar')->name('evento.acompanhar');
     Route::get('/{id}/resultados/{categoria_id}', 'EventoController@resultados')->name('evento.resultados');
     Route::get('/{id}/toggleresultados', 'EventoGerenciarController@toggleMostrarClassificacao')->name('evento.toggleMostrarClassificacao');
     Route::get('/{id}/toggleclassificavel', 'EventoGerenciarController@toggleEventoClassificavel')->name('evento.toggleEventoClassificavel');
@@ -185,6 +186,24 @@ Route::group(["prefix"=>"evento"],function(){
             Route::get('/whatsapp/{inscricao_id}', 'InscricaoGerenciarController@sendWhatsappMessage')->name('evento.torneios.inscricao.whatspp');
 
         });
+
+
+        /*
+         *
+         * TIPO DE TORNEIO: CHAVE SEMI-FINAL/FINAL SEM DISPUTA DE 3o
+         *
+         */
+
+        Route::group(["prefix" => "{torneio_id}/gerenciamento"], function () {
+            Route::group(["prefix" => "torneio_3"], function () {
+                Route::get('/', 'TorneioChaveSemifinalController@index')->name('evento.gerenciamento.torneio_3.index');
+                Route::get('/armageddon/{emparceiramento_id}', 'TorneioChaveSemifinalController@gerenateArmageddon')->name('evento.gerenciamento.torneio_3.armageddon');
+                Route::group(["prefix" => "api"], function () {
+                    Route::post('/setEmparceiramentoData', 'TorneioChaveSemifinalController@api_setEmparceiramentoData')->name('evento.gerenciamento.torneio_3.api.setemparceiramentodata');
+                });
+            });
+        });
+
     });
 
 
@@ -214,6 +233,12 @@ Route::group(["prefix"=>"evento"],function(){
         Route::group(["prefix"=>"{id}/opcao"],function(){
             Route::post('/add', 'CampoPersonalizadoEventoController@opcao_add')->name('evento.campos.opcao.add');
             Route::get('/remove/{opcaos_id}', 'CampoPersonalizadoEventoController@opcao_remove')->name('evento.campos.opcao.remove');
+        });
+    });
+    Route::group(["prefix"=>"{evento_id}/gerenciamento"],function(){
+        Route::group(["prefix" => "torneio_3"], function () {
+            Route::get('/import', 'TorneioChaveSemifinalController@importClassificados')->name('evento.gerenciamento.torneio_3.import');
+            Route::get('/removeAll', 'TorneioChaveSemifinalController@zerarInscricoes')->name('evento.gerenciamento.torneio_3.removeAll');
         });
     });
 });
@@ -339,6 +364,7 @@ Route::group(["prefix"=>"grupoevento"],function(){
     Route::group(["prefix"=>"{id}/evento"],function(){
         Route::post('/new', 'GrupoEventoController@evento_new')->name('grupoevento.evento.new');
     });
+
 });
 
 

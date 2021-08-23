@@ -107,7 +107,7 @@
                             @if($evento->is_lichess_integration)
                                 <td>@if($inscricao->is_lichess_found) Sim @else <strong><span style="color:red">Não</span></strong>@endif</td>
                                 <td>@if($inscricao->lichess_rating) {{$inscricao->lichess_rating}} @else - @endif</td>
-                                <td>@if($inscricao->lichess_start_position) {{$inscricao->lichess_start_position}} @else - @endif</td>
+                                <td>@if($inscricao->start_position) {{$inscricao->start_position}} @else - @endif</td>
                             @endif
                             <td>{{$inscricao->categoria->name}}</td>
                             <td>{{$inscricao->cidade->name}}</td>

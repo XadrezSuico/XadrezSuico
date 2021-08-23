@@ -19,6 +19,18 @@ class Categoria extends Model
     protected $primaryKey = 'id';
     protected $table = 'categoria';
 
+    // AQUELA Categoria CLASSIFICA PARA ESTA Categoria
+    public function classificadora()
+    {
+        return $this->belongsTo("App\Categoria", "categoria_classificadora_id", "id");
+    }
+
+    // ESTA Categoria CLASSIFICA PARA AQUELA Categoria
+    public function classifica()
+    {
+        return $this->hasOne("App\Categoria", "categoria_classificadora_id", "id");
+    }
+
     public function grupo_evento()
     {
         return $this->belongsTo("App\GrupoEvento", "grupo_evento_id", "id");

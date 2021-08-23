@@ -102,6 +102,11 @@ class InscricaoGerenciarController extends Controller
             } else {
                 $inscricao->desconsiderar_pontuacao_geral = false;
             }
+            if ($request->has("desconsiderar_classificado")) {
+                $inscricao->desconsiderar_classificado = true;
+            } else {
+                $inscricao->desconsiderar_classificado = false;
+            }
             if ($request->has("clube_id")) {
                 if ($request->input("clube_id") > 0) {
                     $inscricao->clube_id = $request->input("clube_id");

@@ -60,31 +60,33 @@
 
   </section>
   <section class="col-lg-6 connectedSortable">
-		<div class="box box-primary">
-			<div class="box-header">
-				<h3 class="box-title">Nova Relação de Categoria</h3>
-			</div>
-			<!-- form start -->
-			<form method="post" action="{{url("/evento/".$torneio->evento->id."/torneios/".$torneio->id."/categoria/add")}}">
-				<div class="box-body">
-					<div class="form-group">
-						<label for="categoria_id">Categoria</label>
-						<select name="categoria_id" id="categoria_id" class="form-control">
-							<option value="">--- Selecione ---</option>
-							@foreach($categorias as $categoria)
-								<option value="{{$categoria->id}}">{{$categoria->id}} - {{$categoria->name}}</option>
-							@endforeach
-						</select>
-					</div>
-				</div>
-				<!-- /.box-body -->
+        @if($torneio->tipo_torneio->id != 3 || ($torneio->tipo_torneio->id == 3 AND $torneio->categorias()->count() == 0))
+            <div class="box box-primary">
+                <div class="box-header">
+                    <h3 class="box-title">Nova Relação de Categoria</h3>
+                </div>
+                <!-- form start -->
+                <form method="post" action="{{url("/evento/".$torneio->evento->id."/torneios/".$torneio->id."/categoria/add")}}">
+                    <div class="box-body">
+                        <div class="form-group">
+                            <label for="categoria_id">Categoria</label>
+                            <select name="categoria_id" id="categoria_id" class="form-control">
+                                <option value="">--- Selecione ---</option>
+                                @foreach($categorias as $categoria)
+                                    <option value="{{$categoria->id}}">{{$categoria->id}} - {{$categoria->name}}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                    <!-- /.box-body -->
 
-				<div class="box-footer">
-					<button type="submit" class="btn btn-success">Enviar</button>
-					<input type="hidden" name="_token" value="{{ csrf_token() }}">
-				</div>
-			</form>
-		</div>
+                    <div class="box-footer">
+                        <button type="submit" class="btn btn-success">Enviar</button>
+                        <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                    </div>
+                </form>
+            </div>
+        @endif
 		<div class="box box-primary">
 			<div class="box-header">
 				<h3 class="box-title">Categorias</h3>

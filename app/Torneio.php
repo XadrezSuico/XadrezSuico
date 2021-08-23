@@ -41,6 +41,10 @@ class Torneio extends Model
     {
         return $this->hasMany("App\Inscricao", "torneio_id", "id");
     }
+    public function rodadas()
+    {
+        return $this->hasMany("App\Rodada", "torneio_id", "id");
+    }
 
     public function getCountInscritos()
     {
@@ -139,6 +143,13 @@ class Torneio extends Model
             return true;
         }
         return false;
+    }
+
+    public function setAllInscricoesNotFound(){
+        foreach($this->inscricoes->all() as $inscricao){
+            $inscricao->is_lichess_found = false;
+            $inscricao->save();
+        }
     }
 
     public function isDeletavel()

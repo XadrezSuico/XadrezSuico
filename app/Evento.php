@@ -22,6 +22,18 @@ class Evento extends Model
     protected $primaryKey = 'id';
     protected $table = 'evento';
 
+    // AQUELE Evento CLASSIFICA PARA ESTE Evento
+    public function classificador()
+    {
+        return $this->belongsTo("App\Evento", "evento_classificador_id", "id");
+    }
+
+    // ESTE Evento CLASSIFICA PARA AQUELE Evento
+    public function classifica()
+    {
+        return $this->hasOne("App\Evento", "evento_classificador_id", "id");
+    }
+
     public function grupo_evento()
     {
         return $this->belongsTo("App\GrupoEvento", "grupo_evento_id", "id");

@@ -79,6 +79,16 @@
 									</select>
 								</div>
 								<div class="form-group">
+									<label for="grupo_evento_classificador_id">Grupo de Evento Classificador</label>
+									<select name="grupo_evento_classificador_id" id="grupo_evento_classificador_id" class="form-control width-100" @if(!$user->hasPermissionGlobal() && !$user->hasPermissionGroupEventByPerfil($grupo_evento->id,[7])) disabled="disabled" @endif>
+										<option value="">--- Você pode selecionar um grupo de evento ---</option>
+										@foreach($grupo_evento->where([["id","!=",$grupo_evento->id]])->get() as $ge)
+											<option value="{{$ge->id}}">{{$ge->id}} - {{$ge->name}}</option>
+										@endforeach
+									</select>
+                                    <small><strong>IMPORTANTE!</strong> Essa configuração serve para caso tenha um grupo de evento que classifica para este grupo de evento. Aqui vai o Grupo de Evento que classifica para este Grupo de Evento.</small>
+								</div>
+								<div class="form-group">
 									<label><input type="checkbox" id="e_pontuacao_resultado_para_geral" name="e_pontuacao_resultado_para_geral" @if($grupo_evento->e_pontuacao_resultado_para_geral) checked="checked" @endif @if(!\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal()) disabled="disabled" @endif > A pontuação do enxadrista será composta pelos seus resultados?</label>
 								</div>
 							</div>
@@ -734,12 +744,16 @@
 		$("#softwares_id").select2();
 		$("#tipo_ratings_id").select2();
 		$("#evento_cidade_id").select2();
+		$("#grupo_evento_classificador_id").select2();
 
 		$("#campo_type").select2();
 		$("#campo_validator").select2();
 
 		@if($grupo_evento->tipo_rating)
 			$("#tipo_ratings_id").val([{{$grupo_evento->tipo_rating->tipo_ratings_id}}]).change();
+		@endif
+		@if($grupo_evento->classificador)
+			$("#grupo_evento_classificador_id").val([{{$grupo_evento->classificador->id}}]).change();
 		@endif
 		$("#tabela_torneio_template").DataTable({
 				responsive: true,

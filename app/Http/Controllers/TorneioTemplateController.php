@@ -62,6 +62,17 @@ class TorneioTemplateController extends Controller
         $torneio_template = TorneioTemplate::find($id);
         $torneio_template->name = $request->input("name");
         $torneio_template->torneio_name = $request->input("torneio_name");
+
+        if ($request->has("tipo_torneio_id")) {
+            if ($request->input("tipo_torneio_id") != "") {
+                $torneio_template->tipo_torneio_id = $request->input("tipo_torneio_id");
+            } else {
+                $torneio_template->tipo_torneio_id = null;
+            }
+        } else {
+            $torneio_template->tipo_torneio_id = null;
+        }
+
         $torneio_template->save();
         return redirect("/grupoevento/" . $grupo_evento->id . "/torneiotemplates/dashboard/" . $id);
     }

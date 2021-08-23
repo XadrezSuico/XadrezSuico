@@ -53,6 +53,9 @@
                         <th>Cidade</th>
                         <th>Clube</th>
                         <th>Confirmado?</th>
+                        @if($evento->classifica)
+                            <th>Permite Classificar?</th>
+                        @endif
                         <th>Data e Hora</th>
                         <th>Opções</th>
                     </tr>
@@ -85,6 +88,9 @@
                             <td>{{$inscricao->cidade->name}}</td>
                             <td>@if($inscricao->clube) {{$inscricao->clube->name}} @else Sem Clube @endif</td>
                             <td>@if($inscricao->confirmado) Sim @else Não @endif</td>
+                            @if($evento->classifica)
+                                <td>@if(!$inscricao->desconsiderar_classificado) Sim @else Não @endif</td>
+                            @endif
                             <td  data-sort='{{$inscricao->created_at}}'>{{$inscricao->getCreatedAt()}}</td>
                             <td>
 
@@ -96,7 +102,7 @@
                                     @if($inscricao->torneio->evento->is_lichess_integration)
                                         @if(!$inscricao->is_lichess_found)
                                             <a href="https://api.whatsapp.com/send?phone=55{{$inscricao->enxadrista->celular}}&text=Olá {{$inscricao->enxadrista->name}}! Você preencheu sua inscrição para o {{$inscricao->torneio->evento->name}}, mas falta prosseguir com sua inscrição no Lichess.org. Favor seguir os passos em: {{$inscricao->getLichessProcessLink()}}. Este link serve para se inscrever na etapa no Lichess.org e vincular à sua inscrição do formulário. Qualquer dúvida, estamos à disposição." class="btn btn-success" target="_blank">
-                                                <strong>Enviar Mensagem no Whatsapp sobre a Inscrição no Lichess.org</strong>
+                                                <strong>Enviar Mensagem no<br/>Whatsapp sobre a<br/>Inscrição no Lichess.org</strong>
                                             </a><br/>
                                             @if(!$inscricao->is_whatsapp_sent)
                                                 @if(env("TWILIO_SID",false) && env("TWILIO_TOKEN",false))

@@ -81,6 +81,7 @@ class CategoriaEventoController extends Controller
         $categoria->idade_maxima = $request->input("idade_maxima");
         $categoria->code = $request->input("code");
         $categoria->cat_code = $request->input("cat_code");
+
         $categoria->save();
 
         return redirect("/evento/" . $evento->id . "/categorias/dashboard/" . $categoria->id);

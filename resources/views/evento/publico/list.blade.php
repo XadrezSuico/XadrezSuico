@@ -22,6 +22,15 @@
         </ul>
 	@endif
 
+    @if($evento->classifica)
+        <div class="alert alert-success" role="alert">
+            <h3 style="margin-top: 0;">Importante!</h3>
+            <p>Os nomes em <strong><span style="color: green"><u>verde e sublinhados</u></span></strong> estão classificados para o <strong>{{$evento->classifica->name}}</strong>.</p>
+            <p>Já os nomes em <strong><span style="color: orange"><u>laranja e sublinhados</u></span></strong> estão classificados para o <strong>{{$evento->classifica->name}}</strong> por <strong><u>outro evento classificatório</u></strong>.</p>
+            <p>A <strong>lista de classificados pode sofrer alterações</strong> devido caso ocorra declínio por parte de algum(a) enxadrista, caso permitido assim pela organização ou pelo regulamento.</p>
+        </div>
+    @endif
+
     <div class="box">
         <div class="box-body">
             <table id="tabela" class="table-responsive table-condensed table-striped" style="width: 100%">
@@ -41,12 +50,30 @@
                 <tbody>
                     @foreach($inscricoes as $inscricao)
                         <tr>
-                            <td>{{$inscricao->posicao}}</td>
-                            <td>#{{$inscricao->enxadrista->id}} - {{$inscricao->enxadrista->name}}</td>
-                            <td>{{$inscricao->enxadrista->getBorn()}}</td>
+
+                            <td data-sort='{{($inscricao->posicao) ? $inscricao->posicao : 999999999}}'>@if($inscricao->posicao) {{$inscricao->posicao}} @else - @endif</td>
+                            @if($evento->classifica)
+                                @if($evento->classifica->enxadristaInscrito($inscricao->enxadrista->id))
+                                    <td style="font-weight: bold; color: green; text-decoration: underline" >
+                                        #{{$inscricao->enxadrista->id}} - {{$inscricao->enxadrista->name}}
+                                    </td>
+                                @else
+                                    @if($evento->classifica->grupo_evento->enxadristaJaInscritoEmOutroEvento($evento->classifica->id,$inscricao->enxadrista->id))
+                                        <td style="font-weight: bold; color: orange; text-decoration: underline" >
+                                            #{{$inscricao->enxadrista->id}} - {{$inscricao->enxadrista->name}}
+                                        </td>
+                                    @else
+                                        <td>#{{$inscricao->enxadrista->id}} - {{$inscricao->enxadrista->name}}</td>
+                                    @endif
+                                @endif
+                            @else
+                                <td>#{{$inscricao->enxadrista->id}} - {{$inscricao->enxadrista->name}}</td>
+                            @endif
+
+                            <td>{{$inscricao->enxadrista->getNascimentoPublico()}}</td>
                             <td>{{$inscricao->cidade->name}}</td>
                             <td>@if($inscricao->clube) {{$inscricao->clube->name}} @else Sem Clube @endif</td>
-                            <td>{{$inscricao->pontos}}</td>
+                            <td>@if($inscricao->posicao) {{$inscricao->pontos}} @else - @endif</td>
                             @foreach($criterios as $criterio)
                                 <th>@if($criterio->criterio->valor_criterio($inscricao->id)) {{$criterio->criterio->valor_criterio($inscricao->id)->valor}} @else - @endif</th>
                             @endforeach

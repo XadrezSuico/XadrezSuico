@@ -24,6 +24,11 @@ class TorneioTemplate extends Model
         return $this->belongsTo("App\GrupoEvento", "grupo_evento_id", "id");
     }
 
+    public function tipo()
+    {
+        return $this->belongsTo("App\TipoTorneio", "tipo_torneio_id", "id");
+    }
+
     public function categorias()
     {
         return $this->hasMany("App\CategoriaTorneioTemplate", "torneio_template_id", "id");

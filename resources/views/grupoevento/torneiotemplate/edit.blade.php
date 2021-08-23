@@ -38,6 +38,14 @@
 						<label for="torneio_name">Nome do Torneio</label>
 						<input name="torneio_name" id="torneio_name" class="form-control" type="text" value="{{$torneio_template->torneio_name}}" />
 					</div>
+                    <div class="form-group">
+                        <label for="tipo_torneio_id">Tipo de Torneio</label>
+                        <select name="tipo_torneio_id" id="tipo_torneio_id" class="form-control width-100">
+                            @foreach(\App\TipoTorneio::all() as $tipo_torneio)
+                                <option value="{{$tipo_torneio->id}}">{{$tipo_torneio->id}} - {{$tipo_torneio->name}}</option>
+                            @endforeach
+                        </select>
+                    </div>
 				</div>
 				<!-- /.box-body -->
 
@@ -118,9 +126,14 @@
 <script type="text/javascript">
   $(document).ready(function(){
 		$("#categoria_id").select2();
+		$("#tipo_torneio_id").select2();
 		$("#tabela").DataTable({
 				responsive: true,
 		});
+
+        @if($torneio_template->tipo)
+			$("#tipo_torneio_id").val([{{$torneio_template->tipo->id}}]).change();
+        @endif
   });
 </script>
 @endsection

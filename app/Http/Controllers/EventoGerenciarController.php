@@ -244,6 +244,16 @@ class EventoGerenciarController extends Controller
             $evento->is_chess_com = false;
         }
 
+        if ($request->has("evento_classificador_id")) {
+            if ($request->input("evento_classificador_id") != "") {
+                $evento->evento_classificador_id = $request->input("evento_classificador_id");
+            } else {
+                $evento->evento_classificador_id = null;
+            }
+        } else {
+            $evento->evento_classificador_id = null;
+        }
+
         $evento->save();
 
         if ($request->has("tipo_ratings_id")) {
@@ -463,17 +473,31 @@ class EventoGerenciarController extends Controller
 
         $categoria = Categoria::find($categoria_id);
         $torneio = $categoria->getTorneioByEvento($evento);
-        $inscricoes = Inscricao::where([
-            ["categoria_id", "=", $categoria->id],
-            ["confirmado", "=", true],
-        ])
-            ->whereHas("torneio", function ($q1) use ($evento) {
-                $q1->where([
-                    ["evento_id", "=", $evento->id],
-                ]);
-            })
-            ->orderBy("posicao", "ASC")
-            ->get();
+        if($evento->is_lichess_integration){
+            $inscricoes = Inscricao::where([
+                ["categoria_id", "=", $categoria->id],
+            ])
+                ->whereHas("torneio", function ($q1) use ($evento) {
+                    $q1->where([
+                        ["evento_id", "=", $evento->id],
+                    ]);
+                })
+                ->orderBy("confirmado", "DESC")
+                ->orderBy("posicao", "ASC")
+                ->get();
+        }else{
+            $inscricoes = Inscricao::where([
+                ["categoria_id", "=", $categoria->id],
+                ["confirmado", "=", true],
+            ])
+                ->whereHas("torneio", function ($q1) use ($evento) {
+                    $q1->where([
+                        ["evento_id", "=", $evento->id],
+                    ]);
+                })
+                ->orderBy("posicao", "ASC")
+                ->get();
+        }
         $criterios = $torneio->getCriteriosTotal();
         return view("evento.publico.list", compact("evento", "categoria", "inscricoes", "criterios"));
     }

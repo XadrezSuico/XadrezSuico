@@ -160,6 +160,24 @@
 									Resultados @if($evento->e_resultados_manuais) Automáticos @else Manuais @endif
 								</a>
 							@endif<br/><br/>
+							@if(
+								\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
+								\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4]) ||
+								\Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])
+							)
+                                @if($evento->classificador)
+                                    <h4>Funções de Evento que possui Classificador:</h4>
+                                    <a href="{{url("/evento/".$evento->id."/gerenciamento/torneio_3/import")}}" class="btn btn-app">
+                                        <i class="fa fa-upload"></i>
+                                        Importar Inscrições do Evento Classificador
+                                    </a>
+                                    <a href="{{url("/evento/".$evento->id."/gerenciamento/torneio_3/removeAll")}}" class="btn btn-app">
+                                        <i class="fa fa-times"></i>
+                                        Remove todas as Inscrições do Evento
+                                    </a>
+
+                                @endif
+                            @endif
 						</div>
 						<!-- /.box-body -->
 					</div>
@@ -312,6 +330,19 @@
 										@endforeach
 									</select>
 								</div>
+
+                                @if($evento->grupo_evento->classificador)
+                                    <div class="form-group">
+                                        <label for="evento_classificador_id">Evento Classificador ({{$evento->grupo_evento->classificador->name}})</label>
+                                        <select name="evento_classificador_id" id="evento_classificador_id" class="form-control width-100">
+                                            <option value="">--- Você pode selecionar um evento ---</option>
+                                            @foreach($evento->grupo_evento->classificador->eventos->all() as $ec)
+                                                <option value="{{$ec->id}}">{{$ec->id}} - {{$ec->name}}</option>
+                                            @endforeach
+                                        </select>
+                                        <small><strong>IMPORTANTE!</strong> Essa configuração serve para caso tenha um grupo de evento que classifica para este grupo de evento. Aqui vai o Evento Classificador que classifica para este Evento.</small>
+                                    </div>
+                                @endif
 							</div>
 							<!-- /.box-body -->
 
@@ -804,7 +835,7 @@
 														\Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])
 													)
 														<a class="btn btn-default" href="{{url("/evento/".$evento->id."/torneios/edit/".$torneio->id)}}" role="button">Editar</a>
-														<a class="btn btn-sm btn-warning" href="{{url("/evento/".$evento->id."/torneios/union/".$torneio->id)}}" role="button">Unir Torneios</a><br/>
+														@if($torneio->tipo_torneio->id != 3)  <a class="btn btn-sm btn-warning" href="{{url("/evento/".$evento->id."/torneios/union/".$torneio->id)}}" role="button">Unir Torneios</a><br/> @endif
 													@endif
 													<a class="btn btn-default" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/inscricoes")}}" role="button">Inscrições</a>
 													@if(
@@ -813,7 +844,10 @@
 														\Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])
 													)
 														@if(!$evento->e_resultados_manuais) <a class="btn btn-default" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/resultados")}}" role="button">Resultados</a><br/> @endif
-														<a class="btn btn-success" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/inscricoes/sm")}}" role="button" target="_blank">Baixar Inscrições Confirmadas</a><br/>
+
+														@if($torneio->tipo_torneio->id == 3) <a class="btn btn-block btn-lg btn-success" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/gerenciamento/torneio_3")}}" role="button">Gerenciamento do Torneio</a><br/> @endif
+
+                                                        <a class="btn btn-success" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/inscricoes/sm")}}" role="button" target="_blank">Baixar Inscrições Confirmadas</a><br/>
 														<a class="btn btn-warning" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/inscricoes/sm/all")}}" role="button" target="_blank">Baixar Todas as Inscrições</a><br/>
 													@endif
 													<a class="btn btn-success" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/inscricoes/relatorio/inscricoes")}}" role="button" target="_blank">Imprimir Inscrições</a><br/>
@@ -1006,6 +1040,11 @@
 		@if($evento->tipo_rating)
 			$("#tipo_ratings_id").val([{{$evento->tipo_rating->tipo_ratings_id}}]).change();
 		@endif
+
+        @if($evento->classificador)
+		    $("#evento_classificador_id").select2();
+			$("#evento_classificador_id").val([{{$evento->classificador->id}}]).change();
+        @endif
 		$("#tabela_torneio_template").DataTable({
 				responsive: true,
 		});
