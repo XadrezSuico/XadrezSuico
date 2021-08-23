@@ -26,7 +26,7 @@
         <div class="alert alert-success" role="alert">
             <h3 style="margin-top: 0;">Importante!</h3>
             <p>Os nomes em <strong><span style="color: green"><u>verde e sublinhados</u></span></strong> estão classificados para o <strong>{{$evento->classifica->name}}</strong>.</p>
-            <p>Já os nomes em <strong><span style="color: orange"><u>laranja e sublinhados</u></span></strong> estão classificados para o <strong>{{$evento->classifica->name}}</strong> por <strong><u>outro evento classificatório</u></strong>.</p>
+            <p>Já os nomes em <strong><span style="color: orange"><u>laranja e sublinhados</u></span></strong> estão classificados para uma etapa do <strong>{{$evento->classifica->grupo_evento->name}}</strong> do mesmo dia por <strong><u>outro evento classificatório</u></strong>.</p>
             <p>A <strong>lista de classificados pode sofrer alterações</strong> devido caso ocorra declínio por parte de algum(a) enxadrista, caso permitido assim pela organização ou pelo regulamento.</p>
         </div>
     @endif

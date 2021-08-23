@@ -85,6 +85,12 @@
 								</a>
 							@endif
 							<hr/>
+                            <h4>Divulgação de Emparceiramentos:</h4>
+							<a href="{{url("/evento/acompanhar/".$evento->id)}}" class="btn btn-app">
+								<i class="fa fa-eye"></i>
+								Link para Acompanhar os Emparceiramentos
+							</a>
+							<hr/>
 							<h4>Classificação:</h4>
 							@if(
 								\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||

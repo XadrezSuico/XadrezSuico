@@ -115,7 +115,7 @@
                                         @php($i = 1)
                                         @foreach($rodada->emparceiramentos->all() as $emparceiramento)
                                             <!-- EMPARCEIRAMENTO {{$emparceiramento->id}} -->
-                                            <div class=" @if($rodada->numero == 1) col-xs-4 col-xs-offset-{{$i++}} @else col-xs-10 col-xs-offset-{{$i++}} @endif">
+                                            <div class=" @if($rodada->numero == 1) col-xs-6 col-sm-4 col-sm-offset-{{$i++}} @else col-xs-12 col-sm-10 col-sm-offset-{{$i++}} @endif">
                                                 <div class="emparceiramento text-center">
                                                     <div id="emparceiramento_{{$emparceiramento->id}}_enxadrista_a" class="center-block @if($emparceiramento->cor_a == 1) enxadrista_white @else @if($emparceiramento->cor_a == 2) enxadrista_black @else enxadrista_without_color @endif @endif">
                                                         <strong>@if($emparceiramento->inscricao_a) {{$emparceiramento->inscricao_A->enxadrista->name}} @if($evento->is_chess_com) ({{$emparceiramento->inscricao_A->enxadrista->chess_com_username}}) @endif @else @if($rodada->numero == 2) Vencedor Jogo 1 @else - @endif @endif</strong>
