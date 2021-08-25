@@ -805,15 +805,20 @@
 													@endforeach
 												</td>
 												<td>
-                                                    @if($evento->is_lichess_integration)
-                                                        <strong>Torneio Lichess.org</strong><br/>
-                                                        Inscritos: <strong>{{$torneio->getCountLichessConfirmadosnoTorneio()}}</strong><br/>
-                                                        Não Inscritos: <strong>{{$torneio->getCountInscritos() - $torneio->getCountLichessConfirmadosnoTorneio()}}</strong>
-                                                    @else
-                                                        Total: {{$torneio->getCountInscritos()}}<br/>
-                                                        Confirmados: {{$torneio->getCountInscritosConfirmados()}}<br/>
-                                                        Não Confirmados: {{$torneio->getCountInscritosNaoConfirmados()}}<br/>
-                                                        Presentes: <strong>{{$torneio->quantosInscritosPresentes()}}</strong>
+                                                    Total de Inscritos: {{$evento->quantosInscritos()}}<br/>
+                                                    @if(
+                                                        \Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
+                                                        \Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4,5]) ||
+                                                        \Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])
+                                                    )
+                                                        Confirmados: {{$evento->quantosInscritosConfirmados()}}<br/>
+                                                        Presentes: {{$evento->quantosInscritosPresentes()}}
+                                                        <hr/>
+                                                        @if($evento->is_lichess_integration)
+                                                            <strong>Torneio Lichess.org</strong><br/>
+                                                            Inscritos: <strong>{{$evento->quantosInscritosConfirmadosLichess()}}</strong><br/>
+                                                            Não Inscritos: <strong>{{$evento->quantosInscritosFaltamLichess()}}</strong>
+                                                        @endif
                                                     @endif
 												</td>
 												<td>
@@ -864,7 +869,7 @@
                                                         <hr/>
                                                         <strong>Opções Lichess.org</strong><br/>
 														<a class="btn btn-success" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/lichess/check_players_in")}}" role="button">Conferir Inscrições no Torneio do Lichess.org</a><br/>
-                                                        Última Atualização: {{$torneio->getLastLichessPlayersUpdate()}}
+                                                        Última Atualização: {{$torneio->getLastLichessPlayersUpdate()}}<br/>
 														@if($torneio->evento->data_inicio <= date("Y-m-d")) <a class="btn btn-success" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/lichess/get_results")}}" role="button">Inserir Resultados do Torneio do Lichess.org</a><br/> @endif
 														<a class="btn btn-danger" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/lichess/remove_lichess_players_not_found")}}" role="button">REMOVER os Players do Lichess.org que NÃO foram encontrados</a><br/>
                                                     @endif

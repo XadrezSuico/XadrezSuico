@@ -200,6 +200,8 @@ Route::group(["prefix"=>"evento"],function(){
                 Route::get('/armageddon/{emparceiramento_id}', 'TorneioChaveSemifinalController@gerenateArmageddon')->name('evento.gerenciamento.torneio_3.armageddon');
                 Route::group(["prefix" => "api"], function () {
                     Route::post('/setEmparceiramentoData', 'TorneioChaveSemifinalController@api_setEmparceiramentoData')->name('evento.gerenciamento.torneio_3.api.setemparceiramentodata');
+                    Route::get('/homologateEmparceiramento/{emparceiramento_id}', 'TorneioChaveSemifinalController@api_homologateEmparceiramento')->name('evento.gerenciamento.torneio_3.api.homologateemparceiramento');
+                    Route::get('/unaproveEmparceiramento/{emparceiramento_id}', 'TorneioChaveSemifinalController@api_desaprovarEmparceiramento')->name('evento.gerenciamento.torneio_3.api.unaprove');
                 });
             });
         });

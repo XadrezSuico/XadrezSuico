@@ -59,4 +59,12 @@ class Emparceiramento extends Model
         return 0;
     }
 
+    public function hasArmageddonsAproved(){
+        foreach($this->armageddons->all() as $armageddon){
+            if(is_int($armageddon->resultado)){
+                return true;
+            }
+        }
+        return false;
+    }
 }

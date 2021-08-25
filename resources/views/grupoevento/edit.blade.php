@@ -203,14 +203,20 @@
                                                     </td>
 													<td>{{$evento->cidade->name}} - {{$evento->local}}</td>
 													<td>
-														@if($evento->is_lichess_integration)
-															<strong>Torneio Lichess.org</strong><br/>
-															Inscritos: <strong>{{$evento->quantosInscritosConfirmadosLichess()}}</strong><br/>
-															Não Inscritos: <strong>{{$evento->quantosInscritosFaltamLichess()}}</strong>
-														@else
-                                                            Total: {{$evento->quantosInscritos()}}<br/>
+                                                        Total de Inscritos: {{$evento->quantosInscritos()}}<br/>
+                                                        @if(
+												            \Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
+                                                            \Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4,5]) ||
+                                                            \Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])
+                                                        )
                                                             Confirmados: {{$evento->quantosInscritosConfirmados()}}<br/>
                                                             Presentes: {{$evento->quantosInscritosPresentes()}}
+                                                            <hr/>
+                                                            @if($evento->is_lichess_integration)
+                                                                <strong>Torneio Lichess.org</strong><br/>
+                                                                Inscritos: <strong>{{$evento->quantosInscritosConfirmadosLichess()}}</strong><br/>
+                                                                Não Inscritos: <strong>{{$evento->quantosInscritosFaltamLichess()}}</strong>
+                                                            @endif
                                                         @endif
 													</td>
 													<td>

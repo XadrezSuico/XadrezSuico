@@ -44,7 +44,7 @@ class EmailController extends Controller
 
     public static function sendScheduledEmails()
     {
-        $emails = Email::where([["is_sent", "=", false]])->orderBy("id", "ASC")->limit(10)->get();
+        $emails = Email::where([["is_sent", "=", false]])->orderBy("id", "ASC")->limit(intval(date("i")/2) + 10)->get();
         foreach ($emails as $email) {
             $email_send = new EmailSend($email);
             Mail::to($email->email, $email->enxadrista->name)->send($email_send);
