@@ -200,6 +200,11 @@
                     Visualizar Lista de Inscrições
                 </a><br/>
             @endif
+            @if($evento->hasTorneiosEmparceiradosByXadrezSuico())
+                <a href="{{url("/evento/acompanhar/".$evento->id)}}" class="btn btn-lg btn-primary btn-block">
+                    Acompanhe o Emparceiramento do Torneio
+                </a><br/>
+            @endif
 			@if($evento->pagina)
 				@if($evento->pagina->imagem) <div style="width: 100%; text-align: center;"><img src="data:image/png;base64, {!!$evento->pagina->imagem!!}" width="100%" style="max-width: 800px"/></div> <br/> @endif
 				@if($evento->pagina->texto) {!!$evento->pagina->texto!!} <br/> @endif

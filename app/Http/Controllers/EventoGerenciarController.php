@@ -381,6 +381,27 @@ class EventoGerenciarController extends Controller
         }
     }
 
+    public function toggleInscricoes($evento_id)
+    {
+        $user = Auth::user();
+        $evento = Evento::find($evento_id);
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionEventByPerfil($evento->id, [4]) &&
+            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
+        ) {
+            return redirect("/evento/dashboard/".$evento->id);
+        }
+        if ($evento) {
+            if ($evento->is_inscricoes_bloqueadas) {
+                $evento->is_inscricoes_bloqueadas = false;
+            } else {
+                $evento->is_inscricoes_bloqueadas = true;
+            }
+            $evento->save();
+            return redirect("/evento/dashboard/" . $evento->id);
+        }
+    }
     public function toggleMostrarClassificacao($evento_id)
     {
         $user = Auth::user();

@@ -91,6 +91,11 @@
     <div class="box">
         <div class="box-body">
             <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+                @if($evento->e_permite_visualizar_lista_inscritos_publica)
+                    <a href="{{url("/inscricao/visualizar/".$evento->id)}}" class="btn btn-lg btn-info btn-block">
+                        Visualizar Lista de Inscrições
+                    </a><br/>
+                @endif
                 <h3>Data: {{$evento->getDataInicio()}}</h3>
                 @foreach($evento->torneios()->orderBy("name","ASC")->get() as $torneio)
                     <div class="panel panel-default">

@@ -9,6 +9,7 @@ use Illuminate\Support\Str;
 use App\Inscricao;
 use App\Enum\EmailType;
 
+use Log;
 
 class InscricaoLichessController extends Controller
 {
@@ -141,12 +142,19 @@ class InscricaoLichessController extends Controller
                         $inscricao->enxadrista->save();
 
                         if($inscricao->torneio->evento->lichess_team_password){
-                            $team_response = \Httpful\Request::post('https://lichess.org/team/'.$inscricao->torneio->evento->lichess_team_id.'/join')
-                                ->sendsType(\Httpful\Mime::FORM)
-                                ->body('password=' . $inscricao->torneio->evento->lichess_team_password)
-                                ->expectsJson()
-                                ->addHeader('Authorization', "Bearer " . $request->session()->get('lichess_token', ""))
-                                ->send();
+                            if($inscricao->torneio->evento->lichess_team_password){
+                                $team_response = \Httpful\Request::post('https://lichess.org/team/'.$inscricao->torneio->evento->lichess_team_id.'/join')
+                                    ->sendsType(\Httpful\Mime::FORM)
+                                    ->body('password=' . $inscricao->torneio->evento->lichess_team_password)
+                                    ->expectsJson()
+                                    ->addHeader('Authorization', "Bearer " . $request->session()->get('lichess_token', ""))
+                                    ->send();
+                            }else{
+                                $team_response = \Httpful\Request::post('https://lichess.org/team/'.$inscricao->torneio->evento->lichess_team_id.'/join')
+                                    ->expectsJson()
+                                    ->addHeader('Authorization', "Bearer " . $request->session()->get('lichess_token', ""))
+                                    ->send();
+                            }
                         }else{
                             $team_response = \Httpful\Request::post('https://lichess.org/team/'.$inscricao->torneio->evento->lichess_team_id.'/join')
                                 ->expectsJson()
@@ -154,44 +162,57 @@ class InscricaoLichessController extends Controller
                                 ->send();
                         }
                         if($team_response->code == 200){
-                            return redirect($inscricao->torneio->evento->getLichessTournamentLink());
+                            if($team_response->body->ok){
+                                if($inscricao->torneio->evento->lichess_tournament_password){
+                                    $tournament_response = \Httpful\Request::post('https://lichess.org/api/swiss/'.$inscricao->torneio->evento->lichess_tournament_id.'/join')
+                                        ->sendsType(\Httpful\Mime::FORM)
+                                        ->body('password=' . $inscricao->torneio->evento->lichess_tournament_password)
+                                        ->expectsJson()
+                                        ->addHeader('Authorization', "Bearer " . $request->session()->get('lichess_token', ""))
+                                        ->send();
+                                }else{
+                                    $tournament_response = \Httpful\Request::post('https://lichess.org/api/swiss/'.$inscricao->torneio->evento->lichess_tournament_id.'/join')
+                                        ->expectsJson()
+                                        ->addHeader('Authorization', "Bearer " . $request->session()->get('lichess_token', ""))
+                                        ->send();
+                                }
+                                if($tournament_response->code == 200){
+                                    if($tournament_response->body->ok){
+                                        Log::debug("Inscrição efetuada.");
 
-                            // if($team_response->body->ok){
-                            //     $tournament_response = \Httpful\Request::post('https://lichess.org/api/tournament/'.$inscricao->torneio->evento->lichess_tournament_id.'/join')
-                            //         ->expectsJson()
-                            //         ->addHeader('Authorization', "Bearer " . $request->session()->get('lichess_token', ""))
-                            //         ->send();
-                            //     if($tournament_response->code == 200){
-                            //         if($tournament_response->body->ok){
+                                        $lichess_integration_controller = new LichessIntegrationController;
+                                        $retorno = $lichess_integration_controller->getSwissResults($inscricao->torneio->evento->lichess_tournament_id);
+                                        if($retorno["ok"] == 1){
+                                            Log::debug("Pesquisa dos enxadristas inscritos");
+                                            foreach(explode("\n",$retorno["data"]) as $lichess_player_raw){
+                                                $lichess_player = json_decode(trim($lichess_player_raw));
+                                                if(isset($lichess_player->username)){
+                                                    Log::debug("Username: ".$lichess_player->username);
+                                                    if($lichess_player->username == $inscricao->enxadrista->lichess_username){
+                                                        Log::debug("Encontrado.");
 
-                            //             $lichess_integration_controller = new LichessIntegrationController;
-                            //             $retorno = $lichess_integration_controller->getSwissResults($inscricao->torneio->evento->lichess_tournament_id);
-                            //             if($retorno["ok"] == 1){
-                            //                 foreach(explode("\n",$retorno["data"]) as $lichess_player_raw){
-                            //                     $lichess_player = json_decode(trim($lichess_player_raw));
-                            //                     if(isset($lichess_player->username)){
-                            //                         if($lichess_player->username == $inscricao->enxadrista->username){
+                                                        if (!$inscricao->is_lichess_found && !$inscricao->is_last_lichess_found) {
+                                                            EmailController::schedule(
+                                                                $inscricao->enxadrista->email,
+                                                                $inscricao,
+                                                                EmailType::ConfirmacaoInscricaoLichess,
+                                                                $inscricao->enxadrista
+                                                            );
+                                                        }
 
-                            //                             if (!$inscricao->is_lichess_found) {
-                            //                                 EmailController::schedule(
-                            //                                     $inscricao->enxadrista->email,
-                            //                                     $inscricao,
-                            //                                     EmailType::ConfirmacaoInscricaoLichess,
-                            //                                     $inscricao->enxadrista
-                            //                                 );
-                            //                             }
+                                                        $inscricao->is_lichess_found = true;
+                                                        $inscricao->is_last_lichess_found = true;
+                                                        $inscricao->save();
+                                                        // return redirect($inscricao->torneio->evento->getLichessTournamentLink());
 
-                            //                             $inscricao->is_lichess_found = true;
-                            //                             $inscricao->save();
+                                                    }
+                                                }
+                                            }
 
-                            //                         }
-                            //                     }
-                            //                 }
-
-                            //             }
-                            //         }
-                            //     }
-                            // }
+                                        }
+                                    }
+                                }
+                            }
                         }
 
                     }

@@ -84,6 +84,18 @@
 									Link para Divulgação
 								</a>
 							@endif
+                            <br/>
+
+                            <a href="{{url("/evento/".$evento->id."/toggleinscricoes")}}" class="btn btn-warning btn-app">
+                                @if(!$evento->is_inscricoes_bloqueadas)
+                                    <i class="fa fa-lock"></i>
+                                    Bloquear
+                                @else
+                                    <i class="fa fa-unlock"></i>
+                                    Liberar
+                                @endif
+                                Inscricoes
+                            </a>
 							<hr/>
                             <h4>Divulgação de Emparceiramentos:</h4>
 							<a href="{{url("/evento/acompanhar/".$evento->id)}}" class="btn btn-app">
@@ -781,7 +793,7 @@
 						</div>
 						<!-- form start -->
 							<div class="box-body">
-								<table id="tabela_torneio_template" class="table-responsive table-condensed table-striped" style="width: 100%">
+								<table id="tabela_torneio" class="table-responsive table-condensed table-striped" style="width: 100%">
 									<thead>
 										<tr>
 											<th>#</th>
@@ -1056,7 +1068,7 @@
 		    $("#evento_classificador_id").select2();
 			$("#evento_classificador_id").val([{{$evento->classificador->id}}]).change();
         @endif
-		$("#tabela_torneio_template").DataTable({
+		$("#tabela_torneio").DataTable({
 				responsive: true,
 		});
 		$("#tabela_categoria").DataTable({

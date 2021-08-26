@@ -78,6 +78,7 @@
                         <a href="{{url("/inscricao/".$inscricao->uuid."/lichess/redirect")}}" class="btn btn-lg btn-success btn-block">
                             <strong>Logar no Lichess.org</strong>
                         </a><br/>
+                        <h1><strong>IMPORTANTE!</strong> O login deve ser efetuado com o login do Lichess.org do enxadrista. Caso você seja um professor e esteja efetuando a inscrição de um aluno, copie o link da página e envie o enxadrista para que possa concluir o processo.</h1>
                     @else
                         <h3>Não é mais possível vincular sua inscrição para jogar este torneio.</h3>
                     @endif
@@ -87,9 +88,9 @@
                         <h2>Ótimo, <strong>{{$username}}</strong>!</h2>
                         <h3>Quando você clicar no botão abaixo entenda o que vai acontecer:</h3>
                         <ol>
-                            <li><h4>O cadastro de <strong>{{$inscricao->enxadrista->name}}</strong> será atualizado para <strong>{{$username}}</strong>;</h4></li>
+                            <li><h4>No cadastro de <strong>{{$inscricao->enxadrista->name}}</strong> será atualizado o campo <strong>USUÁRIO DO LICHESS.ORG</strong> para <strong>{{$username}}</strong>;</h4></li>
                             <li><h4>Você será inserido no time <strong>{{$inscricao->torneio->evento->getLichessTeamLink()}}</strong>;</h4></li>
-                            <li><h4>Após isto, você será direcionado para o Torneio (<strong>{{$inscricao->torneio->evento->getLichessTournamentLink()}}</strong>) para que finalize sua inscrição.</h4></li>
+                            <li><h4>Você será inscrito no torneio <strong>{{$inscricao->torneio->evento->getLichessTournamentLink()}}</strong>;</h4></li>
                         </ol>
                         <h3>Você confirma esse procedimento?</h3>
                         <a href="{{url("/inscricao/".$inscricao->uuid."/lichess/confirm")}}" class="btn btn-lg btn-success btn-block">

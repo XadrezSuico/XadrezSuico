@@ -150,6 +150,9 @@ class Evento extends Model
 
     public function inscricoes_encerradas($api = false)
     {
+        if($this->is_inscricoes_bloqueadas){
+            return true;
+        }
         $datetime = DateTime::createFromFormat('Y-m-d H:i:s', $this->data_limite_inscricoes_abertas);
         if ($datetime) {
             if ($api) {
@@ -323,6 +326,15 @@ class Evento extends Model
         return true;
     }
 
+    public function hasTorneiosEmparceiradosByXadrezSuico(){
+        foreach($this->torneios->all() as $torneio){
+            if($torneio->rodadas()->count() > 0){
+                return true;
+            }
+        }
+        return false;
+    }
+
     public function isDeletavel()
     {
         if ($this->id != null) {
@@ -333,5 +345,16 @@ class Evento extends Model
         } else {
             return false;
         }
+    }
+
+
+
+
+    public static function countAllReceivingRegister(){
+        $count = 0;
+        foreach(Evento::all() as $evento){
+            if(!$evento->inscricoes_encerradas()) $count++;
+        }
+        return $count;
     }
 }

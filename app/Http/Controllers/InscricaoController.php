@@ -290,14 +290,46 @@ class InscricaoController extends Controller
                     )
                 )
                 ||
-                ($evento->is_lichess && $enxadrista->lichess_username == NULL || $enxadrista->lichess_username == "")
+                ($evento->is_lichess && ($enxadrista->lichess_username == NULL || $enxadrista->lichess_username == ""))
                 ||
-                ($evento->is_chess_com && $enxadrista->chess_com_username == NULL || $enxadrista->chess_com_username == "")
+                ($evento->is_chess_com && ($enxadrista->chess_com_username == NULL || $enxadrista->chess_com_username == ""))
                 ||
                 $enxadrista->last_cadastral_update == NULL
                 ||
                 $enxadrista->last_cadastral_update <= "01-01-".date("Y")." 00:00:00"
             ){
+                $what = array();
+                if($enxadrista->name == NULL) $what[] = "name";
+                if($enxadrista->born == NULL) $what[] = "born";
+                if($enxadrista->pais_id == NULL) $what[] = "pais_id";
+                if($enxadrista->cidade_id == NULL) $what[] = "cidade_id";
+                if($enxadrista->email == NULL) $what[] = "email";
+                if($enxadrista->sexos_id == NULL) $what[] = "sexos_id";
+                if($enxadrista->pais_celular_id == NULL) $what[] = "pais_celular_id";
+                if($enxadrista->celular == NULL) $what[] = "celular";
+                if($enxadrista->documentos()->count() == 0) $what[] = "documentos";
+                if($enxadrista->howOld() >= 130) $what[] = "born";
+
+                if(($evento->calcula_cbx && (!$enxadrista->cbx_id || $enxadrista->cbx_id == 0))) $what[] = "cbx_id";
+                if(($evento->calcula_fide &&
+                    (
+                        (
+                            $enxadrista->pais_id == 33 && (!$enxadrista->cbx_id || $enxadrista->cbx_id == 0)
+                        )||(
+                            $enxadrista->pais_id != 33 && (!$enxadrista->fide_id || $enxadrista->fide_id == 0)
+                        )
+                    )
+                )) $what[] = "fide_id";
+
+                if(($evento->is_lichess && ($enxadrista->lichess_username == NULL || $enxadrista->lichess_username == ""))) $what[] = "lichess_id";
+
+                if(($evento->is_chess_com && ($enxadrista->chess_com_username == NULL || $enxadrista->chess_com_username == ""))) $what[] = "chess_com_id";
+
+                if($enxadrista->last_cadastral_update == NULL) $what[] = "last_cadastral_update_null";
+
+                if($enxadrista->last_cadastral_update <= "01-01-".date("Y")." 00:00:00") $what[] = "last_cadastral_update_when";
+
+
                 $fields = array();
                 // 1/5
                 $fields["id"] = $enxadrista->id;
@@ -333,7 +365,7 @@ class InscricaoController extends Controller
                 }
 
 
-                return response()->json(["ok" => 0, "error" => 1, "message" => "Antes de efetuar a inscrição, é necessária fazer uma atualização cadastral, por favor, preencha os dados cadastrais obrigatórios para continuar.", "necessita_atualizacao" => 1, "fields"=>$fields]);
+                return response()->json(["ok" => 0, "error" => 1, "message" => "Antes de efetuar a inscrição, é necessária fazer uma atualização cadastral, por favor, preencha os dados cadastrais obrigatórios para continuar.", "necessita_atualizacao" => 1, "fields"=>$fields, "what"=>$what]);
             }
             return response()->json(["ok" => 1, "error" => 0]);
         }else{

@@ -913,7 +913,7 @@ class TorneioController extends Controller
                                     ]);
                                 })->first();
 
-                                if(!$inscricao->is_lichess_found && ($inscricao->is_lichess_found != $inscricao->is_last_lichess_found)){
+                                if(!$inscricao->is_lichess_found && (!$inscricao->is_last_lichess_found)){
                                     // EMAIL PARA O ENXADRISTA SOLICITANTE
                                     EmailController::schedule(
                                         $inscricao->enxadrista->email,
@@ -930,7 +930,6 @@ class TorneioController extends Controller
                                 $inscricao->save();
                             }else{
                                 $inscricao->is_lichess_found = false;
-                                $inscricao->is_last_lichess_found = false;
                                 $inscricao->save();
                                 $players_not_found[] = $lichess_player->username;
                             }

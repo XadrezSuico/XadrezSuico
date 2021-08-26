@@ -55,7 +55,7 @@ class CronController extends Controller
                             })->first();
                             $inscricao->disableLogging();
 
-                            if(!$inscricao->is_lichess_found && ($inscricao->is_lichess_found != $inscricao->is_last_lichess_found)){
+                            if(!$inscricao->is_lichess_found && (!$inscricao->is_last_lichess_found)){
 
                                 // EMAIL PARA O ENXADRISTA SOLICITANTE
                                 EmailController::schedule(
@@ -71,7 +71,6 @@ class CronController extends Controller
                             $inscricao->save();
                         }else{
                             $inscricao->is_lichess_found = false;
-                            $inscricao->is_last_lichess_found = false;
                         }
                     }
                 }

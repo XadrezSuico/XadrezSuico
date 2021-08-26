@@ -39,9 +39,14 @@
 		</div>
 
 		<div class="box-body">
-			@if($evento->e_permite_visualizar_lista_inscritos_publica)
+			@if(!$evento->inscricoes_encerradas())
                 <a href="{{url("/inscricao/".$evento->id)}}" class="btn btn-lg btn-info btn-block">
                     Voltar ao Formulário de Inscrição
+                </a><br/>
+            @endif
+            @if($evento->hasTorneiosEmparceiradosByXadrezSuico())
+                <a href="{{url("/evento/acompanhar/".$evento->id)}}" class="btn btn-lg btn-primary btn-block">
+                    Acompanhe o Emparceiramento do Torneio
                 </a><br/>
             @endif
 			@if($evento->pagina)
