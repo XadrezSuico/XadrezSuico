@@ -183,6 +183,7 @@ class InscricaoController extends Controller
                         }
                     }
                     if ($enxadrista->estaInscrito($evento->id)) {
+                        $item["name"] .= "(Já está Inscrito)";
                         $item["permitida_inscricao"] = false;
                     }
                 }else{
@@ -195,6 +196,7 @@ class InscricaoController extends Controller
                 }
             }else{
                 if ($enxadrista->estaInscrito($evento->id)) {
+                    $item["name"] .= "(Já está Inscrito)";
                     $item["text"] .= " - Já Está Inscrito neste Evento";
                     $item["permitida_inscricao"] = false;
                 }

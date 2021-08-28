@@ -6,6 +6,8 @@ use App\InscricaoCriterioDesempate;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\Activitylog\Traits\LogsActivity;
 
+use Log;
+
 class CriterioDesempate extends Model
 {
     use LogsActivity;
@@ -45,6 +47,42 @@ class CriterioDesempate extends Model
 
         return false;
     }
+    public function valor_criterio_visualizacao($inscrito_id)
+    {
+        $desempate = $this->valor_criterio($inscrito_id);
+        if ($desempate) {
+            switch($this->internal_code){
+                case "TT3_1":
+                    switch($desempate->valor){
+                        case 2.0:
+                            return "1º";
+                            break;
+                        case 1.0:
+                            return "2º";
+                            break;
+                        default:
+                            return "-";
+                    }
+                    break;
+                case "TT3_2":
+                    switch($desempate->valor){
+                        case 2.0:
+                            return "3º";
+                            break;
+                        case 1.0:
+                            return "4º";
+                            break;
+                        default:
+                            return "-";
+                    }
+                    break;
+                default:
+                    return $desempate;
+            }
+        }
+
+        return false;
+    }
     public function valor_criterio_geral($enxadrista_id, $grupo_evento_id, $categoria_id)
     {
         return $this->valor_desempate_geral($enxadrista_id, $grupo_evento_id, $categoria_id);
@@ -70,20 +108,25 @@ class CriterioDesempate extends Model
     {
         $desempate_a = $this->valor_criterio($inscrito_a->id);
         $desempate_b = $this->valor_criterio($inscrito_b->id);
-        // echo $desempate_a, $desempate_b;
+        Log::debug("Comparação de critérios (".$this->name.") entre ".$inscrito_a->id." e ".$inscrito_b->id);
         if ($desempate_a && !$desempate_b) {
+            Log::debug("critério B não existe");
             return 1;
         } elseif (!$desempate_a && $desempate_b) {
+            Log::debug("critério A não existe");
             return 0;
         } elseif ($desempate_a && $desempate_b) {
 
             if ($desempate_a->valor < $desempate_b->valor) {
+            Log::debug("critério A < B");
                 return 1;
             } elseif ($desempate_a->valor > $desempate_b->valor) {
+                Log::debug("critério A > B");
                 return -1;
             }
 
         }
+        Log::debug("critérios não encontrados");
         return 0;
     }
 

@@ -16,12 +16,14 @@ use App\Torneio;
 use App\Rodada;
 use App\Emparceiramento;
 
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 use App\Enum\EmailType;
 
 use App\Http\Controllers\LichessIntegrationController;
+use App\Http\Controllers\CriterioDesempateController;
 
 use Log;
 
@@ -1220,5 +1222,36 @@ class TorneioController extends Controller
         }
     }
 
+
+    public static function gerarCriteriosDesempate($torneio_id){
+        $torneio = Torneio::find($torneio_id);
+        if($torneio){
+            $criterio_desempate_controller = new CriterioDesempateController;
+            $criterios_desempate = $torneio->evento->getCriterios();
+            if($torneio->tipo_torneio->id == 3){
+                foreach($torneio->inscricoes->all() as $inscricao){
+                    if($inscricao->pontos != NULL){
+                        foreach($inscricao->criterios_desempate->all() as $criterios_inscricao){
+                            $criterios_inscricao->delete();
+                        }
+                    }
+                }
+                foreach($criterios_desempate as $criterio_desempate){
+                    foreach($torneio->inscricoes->all() as $inscricao){
+                        if($inscricao->pontos != NULL){
+                            $valor_criterio = $criterio_desempate_controller->generate($torneio->evento, $inscricao->enxadrista, $criterio_desempate->criterio);
+                            if(!is_bool($valor_criterio)){
+                                $criterio_desempate_inscricao = new InscricaoCriterioDesempate;
+                                $criterio_desempate_inscricao->inscricao_id = $inscricao->id;
+                                $criterio_desempate_inscricao->criterio_desempate_id = $criterio_desempate->criterio->id;
+                                $criterio_desempate_inscricao->valor = $valor_criterio;
+                                $criterio_desempate_inscricao->save();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 
 }

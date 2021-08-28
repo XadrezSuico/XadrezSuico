@@ -15,6 +15,8 @@ use App\Sexo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
+use Log;
+
 class CategoriaController extends Controller
 {
     public function __construct()
@@ -25,7 +27,7 @@ class CategoriaController extends Controller
     public static function classificar($evento_id, $categoria_id)
     {
         $evento = Evento::find($evento_id);
-        
+
 
         $categoria = Categoria::find($categoria_id);
         echo '<br/><br/> Categoria: ' . $categoria->name;
@@ -50,6 +52,7 @@ class CategoriaController extends Controller
         $i = 1;
         $j = 1;
         foreach ($inscritos as $inscricao) {
+            Log::debug("Posição ".$i.": ".$inscricao->id);
             $inscricao->posicao = $i;
             // echo $i;
             if (!$inscricao->desconsiderar_pontuacao_geral) {
@@ -76,11 +79,14 @@ class CategoriaController extends Controller
             return 1;
         } else {
             $criterios = $inscrito_a->torneio->getCriteriosTotal();
+
+
+
             echo "[" . count($criterios) . "]";
             foreach ($criterios as $criterio) {
                 $desempate = $criterio->criterio->sort_desempate($inscrito_a, $inscrito_b);
                 if ($desempate != 0) {
-                    echo $criterio->criterio->name;
+                    echo $criterio->criterio->name. " - Res(".$desempate.")---<br/>";
                     return $desempate;
                 }
             }

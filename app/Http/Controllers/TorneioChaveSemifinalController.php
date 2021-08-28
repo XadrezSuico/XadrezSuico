@@ -309,6 +309,13 @@ class TorneioChaveSemifinalController extends Controller
                             if($emparceiramento_validacao->rodada->numero == 1) $emparceiramento_2_1->save();
                             $emparceiramento->save();
 
+                            if($emparceiramento_validacao->rodada->numero == 2){
+                                foreach($emparceiramento_validacao->rodada->torneio->inscricoes->all() as $inscricao){
+                                    $inscricao->pontos = 0;
+                                    $inscricao->save();
+                                }
+                            }
+
                             return response()->json(["ok" => 1, "error" => 0]);
                         }
 
@@ -386,6 +393,14 @@ class TorneioChaveSemifinalController extends Controller
                             }
 
                             $emparceiramento->save();
+
+
+                            if($emparceiramento_validacao->rodada->numero == 2){
+                                foreach($emparceiramento_validacao->rodada->torneio->inscricoes->all() as $inscricao){
+                                    $inscricao->pontos = NULL;
+                                    $inscricao->save();
+                                }
+                            }
 
                             return response()->json(["ok" => 1, "error" => 0]);
                         }

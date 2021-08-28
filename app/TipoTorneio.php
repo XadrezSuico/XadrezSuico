@@ -28,4 +28,9 @@ class TipoTorneio extends Model
     {
         return $this->hasMany("App\TorneioTemplate", "tipo_torneio_id", "id");
     }
+
+    public function usaPontuacao(){
+        if($this->id == 3) return false;
+        return true;
+    }
 }

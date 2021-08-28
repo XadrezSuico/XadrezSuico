@@ -89,6 +89,16 @@ class Inscricao extends Model
         return $this->belongsTo("App\Clube", "clube_id", "id");
     }
 
+    public function emparceiramentos_a()
+    {
+        return $this->hasMany("App\Emparceiramento", "inscricao_a", "id");
+    }
+
+    public function emparceiramentos_b()
+    {
+        return $this->hasMany("App\Emparceiramento", "inscricao_b", "id");
+    }
+
     public function criterios_desempate()
     {
         return $this->hasMany("App\InscricaoCriterioDesempate", "inscricao_id", "id");
@@ -126,5 +136,17 @@ class Inscricao extends Model
             return $datetime->format("d/m/Y H:i:s");
         }
         return false;
+    }
+
+    public function getEmparceiramentos()
+    {
+        $emparceiramentos = array();
+        foreach($this->emparceiramentos_a->all() as $emparceiramento){
+            $emparceiramentos[] = $emparceiramento;
+        }
+        foreach($this->emparceiramentos_b->all() as $emparceiramento){
+            $emparceiramentos[] = $emparceiramento;
+        }
+        return $emparceiramentos;
     }
 }

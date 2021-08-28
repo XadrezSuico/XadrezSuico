@@ -148,6 +148,13 @@ class Evento extends Model
 
     }
 
+    public function getCriterios(){
+        if($this->criterios()->count() == 0){
+            return $this->grupo_evento->criterios->all();
+        }
+        return $this->criterios->all();
+    }
+
     public function inscricoes_encerradas($api = false)
     {
         if($this->is_inscricoes_bloqueadas){
@@ -303,6 +310,18 @@ class Evento extends Model
         } else {
             return true;
         }
+    }
+
+    public function getTorneioByCategoria($categoria_id){
+        $torneio = $this->torneios->whereHas("categorias",function($q1) use ($categoria_id){
+            $q1->where([
+                ["categorias_id","=",$categoria_id]
+            ]);
+        })->first();
+        if($torneio){
+            return $torneio;
+        }
+        return false;
     }
 
     public function getLichessTeamLink(){

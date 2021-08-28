@@ -57,6 +57,6 @@ class EventoController extends Controller
                 ->get();
         }
         $criterios = $torneio->getCriterios();
-        return view("evento.publico.list", compact("evento", "categoria", "inscricoes", "criterios"));
+        return view("evento.publico.list", compact("evento", "torneio", "categoria", "inscricoes", "criterios"));
     }
 }

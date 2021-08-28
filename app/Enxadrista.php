@@ -247,6 +247,18 @@ class Enxadrista extends Model
         return false;
     }
 
+
+    public function getInscricao($evento_id)
+    {
+        if ($this->estaInscrito($evento_id) > 0) {
+            $inscricao = $this->inscricoes()->whereHas("torneio", function ($q2) use ($evento_id) {
+                $q2->where([["evento_id", "=", $evento_id]]);
+            })->first();
+            return $inscricao;
+        }
+        return false;
+    }
+
     public function ratingParaEvento($evento_id)
     {
         $enxadrista = $this;

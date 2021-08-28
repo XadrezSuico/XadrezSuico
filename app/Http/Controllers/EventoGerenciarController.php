@@ -369,6 +369,9 @@ class EventoGerenciarController extends Controller
             return redirect("/evento/dashboard".$evento->id);
         }
         if ($evento) {
+            foreach($evento->torneios->all() as $torneio){
+                TorneioController::gerarCriteriosDesempate($torneio->id);
+            }
             foreach ($evento->categorias->all() as $categoria) {
                 CategoriaController::classificar($evento->id, $categoria->categoria->id);
             }
@@ -520,7 +523,7 @@ class EventoGerenciarController extends Controller
                 ->get();
         }
         $criterios = $torneio->getCriteriosTotal();
-        return view("evento.publico.list", compact("evento", "categoria", "inscricoes", "criterios"));
+        return view("evento.publico.list", compact("evento", "torneio", "categoria", "inscricoes", "criterios"));
     }
 
     public function visualizar_inscricoes($id)

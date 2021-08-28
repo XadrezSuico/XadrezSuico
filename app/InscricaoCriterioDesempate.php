@@ -18,4 +18,12 @@ class InscricaoCriterioDesempate extends Model
     public $timestamps = true;
     protected $primaryKey = 'id';
     protected $table = 'inscricao_criterio_desempate';
+
+    public function inscricao(){
+        return $this->belongsTo("App\Inscricao","inscricao_id","id");
+    }
+
+    public function criterio(){
+        return $this->belongsTo("App\CriterioDesempate","criterio_desempate_id","id");
+    }
 }

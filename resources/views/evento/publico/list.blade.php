@@ -41,7 +41,7 @@
                         <th>Data de Nascimento</th>
                         <th>Cidade</th>
                         <th>Clube</th>
-                        <th>Pontuação</th>
+                        @if($torneio->tipo_torneio->usaPontuacao()) <th>Pontuação</th> @endif
                         @foreach($criterios as $criterio)
                             <th>{{$criterio->criterio->code}}</th>
                         @endforeach
@@ -73,9 +73,9 @@
                             <td>{{$inscricao->enxadrista->getNascimentoPublico()}}</td>
                             <td>{{$inscricao->cidade->name}}</td>
                             <td>@if($inscricao->clube) {{$inscricao->clube->name}} @else Sem Clube @endif</td>
-                            <td>@if($inscricao->posicao) {{$inscricao->pontos}} @else - @endif</td>
+                            @if($torneio->tipo_torneio->usaPontuacao()) <td>@if($inscricao->posicao) {{$inscricao->pontos}} @else - @endif</td> @endif
                             @foreach($criterios as $criterio)
-                                <th>@if($criterio->criterio->valor_criterio($inscricao->id)) {{$criterio->criterio->valor_criterio($inscricao->id)->valor}} @else - @endif</th>
+                                <th>@if($criterio->criterio->valor_criterio_visualizacao($inscricao->id)) {{$criterio->criterio->valor_criterio_visualizacao($inscricao->id)}} @else - @endif</th>
                             @endforeach
                         </tr>
                     @endforeach
