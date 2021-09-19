@@ -66,6 +66,13 @@ class CategoriaGrupoEventoController extends Controller
             $categoria->nao_classificar = true;
         }
 
+
+        if ($request->has("quantos_premiam")) {
+            if ($request->input("quantos_premiam") != "") {
+                $categoria->quantos_premiam = $request->input("quantos_premiam");
+            }
+        }
+
         $categoria->grupo_evento_id = $grupo_evento->id;
         $categoria->save();
 
@@ -121,6 +128,17 @@ class CategoriaGrupoEventoController extends Controller
         } else {
             $categoria->categoria_classificadora_id = null;
         }
+
+        if ($request->has("quantos_premiam")) {
+            if ($request->input("quantos_premiam") != "") {
+                $categoria->quantos_premiam = $request->input("quantos_premiam");
+            } else {
+                $categoria->quantos_premiam = null;
+            }
+        } else {
+            $categoria->quantos_premiam = null;
+        }
+
         $categoria->save();
 
         return redirect("/grupoevento/" . $grupo_evento->id . "/categorias/dashboard/" . $categoria->id);

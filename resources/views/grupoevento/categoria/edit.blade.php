@@ -53,6 +53,11 @@
 						<input name="code" id="code" class="form-control" type="text" value="{{$categoria->code}}" />
 						<small>Este código pode ser diferente de acordo com a sua forma de controle. Mas vale saber: é esta a informação que será utilizada para identificação da categoria quando ocorrer o processamento do resultado, e por isso é importante que esteja preenchida no Swiss-Manager e também que seja única para cada categoria.</small>
 					</div>
+					<div class="form-group">
+						<label for="name">Quantos premiam desta categoria?</label>
+						<input name="quantos_premiam" id="quantos_premiam" class="form-control" type="text" value="{{$categoria->quantos_premiam}}" />
+						<small>Informe neste campo quantos enxadristas premiam nesta categoria.</small>
+					</div>
                     @if($categoria->grupo_evento->classificador)
                         <div class="form-group">
                             <label for="categoria_classificadora_id">Categoria Classificadora ({{$categoria->grupo_evento->classificador->name}})</label>

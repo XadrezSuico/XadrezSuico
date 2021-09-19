@@ -100,7 +100,6 @@ class TorneioChaveSemifinalController extends Controller
                             if($i+1 <= $total_inscricoes_permitidas){
                             Log::debug("Importando inscrição ".$inscricao->id."(Enxadrista ".$inscricao->enxadrista->id.")");
                                 // VALIDA SE O ENXADRISTA JÁ SE ENCONTRA INSCRITO EM OUTRO EVENTO DO GRUPO DE EVENTO NO MESMO DIA
-
                                 $inscricao_mesmo_dia_count = Inscricao::whereHas("torneio",function($q1) use ($torneio,$inscricao){
                                     $q1->whereHas("evento", function($q2) use ($torneio,$inscricao){
                                         $q2->whereHas("grupo_evento",function($q3) use ($torneio,$inscricao){
@@ -128,32 +127,51 @@ class TorneioChaveSemifinalController extends Controller
                                 ])
                                 ->count();
                                 if($inscricao_mesmo_dia_count == 0){
-                                    Log::debug("Efetuando inscrição...");
-                                    $inscricao_nova = new Inscricao;
-                                    $inscricao_nova->enxadrista_id = $inscricao->enxadrista_id;
-                                    $inscricao_nova->categoria_id = $categoria->categoria->id;
-                                    $inscricao_nova->cidade_id = $inscricao->cidade_id;
-                                    $inscricao_nova->clube_id = $inscricao->clube_id;
-                                    $inscricao_nova->torneio_id = $torneio->id;
-                                    $inscricao_nova->regulamento_aceito = $inscricao->regulamento_aceito;
-                                    $inscricao_nova->confirmado = $inscricao->confirmado;
-                                    $inscricao_nova->xadrezsuico_aceito = $inscricao->xadrezsuico_aceito;
-                                    $inscricao_nova->start_position = $i+1;
-                                    $inscricao_nova->save();
-
-
-                                    foreach($torneio->rodadas->all() as $rodada){
-                                        foreach($rodada->emparceiramentos->all() as $emparceiramento){
-                                            if($emparceiramento->numero_a == $i+1){
-                                                $emparceiramento->inscricao_a = $inscricao_nova->id;
-                                            }elseif($emparceiramento->numero_b == $i+1){
-                                                $emparceiramento->inscricao_b = $inscricao_nova->id;
-                                            }
-                                            $emparceiramento->save();
-                                        }
+                                    if($torneio->evento->grupo_evento->evento_classifica){
+                                        // VALIDA SE O ENXADRISTA JÁ SE ENCONTRA INSCRITO NO EVENTO QUE O GRUPO DE EVENTO CLASSIFICADOR CLASSIFICA
+                                        $inscricao_grupo_evento_count = Inscricao::whereHas("torneio",function($q1) use ($torneio,$inscricao){
+                                            $q1->whereHas("evento", function($q2) use ($torneio,$inscricao){
+                                                $q2->where([
+                                                    ["id","=",$torneio->evento->grupo_evento->evento_classifica->id]
+                                                ]);
+                                            });
+                                        })
+                                        ->where([
+                                            ["enxadrista_id","=",$inscricao->enxadrista->id],
+                                            ["id","!=",$inscricao->id],
+                                        ])
+                                        ->count();
+                                    }else{
+                                        $inscricao_grupo_evento_count = 0;
                                     }
+                                    if($inscricao_grupo_evento_count == 0){
+                                        Log::debug("Efetuando inscrição...");
+                                        $inscricao_nova = new Inscricao;
+                                        $inscricao_nova->enxadrista_id = $inscricao->enxadrista_id;
+                                        $inscricao_nova->categoria_id = $categoria->categoria->id;
+                                        $inscricao_nova->cidade_id = $inscricao->cidade_id;
+                                        $inscricao_nova->clube_id = $inscricao->clube_id;
+                                        $inscricao_nova->torneio_id = $torneio->id;
+                                        $inscricao_nova->regulamento_aceito = $inscricao->regulamento_aceito;
+                                        $inscricao_nova->confirmado = $inscricao->confirmado;
+                                        $inscricao_nova->xadrezsuico_aceito = $inscricao->xadrezsuico_aceito;
+                                        $inscricao_nova->start_position = $i+1;
+                                        $inscricao_nova->save();
 
-                                    $i++;
+
+                                        foreach($torneio->rodadas->all() as $rodada){
+                                            foreach($rodada->emparceiramentos->all() as $emparceiramento){
+                                                if($emparceiramento->numero_a == $i+1){
+                                                    $emparceiramento->inscricao_a = $inscricao_nova->id;
+                                                }elseif($emparceiramento->numero_b == $i+1){
+                                                    $emparceiramento->inscricao_b = $inscricao_nova->id;
+                                                }
+                                                $emparceiramento->save();
+                                            }
+                                        }
+
+                                        $i++;
+                                    }
                                 }
                             }
                         }
@@ -282,7 +300,7 @@ class TorneioChaveSemifinalController extends Controller
 
                             if($emparceiramento_validacao->rodada->numero == 1){
                                 $rodada_2 = $emparceiramento_validacao->rodada->torneio->rodadas()->where([["numero","=",2]])->first();
-                                $emparceiramento_2_1 = $rodada_2->emparceiramentos()->where([["numero_a","=","J1xJ4"]])->first();
+                                $emparceiramento_2_1 = $rodada_2->emparceiramentos()->first();
                             }
 
                             if($emparceiramento->getResultadoA() > $emparceiramento->getResultadoB()){
@@ -313,7 +331,9 @@ class TorneioChaveSemifinalController extends Controller
                                 foreach($emparceiramento_validacao->rodada->torneio->inscricoes->all() as $inscricao){
                                     $inscricao->pontos = 0;
                                     $inscricao->save();
+                                    Log::debug("Inscrição ".$inscricao->id." - Resultado inserido");
                                 }
+                                return response()->json(["ok" => 1, "error" => 0,"finished" => 1]);
                             }
 
                             return response()->json(["ok" => 1, "error" => 0]);
@@ -367,7 +387,7 @@ class TorneioChaveSemifinalController extends Controller
 
                             if($emparceiramento_validacao->rodada->numero == 1){
                                 $rodada_2 = $emparceiramento_validacao->rodada->torneio->rodadas()->where([["numero","=",2]])->first();
-                                $emparceiramento_2_1 = $rodada_2->emparceiramentos()->where([["numero_a","=","J1xJ4"]])->first();
+                                $emparceiramento_2_1 = $rodada_2->emparceiramentos()->first();
 
                                 if($emparceiramento->numero_a == 1 || $emparceiramento->numero_a == 4){
                                     $emparceiramento_2_1->inscricao_a = NULL;
@@ -395,12 +415,12 @@ class TorneioChaveSemifinalController extends Controller
                             $emparceiramento->save();
 
 
-                            if($emparceiramento_validacao->rodada->numero == 2){
+                            // if($emparceiramento_validacao->rodada->numero == 2){
                                 foreach($emparceiramento_validacao->rodada->torneio->inscricoes->all() as $inscricao){
                                     $inscricao->pontos = NULL;
                                     $inscricao->save();
                                 }
-                            }
+                            // }
 
                             return response()->json(["ok" => 1, "error" => 0]);
                         }

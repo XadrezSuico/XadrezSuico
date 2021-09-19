@@ -97,6 +97,8 @@
                     </a><br/>
                 @endif
                 <h3>Data: {{$evento->getDataInicio()}}</h3>
+                <hr/>
+                <p>Clique sobre a categoria que deseja ver o emparceiramento:</p>
                 @foreach($evento->torneios()->orderBy("name","ASC")->get() as $torneio)
                     <div class="panel panel-default">
                         <div class="panel-heading" role="tab" id="torneio_header_{{$torneio->id}}">

@@ -183,7 +183,7 @@
 								\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4]) ||
 								\Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])
 							)
-                                @if($evento->classificador)
+                                @if($evento->evento_classificador_id > 0)
                                     <h4>Funções de Evento que possui Classificador:</h4>
                                     <a href="{{url("/evento/".$evento->id."/gerenciamento/torneio_3/import")}}" class="btn btn-app">
                                         <i class="fa fa-upload"></i>
@@ -193,9 +193,28 @@
                                         <i class="fa fa-times"></i>
                                         Remove todas as Inscrições do Evento
                                     </a>
+                                @else
+                                    @if($evento->grupo_evento_classificador_id > 0)
+                                        <h4>Funções de Evento que possui Grupo de Evento Classificador:</h4>
+                                        <a href="{{url("/evento/".$evento->id."/gerenciamento/import")}}" class="btn btn-app">
+                                            <i class="fa fa-upload"></i>
+                                            Importar Inscrições do Grupo de Evento Classificador
+                                        </a>
+                                        <a href="{{url("/evento/".$evento->id."/gerenciamento/removeAll")}}" class="btn btn-app">
+                                            <i class="fa fa-times"></i>
+                                            Remove todas as Inscrições do Evento
+                                        </a>
 
+                                    @endif
                                 @endif
                             @endif
+                            <br/><br/>
+                            <hr/>
+                            <h4>Relatórios:</h4>
+                            <a href="{{url("/evento/".$evento->id."/relatorios/premiados")}}" class="btn btn-app">
+                                <i class="fa fa-file"></i>
+                                Enxadristas Premiados neste Evento
+                            </a>
 						</div>
 						<!-- /.box-body -->
 					</div>
@@ -359,6 +378,17 @@
                                             @endforeach
                                         </select>
                                         <small><strong>IMPORTANTE!</strong> Essa configuração serve para caso tenha um grupo de evento que classifica para este grupo de evento. Aqui vai o Evento Classificador que classifica para este Evento.</small>
+                                    </div>
+                                @else
+                                    <div class="form-group">
+                                        <label for="grupo_evento_classificador_id">Grupo de Evento Classificador</label>
+                                        <select name="grupo_evento_classificador_id" id="grupo_evento_classificador_id" class="form-control width-100">
+                                            <option value="">--- Você pode selecionar um grupo de evento ---</option>
+                                            @foreach($evento->grupo_evento->all() as $gec)
+                                                <option value="{{$gec->id}}">{{$gec->id}} - {{$gec->name}}</option>
+                                            @endforeach
+                                        </select>
+                                        <small><strong>IMPORTANTE!</strong> Essa configuração serve para caso tenha um grupo de evento que classifica para este grupo de evento.</small>
                                     </div>
                                 @endif
 							</div>
@@ -817,28 +847,24 @@
 													@endforeach
 												</td>
 												<td>
-                                                    Total de Inscritos: {{$evento->quantosInscritos()}}<br/>
+                                                    Total de Inscritos: {{$torneio->getCountInscritos()}}<br/>
                                                     @if(
                                                         \Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
                                                         \Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4,5]) ||
                                                         \Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])
                                                     )
-                                                        Confirmados: {{$evento->quantosInscritosConfirmados()}}<br/>
-                                                        Presentes: {{$evento->quantosInscritosPresentes()}}
+                                                        Confirmados: {{$torneio->getCountInscritosConfirmados()}}<br/>
+                                                        Presentes: {{$torneio->quantosInscritosPresentes()}}
                                                         <hr/>
                                                         @if($evento->is_lichess_integration)
                                                             <strong>Torneio Lichess.org</strong><br/>
-                                                            Inscritos: <strong>{{$evento->quantosInscritosConfirmadosLichess()}}</strong><br/>
-                                                            Não Inscritos: <strong>{{$evento->quantosInscritosFaltamLichess()}}</strong>
+                                                            Inscritos: <strong>{{$torneio->getCountLichessConfirmadosnoTorneio()}}</strong><br/>
+                                                            Não Inscritos: <strong>{{$torneio->getCountInscritos() - $torneio->getCountLichessConfirmadosnoTorneio()}}</strong>
                                                         @endif
                                                     @endif
 												</td>
 												<td>
-													@if($torneio->hasCriteriosDesempateNasInscricoes())
-														Sim
-													@else
-														<strong>Não</strong>
-													@endif
+                                                    {{$torneio->getIsResultadosImportados()}}
 												</td>
 												<td>
 													{{$torneio->tipo_torneio->name}}
@@ -1067,6 +1093,10 @@
         @if($evento->classificador)
 		    $("#evento_classificador_id").select2();
 			$("#evento_classificador_id").val([{{$evento->classificador->id}}]).change();
+        @endif
+        @if($evento->grupo_evento_classificador)
+		    $("#grupo_evento_classificador_id").select2();
+			$("#grupo_evento_classificador_id").val([{{$evento->grupo_evento_classificador->id}}]).change();
         @endif
 		$("#tabela_torneio").DataTable({
 				responsive: true,

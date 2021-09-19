@@ -180,36 +180,52 @@ class InscricaoLichessController extends Controller
                                     if($tournament_response->body->ok){
                                         Log::debug("Inscrição efetuada.");
 
-                                        $lichess_integration_controller = new LichessIntegrationController;
-                                        $retorno = $lichess_integration_controller->getSwissResults($inscricao->torneio->evento->lichess_tournament_id);
-                                        if($retorno["ok"] == 1){
-                                            Log::debug("Pesquisa dos enxadristas inscritos");
-                                            foreach(explode("\n",$retorno["data"]) as $lichess_player_raw){
-                                                $lichess_player = json_decode(trim($lichess_player_raw));
-                                                if(isset($lichess_player->username)){
-                                                    Log::debug("Username: ".$lichess_player->username);
-                                                    if($lichess_player->username == $inscricao->enxadrista->lichess_username){
-                                                        Log::debug("Encontrado.");
 
-                                                        if (!$inscricao->is_lichess_found && !$inscricao->is_last_lichess_found) {
-                                                            EmailController::schedule(
-                                                                $inscricao->enxadrista->email,
-                                                                $inscricao,
-                                                                EmailType::ConfirmacaoInscricaoLichess,
-                                                                $inscricao->enxadrista
-                                                            );
-                                                        }
-
-                                                        $inscricao->is_lichess_found = true;
-                                                        $inscricao->is_last_lichess_found = true;
-                                                        $inscricao->save();
-                                                        // return redirect($inscricao->torneio->evento->getLichessTournamentLink());
-
-                                                    }
-                                                }
-                                            }
-
+                                        if (!$inscricao->is_lichess_found && !$inscricao->is_last_lichess_found) {
+                                            EmailController::schedule(
+                                                $inscricao->enxadrista->email,
+                                                $inscricao,
+                                                EmailType::ConfirmacaoInscricaoLichess,
+                                                $inscricao->enxadrista
+                                            );
                                         }
+
+                                        $inscricao->is_lichess_found = true;
+                                        $inscricao->is_last_lichess_found = true;
+                                        $inscricao->save();
+                                        // return redirect($inscricao->torneio->evento->getLichessTournamentLink());
+
+
+                                        // $lichess_integration_controller = new LichessIntegrationController;
+                                        // $retorno = $lichess_integration_controller->getSwissResults($inscricao->torneio->evento->lichess_tournament_id);
+                                        // if($retorno["ok"] == 1){
+                                        //     Log::debug("Pesquisa dos enxadristas inscritos");
+                                        //     foreach(explode("\n",$retorno["data"]) as $lichess_player_raw){
+                                        //         $lichess_player = json_decode(trim($lichess_player_raw));
+                                        //         if(isset($lichess_player->username)){
+                                        //             Log::debug("Username: ".$lichess_player->username);
+                                        //             if($lichess_player->username == $inscricao->enxadrista->lichess_username){
+                                        //                 Log::debug("Encontrado.");
+
+                                        //                 if (!$inscricao->is_lichess_found && !$inscricao->is_last_lichess_found) {
+                                        //                     EmailController::schedule(
+                                        //                         $inscricao->enxadrista->email,
+                                        //                         $inscricao,
+                                        //                         EmailType::ConfirmacaoInscricaoLichess,
+                                        //                         $inscricao->enxadrista
+                                        //                     );
+                                        //                 }
+
+                                        //                 $inscricao->is_lichess_found = true;
+                                        //                 $inscricao->is_last_lichess_found = true;
+                                        //                 $inscricao->save();
+                                        //                 // return redirect($inscricao->torneio->evento->getLichessTournamentLink());
+
+                                        //             }
+                                        //         }
+                                        //     }
+
+                                        // }
                                     }
                                 }
                             }

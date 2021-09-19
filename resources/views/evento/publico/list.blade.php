@@ -27,6 +27,14 @@
             <h3 style="margin-top: 0;">Importante!</h3>
             <p>Os nomes em <strong><span style="color: green"><u>verde e sublinhados</u></span></strong> estão classificados para o <strong>{{$evento->classifica->name}}</strong>.</p>
             <p>Já os nomes em <strong><span style="color: orange"><u>laranja e sublinhados</u></span></strong> estão classificados para uma etapa do <strong>{{$evento->classifica->grupo_evento->name}}</strong> do mesmo dia por <strong><u>outro evento classificatório</u></strong>.</p>
+            @if($evento->classifica->grupo_evento->evento_classifica) <p>E os nomes em <strong><span style="color: red"><u>vermelho e sublinhados</u></span></strong> estão classificados para o <strong>{{$evento->classifica->grupo_evento->evento_classifica->name}}</strong> e por isso <strong><u>não podem mais se classificar</u></strong> para algum evento do <strong>{{$evento->classifica->grupo_evento->name}}</strong>.</p> @endif
+            <p>A <strong>lista de classificados pode sofrer alterações</strong> devido caso ocorra declínio por parte de algum(a) enxadrista, caso permitido assim pela organização ou pelo regulamento.</p>
+        </div>
+    @endif
+    @if($evento->grupo_evento->evento_classifica)
+        <div class="alert alert-success" role="alert">
+            <h3 style="margin-top: 0;">Importante!</h3>
+            <p>Os nomes em <strong><span style="color: green"><u>verde e sublinhados</u></span></strong> estão classificados para o <strong>{{$evento->grupo_evento->evento_classifica->name}}</strong>.</p>
             <p>A <strong>lista de classificados pode sofrer alterações</strong> devido caso ocorra declínio por parte de algum(a) enxadrista, caso permitido assim pela organização ou pelo regulamento.</p>
         </div>
     @endif
@@ -55,23 +63,43 @@
                             @if($evento->classifica)
                                 @if($evento->classifica->enxadristaInscrito($inscricao->enxadrista->id))
                                     <td style="font-weight: bold; color: green; text-decoration: underline" >
-                                        #{{$inscricao->enxadrista->id}} - {{$inscricao->enxadrista->name}}
+                                        #{{$inscricao->enxadrista->id}} - {{$inscricao->enxadrista->name}} @if($inscricao->desconsiderar_pontuacao_geral) <u><i>(WO)</i></u> @endif
                                     </td>
                                 @else
                                     @if($evento->classifica->grupo_evento->enxadristaJaInscritoEmOutroEvento($evento->classifica->id,$inscricao->enxadrista->id))
                                         <td style="font-weight: bold; color: orange; text-decoration: underline" >
-                                            #{{$inscricao->enxadrista->id}} - {{$inscricao->enxadrista->name}}
+                                            #{{$inscricao->enxadrista->id}} - {{$inscricao->enxadrista->name}} @if($inscricao->desconsiderar_pontuacao_geral) <u><i>(WO)</i></u> @endif
                                         </td>
                                     @else
-                                        <td>#{{$inscricao->enxadrista->id}} - {{$inscricao->enxadrista->name}}</td>
+                                        @if($evento->classifica->grupo_evento->evento_classifica)
+                                            @if($evento->classifica->grupo_evento->evento_classifica->enxadristaInscrito($inscricao->enxadrista->id))
+                                                <td style="font-weight: bold; color: red; text-decoration: underline">
+                                                    #{{$inscricao->enxadrista->id}} - {{$inscricao->enxadrista->name}} @if($inscricao->desconsiderar_pontuacao_geral) <u><i>(WO)</i></u> @endif
+                                                </td>
+                                            @else
+                                                <td>#{{$inscricao->enxadrista->id}} - {{$inscricao->enxadrista->name}} @if($inscricao->desconsiderar_pontuacao_geral) <strong><u><i>(WO)</i></u></strong> @endif</td>
+                                            @endif
+                                        @else
+                                            <td>#{{$inscricao->enxadrista->id}} - {{$inscricao->enxadrista->name}} @if($inscricao->desconsiderar_pontuacao_geral) <strong><u><i>(WO)</i></u></strong> @endif</td>
+                                        @endif
                                     @endif
                                 @endif
                             @else
-                                <td>#{{$inscricao->enxadrista->id}} - {{$inscricao->enxadrista->name}}</td>
+                                @if($evento->grupo_evento->evento_classifica)
+                                    @if($evento->grupo_evento->evento_classifica->enxadristaInscrito($inscricao->enxadrista->id))
+                                        <td style="font-weight: bold; color: green; text-decoration: underline">
+                                            #{{$inscricao->enxadrista->id}} - {{$inscricao->enxadrista->name}} @if($inscricao->desconsiderar_pontuacao_geral) <u><i>(WO)</i></u> @endif
+                                        </td>
+                                    @else
+                                        <td>#{{$inscricao->enxadrista->id}} - {{$inscricao->enxadrista->name}} @if($inscricao->desconsiderar_pontuacao_geral) <strong><u><i>(WO)</i></u></strong> @endif</td>
+                                    @endif
+                                @else
+                                    <td>#{{$inscricao->enxadrista->id}} - {{$inscricao->enxadrista->name}} @if($inscricao->desconsiderar_pontuacao_geral) <strong><u><i>(WO)</i></u></strong> @endif</td>
+                                @endif
                             @endif
 
                             <td>{{$inscricao->enxadrista->getNascimentoPublico()}}</td>
-                            <td>{{$inscricao->cidade->name}}</td>
+                            <td>{{$inscricao->getCidade()}}</td>
                             <td>@if($inscricao->clube) {{$inscricao->clube->name}} @else Sem Clube @endif</td>
                             @if($torneio->tipo_torneio->usaPontuacao()) <td>@if($inscricao->posicao) {{$inscricao->pontos}} @else - @endif</td> @endif
                             @foreach($criterios as $criterio)

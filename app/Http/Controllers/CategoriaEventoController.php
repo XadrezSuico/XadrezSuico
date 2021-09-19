@@ -82,6 +82,15 @@ class CategoriaEventoController extends Controller
         $categoria->code = $request->input("code");
         $categoria->cat_code = $request->input("cat_code");
 
+        if ($request->has("categoria_classificadora_id")) {
+            if ($request->input("categoria_classificadora_id") != "") {
+                $categoria->categoria_classificadora_id = $request->input("categoria_classificadora_id");
+            } else {
+                $categoria->categoria_classificadora_id = null;
+            }
+        } else {
+            $categoria->categoria_classificadora_id = null;
+        }
         $categoria->save();
 
         return redirect("/evento/" . $evento->id . "/categorias/dashboard/" . $categoria->id);

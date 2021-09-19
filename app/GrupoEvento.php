@@ -32,6 +32,12 @@ class GrupoEvento extends Model
         return $this->hasOne("App\GrupoEvento", "grupo_evento_classificador_id", "id");
     }
 
+    // ESTE Grupo de Evento CLASSIFICA PARA AQUELE Evento
+    public function evento_classifica()
+    {
+        return $this->hasOne("App\Evento", "grupo_evento_classificador_id", "id");
+    }
+
     public function eventos()
     {
         return $this->hasMany("App\Evento", "grupo_evento_id", "id");

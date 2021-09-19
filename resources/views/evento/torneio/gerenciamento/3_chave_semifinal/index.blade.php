@@ -123,6 +123,7 @@
 						</div>
                         <div class="box-body">
                                 @foreach($torneio->rodadas->all() as $rodada)
+                                    <!-- RODADA {{$rodada->id}} -->
                                     <div class="row">
                                         @foreach($rodada->emparceiramentos->all() as $emparceiramento)
                                             <!-- EMPARCEIRAMENTO {{$emparceiramento->id}} -->
@@ -137,7 +138,7 @@
                                                     <div id="emparceiramento_{{$emparceiramento->id}}_enxadrista_b" class="center-block @if($emparceiramento->cor_b == 1) enxadrista_white @else @if($emparceiramento->cor_b == 2) enxadrista_black @else enxadrista_without_color @endif @endif">
                                                         <strong>@if($emparceiramento->inscricao_b) {{$emparceiramento->inscricao_B->enxadrista->name}} @if($torneio->evento->is_chess_com) ({{$emparceiramento->inscricao_B->enxadrista->chess_com_username}}) @endif<span id="emparceiramento_{{$emparceiramento->id}}_b_trofeu" class=" @if($emparceiramento->resultado != 1) display-none @endif "><i class="fa fa-trophy"></i></span> @else - @endif</strong>
                                                     </div>
-                                                    @if($emparceiramento->inscricao_a && $emparceiramento->inscricao_b)
+                                                    @if($emparceiramento->inscricao_A || $emparceiramento->inscricao_B)
                                                         <hr/>
                                                         @if($emparceiramento->armageddons()->count() == 0 && !is_int($emparceiramento->resultado) )
                                                             <strong>Gerenciamento da Partida:</strong><br/>

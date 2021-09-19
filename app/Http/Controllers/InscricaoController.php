@@ -761,7 +761,7 @@ class InscricaoController extends Controller
         }
 
         if(count($documentos) == 0){
-            return response()->json(["ok"=>0,"error"=>1,"É obrigatório a inserção de ao menos UM DOCUMENTO.", "registred" => 0, "ask" => 0]);
+            return response()->json(["ok"=>0,"error"=>1, "message" => "É obrigatório a inserção de ao menos UM DOCUMENTO.", "registred" => 0, "ask" => 0]);
         }
 
         $nome_corrigido = trim($nome_corrigido);
@@ -1120,7 +1120,7 @@ class InscricaoController extends Controller
         }
 
         if(count($documentos) == 0){
-            return response()->json(["ok"=>0,"error"=>1,"É obrigatório a inserção de ao menos UM DOCUMENTO.", "registred" => 0, "ask" => 0]);
+            return response()->json(["ok"=>0,"error"=>1, "message" => "É obrigatório a inserção de ao menos UM DOCUMENTO.", "registred" => 0, "ask" => 0]);
         }
 
         $nome_corrigido = trim($nome_corrigido);

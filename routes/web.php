@@ -129,6 +129,9 @@ Route::group(["prefix"=>"evento"],function(){
     Route::get('/{id}/resultados/{categoria_id}/interno', 'EventoGerenciarController@resultados')->name('evento.resultados.interno');
 	Route::get('/{id}/inscricoes/list', 'EventoGerenciarController@visualizar_inscricoes')->name('evento.inscricoes.list');
 	Route::get('/{id}/enxadristas/sm', 'EventoGerenciarController@downloadListaManagerParaEvento')->name('evento.enxadristas.sm');
+    Route::group(["prefix"=>"{id}/relatorios"],function(){
+        Route::get('/premiados', 'EventoGerenciarController@relatorio_premiados')->name('evento.relatorios.premiados');
+    });
 
 
 
@@ -239,6 +242,8 @@ Route::group(["prefix"=>"evento"],function(){
         });
     });
     Route::group(["prefix"=>"{evento_id}/gerenciamento"],function(){
+        Route::get('/import', 'InscricaoGerenciarController@importClassificados')->name('evento.gerenciamento.import');
+        Route::get('/removeAll', 'InscricaoGerenciarController@zerarInscricoes')->name('evento.gerenciamento.removeAll');
         Route::group(["prefix" => "torneio_3"], function () {
             Route::get('/import', 'TorneioChaveSemifinalController@importClassificados')->name('evento.gerenciamento.torneio_3.import');
             Route::get('/removeAll', 'TorneioChaveSemifinalController@zerarInscricoes')->name('evento.gerenciamento.torneio_3.removeAll');

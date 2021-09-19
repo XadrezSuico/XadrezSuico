@@ -152,6 +152,20 @@ class Torneio extends Model
         }
     }
 
+    public function getIsResultadosImportados(){
+        if($this->tipo_torneio->id == 3){
+            $rodada = $this->rodadas()->where([["numero","=",2]])->first();
+            $emparceiramento = $rodada->emparceiramentos()->first();
+            if(is_int($emparceiramento->resultado)){
+                return "Sim";
+            }
+        }
+        if($this->hasCriteriosDesempateNasInscricoes()){
+            return "Sim";
+        }
+        return "Não";
+    }
+
     public function isDeletavel()
     {
         if ($this->id != null) {

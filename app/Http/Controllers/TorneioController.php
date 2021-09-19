@@ -1011,18 +1011,20 @@ class TorneioController extends Controller
                 $retorno = $lichess_integration_controller->getSwissResults($torneio->evento->lichess_tournament_id);
                 if($retorno["ok"] == 1){
                 $torneio->setAllInscricoesNotFound();
+                    $k = 1;
                     foreach(explode("\n",$retorno["data"]) as $lichess_player_raw){
                         $lichess_player = json_decode(trim($lichess_player_raw));
                         if($lichess_player){
+                            Log::debug("Import Username ".$k++.": ".$lichess_player->username);
                             $inscricao_count = $torneio->inscricoes()->whereHas("enxadrista",function($q1) use ($lichess_player){
                                 $q1->where([
-                                    ["lichess_username","=",mb_strtolower($lichess_player->username)]
+                                    ["lichess_username","=",trim(mb_strtolower($lichess_player->username))]
                                 ]);
                             })->count();
                             if($inscricao_count > 0){
                                 $inscricao = $torneio->inscricoes()->whereHas("enxadrista",function($q1) use ($lichess_player){
                                     $q1->where([
-                                        ["lichess_username","=",mb_strtolower($lichess_player->username)]
+                                        ["lichess_username","=",trim(mb_strtolower($lichess_player->username))]
                                     ]);
                                 })->first();
 
@@ -1230,21 +1232,19 @@ class TorneioController extends Controller
             $criterios_desempate = $torneio->evento->getCriterios();
             if($torneio->tipo_torneio->id == 3){
                 foreach($torneio->inscricoes->all() as $inscricao){
-                    if($inscricao->pontos != NULL){
-                        foreach($inscricao->criterios_desempate->all() as $criterios_inscricao){
-                            $criterios_inscricao->delete();
-                        }
+                    foreach($inscricao->criterios_desempate->all() as $criterios_inscricao){
+                        $criterios_inscricao->delete();
                     }
                 }
                 foreach($criterios_desempate as $criterio_desempate){
                     foreach($torneio->inscricoes->all() as $inscricao){
-                        if($inscricao->pontos != NULL){
+                        if(is_numeric($inscricao->pontos)){
                             $valor_criterio = $criterio_desempate_controller->generate($torneio->evento, $inscricao->enxadrista, $criterio_desempate->criterio);
                             if(!is_bool($valor_criterio)){
                                 $criterio_desempate_inscricao = new InscricaoCriterioDesempate;
                                 $criterio_desempate_inscricao->inscricao_id = $inscricao->id;
                                 $criterio_desempate_inscricao->criterio_desempate_id = $criterio_desempate->criterio->id;
-                                $criterio_desempate_inscricao->valor = $valor_criterio;
+                                $criterio_desempate_inscricao->valor = (!$inscricao->desconsiderar_pontuacao_geral) ? $valor_criterio : 0;
                                 $criterio_desempate_inscricao->save();
                             }
                         }

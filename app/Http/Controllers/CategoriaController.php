@@ -55,15 +55,20 @@ class CategoriaController extends Controller
             Log::debug("Posição ".$i.": ".$inscricao->id);
             $inscricao->posicao = $i;
             // echo $i;
-            if (!$inscricao->desconsiderar_pontuacao_geral) {
-                $inscricao->posicao_geral = $j;
-                if ($evento->grupo_evento->e_pontuacao_resultado_para_geral) {
-                    $inscricao->pontos_geral = $inscricao->pontos;
+            if (!$inscricao->is_desclassificado) {
+                if (!$inscricao->desconsiderar_pontuacao_geral) {
+                    $inscricao->posicao_geral = $j;
+                    if ($evento->grupo_evento->e_pontuacao_resultado_para_geral) {
+                        $inscricao->pontos_geral = $inscricao->pontos;
+                    } else {
+                        $inscricao->pontos_geral = Pontuacao::getPontuacaoByEvento($evento->id, $j);
+                    }
+                    $j++;
                 } else {
-                    $inscricao->pontos_geral = Pontuacao::getPontuacaoByEvento($evento->id, $j);
+                    $inscricao->posicao_geral = null;
                 }
-                $j++;
             } else {
+                $inscricao->posicao = null;
                 $inscricao->posicao_geral = null;
             }
             $inscricao->save();

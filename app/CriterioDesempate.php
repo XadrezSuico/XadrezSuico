@@ -77,7 +77,7 @@ class CriterioDesempate extends Model
                     }
                     break;
                 default:
-                    return $desempate;
+                    return $desempate->valor;
             }
         }
 

@@ -26,11 +26,13 @@ class CronController extends Controller
         $torneios = Torneio::whereHas("evento",function($q1){
             $q1->whereNotNull("is_lichess_integration");
             $q1->whereNotNull("lichess_tournament_id");
+            $q1->where([["data_fim",">",date("Y-m-d",strtotime(time()+60*60*12))]]);
         })
         ->where(function($q1){
             $q1->whereNull("lichess_last_update");
             $q1->orWhere([["lichess_last_update","<=",date("Y-m-d H:i:s",time() - (60*60*6))]]);
         })
+
         ->limit(5)
         ->get();
         foreach($torneios as $torneio){

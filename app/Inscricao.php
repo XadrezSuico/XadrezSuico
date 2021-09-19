@@ -149,4 +149,15 @@ class Inscricao extends Model
         }
         return $emparceiramentos;
     }
+
+    public function getCidade(){
+        $retorno = trim($this->cidade->name);
+        if($this->cidade->estado->abbr){
+            $retorno .= "/".trim($this->cidade->estado->abbr);
+            if($this->cidade->estado->pais->codigo_iso){
+                $retorno .= " - ".trim($this->cidade->estado->pais->codigo_iso);
+            }
+        }
+        return $retorno;
+    }
 }

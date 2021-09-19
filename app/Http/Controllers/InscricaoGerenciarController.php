@@ -19,6 +19,8 @@ use Illuminate\Support\Facades\Auth;
 
 use Twilio\Rest\Client;
 
+use Log;
+
 
 class InscricaoGerenciarController extends Controller
 {
@@ -106,6 +108,11 @@ class InscricaoGerenciarController extends Controller
                 $inscricao->desconsiderar_classificado = true;
             } else {
                 $inscricao->desconsiderar_classificado = false;
+            }
+            if ($request->has("is_desclassificado")) {
+                $inscricao->is_desclassificado = true;
+            } else {
+                $inscricao->is_desclassificado = false;
             }
             if ($request->has("clube_id")) {
                 if ($request->input("clube_id") > 0) {
@@ -1447,5 +1454,144 @@ class InscricaoGerenciarController extends Controller
         }
 
         return redirect("/evento/".$evento->id."/torneios/".$torneio->id."/inscricoes");
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+    public function importClassificados($evento_id){
+        $evento = Evento::find($evento_id);
+        if($evento){
+            $user = Auth::user();
+            if (
+                !$user->hasPermissionGlobal() &&
+                !$user->hasPermissionEventByPerfil($evento_id, [3, 4]) &&
+                !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [6,7])
+            ) {
+                return redirect("/");
+            }
+            // PERCORRE OS TORNEIOS
+            foreach($evento->torneios->all() as $torneio){
+                foreach($torneio->inscricoes->all() as $inscricao){
+                    $inscricao->delete();
+                }
+            }
+            // PERCORRE OS EVENTOS
+            foreach($evento->grupo_evento_classificador->eventos->all() as $evento_classificador){
+                // PERCORRE OS TORNEIOS DOS EVENTOS
+                foreach($evento_classificador->torneios->all() as $torneio){
+                    Log::debug("Importando torneio ".$torneio->id);
+                    $total_inscricoes_permitidas = 1;
+
+                    // PERCORRE AS CATEGORIAS DOS TORNEIOS
+                    foreach($torneio->categorias->all() as $categoria){
+                        $i = 0;
+                        Log::debug("Importando categoria ".$categoria->categoria->id);
+                        if($categoria->categoria->classifica){
+                            Log::debug("Categoria Classificadora ".$categoria->categoria->classifica->id);
+                        }
+                        $inscricoes = Inscricao::whereHas("torneio",function($q1) use ($torneio, $categoria, $evento_classificador){
+                            $q1->whereHas("evento",function($q2) use ($torneio, $categoria, $evento_classificador){
+                                $q2->where([
+                                    ["id","=",$evento_classificador->id]
+                                ]);
+                            });
+                            $q1->where([
+                                ["categoria_id","=",$categoria->categoria->id],
+                            ]);
+                        })
+                        ->where([
+                            ["confirmado","=",true],
+                            ["desconsiderar_classificado","=",false]
+                        ])
+                        ->orderBy("posicao","asc")
+                        ->get();
+                        foreach($inscricoes as $inscricao){
+                            if($i+1 <= $total_inscricoes_permitidas){
+                                Log::debug("Importando inscrição ".$inscricao->id."(Enxadrista ".$inscricao->enxadrista->id.")");
+                                // VALIDA SE O ENXADRISTA JÁ SE ENCONTRA INSCRITO
+
+                                $inscricao_mesmo_torneio_count = Inscricao::whereHas("torneio",function($q1) use ($torneio,$inscricao,$evento){
+                                    $q1->whereHas("evento", function($q2) use ($torneio,$inscricao,$evento){
+                                        $q2->where([
+                                            ["id","=",$evento->id]
+                                        ]);
+                                    });
+                                })
+                                ->where([
+                                    ["enxadrista_id","=",$inscricao->enxadrista->id],
+                                    ["id","!=",$inscricao->id],
+                                ])
+                                ->count();
+                                if($inscricao_mesmo_torneio_count == 0){
+                                    $torneio_inscricao = Torneio::whereHas("categorias",function($q1) use ($categoria,$evento){
+                                        $q1->where([
+                                            ["categoria_id","=",$categoria->categoria->classifica->id]
+                                        ]);
+                                    })->whereHas("evento",function($q1) use ($evento){
+                                        $q1->where([["id","=",$evento->id]]);
+                                    })
+                                    ->first();
+
+                                    Log::debug("Efetuando inscrição...");
+                                    $inscricao_nova = new Inscricao;
+                                    $inscricao_nova->enxadrista_id = $inscricao->enxadrista_id;
+                                    $inscricao_nova->categoria_id = $categoria->categoria->classifica->id;
+                                    $inscricao_nova->cidade_id = $inscricao->cidade_id;
+                                    $inscricao_nova->clube_id = $inscricao->clube_id;
+                                    $inscricao_nova->torneio_id = $torneio_inscricao->id;
+                                    $inscricao_nova->regulamento_aceito = $inscricao->regulamento_aceito;
+                                    $inscricao_nova->confirmado = $inscricao->confirmado;
+                                    $inscricao_nova->xadrezsuico_aceito = $inscricao->xadrezsuico_aceito;
+                                    $inscricao_nova->start_position = $i+1;
+                                    $inscricao_nova->save();
+
+
+                                    $i++;
+                                }
+                            }else{
+                                Log::debug("Excede total de inscrições para a categoria.");
+                            }
+                        }
+                    }
+                }
+            }
+            return redirect("/evento/dashboard/".$evento->id."?tab=torneio");
+        }
+        return redirect("/");
+    }
+    public function zerarInscricoes($evento_id){
+        $evento = Evento::find($evento_id);
+        if($evento){
+            $user = Auth::user();
+            if (
+                !$user->hasPermissionGlobal() &&
+                !$user->hasPermissionEventByPerfil($evento_id, [3, 4]) &&
+                !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [6,7])
+            ) {
+                return redirect("/");
+            }
+            // PERCORRE OS TORNEIOS
+            foreach($evento->torneios->all() as $torneio){
+                Log::debug("Importando torneio ".$torneio->id);
+                $i = 0;
+                $total_inscricoes_permitidas = 4;
+
+                foreach($torneio->inscricoes->all() as $inscricao){
+                    $inscricao->delete();
+                }
+            }
+            return redirect("/evento/dashboard/".$evento->id."?tab=torneio");
+        }
+        return redirect("/");
     }
 }

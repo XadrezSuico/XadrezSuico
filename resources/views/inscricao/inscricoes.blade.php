@@ -94,9 +94,13 @@
                         <th>Nome do Enxadrista</th>
                         <th>Data de Nascimento</th>
                         @if($evento->is_lichess_integration)
+                            <th>Usuário Lichess.org</th>
                             <th>Inscrito Lichess.org?</th>
                             <th>Rating Lichess.org</th>
                             <th>Posição Inicial (Parcial)</th>
+                        @endif
+                        @if($evento->is_chess_com)
+                            <th>Usuário Chess.com</th>
                         @endif
                         <th>Categoria Inscrição</th>
                         <th>Cidade</th>
@@ -110,12 +114,16 @@
                             <td>{{$inscricao->enxadrista->getNomePublico()}}</td>
                             <td>{{$inscricao->enxadrista->getNascimentoPublico()}}</td>
                             @if($evento->is_lichess_integration)
+                                <td>@if($inscricao->lichess_username) {{$inscricao->lichess_username}} @else - @endif</td>
                                 <td>@if($inscricao->is_lichess_found) Sim @else <strong><span style="color:red">Não</span></strong>@endif</td>
                                 <td>@if($inscricao->lichess_rating) {{$inscricao->lichess_rating}} @else - @endif</td>
                                 <td>@if($inscricao->start_position) {{$inscricao->start_position}} @else - @endif</td>
                             @endif
+                            @if($evento->is_chess_com)
+                                <td>@if($inscricao->chess_com_username) {{$inscricao->chess_com_username}} @else - @endif</td>
+                            @endif
                             <td>{{$inscricao->categoria->name}}</td>
-                            <td>{{$inscricao->cidade->name}}</td>
+                            <td>{{$inscricao->getCidade()}}</td>
                             <td>@if($inscricao->clube) {{$inscricao->clube->name}} @else - @endif</td>
                         </tr>
                     @endforeach

@@ -22,7 +22,7 @@
 	<div class="row">
   <section class="col-lg-6 connectedSortable">
 
-	
+
 		<div class="box box-primary" id="inscricao">
 			<div class="box-header">
 				<h3 class="box-title">Editar Categoria</h3>
@@ -52,6 +52,18 @@
 						<input name="code" id="code" class="form-control" type="text" value="{{$categoria->code}}" />
 						<small>Este código pode ser diferente de acordo com a sua forma de controle. Mas vale saber: é esta a informação que será utilizada para identificação da categoria quando ocorrer o processamento do resultado, e por isso é importante que esteja preenchida no Swiss-Manager e também que seja única para cada categoria.</small>
 					</div>
+                    @if($categoria->evento->grupo_evento_classificador)
+                        <div class="form-group">
+                            <label for="categoria_classificadora_id">Categoria Classificadora ({{$categoria->evento->grupo_evento_classificador->name}})</label>
+                            <select name="categoria_classificadora_id" id="categoria_classificadora_id" class="form-control width-100">
+                                <option value="">--- Você pode selecionar uma categoria ---</option>
+                                @foreach($categoria->evento->grupo_evento_classificador->categorias->all() as $cc)
+                                    <option value="{{$cc->id}}">{{$cc->id}} - {{$cc->name}}</option>
+                                @endforeach
+                            </select>
+                            <small><strong>IMPORTANTE!</strong> Essa configuração serve para caso tenha um grupo de evento que classifica para este grupo de evento. Aqui vai a Categoria do Grupo de Evento Classificador que classifica para esta Categoria.</small>
+                        </div>
+                    @endif
 				</div>
 				<!-- /.box-body -->
 
@@ -132,6 +144,10 @@
   $(document).ready(function(){
 		$("#sexos_id").select2();
 		$("#tabela_sexos").DataTable();
+        @if($categoria->classificadora)
+		    $("#categoria_classificadora_id").select2();
+			$("#categoria_classificadora_id").val([{{$categoria->classificadora->id}}]).change();
+        @endif
   });
 </script>
 @endsection

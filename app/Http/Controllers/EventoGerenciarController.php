@@ -254,6 +254,16 @@ class EventoGerenciarController extends Controller
             $evento->evento_classificador_id = null;
         }
 
+        if ($request->has("grupo_evento_classificador_id")) {
+            if ($request->input("grupo_evento_classificador_id") != "") {
+                $evento->grupo_evento_classificador_id = $request->input("grupo_evento_classificador_id");
+            } else {
+                $evento->grupo_evento_classificador_id = null;
+            }
+        } else {
+            $evento->grupo_evento_classificador_id = null;
+        }
+
         $evento->save();
 
         if ($request->has("tipo_ratings_id")) {
@@ -585,5 +595,31 @@ class EventoGerenciarController extends Controller
                 }
             }
         }
+    }
+
+
+
+    /*
+     *
+     * RELATÓRIOS
+     *
+     */
+    public function relatorio_premiados($id)
+    {
+        $user = Auth::user();
+        $evento = Evento::find($id);
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionEventByPerfil($evento->id, [3,4,5]) &&
+            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
+        ) {
+            return redirect("/evento/dashboard/" . $evento->id);
+        }
+
+        $evento = Evento::find($id);
+        if ($evento) {
+            return view("evento.relatorios.premiados", compact("evento"));
+        }
+        return redirect("/evento");
     }
 }

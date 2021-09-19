@@ -161,11 +161,13 @@ class CriterioDesempateController extends Controller
                             $vice->id != $inscricao->id
                         ){
                             foreach($inscricao->getEmparceiramentos() as $emparceiramento){
-                                if($emparceiramento->rodada->numero == 1){
-                                    if($emparceiramento->inscricao_a == $vencedor->id || $emparceiramento->inscricao_b == $vencedor->id){
-                                        $valor = 2;
-                                    }else{
-                                        $valor = 1;
+                                if(!$emparceiramento->is_armageddon){
+                                    if($emparceiramento->rodada->numero == 1){
+                                        if($emparceiramento->inscricao_a == $vencedor->id || $emparceiramento->inscricao_b == $vencedor->id){
+                                            $valor = 2;
+                                        }else{
+                                            $valor = 1;
+                                        }
                                     }
                                 }
                             }

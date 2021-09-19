@@ -66,7 +66,7 @@
                             <tr>
                                 <td>{{$evento->id}}</td>
                                 <td>{{$evento->name}}<br/>({{$evento->grupo_evento->name}})</td>
-                                <td>{{$evento->cidade->name}}/{{$evento->cidade->estado->abbr}} - {{$evento->cidade->estado->pais->codigo_iso}}</td>
+                                <td>{{$evento->cidade->name}}/{{trim($evento->cidade->estado->abbr)}} - {{$evento->cidade->estado->pais->codigo_iso}}</td>
                                 <td>{{$evento->local}}</td>
                                 <td>@if(!$evento->inscricoes_encerradas()) Sim @else <strong>Não</strong> @endif</td>
                                 <td>

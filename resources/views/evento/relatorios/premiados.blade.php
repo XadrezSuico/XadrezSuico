@@ -1,9 +1,9 @@
 @extends('adminlte::page')
 
-@section("title", "Visualizar Lista de Inscrições")
+@section("title", "Visualizar Premiados - ".$evento->name)
 
 @section('content_header')
-  <h1>Visualizar Lista de Inscrições</h1>
+  <h1>Visualizar Premiados</h1>
 @stop
 
 
@@ -39,7 +39,7 @@
 	</div>
 	<div class="box box-primary">
 		<div class="box-header">
-			<h3 class="box-title">Lista de Inscrições</h3>
+			<h3 class="box-title">Lista de Vencedores</h3>
 			<div class="pull-right box-tools">
 			</div>
 		</div>
@@ -48,26 +48,32 @@
 			<table id="tabela" class="table-responsive table-condensed table-striped" style="width: 100%">
                 <thead>
                     <tr>
-                        <th>#</th>
+                        <th>Categoria</th>
+                        <th>Posição</th>
                         <th>Código Enxadrista</th>
                         <th>Nome do Enxadrista</th>
-                        <th>Data de Nascimento</th>
-                        <th>Categoria Inscrição</th>
                         <th>Cidade</th>
                         <th>Clube</th>
+                        <th>E-mail</th>
+                        <th>Celular</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($evento->getInscricoes() as $inscricao)
-                        <tr>
-                            <td>{{$inscricao->id}}</td>
-                            <td>{{$inscricao->enxadrista->id}}</td>
-                            <td>{{$inscricao->enxadrista->getNomePrivado()}}</td>
-                            <td>{{$inscricao->enxadrista->getNascimentoPrivado()}}</td>
-                            <td>{{$inscricao->categoria->name}}</td>
-                            <td>{{$inscricao->getCidade()}}</td>
-                            <td>@if($inscricao->clube) {{$inscricao->clube->name}} @else - @endif</td>
-                        </tr>
+                    @foreach($evento->torneios->all() as $torneio)
+                        @foreach($torneio->categorias()->orderBy("categoria_id","ASC")->get() as $categoria)
+                            @foreach($categoria->getPremiados() as $inscricao)
+                                <tr>
+                                    <td>{{$inscricao->categoria->name}}</td>
+                                    <td>{{$inscricao->posicao}}</td>
+                                    <td>{{$inscricao->enxadrista->id}}</td>
+                                    <td>{{$inscricao->enxadrista->getNomePrivado()}}</td>
+                                    <td>{{$inscricao->getCidade()}}</td>
+                                    <td>@if($inscricao->clube) {{$inscricao->clube->name}} @else - @endif</td>
+                                    <td>{{$inscricao->enxadrista->email}}</td>
+                                    <td>{{$inscricao->enxadrista->celular}}</td>
+                                </tr>
+                            @endforeach
+                        @endforeach
                     @endforeach
                 </tbody>
             </table>
