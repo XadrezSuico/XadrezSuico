@@ -55,6 +55,8 @@
                         <th>Categoria Inscrição</th>
                         <th>Cidade</th>
                         <th>Clube</th>
+                        <th>Inscrição Inicial</th>
+                        <th>Posição</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -67,6 +69,8 @@
                             <td>{{$inscricao->categoria->name}}</td>
                             <td>{{$inscricao->getCidade()}}</td>
                             <td>@if($inscricao->clube) {{$inscricao->clube->name}} @else - @endif</td>
+                            <td>@if($inscricao->from) {{$inscricao->from->id}} @else - @endif</td>
+                            <td>@if($inscricao->from) @if($inscricao->from->posicao) {{$inscricao->from->posicao}} @else - @endif @else - @endif</td>
                         </tr>
                     @endforeach
                 </tbody>

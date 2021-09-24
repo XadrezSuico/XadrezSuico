@@ -1511,8 +1511,9 @@ class InscricaoGerenciarController extends Controller
                         })
                         ->where([
                             ["confirmado","=",true],
-                            ["desconsiderar_classificado","=",false]
+                            ["desconsiderar_classificado","=",false],
                         ])
+                        ->whereNotNull("posicao")
                         ->orderBy("posicao","asc")
                         ->get();
                         foreach($inscricoes as $inscricao){
@@ -1550,9 +1551,9 @@ class InscricaoGerenciarController extends Controller
                                     $inscricao_nova->clube_id = $inscricao->clube_id;
                                     $inscricao_nova->torneio_id = $torneio_inscricao->id;
                                     $inscricao_nova->regulamento_aceito = $inscricao->regulamento_aceito;
-                                    $inscricao_nova->confirmado = $inscricao->confirmado;
                                     $inscricao_nova->xadrezsuico_aceito = $inscricao->xadrezsuico_aceito;
                                     $inscricao_nova->start_position = $i+1;
+                                    $inscricao_nova->inscricao_from = $inscricao->id;
                                     $inscricao_nova->save();
 
 

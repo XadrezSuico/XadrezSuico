@@ -94,6 +94,7 @@ class TorneioChaveSemifinalController extends Controller
                             ["confirmado","=",true],
                             ["desconsiderar_classificado","=",false]
                         ])
+                        ->whereNotNull("posicao")
                         ->orderBy("posicao","asc")
                         ->get();
                         foreach($inscricoes as $inscricao){
@@ -155,6 +156,7 @@ class TorneioChaveSemifinalController extends Controller
                                         $inscricao_nova->regulamento_aceito = $inscricao->regulamento_aceito;
                                         $inscricao_nova->confirmado = $inscricao->confirmado;
                                         $inscricao_nova->xadrezsuico_aceito = $inscricao->xadrezsuico_aceito;
+                                        $inscricao_nova->inscricao_from = $inscricao->id;
                                         $inscricao_nova->start_position = $i+1;
                                         $inscricao_nova->save();
 
