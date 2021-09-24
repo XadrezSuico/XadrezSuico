@@ -93,9 +93,36 @@
                             <li><h4>Você será inscrito no torneio <strong>{{$inscricao->torneio->evento->getLichessTournamentLink()}}</strong>;</h4></li>
                         </ol>
                         <h3>Você confirma esse procedimento?</h3>
-                        <a href="{{url("/inscricao/".$inscricao->uuid."/lichess/confirm")}}" class="btn btn-lg btn-success btn-block">
+                        <button type="button" class="btn btn-lg btn-success btn-block" data-toggle="modal" data-target="#modal_confirmacao_lichess">
                             <strong>Sim, me inscreva no Torneio do Lichess.org.</strong>
-                        </a><br/>
+                        </button>
+                        <!-- Modal -->
+                        <div class="modal modal-warning fade" id="modal_confirmacao_lichess" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                        <h4 class="modal-title" id="modal_confirmacao_lichess_title" style="text-align: center">ALERTA!</h4>
+                                    </div>
+                                    <div class="modal-body" style="text-align: center">
+                                        <h4>Você tem certeza que o <strong>USUÁRIO DO LICHESS.ORG</strong></h4>
+                                        <h2><strong>{{$username}}</strong></h2>
+                                        <h4>pertence a</h4>
+                                        <h2><strong>{{$inscricao->enxadrista->name}}</strong></h2>?
+                                    </div>
+                                    <div class="modal-footer">
+                                        <a href="{{url("/inscricao/".$inscricao->uuid."/lichess/confirm")}}" class="btn btn-lg btn-success btn-block">
+                                            <strong>Sim, me inscreva no Torneio do Lichess.org.</strong>
+                                        </a>
+                                        <a href="{{url("/inscricao/".$inscricao->uuid."/lichess/clear")}}" class="btn btn-lg btn-danger btn-block">
+                                            <strong>Não, me leve novamente para efetuar o login no Lichess.org</strong>
+                                        </a><br/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <br/>
                         <a href="{{url("/inscricao/".$inscricao->uuid."/lichess/clear")}}" class="btn btn-lg btn-danger btn-block">
                             <strong>Não, me leve novamente para efetuar o login no Lichess.org</strong>
                         </a><br/>
