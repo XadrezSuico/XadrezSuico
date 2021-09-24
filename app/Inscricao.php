@@ -84,6 +84,11 @@ class Inscricao extends Model
         return $this->belongsTo("App\Cidade", "cidade_id", "id");
     }
 
+    public function from()
+    {
+        return $this->belongsTo("App\Inscricao", "inscricao_from", "id");
+    }
+
     public function clube()
     {
         return $this->belongsTo("App\Clube", "clube_id", "id");
