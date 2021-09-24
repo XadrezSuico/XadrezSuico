@@ -56,6 +56,9 @@
                         <th>Clube</th>
                         <th>E-mail</th>
                         <th>Celular</th>
+				    	@foreach($evento->campos() as $campo)
+                            <th>{{$campo->name}}</th>
+                        @endforeach
                     </tr>
                 </thead>
                 <tbody>
@@ -71,6 +74,13 @@
                                     <td>@if($inscricao->clube) {{$inscricao->clube->name}} @else - @endif</td>
                                     <td>{{$inscricao->enxadrista->email}}</td>
                                     <td>{{$inscricao->enxadrista->celular}}</td>
+                                    @foreach($evento->campos() as $campo)
+                                        @if($inscricao->getOpcao($campo->id))
+                                            <td>{{$inscricao->getOpcao($campo->id)->opcao->name}}</td>
+                                        @else
+                                            <td>-</td>
+                                        @endif
+                                    @endforeach
                                 </tr>
                             @endforeach
                         @endforeach
