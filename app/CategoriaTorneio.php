@@ -39,7 +39,12 @@ class CategoriaTorneio extends Model
 
         $premiados = array();
         $i = 1;
-        foreach($this->torneio->inscricoes()->whereNotNull("posicao")->where([["categoria_id","=",$this->categoria->id]])->orderBy("posicao","ASC")->limit($quantos_premiam)->get() as $premiado){
+        foreach($this->torneio->inscricoes()->whereNotNull("posicao")->where([
+            ["categoria_id","=",$this->categoria->id],
+            ["is_desclassificado","=",false],
+            ["desconsiderar_pontuacao_geral","=",false],
+            ["desconsiderar_classificado","=",false],
+        ])->orderBy("posicao","ASC")->limit($quantos_premiam)->get() as $premiado){
             if($i++ <= $quantos_premiam){
                 $premiados[] = $premiado;
             }

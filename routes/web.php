@@ -60,6 +60,7 @@ Route::group(["prefix"=>"inscricao"],function(){
     Route::post('/{id}/inscricao', 'InscricaoController@adicionarNovaInscricao')->name('inscricao.enviar');
     Route::get('/{id}/enxadrista/getCidadeClube/{enxadrista_id}', 'InscricaoController@getCidadeClube')->name('inscricao.getCidadeClube');
     Route::get('/visualizar/{id}', 'InscricaoController@visualizar_inscricoes')->name('inscricao.visualizar.inscricao');
+    Route::get('/premiados/{id}', 'InscricaoController@visualizar_premiados')->name('inscricao.visualizar.premiados');
     Route::group(["prefix"=>"v2"],function(){
         Route::get('/{id}/busca/enxadrista', 'InscricaoController@telav2_buscaEnxadrista')->name('inscricao.v2.busca.enxadrista');
         Route::get('/{id}/busca/estado/{pais_id}', 'InscricaoController@telav2_buscaEstado')->name('inscricao.v2.busca.estado');
@@ -119,6 +120,7 @@ Route::group(["prefix"=>"evento"],function(){
     Route::get('/delete/{id}', 'EventoGerenciarController@delete')->name('evento.delete');
     Route::get('/classificar/{id}', 'EventoGerenciarController@classificar')->name('evento.classificar');
     Route::get('/classificacao/{id}', 'EventoController@classificacao')->name('evento.classificacao');
+    Route::get('/premiados/{id}', 'InscricaoController@visualizar_premiados')->name('evento.visualizar.premiados');
     Route::get('/acompanhar/{id}', 'EventoController@acompanhar')->name('evento.acompanhar');
     Route::get('/{id}/resultados/{categoria_id}', 'EventoController@resultados')->name('evento.resultados');
     Route::get('/{id}/toggleinscricoes', 'EventoGerenciarController@toggleInscricoes')->name('evento.toggleInscricoes');
@@ -315,6 +317,7 @@ Route::group(["prefix"=>"grupoevento"],function(){
     Route::get('/classificar/{id}', 'GrupoEventoController@classificar_page')->name('grupoevento.classificar');
     Route::get('/classificar/{id}/call/{categoria_id}/{action}', 'GrupoEventoController@classificar_call')->name('grupoevento.classificar.call');
     Route::get('/classificacao/{id}', 'GrupoEventoPublicoController@classificacao')->name('grupoevento.publico.classificacao');
+	Route::get('/{id}/inscricoes/list', 'GrupoEventoController@visualizar_inscricoes')->name('grupoevento.inscricoes.list');
     Route::get('/{id}/resultados/enxadrista/{enxadrista_id}', 'GrupoEventoPublicoController@verPontuacaoEnxadrista')->name('grupoevento.publico.verPontuacaoEnxadrista');
     Route::get('/{id}/resultados/{categoria_id}', 'GrupoEventoPublicoController@resultados')->name('grupoevento.publico.resultados');
     Route::group(["prefix"=>"{id}/categoria"],function(){

@@ -75,6 +75,9 @@ class TorneioChaveSemifinalController extends Controller
                         }
                     }
                     foreach($torneio->inscricoes->all() as $inscricao){
+                        foreach($inscricao->criterios_desempate->all() as $criterio_desempate){
+                            $criterio_desempate->delete();
+                        }
                         $inscricao->delete();
                     }
                     // PERCORRE AS CATEGORIAS DOS TORNEIOS
@@ -210,6 +213,9 @@ class TorneioChaveSemifinalController extends Controller
                         }
                     }
                     foreach($torneio->inscricoes->all() as $inscricao){
+                        foreach($inscricao->criterios_desempate->all() as $criterio_desempate){
+                            $criterio_desempate->delete();
+                        }
                         $inscricao->delete();
                     }
                 }

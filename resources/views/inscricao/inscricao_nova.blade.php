@@ -576,7 +576,7 @@
 				@endforeach
 				@if($permite_confirmacao)
 					<div class="form-group">
-							<label><input type="checkbox" id="inscricao_confirmar"> Inscrição Confirmada</label><br/>
+							@if(!$evento->is_lichess_integration) <label><input type="checkbox" id="inscricao_confirmar"> Inscrição Confirmada</label><br/> @endif
 							<label><input type="checkbox" id="inscricao_atualizar"> Atualizar Cadastro (Cidade e Clube)</label><br/>
 					</div>
 				@else

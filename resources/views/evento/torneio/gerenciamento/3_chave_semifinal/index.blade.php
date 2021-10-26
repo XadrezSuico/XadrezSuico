@@ -95,6 +95,14 @@
             font-weight: bold;
 
         }
+
+        .emparceiramento a{
+            color: white;
+            text-decoration: underline;
+        }
+        .enxadrista_white a{
+            color: black;
+        }
 	</style>
 @endsection
 
@@ -130,13 +138,13 @@
                                             <div class=" @if($rodada->numero == 1) col-xs-4 col-xs-offset-1 @else col-xs-9 col-xs-offset-1 @endif">
                                                 <div class="emparceiramento text-center">
                                                     <div id="emparceiramento_{{$emparceiramento->id}}_enxadrista_a" class="center-block @if($emparceiramento->cor_a == 1) enxadrista_white @else @if($emparceiramento->cor_a == 2) enxadrista_black @else enxadrista_without_color @endif @endif">
-                                                        <strong>@if($emparceiramento->inscricao_a) {{$emparceiramento->inscricao_A->enxadrista->name}} @if($torneio->evento->is_chess_com) ({{$emparceiramento->inscricao_A->enxadrista->chess_com_username}}) @endif <span id="emparceiramento_{{$emparceiramento->id}}_a_trofeu" class=" @if($emparceiramento->resultado != -1) display-none @endif "><i class="fa fa-trophy"></i></span> @else - @endif</strong>
+                                                        <strong>@if($emparceiramento->inscricao_a) <a target="_blank" href="{{url("/evento/".$torneio->evento->id."/torneios/".$torneio->id."/inscricoes/edit/".$emparceiramento->inscricao_a)}}">{{$emparceiramento->inscricao_A->enxadrista->name}}</a> @if($emparceiramento->inscricao_A->confirmado)<i class="fa fa-check"></i> @endif @if($torneio->evento->is_chess_com) ({{$emparceiramento->inscricao_A->enxadrista->chess_com_username}}) @endif <span id="emparceiramento_{{$emparceiramento->id}}_a_trofeu" class=" @if($emparceiramento->resultado != -1) display-none @endif "><i class="fa fa-trophy"></i></span> @else - @endif</strong>
                                                     </div>
                                                     @if($emparceiramento->inscricao_a) <div class="resultados_confrontos"><div class="resultado" id="emparceiramento_{{$emparceiramento->id}}_resultado_a_label_partida">{{$emparceiramento->getResultadoA()}}</div><br/></div>@endif
                                                     <i class="fa fa-times center-block"></i>
                                                     @if($emparceiramento->inscricao_b) <div class="resultados_confrontos"><div class="resultado" id="emparceiramento_{{$emparceiramento->id}}_resultado_b_label_partida">{{$emparceiramento->getResultadoB()}}</div><br/></div>@endif
                                                     <div id="emparceiramento_{{$emparceiramento->id}}_enxadrista_b" class="center-block @if($emparceiramento->cor_b == 1) enxadrista_white @else @if($emparceiramento->cor_b == 2) enxadrista_black @else enxadrista_without_color @endif @endif">
-                                                        <strong>@if($emparceiramento->inscricao_b) {{$emparceiramento->inscricao_B->enxadrista->name}} @if($torneio->evento->is_chess_com) ({{$emparceiramento->inscricao_B->enxadrista->chess_com_username}}) @endif<span id="emparceiramento_{{$emparceiramento->id}}_b_trofeu" class=" @if($emparceiramento->resultado != 1) display-none @endif "><i class="fa fa-trophy"></i></span> @else - @endif</strong>
+                                                        <strong>@if($emparceiramento->inscricao_b) <a target="_blank" href="{{url("/evento/".$torneio->evento->id."/torneios/".$torneio->id."/inscricoes/edit/".$emparceiramento->inscricao_b)}}">{{$emparceiramento->inscricao_B->enxadrista->name}}</a> @if($emparceiramento->inscricao_B->confirmado)<i class="fa fa-check"></i> @endif @if($torneio->evento->is_chess_com) ({{$emparceiramento->inscricao_B->enxadrista->chess_com_username}}) @endif<span id="emparceiramento_{{$emparceiramento->id}}_b_trofeu" class=" @if($emparceiramento->resultado != 1) display-none @endif "><i class="fa fa-trophy"></i></span> @else - @endif</strong>
                                                     </div>
                                                     @if($emparceiramento->inscricao_A || $emparceiramento->inscricao_B)
                                                         <hr/>
@@ -199,13 +207,13 @@
                                                         <hr/>
                                                             <h5><strong>Desempate:</strong></h5>
                                                             <div id="emparceiramento_{{$armageddon->id}}_enxadrista_a" class="center-block @if($armageddon->cor_a == 1) enxadrista_white @else @if($armageddon->cor_a == 2) enxadrista_black @else enxadrista_without_color @endif @endif">
-                                                                <strong>@if($armageddon->inscricao_a) {{$armageddon->inscricao_A->enxadrista->name}} @if($torneio->evento->is_chess_com) ({{$armageddon->inscricao_A->enxadrista->chess_com_username}}) @endif <span id="emparceiramento_{{$armageddon->id}}_b_trofeu" class=" @if($armageddon->resultado != -1) display-none @endif "><i class="fa fa-trophy"></i></span>  @else - @endif</strong>
+                                                                <strong>@if($armageddon->inscricao_a) <a target="_blank" href="{{url("/evento/".$torneio->evento->id."/torneios/".$torneio->id."/inscricoes/edit/".$armageddon->inscricao_a)}}">{{$armageddon->inscricao_A->enxadrista->name}}</a> @if($torneio->evento->is_chess_com) ({{$armageddon->inscricao_A->enxadrista->chess_com_username}}) @endif <span id="emparceiramento_{{$armageddon->id}}_b_trofeu" class=" @if($armageddon->resultado != -1) display-none @endif "><i class="fa fa-trophy"></i></span>  @else - @endif</strong>
                                                             </div><br/>
                                                             @if($armageddon->inscricao_a) <div class="resultados_confrontos"><div class="resultado" id="emparceiramento_{{$armageddon->id}}_resultado_a_label_partida">{{$armageddon->getResultadoA()}}</div><br/></div>@endif
                                                             <i class="fa fa-times center-block"></i>
                                                             @if($armageddon->inscricao_b) <div class="resultados_confrontos"><div class="resultado" id="emparceiramento_{{$armageddon->id}}_resultado_b_label_partida">{{$armageddon->getResultadoB()}}</div><br/></div>@endif
                                                             <div id="emparceiramento_{{$armageddon->id}}_enxadrista_b" class="center-block @if($armageddon->cor_b == 1) enxadrista_white @else @if($armageddon->cor_b == 2) enxadrista_black @else enxadrista_without_color @endif @endif">
-                                                                <strong>@if($armageddon->inscricao_b) {{$armageddon->inscricao_B->enxadrista->name}} @if($torneio->evento->is_chess_com) ({{$armageddon->inscricao_B->enxadrista->chess_com_username}}) @endif <span id="emparceiramento_{{$armageddon->id}}_b_trofeu" class=" @if($armageddon->resultado != 1) display-none @endif "><i class="fa fa-trophy"></i></span>  @else - @endif</strong>
+                                                                <strong>@if($armageddon->inscricao_b) <a target="_blank" href="{{url("/evento/".$torneio->evento->id."/torneios/".$torneio->id."/inscricoes/edit/".$armageddon->inscricao_b)}}">{{$armageddon->inscricao_B->enxadrista->name}}</a> @if($torneio->evento->is_chess_com) ({{$armageddon->inscricao_B->enxadrista->chess_com_username}}) @endif <span id="emparceiramento_{{$armageddon->id}}_b_trofeu" class=" @if($armageddon->resultado != 1) display-none @endif "><i class="fa fa-trophy"></i></span>  @else - @endif</strong>
                                                             </div>
                                                             @if($armageddon->inscricao_a && $armageddon->inscricao_b)
                                                                 <hr/>

@@ -1,9 +1,10 @@
 @extends('adminlte::page')
 
-@section("title", "Visualizar Premiados - ".$evento->name)
+@section("title", "Visualizar Premiados - Evento: ".$evento->name)
 
 @section('content_header')
   <h1>Visualizar Premiados</h1>
+  </ol>
 @stop
 
 
@@ -24,7 +25,7 @@
 
 <!-- Main row -->
 <ul class="nav nav-pills">
-  <li role="presentation"><a href="/evento/dashboard/{{$evento->id}}">Voltar à Dashboard de Evento</a></li>
+  <li role="presentation"><a href="/inscricao/{{$evento->id}}">Voltar ao Formulário de Nova Inscrição</a></li>
 </ul>
 <div class="row">
   <!-- Left col -->
@@ -36,10 +37,51 @@
 			<div class="pull-right box-tools">
 			</div>
 		</div>
+
+		<div class="box-body">
+			@if(!$evento->inscricoes_encerradas())
+                <a href="{{url("/inscricao/".$evento->id)}}" class="btn btn-lg btn-info btn-block">
+                    Voltar ao Formulário de Inscrição
+                </a><br/>
+            @endif
+            @if($evento->hasTorneiosEmparceiradosByXadrezSuico())
+                <a href="{{url("/evento/acompanhar/".$evento->id)}}" class="btn btn-lg btn-primary btn-block">
+                    Acompanhe o Emparceiramento do Torneio
+                </a><br/>
+            @endif
+			@if($evento->pagina)
+				@if($evento->pagina->imagem) <div style="width: 100%; text-align: center;"><img src="data:image/png;base64, {!!$evento->pagina->imagem!!}" width="100%" style="max-width: 800px"/></div> <br/> @endif
+				@if($evento->pagina->texto) {!!$evento->pagina->texto!!} <br/> @endif
+				@if($evento->pagina->imagem || $evento->pagina->texto) <hr/> @endif
+			@endif
+			<strong>Categorias:</strong><br/>
+			@foreach($evento->categorias->all() as $categoria)
+				{{$categoria->categoria->name}},
+			@endforeach<br/>
+			<strong>Cidade:</strong> {{$evento->cidade->name}}<br/>
+			<strong>Local:</strong> {{$evento->local}}<br/>
+			<strong>Data:</strong>
+            @if($evento->getDataInicio() == $evento->getDataFim())
+                {{$evento->getDataInicio()}}
+            @else
+                {{$evento->getDataInicio()}} - {{$evento->getDataFim()}}
+            @endif<br/>
+			<strong>Maiores informações em:</strong> <a href="{{$evento->link}}" target="_blank">{{$evento->link}}</a><br/>
+			@if($evento->maximo_inscricoes_evento)
+				<hr/>
+				<strong>Total de Inscritos até o presente momento:</strong> {{$evento->quantosInscritos()}}.<br/>
+				<strong>Limite de Inscritos:</strong> {{$evento->maximo_inscricoes_evento}}.<br/>
+				<hr/>
+			@endif
+			@if($evento->getDataFimInscricoesOnline()) <h3><strong>Inscrições antecipadas até:</strong> {{$evento->getDataFimInscricoesOnline()}}.</h3>@endif
+            @if($evento->is_lichess_integration)
+                Informações do Lichess.org são atualizadas a cada 6 horas.
+            @endif
+        </div>
 	</div>
 	<div class="box box-primary">
 		<div class="box-header">
-			<h3 class="box-title">Lista de Vencedores</h3>
+			<h3 class="box-title">Lista de Premiados</h3>
 			<div class="pull-right box-tools">
 			</div>
 		</div>
@@ -54,11 +96,6 @@
                         <th>Nome do Enxadrista</th>
                         <th>Cidade</th>
                         <th>Clube</th>
-                        <th>E-mail</th>
-                        <th>Celular</th>
-				    	@foreach($evento->campos() as $campo)
-                            <th>{{$campo->name}}</th>
-                        @endforeach
                     </tr>
                 </thead>
                 <tbody>
@@ -72,58 +109,12 @@
                                     <td>{{$inscricao->enxadrista->getNomePrivado()}}</td>
                                     <td>{{$inscricao->getCidade()}}</td>
                                     <td>@if($inscricao->clube) {{$inscricao->clube->name}} @else - @endif</td>
-                                    <td>{{$inscricao->enxadrista->email}}</td>
-                                    <td>{{$inscricao->enxadrista->celular}}</td>
-                                    @foreach($evento->campos() as $campo)
-                                        @if($inscricao->getOpcao($campo->id))
-                                            <td>{{$inscricao->getOpcao($campo->id)->opcao->name}}</td>
-                                        @else
-                                            <td>-</td>
-                                        @endif
-                                    @endforeach
                                 </tr>
                             @endforeach
                         @endforeach
                     @endforeach
                 </tbody>
             </table>
-            <br/>
-            @foreach($evento->torneios->all() as $torneio)
-                @foreach($torneio->categorias()->orderBy("categoria_id","ASC")->get() as $categoria)
-                    {{$categoria->categoria->name}}<br/>
-                    @php
-                        if($evento->is_lichess_integration){
-                            $inscricoes = \App\Inscricao::where([
-                                ["categoria_id", "=", $categoria->categoria->id],
-                            ])
-                                ->whereHas("torneio", function ($q1) use ($evento) {
-                                    $q1->where([
-                                        ["evento_id", "=", $evento->id],
-                                    ]);
-                                })
-                                ->orderBy("confirmado", "DESC")
-                                ->orderBy("posicao", "ASC")
-                                ->get();
-                        }else{
-                            $inscricoes = \App\Inscricao::where([
-                                ["categoria_id", "=", $categoria->categoria->id],
-                                ["confirmado", "=", true],
-                            ])
-                                ->whereHas("torneio", function ($q1) use ($evento) {
-                                    $q1->where([
-                                        ["evento_id", "=", $evento->id],
-                                    ]);
-                                })
-                                ->orderBy("posicao", "ASC")
-                                ->get();
-                        }
-                    @endphp
-                    @foreach($inscricoes as $inscricao)
-                         @if($inscricao->desconsiderar_pontuacao_geral) <u><i>(WO)</i></u> @else @if($inscricao->posicao) {{$inscricao->posicao}} @else - @endif @endif - {{$inscricao->enxadrista->getNomePrivado()}} - {{$inscricao->getCidade()}} - @if($inscricao->clube) {{$inscricao->clube->name}} @else - @endif<br/>
-                    @endforeach
-                    <br/>
-                @endforeach
-            @endforeach
 		</div>
 	</div>
 

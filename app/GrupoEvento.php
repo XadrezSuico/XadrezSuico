@@ -174,4 +174,20 @@ class GrupoEvento extends Model
 
         return false;
     }
+
+    public function getInscricoes()
+    {
+        $grupo_evento = $this;
+        $inscricoes = Inscricao::whereHas("torneio", function ($q1) use ($grupo_evento) {
+            $q1->whereHas("evento",function($q2) use ($grupo_evento) {
+                $q2->where([["grupo_evento_id", "=", $grupo_evento->id]]);
+            });
+        })
+            ->join('enxadrista', 'enxadrista.id', '=', 'inscricao.enxadrista_id')
+            ->orderBy("torneio_id", "ASC")
+            ->orderBy("categoria_id", "ASC")
+            ->orderBy("enxadrista.name", "ASC")
+            ->get();
+        return $inscricoes;
+    }
 }

@@ -45,6 +45,7 @@
                 <thead>
                     <tr>
                         <th>#</th>
+                        <th>Inscrição</th>
                         <th>Nome</th>
                         <th>Data de Nascimento</th>
                         <th>Cidade</th>
@@ -60,40 +61,52 @@
                         <tr>
 
                             <td data-sort='{{($inscricao->posicao) ? $inscricao->posicao : 999999999}}'>@if($inscricao->posicao) {{$inscricao->posicao}} @else - @endif</td>
+                            <td data-sort='{{($inscricao->id)}}'>{{$inscricao->id}}</td>
                             @if($evento->classifica)
                                 @if($evento->classifica->enxadristaInscrito($inscricao->enxadrista->id))
+                                    <!-- E -->
                                     <td style="font-weight: bold; color: green; text-decoration: underline" >
                                         #{{$inscricao->enxadrista->id}} - {{$inscricao->enxadrista->name}} @if($inscricao->desconsiderar_pontuacao_geral) <u><i>(WO)</i></u> @endif
                                     </td>
                                 @else
                                     @if($evento->classifica->grupo_evento->enxadristaJaInscritoEmOutroEvento($evento->classifica->id,$inscricao->enxadrista->id))
+                                        <!-- JE -->
                                         <td style="font-weight: bold; color: orange; text-decoration: underline" >
                                             #{{$inscricao->enxadrista->id}} - {{$inscricao->enxadrista->name}} @if($inscricao->desconsiderar_pontuacao_geral) <u><i>(WO)</i></u> @endif
                                         </td>
                                     @else
                                         @if($evento->classifica->grupo_evento->evento_classifica)
                                             @if($evento->classifica->grupo_evento->evento_classifica->enxadristaInscrito($inscricao->enxadrista->id))
+                                                <!-- GE -->
                                                 <td style="font-weight: bold; color: red; text-decoration: underline">
                                                     #{{$inscricao->enxadrista->id}} - {{$inscricao->enxadrista->name}} @if($inscricao->desconsiderar_pontuacao_geral) <u><i>(WO)</i></u> @endif
                                                 </td>
                                             @else
+                                                <!-- SGE -->
                                                 <td>#{{$inscricao->enxadrista->id}} - {{$inscricao->enxadrista->name}} @if($inscricao->desconsiderar_pontuacao_geral) <strong><u><i>(WO)</i></u></strong> @endif</td>
                                             @endif
                                         @else
+                                            <!-- S -->
                                             <td>#{{$inscricao->enxadrista->id}} - {{$inscricao->enxadrista->name}} @if($inscricao->desconsiderar_pontuacao_geral) <strong><u><i>(WO)</i></u></strong> @endif</td>
                                         @endif
                                     @endif
                                 @endif
                             @else
                                 @if($evento->grupo_evento->evento_classifica)
-                                    @if($evento->grupo_evento->evento_classifica->enxadristaInscrito($inscricao->enxadrista->id))
+                                    @php
+                                        /*if($evento->grupo_evento->evento_classifica->enxadristaInscrito($inscricao->enxadrista->id))*/
+                                    @endphp
+                                    @if($inscricao->hasInscricoesFromEstaParaEvento($evento->grupo_evento->evento_classifica->id))
+                                        <!-- 2GE -->
                                         <td style="font-weight: bold; color: green; text-decoration: underline">
                                             #{{$inscricao->enxadrista->id}} - {{$inscricao->enxadrista->name}} @if($inscricao->desconsiderar_pontuacao_geral) <u><i>(WO)</i></u> @endif
                                         </td>
                                     @else
+                                        <!-- 2NGE -->
                                         <td>#{{$inscricao->enxadrista->id}} - {{$inscricao->enxadrista->name}} @if($inscricao->desconsiderar_pontuacao_geral) <strong><u><i>(WO)</i></u></strong> @endif</td>
                                     @endif
                                 @else
+                                    <!-- 2N -->
                                     <td>#{{$inscricao->enxadrista->id}} - {{$inscricao->enxadrista->name}} @if($inscricao->desconsiderar_pontuacao_geral) <strong><u><i>(WO)</i></u></strong> @endif</td>
                                 @endif
                             @endif

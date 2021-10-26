@@ -264,6 +264,7 @@
 										<option value="0">Padrão XadrezSuíço</option>
 										<option value="1">FIDE</option>
 										<option value="2">LBX</option>
+										<option value="3">Padrão XadrezSuíço (Nome no Sobrenome, e Sobrenome no Nome)</option>
 									</select>
 								</div>
 								<div class="form-group">

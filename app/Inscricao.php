@@ -89,6 +89,11 @@ class Inscricao extends Model
         return $this->belongsTo("App\Inscricao", "inscricao_from", "id");
     }
 
+    public function to()
+    {
+        return $this->hasMany("App\Inscricao", "inscricao_from", "id");
+    }
+
     public function clube()
     {
         return $this->belongsTo("App\Clube", "clube_id", "id");
@@ -164,5 +169,23 @@ class Inscricao extends Model
             }
         }
         return $retorno;
+    }
+
+    public function hasInscricoesFromEstaParaGrupoEvento($grupo_evento_id){
+        $inscricoes_count = $this->to()->whereHas("torneio",function($q1) use ($grupo_evento_id){
+            $q1->whereHas("evento",function($q2) use ($grupo_evento_id){
+                $q2->where([["grupo_evento_id","=",$grupo_evento_id]]);
+            });
+        })->count();
+        if($inscricoes_count > 0) return true;
+        return false;
+    }
+
+    public function hasInscricoesFromEstaParaEvento($evento_id){
+        $inscricoes_count = $this->to()->whereHas("torneio",function($q1) use ($evento_id){
+            $q1->where([["evento_id","=",$evento_id]]);
+        })->count();
+        if($inscricoes_count > 0) return true;
+        return false;
     }
 }
