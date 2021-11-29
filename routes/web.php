@@ -214,6 +214,10 @@ Route::group(["prefix"=>"evento"],function(){
 
     });
 
+    Route::group(["prefix"=>"{id}/criteriodesempate"],function(){
+        Route::post('/add', 'EventoGerenciarController@criterio_desempate_add')->name('evento.criteriodesempate.add');
+        Route::get('/remove/{cd_grupo_evento_id}', 'EventoGerenciarController@criterio_desempate_remove')->name('evento.criteriodesempate.remove');
+    });
 
     Route::group(["prefix"=>"{id}/categoria"],function(){
         Route::post('/add', 'EventoGerenciarController@categoria_add')->name('evento.categoria.add');

@@ -82,6 +82,10 @@ class CategoriaController extends Controller
             return -1;
         } elseif ($inscrito_a->pontos < $inscrito_b->pontos) {
             return 1;
+        } elseif (!$inscrito_a->desconsiderar_pontuacao_geral && $inscrito_b->desconsiderar_pontuacao_geral) {
+            return -1;
+        } elseif ($inscrito_a->desconsiderar_pontuacao_geral && !$inscrito_b->desconsiderar_pontuacao_geral) {
+            return 1;
         } else {
             $criterios = $inscrito_a->torneio->getCriteriosTotal();
 

@@ -59,6 +59,11 @@
 				    	@foreach($evento->campos() as $campo)
                             <th>{{$campo->name}}</th>
                         @endforeach
+                        @if($evento->classificador)
+                            @foreach($evento->classificador->campos() as $campo)
+                                <th>{{$campo->name}}</th>
+                            @endforeach
+                        @endif
                     </tr>
                 </thead>
                 <tbody>
@@ -81,6 +86,15 @@
                                             <td>-</td>
                                         @endif
                                     @endforeach
+                                    @if($evento->classificador)
+                                        @foreach($evento->classificador->campos() as $campo)
+                                            @if($inscricao->from->getOpcao($campo->id))
+                                                <td>{{$inscricao->from->getOpcao($campo->id)->opcao->name}}</td>
+                                            @else
+                                                <td>-</td>
+                                            @endif
+                                        @endforeach
+                                    @endif
                                 </tr>
                             @endforeach
                         @endforeach

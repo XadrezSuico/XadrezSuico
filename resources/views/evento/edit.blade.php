@@ -272,7 +272,7 @@
 									<select name="cidade_id" id="cidade_id" class="form-control width-100" @if(!\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() && !\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4]) && !\Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])) disabled="disabled" @endif>
 										<option value="">--- Selecione ---</option>
 										@foreach($cidades as $cidade)
-											<option value="{{$cidade->id}}">{{$cidade->id}} - {{$cidade->name}}</option>
+											<option value="{{$cidade->id}}">{{$cidade->id}} - {{$cidade->getName()}}</option>
 										@endforeach
 									</select>
 								</div>

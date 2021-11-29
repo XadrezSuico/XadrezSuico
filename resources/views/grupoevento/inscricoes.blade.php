@@ -67,7 +67,12 @@
                             <td>{{$inscricao->torneio->name}}</td>
                             <td>{{$inscricao->categoria->name}}</td>
                             <td>{{$inscricao->enxadrista->id}}</td>
-                            <td>{{$inscricao->enxadrista->getNomePrivado()}}</td>
+                            <td>
+                                {{$inscricao->enxadrista->getNomePrivado()}}
+                                @if($inscricao->torneio->evento->is_chess_com)
+                                    ({{$inscricao->enxadrista->chess_com_username}})
+                                @endif
+                            </td>
                             <td>{{$inscricao->enxadrista->getNascimentoPrivado()}}</td>
                             <td>{{$inscricao->getCidade()}}</td>
                             <td>@if($inscricao->clube) {{$inscricao->clube->name}} @else - @endif</td>

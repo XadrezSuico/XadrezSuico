@@ -64,7 +64,9 @@
                         <tr>
                             <td>{{$inscricao->id}}</td>
                             <td>{{$inscricao->enxadrista->id}}</td>
-                            <td>{{$inscricao->enxadrista->getNomePrivado()}}</td>
+                            <td>
+                                {{$inscricao->enxadrista->getNomePrivado()}}
+                            </td>
                             <td>{{$inscricao->enxadrista->getNascimentoPrivado()}}</td>
                             <td>{{$inscricao->categoria->name}}</td>
                             <td>{{$inscricao->getCidade()}}</td>

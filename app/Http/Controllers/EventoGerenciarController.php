@@ -6,6 +6,7 @@ use App\Categoria;
 use App\CategoriaEvento;
 use App\Cidade;
 use App\CriterioDesempate;
+use App\CriterioDesempateEvento;
 use App\Evento;
 use App\Exports\EnxadristasFromView;
 use App\Inscricao;
@@ -543,7 +544,7 @@ class EventoGerenciarController extends Controller
         if (
             !$user->hasPermissionGlobal() &&
             !$user->hasPermissionEventByPerfil($evento->id, [3,4,5]) &&
-            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
+            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [6,7])
         ) {
             return redirect("/evento/dashboard/" . $evento->id);
         }
@@ -570,6 +571,42 @@ class EventoGerenciarController extends Controller
         $enxadristasView = new EnxadristasFromView();
         $enxadristasView->setEvento($id);
         return Excel::download($enxadristasView, 'xadrezSuico_evento_' . $id . '_lista_enxadristas_' . date('d-m-Y--H-i-s') . '.xlsx');
+    }
+
+    public function criterio_desempate_add($id, Request $request)
+    {
+        $user = Auth::user();
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionEventByPerfil($evento->id, [4]) &&
+            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
+        ) {
+            return redirect("/evento/dashboard/" . $evento->id);
+        }
+
+        $criterio_desempate_grupo_evento = new CriterioDesempateEvento;
+        $criterio_desempate_grupo_evento->evento_id = $id;
+        $criterio_desempate_grupo_evento->criterio_desempate_id = $request->input("criterio_desempate_id");
+        $criterio_desempate_grupo_evento->tipo_torneio_id = $request->input("tipo_torneio_id");
+        $criterio_desempate_grupo_evento->softwares_id = $request->input("softwares_id");
+        $criterio_desempate_grupo_evento->prioridade = $request->input("prioridade");
+        $criterio_desempate_grupo_evento->save();
+        return redirect("/evento/dashboard/" . $id . "?tab=criterio_desempate");
+    }
+    public function criterio_desempate_remove($id, $cd_grupo_evento_id)
+    {
+        $user = Auth::user();
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionEventByPerfil($evento->id, [4]) &&
+            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
+        ) {
+            return redirect("/evento/dashboard/" . $evento->id);
+        }
+
+        $criterio_desempate_grupo_evento = CriterioDesempateEvento::find($cd_grupo_evento_id);
+        $criterio_desempate_grupo_evento->delete();
+        return redirect("/evento/dashboard/" . $id . "?tab=criterio_desempate");
     }
 
 
@@ -611,7 +648,7 @@ class EventoGerenciarController extends Controller
         if (
             !$user->hasPermissionGlobal() &&
             !$user->hasPermissionEventByPerfil($evento->id, [3,4,5]) &&
-            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
+            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [6,7])
         ) {
             return redirect("/evento/dashboard/" . $evento->id);
         }

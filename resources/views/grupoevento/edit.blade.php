@@ -202,7 +202,7 @@
                                                             {{$evento->getDataInicio()}}<br/>{{$evento->getDataFim()}}
                                                         @endif
                                                     </td>
-													<td>{{$evento->cidade->name}} - {{$evento->local}}</td>
+													<td>{{$evento->cidade->getName()}} <br/> {{$evento->local}}</td>
 													<td>
                                                         Total de Inscritos: {{$evento->quantosInscritos()}}<br/>
                                                         @if(

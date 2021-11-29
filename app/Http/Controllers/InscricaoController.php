@@ -836,10 +836,10 @@ class InscricaoController extends Controller
             if ($request->input("cbx_id") > 0) {
                 $enxadrista->cbx_id = $request->input("cbx_id");
 
-                // $enxadrista = CBXRatingController::getRating($enxadrista, false, true, false);
-                // if (!$enxadrista->encontrado_cbx) {
-                //     return response()->json(["ok" => 0, "error" => 1, "message" => "O ID CBX informado não existe. Por favor, verifique esta informação e tente novamente. Lembrando que esta informação DEVE SER válida e deve corresponder ao cadastro deste enxadrista!", "registred" => 0, "ask" => 0]);
-                // }
+                $enxadrista = CBXRatingController::getRating($enxadrista, false, true, false);
+                if (!$enxadrista->encontrado_cbx) {
+                    return response()->json(["ok" => 0, "error" => 1, "message" => "O ID CBX informado não existe. Por favor, verifique esta informação e tente novamente. Lembrando que esta informação DEVE SER válida e deve corresponder ao cadastro deste enxadrista!", "registred" => 0, "ask" => 0]);
+                }
             }
         }
         if ($request->has("fide_id")) {
@@ -890,9 +890,9 @@ class InscricaoController extends Controller
         $enxadrista->save();
 
 
-        // if ($enxadrista->encontrado_cbx) {
-        //     CBXRatingController::getRating($enxadrista, false, false);
-        // }
+        if ($enxadrista->encontrado_cbx) {
+            CBXRatingController::getRating($enxadrista, false, false);
+        }
         if ($enxadrista->encontrado_fide) {
             FIDERatingController::getRating($enxadrista, false, false);
         }
@@ -1198,10 +1198,10 @@ class InscricaoController extends Controller
             if ($request->input("cbx_id") > 0) {
                 $enxadrista->cbx_id = $request->input("cbx_id");
 
-                // $enxadrista = CBXRatingController::getRating($enxadrista, false, true);
-                // if (!$enxadrista->encontrado_cbx) {
-                //     return response()->json(["ok" => 0, "error" => 1, "message" => "O ID CBX informado não existe. Por favor, verifique esta informação e tente novamente. Lembrando que esta informação DEVE SER válida e deve corresponder ao cadastro deste enxadrista!", "registred" => 0, "ask" => 0]);
-                // }
+                $enxadrista = CBXRatingController::getRating($enxadrista, false, true);
+                if (!$enxadrista->encontrado_cbx) {
+                    return response()->json(["ok" => 0, "error" => 1, "message" => "O ID CBX informado não existe. Por favor, verifique esta informação e tente novamente. Lembrando que esta informação DEVE SER válida e deve corresponder ao cadastro deste enxadrista!", "registred" => 0, "ask" => 0]);
+                }
             }else{
                 $enxadrista->cbx_id = NULL;
             }
