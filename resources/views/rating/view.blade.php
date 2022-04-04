@@ -27,8 +27,8 @@
 			</div>
 		</div>
         <div class="box-body">
-                <h3 style="margin: 0; padding: 0;"><strong>Nome:</strong> {{$enxadrista->name}}<br/></h3>
-                <strong>Data de Nascimento:</strong> {{$enxadrista->getBorn()}}<br/>
+                <h3 style="margin: 0; padding: 0;"><strong>Nome:</strong> {{$enxadrista->getNomePublico()}}<br/></h3>
+                <strong>Data de Nascimento:</strong> {{$enxadrista->getNascimentoPublico()}}<br/>
                 <strong>Cidade:</strong> {{$enxadrista->cidade->name}}<br/>
                 @if($enxadrista->clube) <strong>Clube:</strong> {{$enxadrista->clube->name}}<br/> @endif
 
@@ -111,7 +111,7 @@
                         @php($ratingGrafico += $movimentacao->valor)
                         { y: '{{$movimentacao->torneio->evento->data_fim}}', rating: {{$ratingGrafico}} },
                     @endif
-                    
+
                 @endforeach
             ],
             xkey      : 'y',

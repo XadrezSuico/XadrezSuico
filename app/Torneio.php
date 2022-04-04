@@ -169,7 +169,7 @@ class Torneio extends Model
     public function isDeletavel()
     {
         if ($this->id != null) {
-            if ($this->categorias()->count() > 0 || $this->inscricoes()->count() > 0) {
+            if ($this->categorias()->count() > 0 || $this->inscricoes()->count() > 0 || $this->rodadas()->count() > 0) {
                 return false;
             }
             return true;

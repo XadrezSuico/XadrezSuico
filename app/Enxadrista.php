@@ -296,6 +296,28 @@ class Enxadrista extends Model
                             return $rating->valor;
                         }
                     }
+
+                    $fide = $enxadrista->showRating(0, $evento->tipo_modalidade);
+                    $cbx = $enxadrista->showRating(1, $evento->tipo_modalidade);
+                    $lbx = $enxadrista->showRating(2, $evento->tipo_modalidade);
+
+                    $found = false;
+                    if($fide){
+                        if($fide > $evento->tipo_rating->tipo_rating->showRatingRegraIdade($enxadrista->howOld(), $evento)){
+                            return $fide;
+                        }
+                    }
+                    if($lbx && !$found){
+                        if($lbx > $evento->tipo_rating->tipo_rating->showRatingRegraIdade($enxadrista->howOld(), $evento)){
+                            return $lbx;
+                        }
+                    }
+                    if($cbx && !$found){
+                        if($cbx > $evento->tipo_rating->tipo_rating->showRatingRegraIdade($enxadrista->howOld(), $evento)){
+                            return $cbx;
+                        }
+                    }
+
                     return $rating_regra->inicial;
                 }
             } else {

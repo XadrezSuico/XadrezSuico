@@ -417,6 +417,143 @@ class TorneioController extends Controller
                                 $j++;
                             }
                         }
+
+
+                        if ($torneio->evento->tipo_rating) {
+                            $retornos[] = date("d/m/Y H:i:s") . " - O evento calcula rating. Iniciando processamento do rating do enxadrista.";
+                            $temRating = $enxadrista->temRating($torneio->evento->id);
+                            if ($temRating) {
+                                $retornos[] = date("d/m/Y H:i:s") . " - O enxadrista possui rating deste tipo. Rating #" . $temRating["rating"]->id . ".";
+                                $rating = $temRating["rating"];
+                                $movimentacao = MovimentacaoRating::where([
+                                    ["ratings_id", "=", $rating->id],
+                                    ["torneio_id", "=", $torneio->id],
+                                ])->first();
+                                if ($movimentacao) {
+                                    // echo "Apagando movimentação de rating deste torneio. <br/>";
+                                    $retornos[] = date("d/m/Y H:i:s") . " - Apagando movimentação de rating deste torneio.";
+                                    $movimentacao->delete();
+                                }
+                                if ($temRating["ok"] == 0) {
+                                    $retornos[] = date("d/m/Y H:i:s") . " - O rating está como 0. Colocando rating como o inicial.";
+                                    if ($rating->movimentacoes()->count() == 0) {
+                                        $movimentacao = new MovimentacaoRating;
+                                        $movimentacao->tipo_ratings_id = $rating->tipo_ratings_id;
+                                        $movimentacao->ratings_id = $rating->id;
+                                        $movimentacao->valor = $temRating["regra"]->inicial;
+                                        $movimentacao->is_inicial = true;
+                                        $movimentacao->save();
+                                    }
+                                }
+
+                                if (isset($fields["Val+/-"])) {
+                                    if (!is_null($line[($fields["Val+/-"])])) {
+                                        if ($line[($fields["Val+/-"])] != '') {
+                                            $exp_meio = explode("½", $line[($fields["Val+/-"])]);
+                                            $exp_virgula = explode(",", $line[($fields["Val+/-"])]);
+
+                                            $retornos[] = date("d/m/Y H:i:s") . " - Criando a movimentação do rating desta etapa. Modificação: " . (count($exp_meio) > 1) ? $exp_meio[0] . ".5" : ((count($exp_virgula) > 1) ? $exp_virgula[0] . "." . $exp_virgula[1] : $exp_virgula[0]) . ".";
+
+                                            $movimentacao = new MovimentacaoRating;
+                                            $movimentacao->tipo_ratings_id = $rating->tipo_ratings_id;
+                                            $movimentacao->ratings_id = $rating->id;
+                                            $movimentacao->torneio_id = $torneio->id;
+                                            $movimentacao->inscricao_id = $inscricao->id;
+                                            $movimentacao->valor = (count($exp_meio) > 1) ? $exp_meio[0] . ".5" : ((count($exp_virgula) > 1) ? $exp_virgula[0] . "." . $exp_virgula[1] : $exp_virgula[0]);
+                                            $movimentacao->is_inicial = false;
+                                            $movimentacao->save();
+                                            $retornos[] = date("d/m/Y H:i:s") . " - Movimentação salva. Calculando e atualizando rating do enxadrista.";
+                                            $rating->calcular();
+                                        } else {
+                                            $retornos[] = date("d/m/Y H:i:s") . " - O rating veio nulo. Ignorando alteração.";
+                                        }
+                                    } else {
+                                        $retornos[] = date("d/m/Y H:i:s") . " - O rating veio nulo. Ignorando alteração.";
+                                    }
+                                } else {
+                                    $retornos[] = date("d/m/Y H:i:s") . " - O rating veio nulo. Ignorando alteração.";
+                                }
+                            } else {
+                                if (isset($fields["Val+/-"])) {
+                                    if (!is_null($line[($fields["Val+/-"])])) {
+                                        if ($line[($fields["Val+/-"])] != '') {
+                                            $retornos[] = date("d/m/Y H:i:s") . " - O Enxadrista não possui rating deste tipo. Criando o rating.";
+                                            $rating = new Rating;
+                                            $rating->enxadrista_id = $enxadrista->id;
+                                            $rating->tipo_ratings_id = $inscricao->torneio->evento->tipo_rating->tipo_ratings_id;
+                                            $rating->valor = 0;
+                                            $rating->save();
+
+                                            $rating_inicial = 1800;
+
+
+                                            $fide = $inscricao->enxadrista->showRating(0, $evento->tipo_modalidade);
+                                            $cbx = $inscricao->enxadrista->showRating(1, $evento->tipo_modalidade);
+                                            $lbx = $inscricao->enxadrista->showRating(2, $evento->tipo_modalidade);
+
+                                            $found = false;
+                                            if($fide){
+                                                if($fide > $evento->tipo_rating->tipo_rating->showRatingRegraIdade($inscricao->enxadrista->howOld(), $evento)){
+                                                    $rating_inicial = $fide;
+                                                    $found = true;
+                                                    $retornos[] = date("d/m/Y H:i:s") . " - Encontrado rating FIDE - Definindo como Inicial: ".$fide.".";
+                                                }
+                                            }
+                                            if($lbx && !$found){
+                                                if($lbx > $evento->tipo_rating->tipo_rating->showRatingRegraIdade($inscricao->enxadrista->howOld(), $evento)){
+                                                    $rating_inicial = $lbx;
+                                                    $found = true;
+                                                    $retornos[] = date("d/m/Y H:i:s") . " - Encontrado rating LBX - Definindo como Inicial: ".$lbx.".";
+                                                }
+                                            }
+                                            if($cbx && !$found){
+                                                if($cbx > $evento->tipo_rating->tipo_rating->showRatingRegraIdade($inscricao->enxadrista->howOld(), $evento)){
+                                                    $rating_inicial = $cbx;
+                                                    $found = true;
+                                                    $retornos[] = date("d/m/Y H:i:s") . " - Encontrado rating CBX - Definindo como Inicial: ".$cbx.".";
+                                                }
+                                            }
+
+                                            if(!$found){
+                                                $rating_inicial = $evento->tipo_rating->tipo_rating->showRatingRegraIdade($inscricao->enxadrista->howOld(), $evento);
+                                                $retornos[] = date("d/m/Y H:i:s") . " - Não foi encontrado outros Ratings; Definindo conforme regra de idade - Definindo como Inicial: ".$rating_inicial.".";
+                                            }
+
+
+                                            $movimentacao = new MovimentacaoRating;
+                                            $movimentacao->tipo_ratings_id = $rating->tipo_ratings_id;
+                                            $movimentacao->ratings_id = $rating->id;
+                                            $movimentacao->valor = $rating_inicial;
+                                            $movimentacao->is_inicial = true;
+                                            $movimentacao->save();
+                                            $retornos[] = date("d/m/Y H:i:s") . " - Rating #" . $rating->id . ".";
+
+                                            $exp_meio = explode("½", $line[($fields["Val+/-"])]);
+                                            $exp_virgula = explode(",", $line[($fields["Val+/-"])]);
+
+                                            $retornos[] = date("d/m/Y H:i:s") . " - Criando a movimentação do rating desta etapa. Modificação:" . (count($exp_meio) > 1) ? $exp_meio[0] . ".5" : ((count($exp_virgula) > 1) ? $exp_virgula[0] . "." . $exp_virgula[1] : $exp_virgula[0]) . ".";
+                                            $movimentacao = new MovimentacaoRating;
+                                            $movimentacao->tipo_ratings_id = $rating->tipo_ratings_id;
+                                            $movimentacao->ratings_id = $rating->id;
+                                            $movimentacao->torneio_id = $torneio->id;
+                                            $movimentacao->inscricao_id = $inscricao->id;
+                                            $movimentacao->valor = (count($exp_meio) > 1) ? $exp_meio[0] . ".5" : ((count($exp_virgula) > 1) ? $exp_virgula[0] . "." . $exp_virgula[1] : $exp_virgula[0]);
+                                            $movimentacao->is_inicial = false;
+                                            $movimentacao->save();
+                                            $rating->calcular();
+                                        } else {
+                                            $retornos[] = date("d/m/Y H:i:s") . " - O rating veio nulo. Ignorando alteração.";
+                                        }
+                                    } else {
+                                        $retornos[] = date("d/m/Y H:i:s") . " - O rating veio nulo. Ignorando alteração.";
+                                    }
+                                } else {
+                                    $retornos[] = date("d/m/Y H:i:s") . " - O rating veio nulo. Ignorando alteração.";
+                                }
+                            }
+                        }
+
+
                         $retornos[] = date("d/m/Y H:i:s") . " - Fim do processamento do resultado da inscrição do enxadrista #" . $enxadrista->id . " - " . $enxadrista->name . " .";
                         // echo "Enxadrista: ".$enxadrista->name."<br/>";
                     } else {

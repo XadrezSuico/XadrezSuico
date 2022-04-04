@@ -32,8 +32,8 @@
                     @foreach($tipo_rating->ratings()->orderBy("enxadrista_id","ASC")->get() as $rating)
                         <tr>
                             <td>{{$rating->id}}</td>
-                            <td>#{{$rating->enxadrista->id}} - {{$rating->enxadrista->name}}</td>
-                            <td>{{$rating->enxadrista->getBorn()}}</td>
+                            <td>#{{$rating->enxadrista->id}} - {{$rating->enxadrista->getNomePublico()}}</td>
+                            <td>{{$rating->enxadrista->getNascimentoPublico()}}</td>
                             <td>{{$rating->valor}}</td>
                             <td>
                                 <a class="btn btn-default" href="{{url("/rating/".$tipo_rating->id."/view/".$rating->id)}}" role="button">Visualizar</a>

@@ -65,7 +65,7 @@
                         <tr>
                             <td>{{$inscricao->id}}</td>
                             <td>#{{$inscricao->enxadrista->id}} - <a href="{{url("/enxadrista/edit/".$inscricao->enxadrista->id)}}" target="_blank">{{$inscricao->enxadrista->name}}</a></td>
-                            @if($evento->tipo_rating) <td>@if($inscricao->enxadrista->ratings()->where([["tipo_ratings_id","=",$evento->tipo_rating->tipo_ratings_id]])->count() > 0) {{$inscricao->enxadrista->ratings()->where([["tipo_ratings_id","=",$evento->tipo_rating->tipo_ratings_id]])->first()->valor}} @else Não Há @endif</td> @endif
+                            @if($evento->tipo_rating) <td>{{$inscricao->enxadrista->ratingParaEvento($evento->id)}}</td> @endif
                             @if($evento->is_lichess || $evento->is_lichess_integration) <td>{{$inscricao->enxadrista->lichess_username}}</td> @endif
                             @if($evento->is_lichess_integration)
                                 <td>@if($inscricao->is_lichess_team_found) Sim @else <strong><span style="color:red">Não</span></strong> @endif</td>

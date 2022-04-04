@@ -1,9 +1,9 @@
 @extends('adminlte::page')
 
-@section("title", "Nova Categoria")
+@section("title", "Novo Tipo de Rating")
 
 @section('content_header')
-  <h1>Nova Categoria</h1>
+  <h1>Novo Tipo de Rating</h1>
 @stop
 
 
@@ -18,14 +18,14 @@
 @section("content")
 <!-- Main row -->
 <ul class="nav nav-pills">
-  <li role="presentation"><a href="/categoria">Voltar a Lista de Categorias</a></li>
+  <li role="presentation"><a href="/tiporating">Voltar a Lista de Tipo de Rating</a></li>
 </ul>
 <div class="row">
   <!-- Left col -->
   <section class="col-lg-12 connectedSortable">
 	<div class="box box-primary" id="inscricao">
 		<div class="box-header">
-			<h3 class="box-title">Nova Categoria</h3>
+			<h3 class="box-title">Novo Tipo de Rating</h3>
 		</div>
 	  <!-- form start -->
         <form method="post">
@@ -33,22 +33,6 @@
 				<div class="form-group">
 					<label for="name">Nome</label>
 					<input name="name" id="name" class="form-control" type="text" />
-				</div>
-				<div class="form-group">
-					<label for="name">Idade Mínima (Em anos)</label>
-					<input name="idade_minima" id="idade_minima" class="form-control" type="text" />
-				</div>
-				<div class="form-group">
-					<label for="name">Idade Máxima (Em anos)</label>
-					<input name="idade_maxima" id="idade_maxima" class="form-control" type="text" />
-				</div>
-				<div class="form-group">
-					<label for="name">Código Categoria (Padrão Swiss-Manager)</label>
-					<input name="cat_code" id="cat_code" class="form-control" type="text" />
-				</div>
-				<div class="form-group">
-					<label for="name">Código Grupo (Deve ser único em cada torneio, para evitar problemas de processamento do resultado)</label>
-					<input name="code" id="code" class="form-control" type="text" />
 				</div>
 			</div>
 			<!-- /.box-body -->
@@ -72,7 +56,7 @@
 <script type="text/javascript" src="{{url("/js/jquery.mask.min.js")}}"></script>
 <script type="text/javascript">
   $(document).ready(function(){
-		
+
   });
 </script>
 @endsection

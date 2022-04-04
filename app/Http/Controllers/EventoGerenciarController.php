@@ -332,6 +332,28 @@ class EventoGerenciarController extends Controller
         $evento->pagina->save();
         return redirect("/evento/dashboard/" . $id . "?tab=pagina");
     }
+    
+    public function delete($id)
+    {
+        $user = Auth::user();
+        $evento = Evento::find($id);
+        $grupo_evento = $evento->grupo_evento;
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
+        ) {
+            return redirect("/grupoevento/dashboard/" . $grupo_evento->id);
+        }
+
+        if($evento->isDeletavel()){
+            foreach($evento->email_templates->all() as $email_template){
+                $email_template->delete();
+            }
+            $evento->delete();
+        }
+        return redirect("/grupoevento/dashboard/" . $grupo_evento->id);
+        
+    }
 
     public function categoria_add($id, Request $request)
     {

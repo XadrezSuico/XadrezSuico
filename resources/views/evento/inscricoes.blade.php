@@ -57,10 +57,19 @@
                         <th>Clube</th>
                         <th>Inscrição Inicial</th>
                         <th>Posição</th>
+				    	@foreach($evento->campos() as $campo)
+                            <th>{{$campo->name}}</th>
+                        @endforeach
+                        @if($evento->classificador)
+                            @foreach($evento->classificador->campos() as $campo)
+                                <th>{{$campo->name}}</th>
+                            @endforeach
+                        @endif
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($evento->getInscricoes() as $inscricao)
+                    @foreach($evento->getInscricoes() as $inscricao_ordered)
+                        @php($inscricao = $evento->enxadristaInscrito($inscricao_ordered->enxadrista->id))
                         <tr>
                             <td>{{$inscricao->id}}</td>
                             <td>{{$inscricao->enxadrista->id}}</td>
@@ -73,6 +82,22 @@
                             <td>@if($inscricao->clube) {{$inscricao->clube->name}} @else - @endif</td>
                             <td>@if($inscricao->from) {{$inscricao->from->id}} @else - @endif</td>
                             <td>@if($inscricao->from) @if($inscricao->from->posicao) {{$inscricao->from->posicao}} @else - @endif @else - @endif</td>
+                            @foreach($evento->campos() as $campo)
+                                @if($inscricao->hasOpcao($campo->id))
+                                    <td>{{$inscricao->getOpcao($campo->id)->opcao->name}}</td>
+                                @else
+                                    <td>-</td>
+                                @endif
+                            @endforeach
+                            @if($evento->classificador)
+                                @foreach($evento->classificador->campos() as $campo)
+                                    @if($inscricao->from->getOpcao($campo->id))
+                                        <td>{{$inscricao->from->getOpcao($campo->id)->opcao->name}}</td>
+                                    @else
+                                        <td>-</td>
+                                    @endif
+                                @endforeach
+                            @endif
                         </tr>
                     @endforeach
                 </tbody>

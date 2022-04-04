@@ -207,7 +207,7 @@ class CriterioDesempateGeralController extends Controller
         $pontuacoes = array();
 
         $pontuacao_total = $this->generate_g5($grupo_evento, $enxadrista);
-        $total_etapas = $grupo_evento->etapas()->count();
+        $total_etapas = $grupo_evento->eventos()->where([["classificavel","=",true]])->count();
 
         return number_format($pontuacao_total / $total_etapas, 2, '.', '');
     }
@@ -220,7 +220,7 @@ class CriterioDesempateGeralController extends Controller
         $pontuacoes = array();
 
         $pontuacao_total = $this->generate_g5($grupo_evento, $enxadrista);
-        $total_etapas_participadas = $grupo_evento->etapas()->whereHas("torneios", function ($q1) use ($enxadrista) {
+        $total_etapas_participadas = $grupo_evento->eventos()->whereHas("torneios", function ($q1) use ($enxadrista) {
             $q1->whereHas("inscricoes", function ($q2) use ($enxadrista) {
                 $q2->where([
                     ["enxadrista_id", "=", $enxadrista->id],

@@ -33,7 +33,7 @@ class LBXRatingController extends Controller
             $codigo_organizacao = 2;
 
 
-            if($show_text) echo "Enxadrista #" . $enxadrista->id . " - " . $enxadrista->name;
+            if($show_text) echo "Enxadrista #" . $enxadrista->id . " - " . $enxadrista->name. "(".$enxadrista->lbx_id.")";
 
             $client = new Client;
             $response = $client->get(env("LBX_RATING_SERVER")."/rating/search/id/" . $enxadrista->lbx_id);
@@ -51,18 +51,21 @@ class LBXRatingController extends Controller
                     if($json->ratings->STD == 0){
                         if($save_rating) $enxadrista->setRating($codigo_organizacao,0,1800);
                     }else{
+                        if($show_text) echo "STD:" . $json->ratings->STD;
                         if($save_rating) $enxadrista->setRating($codigo_organizacao,0,$json->ratings->STD);
                     }
 
                     if($json->ratings->RPD == 0){
                         if($save_rating) $enxadrista->setRating($codigo_organizacao,1,1800);
                     }else{
+                        if($show_text) echo "RPD:" . $json->ratings->RPD;
                         if($save_rating) $enxadrista->setRating($codigo_organizacao,1,$json->ratings->RPD);
                     }
 
                     if($json->ratings->BTZ == 0){
                         if($save_rating) $enxadrista->setRating($codigo_organizacao,2,1800);
                     }else{
+                        if($show_text) echo "BTZ:" . $json->ratings->BTZ;
                         if($save_rating) $enxadrista->setRating($codigo_organizacao,2,$json->ratings->BTZ);
                     }
                 }else{
@@ -79,7 +82,7 @@ class LBXRatingController extends Controller
             }else{
                 $enxadrista->save();
             }
-            if($show_text) echo "<hr/>";            
+            if($show_text) echo "<hr/>";
         }else{
             if($show_text) echo "Erro env";
         }

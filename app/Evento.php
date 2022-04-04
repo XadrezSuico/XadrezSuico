@@ -363,7 +363,7 @@ class Evento extends Model
     public function isDeletavel()
     {
         if ($this->id != null) {
-            if ($this->categorias()->count() > 0 || $this->torneios()->count() > 0) {
+            if ($this->categorias()->count() > 0 || $this->categorias_cadastradas()->count() > 0 || $this->torneios()->count() > 0 || $this->criterios()->count() > 0 || $this->campos_adicionais()->count() > 0 || $this->classificador()->count() > 0) {
                 return false;
             }
             return true;

@@ -119,6 +119,14 @@ class Inscricao extends Model
         return $this->hasMany("App\CampoPersonalizadoOpcaoInscricao", "inscricao_id", "id");
     }
 
+    public function hasOpcao($campo_personalizados_id)
+    {
+        if($this->opcoes()->where([["campo_personalizados_id", "=", $campo_personalizados_id]])->count() > 0){
+            return true;
+        }
+        return false;
+    }
+
     public function getOpcao($campo_personalizados_id)
     {
         $opcao = $this->opcoes()->where([["campo_personalizados_id", "=", $campo_personalizados_id]])->first();
@@ -132,9 +140,9 @@ class Inscricao extends Model
     public function isDeletavel()
     {
         if ($this->id != null) {
-            if ($this->criterios_desempate()->count() == 0) {
+            // if ($this->criterios_desempate()->count() == 0) {
                 return true;
-            }
+            // }
         }
         return false;
     }

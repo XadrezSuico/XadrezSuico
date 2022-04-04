@@ -52,6 +52,14 @@ class TipoRating extends Model
         }
         return 0;
     }
+    public function showKRegraIdade($idade, $evento)
+    {
+        $rating_regra = $this->regraIdade($idade, $evento);
+        if ($rating_regra) {
+            return $rating_regra->k;
+        }
+        return 20;
+    }
 
     public function isDeletavel()
     {
