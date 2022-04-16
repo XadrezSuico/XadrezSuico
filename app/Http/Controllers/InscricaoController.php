@@ -290,7 +290,7 @@ class InscricaoController extends Controller
                     $enxadrista->documentos()->count() > 0
                 )
                 ||
-                $enxadrista->howOld() >= 130
+                $enxadrista->howOldForEvento($evento->getYear()) >= 130
                 ||
                 ($evento->calcula_cbx && (!$enxadrista->cbx_id || $enxadrista->cbx_id == 0))
                 ||
@@ -322,7 +322,7 @@ class InscricaoController extends Controller
                 if($enxadrista->pais_celular_id == NULL) $what[] = "pais_celular_id";
                 if($enxadrista->celular == NULL) $what[] = "celular";
                 if($enxadrista->documentos()->count() == 0) $what[] = "documentos";
-                if($enxadrista->howOld() >= 130) $what[] = "born";
+                if($enxadrista->howOldForEvento($evento->getYear()) >= 130) $what[] = "born";
 
                 if(($evento->calcula_cbx && (!$enxadrista->cbx_id || $enxadrista->cbx_id == 0))) $what[] = "cbx_id";
                 if(($evento->calcula_fide &&
@@ -348,7 +348,7 @@ class InscricaoController extends Controller
                 // 1/5
                 $fields["id"] = $enxadrista->id;
                 $fields["name"] = $enxadrista->name;
-                if($enxadrista->howOld() < 130) $fields["born"] = $enxadrista->getBorn();
+                if($enxadrista->howOldForEvento($evento->getYear()) < 130) $fields["born"] = $enxadrista->getBorn();
                 $fields["sexos_id"] = $enxadrista->sexos_id;
                 $fields["pais_nascimento_id"] = $enxadrista->pais_id;
                 // 2/5 - NADA
@@ -513,12 +513,12 @@ class InscricaoController extends Controller
         $categoria = Categoria::find($request->input("categoria_id"));
         if ($categoria) {
             if ($categoria->idade_minima) {
-                if (!($categoria->idade_minima <= $enxadrista->howOld())) {
+                if (!($categoria->idade_minima <= $enxadrista->howOldForEvento($evento->getYear()))) {
                     return response()->json(["ok" => 0, "error" => 1, "message" => "Você não está apto a participar da categoria que você enviou! Motivo: Não possui idade mínima."]);
                 }
             }
             if ($categoria->idade_maxima) {
-                if (!($categoria->idade_maxima >= $enxadrista->howOld())) {
+                if (!($categoria->idade_maxima >= $enxadrista->howOldForEvento($evento->getYear()))) {
                     return response()->json(["ok" => 0, "error" => 1, "message" => "Você não está apto a participar da categoria que você enviou! Motivo: Idade ultrapassa a máxima."]);
                 }
             }
@@ -782,7 +782,7 @@ class InscricaoController extends Controller
         if (!$enxadrista->setBorn($request->input("born"))) {
             return response()->json(["ok" => 0, "error" => 1, "message" => "A data de nascimento é inválida.", "registred" => 0, "ask" => 0]);
         }
-        if($enxadrista->howOld() >= 130){
+        if($enxadrista->howOldForEvento($evento->getYear()) >= 130){
             return response()->json(["ok" => 0, "error" => 1, "message" => "A data de nascimento parece inválida. Por favor, verifique e tente novamente.", "registred" => 0, "ask" => 0]);
         }
 
@@ -960,7 +960,7 @@ class InscricaoController extends Controller
                 $enxadrista->documentos()->count() > 0
             )
             &&
-            $enxadrista->howOld() < 130
+            $enxadrista->howOldForEvento($evento->getYear()) < 130
             &&
             (
                 !(($evento->calcula_cbx || $evento->cbx_required) && (!$enxadrista->cbx_id || $enxadrista->cbx_id == 0))
@@ -1140,7 +1140,7 @@ class InscricaoController extends Controller
             if (!$enxadrista->setBorn($request->input("born"))) {
                 return response()->json(["ok" => 0, "error" => 1, "message" => "A data de nascimento é inválida.", "registred" => 0, "ask" => 0]);
             }
-            if($enxadrista->howOld() >= 130){
+            if($enxadrista->howOldForEvento($evento->getYear()) >= 130){
                 return response()->json(["ok" => 0, "error" => 1, "message" => "A data de nascimento parece inválida. Por favor, verifique e tente novamente.", "registred" => 0, "ask" => 0]);
             }
         }
@@ -1393,12 +1393,12 @@ class InscricaoController extends Controller
                 $categoria = Categoria::find($request->input("categoria_id"));
                 if ($categoria) {
                     if ($categoria->idade_minima) {
-                        if (!($categoria->idade_minima <= $enxadrista->howOld())) {
+                        if (!($categoria->idade_minima <= $enxadrista->howOldForEvento($evento->getYear()))) {
                             return response()->json(["ok" => 0, "error" => 1, "message" => "Você não está apto a participar da categoria que você enviou! Motivo: Não possui idade mínima."]);
                         }
                     }
                     if ($categoria->idade_maxima) {
-                        if (!($categoria->idade_maxima >= $enxadrista->howOld())) {
+                        if (!($categoria->idade_maxima >= $enxadrista->howOldForEvento($evento->getYear()))) {
                             return response()->json(["ok" => 0, "error" => 1, "message" => "Você não está apto a participar da categoria que você enviou! Motivo: Idade ultrapassa a máxima."]);
                         }
                     }
@@ -1605,16 +1605,16 @@ class InscricaoController extends Controller
         $categorias = $evento->categorias()->whereHas("categoria", function ($q1) use ($enxadrista) {
             $q1->where(function ($q2) use ($enxadrista) {
                     $q2->where(function ($q3) use ($enxadrista) {
-                        $q3->where([["idade_minima", "<=", $enxadrista->howOld()]]);
-                        $q3->where([["idade_maxima", ">=", $enxadrista->howOld()]]);
+                        $q3->where([["idade_minima", "<=", $enxadrista->howOldForEvento($evento->getYear())]]);
+                        $q3->where([["idade_maxima", ">=", $enxadrista->howOldForEvento($evento->getYear())]]);
                     })
                         ->orWhere(function ($q3) use ($enxadrista) {
-                            $q3->where([["idade_minima", "<=", $enxadrista->howOld()]]);
+                            $q3->where([["idade_minima", "<=", $enxadrista->howOldForEvento($evento->getYear())]]);
                             $q3->where([["idade_maxima", "=", null]]);
                         })
                         ->orWhere(function ($q3) use ($enxadrista) {
                             $q3->where([["idade_minima", "=", null]]);
-                            $q3->where([["idade_maxima", ">=", $enxadrista->howOld()]]);
+                            $q3->where([["idade_maxima", ">=", $enxadrista->howOldForEvento($evento->getYear())]]);
                         })
                         ->orWhere(function ($q3) {
                             $q3->where([["idade_minima", "=", null]]);

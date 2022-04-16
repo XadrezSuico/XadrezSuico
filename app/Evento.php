@@ -360,6 +360,15 @@ class Evento extends Model
         return false;
     }
 
+    public function getYear(){
+        $datetime = DateTime::createFromFormat('Y-m-d', $this->data_inicio);
+        if ($datetime) {
+            return $datetime->format("Y");
+        } else {
+            return false;
+        }
+    }
+
     public function isDeletavel()
     {
         if ($this->id != null) {

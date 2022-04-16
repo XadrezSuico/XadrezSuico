@@ -233,6 +233,17 @@ class Enxadrista extends Model
 
     }
 
+    public function howOldForEvento($year)
+    {
+        $datetime = DateTime::createFromFormat('Y-m-d', $this->born);
+        if ($datetime) {
+            return $year - $datetime->format("Y");
+        } else {
+            return false;
+        }
+
+    }
+
     public function estaInscrito($evento_id)
     {
         $enxadrista = $this;
