@@ -583,6 +583,7 @@
 					<div class="form-group">
 						<label><input type="checkbox" id="regulamento_aceito"> Eu aceito o @if($evento->grupo_evento->regulamento_link) <a href="{{$evento->grupo_evento->regulamento_link}}" target="_blank"> @endif regulamento do  {{$evento->grupo_evento->name}} @if($evento->grupo_evento->regulamento_link) </a> @endif integralmente.</label><br/>
 						<label><input type="checkbox" id="xadrezsuico_aceito"> Eu aceito o <a href="{{url("/termosdeuso")}}" target="_blank">termo de uso</a> e a <a href="{{url("/politicadeprivacidade")}}" target="_blank">política de privacidade</a> da Plataforma de Gerenciamento de Circuitos de Xadrez - XadrezSuíço - Implementada pela <u>{{env("IMPLEMENTADO_POR")}}</u>.</label>
+						<label><input type="checkbox" id="imagem_aceito"> Eu (ou Responsável) cedo meus direitos de imagem do Enxadrista aos organizadores do <u>{{$evento->name}}</u> de forma gratuita, a título de divulgação em material impresso ou digital em caráter informativo.</label>
 					</div>
 				@endif
 				<button id="enviar_inscricao" class="btn btn-success">Enviar Inscrição</button>
@@ -1214,6 +1215,8 @@
 				$("#regulamento_aceito").removeAttr('checked');
 				$("#xadrezsuico_aceito").prop('checked',false);
 				$("#xadrezsuico_aceito").removeAttr('checked');
+				$("#imagem_aceito").prop('checked',false);
+				$("#imagem_aceito").removeAttr('checked');
 
 				$.getJSON("{{url("/inscricao/v2/".$evento->id."/enxadrista")}}/".concat($("#enxadrista_id").val()),function(data){
 					if(data.ok == 1){
@@ -1610,6 +1613,7 @@
 		@if($permite_confirmacao)
 			data = data.concat("&regulamento_aceito=true");
 			data = data.concat("&xadrezsuico_aceito=true");
+			data = data.concat("&imagem_aceito=true");
 
 			if($("#inscricao_confirmar").is(":checked")){
 				data = data.concat("&inscricao_confirmada=true");
@@ -1623,6 +1627,9 @@
 			}
 			if($("#xadrezsuico_aceito").is(":checked")){
 				data = data.concat("&xadrezsuico_aceito=true");
+			}
+			if($("#imagem_aceito").is(":checked")){
+				data = data.concat("&imagem_aceito=true");
 			}
 		@endif
 		@foreach($evento->campos() as $campo)

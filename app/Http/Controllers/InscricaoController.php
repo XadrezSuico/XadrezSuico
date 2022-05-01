@@ -436,6 +436,10 @@ class InscricaoController extends Controller
         ) {
             return response()->json(["ok" => 0, "error" => 1, "message" => "Você deve aceitar o termo de uso e política de privacidade da plataforma XadrezSuíço!", "registred" => 0]);
         } elseif (
+            !$request->has("xadrezsuico_aceito")
+        ) {
+            return response()->json(["ok" => 0, "error" => 1, "message" => "Os direitos de imagem devem ser fornecidos para inscrição neste evento.", "registred" => 0]);
+        } elseif (
             !$request->has("enxadrista_id") ||
             !$request->has("categoria_id") ||
             !$request->has("cidade_id") ||
@@ -535,6 +539,7 @@ class InscricaoController extends Controller
         }
         $inscricao->regulamento_aceito = true;
         $inscricao->xadrezsuico_aceito = true;
+        $inscricao->is_aceito_imagem = 1;
 
         if($user){
             if (
@@ -1602,17 +1607,17 @@ class InscricaoController extends Controller
      */
     public function categoriasEnxadrista($evento, $enxadrista)
     {
-        $categorias = $evento->categorias()->whereHas("categoria", function ($q1) use ($enxadrista) {
-            $q1->where(function ($q2) use ($enxadrista) {
-                    $q2->where(function ($q3) use ($enxadrista) {
+        $categorias = $evento->categorias()->whereHas("categoria", function ($q1) use ($enxadrista, $evento) {
+            $q1->where(function ($q2) use ($enxadrista, $evento) {
+                    $q2->where(function ($q3) use ($enxadrista, $evento) {
                         $q3->where([["idade_minima", "<=", $enxadrista->howOldForEvento($evento->getYear())]]);
                         $q3->where([["idade_maxima", ">=", $enxadrista->howOldForEvento($evento->getYear())]]);
                     })
-                        ->orWhere(function ($q3) use ($enxadrista) {
+                        ->orWhere(function ($q3) use ($enxadrista, $evento) {
                             $q3->where([["idade_minima", "<=", $enxadrista->howOldForEvento($evento->getYear())]]);
                             $q3->where([["idade_maxima", "=", null]]);
                         })
-                        ->orWhere(function ($q3) use ($enxadrista) {
+                        ->orWhere(function ($q3) use ($enxadrista, $evento) {
                             $q3->where([["idade_minima", "=", null]]);
                             $q3->where([["idade_maxima", ">=", $enxadrista->howOldForEvento($evento->getYear())]]);
                         })
