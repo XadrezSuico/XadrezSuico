@@ -33,6 +33,10 @@ class Torneio extends Model
     {
         return $this->belongsTo("App\TipoTorneio", "tipo_torneio_id", "id");
     }
+    public function software()
+    {
+        return $this->belongsTo("App\Software", "softwares_id", "id");
+    }
     public function categorias()
     {
         return $this->hasMany("App\CategoriaTorneio", "torneio_id", "id");

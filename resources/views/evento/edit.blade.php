@@ -808,6 +808,15 @@
 											@endforeach
 										</select>
 									</div>
+									<div class="form-group">
+										<label for="softwares_id">Software</label>
+										<select id="torneio_softwares_id" name="softwares_id" class="form-control">
+											<option value="">-- Selecione --</option>
+											@foreach(\App\Software::all() as $software)
+												<option value="{{$software->id}}">{{$software->name}}</option>
+											@endforeach
+										</select>
+									</div>
 								</div>
 								<!-- /.box-body -->
 
@@ -895,7 +904,7 @@
 														\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4]) ||
 														\Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])
 													)
-														@if(!$evento->e_resultados_manuais) <a class="btn btn-default" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/resultados")}}" role="button">Resultados</a><br/> @endif
+														@if(!$evento->e_resultados_manuais) <a class="btn btn-default" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/resultados/file")}}" role="button">Resultados</a><br/> @endif
 
 														@if($torneio->tipo_torneio->id == 3) <a class="btn btn-block btn-lg btn-success" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/gerenciamento/torneio_3")}}" role="button">Gerenciamento do Torneio</a><br/> @endif
 
@@ -1083,7 +1092,7 @@
 		$("#criterio_desempate_id").select2();
 		$("#criterio_desempate_geral_id").select2();
 		$("#tipo_torneio_id").select2();
-		$("#softwares_id").select2();
+		$("#torneio_softwares_id").select2();
 		$("#tipo_ratings_id").select2();
 		$("#cidade_id").select2();
 		$("#cidade_id").val([{{$evento->cidade_id}}]).change();

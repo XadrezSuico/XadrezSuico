@@ -43,6 +43,15 @@
 						@endforeach
 					</select>
 				</div>
+                <div class="form-group">
+                    <label for="softwares_id">Software</label>
+                    <select id="softwares_id" name="softwares_id" class="form-control">
+                        <option value="">-- Selecione --</option>
+                        @foreach($softwares as $software)
+                            <option value="{{$software->id}}">{{$software->name}}</option>
+                        @endforeach
+                    </select>
+                </div>
 			</div>
 			<!-- /.box-body -->
 
@@ -66,6 +75,7 @@
 <script type="text/javascript">
   $(document).ready(function(){
 	$("#tipo_torneio_id").select2();
+	$("#softwares_id").select2();
   });
 </script>
 @endsection

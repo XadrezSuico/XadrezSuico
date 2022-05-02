@@ -43,6 +43,15 @@
 								<option value="{{$tipo_torneio->id}}">{{$tipo_torneio->name}}</option>
 							@endforeach
 						</select>
+                        <div class="form-group">
+                            <label for="softwares_id">Software</label>
+                            <select id="softwares_id" name="softwares_id" class="form-control">
+                                <option value="">-- Selecione --</option>
+                                @foreach($softwares as $software)
+                                    <option value="{{$software->id}}">{{$software->name}}</option>
+                                @endforeach
+                            </select>
+                        </div>
 					</div>
 					<div class="form-group">
 						<label>Template de Torneio</label>
@@ -131,6 +140,7 @@
   $(document).ready(function(){
 		$("#categoria_id").select2();
 		$("#tipo_torneio_id").select2().val({{$torneio->tipo_torneio_id}}).change();
+		$("#softwares_id").select2().val({{$torneio->softwares_id}}).change();
 		$("#tabela").DataTable({
 				responsive: true,
 		});

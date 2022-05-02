@@ -164,8 +164,10 @@ Route::group(["prefix"=>"evento"],function(){
 	    Route::get('/union/{torneio_id}', 'TorneioController@union')->name('evento.torneios.union');
 	    Route::post('/union/{torneio_id}', 'TorneioController@union_post')->name('evento.torneios.union.post');
 	    Route::get('/delete/{torneio_id}', 'TorneioController@delete')->name('evento.torneios.delete');
-	    Route::get('/{torneio_id}/resultados', 'TorneioController@formResults')->name('evento.torneios.resultados');
-	    Route::post('/{torneio_id}/resultados', 'TorneioController@sendResultsTxt')->name('evento.torneios.resultados.post');
+	    Route::get('/{torneio_id}/resultados', 'Torneio_ImportacaoController@formResults')->name('evento.torneios.importacao.resultados');
+	    Route::post('/{torneio_id}/resultados', 'Torneio_ImportacaoController@sendResultsTxt')->name('evento.torneios.importacao.resultados.post');
+	    Route::get('/{torneio_id}/resultados/file', 'Torneio_ImportacaoController@formResultsFile')->name('evento.torneios.importacao.resultados.file');
+	    Route::post('/{torneio_id}/resultados/file', 'Torneio_ImportacaoController@sendResultsFile')->name('evento.torneios.importacao.resultados.file.post');
 
         Route::group(["prefix"=>"{torneio_id}/lichess"],function(){
 	        Route::get('/check_players_in', 'TorneioController@check_players_in')->name('evento.torneios.lichess.check_players_in');
