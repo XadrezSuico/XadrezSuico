@@ -169,6 +169,10 @@ Route::group(["prefix"=>"evento"],function(){
 	    Route::get('/{torneio_id}/resultados/file', 'Torneio_ImportacaoController@formResultsFile')->name('evento.torneios.importacao.resultados.file');
 	    Route::post('/{torneio_id}/resultados/file', 'Torneio_ImportacaoController@sendResultsFile')->name('evento.torneios.importacao.resultados.file.post');
 
+        Route::get('/{torneio_id}/emparceiramentos', 'Torneio_ImportacaoController@formPairingsFile')->name('evento.torneios.importacao.emparceiramentos');
+	    Route::post('/{torneio_id}/emparceiramentos', 'Torneio_ImportacaoController@sendPairingsFile')->name('evento.torneios.importacao.emparceiramentos.post');
+
+
         Route::group(["prefix"=>"{torneio_id}/lichess"],function(){
 	        Route::get('/check_players_in', 'TorneioController@check_players_in')->name('evento.torneios.lichess.check_players_in');
 	        Route::get('/get_results', 'TorneioController@lichess_get_results')->name('evento.torneios.lichess.lichess_get_results');

@@ -844,7 +844,7 @@ class Torneio_ImportacaoController extends Controller
 
         $torneio = Torneio::find($torneio_id);
         $evento = $torneio->evento;
-        return view("evento.torneio.emparceiramentos", compact("evento", "torneio"));
+        return view("evento.torneio.importacao.emparceiramentos", compact("evento", "torneio"));
     }
 
 
@@ -855,14 +855,207 @@ class Torneio_ImportacaoController extends Controller
             $file = file_get_contents($request->file('arquivo'));
 
             switch($torneio->software->name){
-                case 0:
-                case 2:
-                    return $this->setResults_tipo_exportacao_0($file, $evento_id, $torneio_id);
+                case "Swiss-Manager":
+                    return $this->importPairings_SwissManager($file, $evento_id, $torneio_id);
                     break;
-                case 1:
-                    return $this->setResults_tipo_exportacao_1($file, $evento_id, $torneio_id);
             }
         }
         return false;
+    }
+
+    public function importPairings_SwissManager($emparceiramentos, $evento_id, $torneio_id){
+        $evento = Evento::find($evento_id);
+        $user = Auth::user();
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionEventByPerfil($evento->id, [4]) &&
+            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
+        ) {
+            return redirect("/evento/dashboard/" . $evento->id);
+        }
+
+        $retornos = array();
+        $torneio = Torneio::find($torneio_id);
+        $retornos[] = date("d/m/Y H:i:s") . " - Início do Processamento para os emparceiramentos do torneio de #" . $torneio->id . " - '" . $torneio->name . "' do Evento '" . $torneio->evento->name . "'";
+        $retornos[] = "<hr/>";
+        $lines = str_getcsv($emparceiramentos, "\n");
+        $i = 0;
+        $k = -1;
+        $fields = array();
+        foreach ($lines as $line) {
+            $columns = str_getcsv($line, ";");
+            if ($i == 0) {
+                $j = 0;
+                $retornos[] = date("d/m/Y H:i:s") . " - Capturando as informações de campos no cabeçalho:";
+                foreach ($columns as $column) {
+                    switch ($column) {
+                        case "Rodada":
+                            $fields["Rodada"] = $j;
+                            $retornos[] = date("d/m/Y H:i:s") . " - Coluna de Código de Rodada [" . $j . "]";
+                            break;
+                        case "Mesa":
+                            $fields["Mesa"] = $j;
+                            $retornos[] = date("d/m/Y H:i:s") . " - Coluna de Código de Mesa [" . $j . "]";
+                            break;
+                        case "ID-B":
+                            $fields["ID-B"] = $j;
+                            $retornos[] = date("d/m/Y H:i:s") . " - Coluna de Código do Enxadrista de Brancas [" . $j . "]";
+                            break;
+                        case "ID-N":
+                            $fields["ID-N"] = $j;
+                            $retornos[] = date("d/m/Y H:i:s") . " - Coluna de Código do Enxadrista de Negras [" . $j . "]";
+                            break;
+                        case "NoB":
+                            $fields["NoB"] = $j;
+                            $retornos[] = date("d/m/Y H:i:s") . " - Coluna do Número Inicial do Enxadrista de Brancas [" . $j . "]";
+                            break;
+                        case "NoN":
+                            $fields["NoN"] = $j;
+                            $retornos[] = date("d/m/Y H:i:s") . " - Coluna do Número Inicial do Enxadrista de Negras [" . $j . "]";
+                            break;
+                        case "ResB":
+                            $fields["ResB"] = $j;
+                            $retornos[] = date("d/m/Y H:i:s") . " - Coluna do Resultado de Brancas [" . $j . "]";
+                            break;
+                        case "ResM":
+                            $fields["ResM"] = $j;
+                            $retornos[] = date("d/m/Y H:i:s") . " - Coluna do Resultado das Negras [" . $j . "]";
+                            break;
+                        case "WO":
+                            $fields["WO"] = $j;
+                            $retornos[] = date("d/m/Y H:i:s") . " - Coluna de Houve W.O. [" . $j . "]";
+                            break;
+                    }
+
+                    $j++;
+                }
+                $retornos[] = "<hr/>";
+                $retornos[] = date("d/m/Y H:i:s") . " - Início do Processamento dos Resultados:";
+
+
+                /*
+                 *
+                 * REMOVE TODOS OS EMPARCEIRAMENTOS DO TORNEIO
+                 *
+                 */
+                $retornos[] = date("d/m/Y H:i:s") . " - Dado início da remoção de emparceiramentos.";
+                foreach($torneio->rodadas->all() as $rodada){
+                    foreach($rodada->emparceiramentos->all() as $emparceiramento){
+                        $retornos[] = date("d/m/Y H:i:s") . " - Removido emparceiramento da rodada ".$rodada->numero." para a mesa ".$emparceiramento->numero.".";
+                        $emparceiramento->delete();
+                    }
+                }
+                $retornos[] = date("d/m/Y H:i:s") . " - Finalizado processo de remoção de emparceiramentos.";
+            } else {
+                $retornos[] = date("d/m/Y H:i:s") . " - Início de Processamento de Emparceiramento.";
+                $line = explode(";", $line);
+
+                $rodada_count = $torneio->rodadas()->where([["numero","=", $line[($fields["Rodada"])] ]])->count();
+                if($rodada_count == 0){
+                    $retornos[] = date("d/m/Y H:i:s") . " - Rodada de número ".$line[($fields["Rodada"])]." não encontrada. Rodada sendo criada.";
+                    $rodada = new Rodada;
+                    $rodada->torneio_id = $torneio->id;
+                    $rodada->numero = $line[($fields["Rodada"])];
+                    $rodada->save();
+                    $retornos[] = date("d/m/Y H:i:s") . " - Rodada criada sob o ID ".$rodada->id.".";
+                }else{
+                    $rodada = $torneio->rodadas()->where([["numero","=", $line[($fields["Rodada"])] ]])->first();
+                    $retornos[] = date("d/m/Y H:i:s") . " - Rodada encontrada sob o ID ".$rodada->id.".";
+                }
+
+                $retornos[] = date("d/m/Y H:i:s") . " - Iniciando o Processamento de Emparceiramento da Mesa ".$line[($fields["Mesa"])]." .";
+                if(isset($line[($fields["ID-B"])]) && isset($line[($fields["ID-N"])])){
+                    if($line[($fields["ID-B"])] > 0 && $line[($fields["ID-N"])] > 0){
+                        $emparceiramento = new Emparceiramento;
+                        $emparceiramento->rodadas_id = $rodada->id;
+                        $emparceiramento->numero = $line[($fields["Mesa"])];
+
+
+                        $all_enxadristas_found = true;
+                        // Busca do Enxadrista A
+                        $enxadrista_a_count = Enxadrista::where([["id","=",$line[($fields["ID-B"])]]])->count();
+                        if($enxadrista_a_count > 0){
+                            $enxadrista_a = Enxadrista::find($line[($fields["ID-B"])]);
+                        }else{
+                            $all_enxadristas_found = false;
+                        }
+                        // Busca do Enxadrista B
+                        $enxadrista_b_count = Enxadrista::where([["id","=",$line[($fields["ID-N"])]]])->count();
+                        if($enxadrista_b_count > 0){
+                            $enxadrista_b = Enxadrista::find($line[($fields["ID-N"])]);
+                        }else{
+                            $all_enxadristas_found = false;
+                        }
+
+                        if($all_enxadristas_found){
+
+                            $all_enxadristas_are_inscritos = true;
+
+                            if ($enxadrista_a->estaInscrito($torneio->evento->id)) {
+                                $inscricao_a = $enxadrista_a->getInscricao($torneio->evento->id);
+                            } else {
+                                $all_enxadristas_are_inscritos = false;
+                            }
+                            if ($enxadrista_b->estaInscrito($torneio->evento->id)) {
+                                $inscricao_b = $enxadrista_b->getInscricao($torneio->evento->id);
+                            } else {
+                                $all_enxadristas_are_inscritos = false;
+                            }
+
+
+                            if($all_enxadristas_are_inscritos){
+
+                                $emparceiramento->inscricao_a = $inscricao_a->id;
+                                $emparceiramento->inscricao_b = $inscricao_b->id;
+
+                                $emparceiramento->numero_a = $line[($fields["NoB"])];
+                                $emparceiramento->numero_b = $line[($fields["NoN"])];
+
+                                $explode_res_a = explode(",",$line[($fields["ResB"])]);
+                                $explode_res_b = explode(",",$line[($fields["ResM"])]);
+
+                                $emparceiramento->resultado_a = (count($explode_res_a) > 1) ? $explode_res_a[0].".".$explode_res_a[1] : $explode_res_a[0];
+                                $emparceiramento->resultado_b = (count($explode_res_b) > 1) ? $explode_res_b[0].".".$explode_res_b[1] : $explode_res_b[0];
+
+                                if(isset($line[($fields["WO"])])){
+                                    if($line[($fields["WO"])] != ""){
+                                        $retornos[] = date("d/m/Y H:i:s") . " - Houve W.O no emparceiramento. Verificando resultados com 0 para armazenamento do resultado de W.O.";
+                                        if($emparceiramento->resultado_a == 0){
+                                            $retornos[] = date("d/m/Y H:i:s") . " - W.O para o Enxadrista A.";
+                                            $emparceiramento->is_wo_a = true;
+                                        }
+                                        if($emparceiramento->resultado_b == 0){
+                                            $retornos[] = date("d/m/Y H:i:s") . " - W.O para o Enxadrista B.";
+                                            $emparceiramento->is_wo_b = true;
+                                        }
+                                    }
+                                }
+
+                                $emparceiramento->save();
+
+                                $retornos[] = date("d/m/Y H:i:s") . " - Emparceiramento para a Rodada ".$rodada->id." e Mesa ".$emparceiramento->numero." devidamente processado.";
+                            } else {
+                                // echo "DEU PROBLEMAAAAA AQUIIIII!";
+                                $retornos[] = date("d/m/Y H:i:s") . " - Durante o processamento do emparceiramento: Enxadrista A e/ou Enxadrista B sem inscrição.";
+                            }
+                        } else {
+                            // echo "DEU PROBLEMAAAAA AQUIIIII!";
+                            $retornos[] = date("d/m/Y H:i:s") . " - Durante o processamento do emparceiramento: Enxadrista A e/ou Enxadrista B não foi encontrado.";
+                        }
+                    } else {
+                        // echo "DEU PROBLEMAAAAA AQUIIIII!";
+                        $retornos[] = date("d/m/Y H:i:s") . " - Durante o processamento do emparceiramento: Enxadrista A e/ou Enxadrista B sem ID.";
+                    }
+                } else {
+                    // echo "DEU PROBLEMAAAAA AQUIIIII!";
+                    $retornos[] = date("d/m/Y H:i:s") . " - Durante o processamento do emparceiramento: Enxadrista A e/ou Enxadrista B sem ID.";
+                }
+            }
+            $retornos[] = date("d/m/Y H:i:s") . " - <hr/>";
+            $i++;
+        }
+        $retornos[] = date("d/m/Y H:i:s") . " - Fim do Processamento";
+        $evento = $torneio->evento;
+        return view("evento.torneio.importacao.emparceiramentos_retorno", compact("retornos", "torneio", "evento"));
     }
 }
