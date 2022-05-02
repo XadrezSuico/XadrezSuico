@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
+use App\Helper\RatingEloHelper;
+
 use App\Enxadrista;
 use App\Evento;
 use App\Torneio;
@@ -1008,6 +1010,23 @@ class Torneio_ImportacaoController extends Controller
                                 $emparceiramento->inscricao_a = $inscricao_a->id;
                                 $emparceiramento->inscricao_b = $inscricao_b->id;
 
+                                if($torneio->evento->tipo_rating){
+                                    /*
+                                    *
+                                    * MÉTODO PARA TESTE DE RATING
+                                    *
+                                    */
+                                    // $modifications = RatingEloHelper::generateElo(
+                                    //     $enxadrista_a->ratingParaEvento($torneio->evento->tipo_rating->id),
+                                    //     $enxadrista_b->ratingParaEvento($torneio->evento->tipo_rating->id),
+                                    //     $enxadrista_a->KParaEvento($torneio->evento->tipo_rating->id),
+                                    //     $enxadrista_b->KParaEvento($torneio->evento->tipo_rating->id)
+                                    // );
+
+                                    // $retornos[] = date("d/m/Y H:i:s") . " - Movimentações de Curioso: ".json_encode($modifications);
+
+                                }
+
                                 $emparceiramento->numero_a = $line[($fields["NoB"])];
                                 $emparceiramento->numero_b = $line[($fields["NoN"])];
 
@@ -1033,7 +1052,7 @@ class Torneio_ImportacaoController extends Controller
 
                                 $emparceiramento->save();
 
-                                $retornos[] = date("d/m/Y H:i:s") . " - Emparceiramento para a Rodada ".$rodada->id." e Mesa ".$emparceiramento->numero." devidamente processado.";
+                                $retornos[] = date("d/m/Y H:i:s") . " - Emparceiramento para a Rodada ".$rodada->numero." e Mesa ".$emparceiramento->numero." devidamente processado.";
                             } else {
                                 // echo "DEU PROBLEMAAAAA AQUIIIII!";
                                 $retornos[] = date("d/m/Y H:i:s") . " - Durante o processamento do emparceiramento: Enxadrista A e/ou Enxadrista B sem inscrição.";

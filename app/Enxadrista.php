@@ -345,6 +345,22 @@ class Enxadrista extends Model
         return false;
     }
 
+    public function KParaEvento($evento_id)
+    {
+        $enxadrista = $this;
+        $evento = Evento::find($evento_id);
+        if ($evento) {
+            if ($evento->tipo_rating) {
+                $regra_idade = $evento->tipo_rating->tipo_rating->regraIdade($enxadrista->howOld(), $evento);
+                if($regra_idade){
+                    return $regra_idade->k;
+                }
+            }
+        }
+        return 20;
+    }
+
+
     public function temRating($evento_id)
     {
         $enxadrista = $this;
