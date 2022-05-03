@@ -53,7 +53,7 @@
                             <td>{{$pontuacao->posicao}}</td>
                             <td><a href="{{url("/grupoevento/".$grupo_evento->id."/resultados/enxadrista/".$pontuacao->enxadrista->id)}}">#{{$pontuacao->enxadrista->id}}</a></td>
                             <td><a href="{{url("/grupoevento/".$grupo_evento->id."/resultados/enxadrista/".$pontuacao->enxadrista->id)}}">{{$pontuacao->enxadrista->name}}</a></td>
-                            <td>{{$pontuacao->enxadrista->getBorn()}}</td>
+                            <td>{{$pontuacao->enxadrista->getNascimentoPublico()}}</td>
                             <td>{{$pontuacao->enxadrista->cidade->name}}</td>
                             <td>@if($pontuacao->enxadrista->clube) {{$pontuacao->enxadrista->clube->name}} @else Sem Clube @endif</td>
                             @foreach($eventos as $evento)
@@ -91,7 +91,7 @@
                         <strong>{{$j++}} - {{$criterio->criterio->code}}:</strong> {{$criterio->criterio->name}}<br/>
                     @endforeach
                 </div>
-                <div class="col-md-6">                    
+                <div class="col-md-6">
                     @if(count($eventos) > 0)
                         <h4>Legenda dos Eventos:</h4><br/>
                         @php($i=1)
