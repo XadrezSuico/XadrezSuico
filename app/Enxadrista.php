@@ -361,13 +361,43 @@ class Enxadrista extends Model
     }
 
 
-    public function temRating($evento_id)
+    public function temRating($evento_id = null, $tipo_ratings_id = null)
     {
         $enxadrista = $this;
-        $evento = Evento::find($evento_id);
-        if ($evento->tipo_rating) {
+        if($evento_id){
+            $evento = Evento::find($evento_id);
+            if ($evento->tipo_rating) {
+                $rating_regra = TipoRatingRegras::where([
+                    ["tipo_ratings_id", "=", $evento->tipo_rating->tipo_ratings_id],
+                ])
+                    ->where(function ($q1) use ($evento, $enxadrista) {
+                        $q1->where([
+                            ["idade_minima", "<=", $enxadrista->howOld()],
+                            ["idade_maxima", "=", null],
+                        ]);
+                        $q1->orWhere([
+                            ["idade_minima", "=", null],
+                            ["idade_maxima", ">=", $enxadrista->howOld()],
+                        ]);
+                        $q1->orWhere([
+                            ["idade_minima", "<=", $enxadrista->howOld()],
+                            ["idade_maxima", ">=", $enxadrista->howOld()],
+                        ]);
+                    })
+                    ->first();
+                $rating = $this->ratings()->where([["tipo_ratings_id", "=", $evento->tipo_rating->tipo_ratings_id]])->first();
+                if ($rating) {
+                    if ($rating->valor > 0) {
+                        return ["ok" => 1, "rating" => $rating, "regra" => $rating_regra];
+                    }
+                    return ["ok" => 0, "rating" => $rating, "regra" => $rating_regra];
+                }
+            }
+        }elseif($tipo_ratings_id){
+            $tipo_rating = TipoRating::find($tipo_ratings_id);
+
             $rating_regra = TipoRatingRegras::where([
-                ["tipo_ratings_id", "=", $evento->tipo_rating->tipo_ratings_id],
+                ["tipo_ratings_id", "=", $tipo_rating->id],
             ])
                 ->where(function ($q1) use ($evento, $enxadrista) {
                     $q1->where([
@@ -390,6 +420,8 @@ class Enxadrista extends Model
                     return ["ok" => 1, "rating" => $rating, "regra" => $rating_regra];
                 }
                 return ["ok" => 0, "rating" => $rating, "regra" => $rating_regra];
+            }else{
+                return ["ok" => 0, "rating" => null, "regra" => $rating_regra];
             }
         }
         return false;

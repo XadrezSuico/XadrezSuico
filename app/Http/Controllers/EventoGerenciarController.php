@@ -332,7 +332,7 @@ class EventoGerenciarController extends Controller
         $evento->pagina->save();
         return redirect("/evento/dashboard/" . $id . "?tab=pagina");
     }
-    
+
     public function delete($id)
     {
         $user = Auth::user();
@@ -352,7 +352,7 @@ class EventoGerenciarController extends Controller
             $evento->delete();
         }
         return redirect("/grupoevento/dashboard/" . $grupo_evento->id);
-        
+
     }
 
     public function categoria_add($id, Request $request)
@@ -497,6 +497,27 @@ class EventoGerenciarController extends Controller
                 $evento->e_resultados_manuais = false;
             } else {
                 $evento->e_resultados_manuais = true;
+            }
+            $evento->save();
+            return redirect("/evento/dashboard/" . $evento->id);
+        }
+    }
+    public function toggleRating($evento_id)
+    {
+        $user = Auth::user();
+        $evento = Evento::find($evento_id);
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionEventByPerfil($evento->id, [4]) &&
+            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
+        ) {
+            return redirect("/evento/dashboard/".$evento->id);
+        }
+        if ($evento) {
+            if ($evento->is_rating_calculate_enabled) {
+                $evento->is_rating_calculate_enabled = false;
+            } else {
+                $evento->is_rating_calculate_enabled = true;
             }
             $evento->save();
             return redirect("/evento/dashboard/" . $evento->id);

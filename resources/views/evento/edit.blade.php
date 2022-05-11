@@ -151,6 +151,21 @@
 									<i class="fa fa-download"></i>
 									Baixar para Uso neste Evento (Swiss-Manager)
 								</a>
+
+                                @if($evento->tipo_rating)
+                                    <hr/>
+                                    <h4>Rating:</h4>
+                                    <a href="{{url("/evento/".$evento->id)}}/togglerating" class="btn btn-app">
+                                        @if($evento->is_rating_calculate_enabled)
+                                            <i class="fa fa-lock"></i>
+                                            Não Permitir o Cálculo do Rating Interno
+                                        @else
+                                            <i class="fa fa-unlock"></i>
+                                            Permitir o Cálculo do Rating Interno
+                                        @endif
+                                    </a>
+                                @endif
+
 							@endif
 
 							@if(

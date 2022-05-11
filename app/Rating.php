@@ -27,6 +27,10 @@ class Rating extends Model
     {
         return $this->hasMany("App\MovimentacaoRating", "ratings_id", "id");
     }
+    public function dias()
+    {
+        return $this->hasMany("App\RatingDia", "ratings_id", "id");
+    }
 
     public function calcular()
     {
