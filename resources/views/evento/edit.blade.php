@@ -89,10 +89,10 @@
                             <a href="{{url("/evento/".$evento->id."/toggleinscricoes")}}" class="btn btn-warning btn-app">
                                 @if(!$evento->is_inscricoes_bloqueadas)
                                     <i class="fa fa-lock"></i>
-                                    Bloquear
+                                    Bloquear (Status Atual: Liberado)
                                 @else
                                     <i class="fa fa-unlock"></i>
-                                    Liberar
+                                    Liberar  (Status Atual: Bloqueado)
                                 @endif
                                 Inscricoes
                             </a>
@@ -116,10 +116,10 @@
 								<a href="{{url("/evento/".$evento->id."/toggleresultados")}}" class="btn btn-warning btn-app">
 									@if($evento->mostrar_resultados)
 										<i class="fa fa-lock"></i>
-										Restringir
+										Restringir (Status Atual: Liberado)
 									@else
 										<i class="fa fa-unlock"></i>
-										Liberar
+										Liberar (Status Atual: Restringido)
 									@endif
 									Classificação Pública
 								</a>
@@ -158,12 +158,18 @@
                                     <a href="{{url("/evento/".$evento->id)}}/togglerating" class="btn btn-app">
                                         @if($evento->is_rating_calculate_enabled)
                                             <i class="fa fa-lock"></i>
-                                            Não Permitir o Cálculo do Rating Interno
+                                            Não Permitir o Cálculo do Rating Interno (Status Atual: Permitido)
                                         @else
                                             <i class="fa fa-unlock"></i>
-                                            Permitir o Cálculo do Rating Interno
+                                            Permitir o Cálculo do Rating Interno (Status Atual: Não Permitido)
                                         @endif
                                     </a>
+                                    @if($evento->is_rating_calculate_enabled)
+                                        <a href="{{url("/evento/".$evento->id)}}/rating/calculate" class="btn btn-app">
+                                            <i class="fa fa-calculator"></i>
+                                            Calcular Rating
+                                        </a>
+                                    @endif
                                 @endif
 
 							@endif
@@ -177,10 +183,10 @@
 								<a href="{{url("/evento/".$evento->id."/toggleclassificavel")}}" class="btn btn-app">
 									@if($evento->classificavel)
 										<i class="fa fa-lock"></i>
-										Não Permitir
+										Não Permitir (Status Atual: Permitido)
 									@else
 										<i class="fa fa-unlock"></i>
-										Permitir
+										Permitir (Status Atual: Não Permitido)
 									@endif
 									Classificação Geral deste Evento
 								</a>
@@ -190,7 +196,7 @@
 									@else
 										<i class="fa fa-lock"></i>
 									@endif
-									Resultados @if($evento->e_resultados_manuais) Automáticos @else Manuais @endif
+									Resultados @if($evento->e_resultados_manuais) Automáticos  (Status Atual: Manuais) @else Manuais  (Status Atual: Automáticos) @endif
 								</a>
 							@endif<br/><br/>
 							@if(
