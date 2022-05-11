@@ -35,6 +35,11 @@
         #successMessage a{
             color: #fff !important;
         }
+
+
+        .field-required{
+            color: red;
+        }
 	</style>
 @endsection
 
@@ -72,7 +77,7 @@
             </div>
             <div class="modal-body">
 				<div class="form-group">
-					<label for="estado_pais_id">País *</label>
+					<label for="estado_pais_id" class="field-required">País *</label>
 					<select id="estado_pais_id" class="pais_id this_is_select2 form-control">
 						<option value="">--- Selecione um país ---</option>
 						@foreach(\App\Pais::all() as $pais)
@@ -81,7 +86,7 @@
 					</select>
 				</div>
                 <div class="form-group">
-                    <label for="name">Nome *</label>
+                    <label for="name" class="field-required">Nome *</label>
                     <input type="text" name="name" class="form-control" id="estado_nome" placeholder="Insira o Nome Completo da Cidade" required="required">
                 </div>
             </div>
@@ -101,7 +106,7 @@
             </div>
             <div class="modal-body">
 				<div class="form-group">
-					<label for="cidade_pais_id">País *</label>
+					<label for="cidade_pais_id" class="field-required">País *</label>
 					<select id="cidade_pais_id" class="pais_id this_is_select2 form-control">
 						<option value="">--- Selecione um país ---</option>
 						@foreach(\App\Pais::all() as $pais)
@@ -110,13 +115,13 @@
 					</select>
 				</div>
 				<div class="form-group">
-					<label for="cidade_estados_id">Estado/Província *</label>
+					<label for="cidade_estados_id" class="field-required">Estado/Província *</label>
 					<select id="cidade_estados_id" class="estados_id this_is_select2 form-control">
 						<option value="">--- Selecione um país primeiro ---</option>
 					</select>
 				</div>
                 <div class="form-group">
-                    <label for="name">Nome *</label>
+                    <label for="name" class="field-required">Nome *</label>
                     <input type="text" name="name" class="form-control" id="cidade_nome" placeholder="Insira o Nome Completo da Cidade" required="required">
                 </div>
             </div>
@@ -136,11 +141,11 @@
             </div>
             <div class="modal-body">
                 <div class="form-group">
-                    <label for="name">Nome *</label>
+                    <label for="name" class="field-required">Nome *</label>
                     <input type="text" name="name" class="form-control" id="clube_nome" placeholder="Insira o Nome Completo do Clube" required="required">
                 </div>
 				<div class="form-group">
-					<label for="clube_pais_id">País *</label>
+					<label for="clube_pais_id" class="field-required">País *</label>
 					<select id="clube_pais_id" class="pais_id this_is_select2 form-control">
 						<option value="">--- Selecione um país ---</option>
 						@foreach(\App\Pais::all() as $pais)
@@ -149,13 +154,13 @@
 					</select>
 				</div>
 				<div class="form-group">
-					<label for="clube_estados_id">Estado/Província *</label>
+					<label for="clube_estados_id" class="field-required">Estado/Província *</label>
 					<select id="clube_estados_id" class="estados_id this_is_select2 form-control">
 						<option value="">--- Selecione um país primeiro ---</option>
 					</select>
 				</div>
                 <div class="form-group">
-                    <label for="clube_cidade_id">Cidade *</label>
+                    <label for="clube_cidade_id" class="field-required">Cidade *</label>
                     <select id="clube_cidade_id" class="this_is_select2 form-control">
                         <option value="">--- Selecione uma cidade ---</option>
                     </select>
@@ -257,20 +262,35 @@
 				</div>
 			</div>
 			<div id="enxadrista" style="display:none">
+                <div class="alert alert-warning" id="alert_new_enxadrista">
+                    Você está começando o processo de cadastro de um novo enxadrista.<br/>
+                    Lembre-se de fazer isto apenas senão achar o enxadrista na busca!<br/>
+                    <hr/>
+                    O processo é feito em 5 etapas. Caso ocorram erros de preenchimento, apenas aparecerão no final da 5a etapa.<br/>
+                    Na 2a etapa serão pedidos uma lista de documentos, porém é obrigatório informar <strong>AO MENOS um deles</strong>.<br/>
+                    Todos os campos com <strong class="field-required">* e em vermelho são obrigatórios</strong>.
+                </div>
+                <div class="alert alert-warning" style="display:none" id="alert_update_enxadrista">
+                    Você está começando o processo de cadastro de atualização do cadastro de um enxadrista.
+                    <hr/>
+                    O processo é feito em 5 etapas. Caso ocorram erros de preenchimento, apenas aparecerão no final da 5a etapa.<br/>
+                    Na 2a etapa serão pedidos uma lista de documentos, porém é obrigatório informar <strong>AO MENOS um deles</strong>.<br/>
+                    Todos os campos com <strong class="field-required">* e em vermelho são obrigatórios</strong>.
+                </div>
 				<h3>Cadastro de Enxadrista:</h3>
 				<hr/>
 				<div id="enxadrista_1">
 					<h4>Passo 1/5 - Dados Básicos:</h4>
 					<div class="form-group">
-						<label for="name">Nome Completo *</label>
+						<label for="name" class="field-required">Nome Completo *</label>
 						<input name="name" id="name" class="form-control cadastro_enxadrista_input" type="text" />
 					</div>
 					<div class="form-group">
-						<label for="born">Data de Nascimento *</label>
+						<label for="born" class="field-required">Data de Nascimento *</label>
 						<input name="born" id="born" class="form-control cadastro_enxadrista_input" type="text" />
 					</div>
 					<div class="form-group">
-						<label for="sexos_id">Sexo *</label>
+						<label for="sexos_id" class="field-required">Sexo *</label>
 						<select id="sexos_id" name="sexos_id" class="form-control this_is_select2 cadastro_enxadrista_select">
 							<option value="">--- Selecione ---</option>
 							@foreach($sexos as $sexo)
@@ -279,7 +299,7 @@
 						</select>
 					</div>
 					<div class="form-group">
-						<label for="pais_nascimento_id">País de Nascimento *</label>
+						<label for="pais_nascimento_id" class="field-required">País de Nascimento *</label>
 						<select id="pais_nascimento_id" name="pais_nascimento_id" class="form-control this_is_select2 cadastro_enxadrista_select">
 							<option value="">--- Selecione um país ---</option>
 							@foreach(\App\Pais::all() as $pais)
@@ -304,13 +324,13 @@
 					<div class="row">
 						<div class="col-md-12">
 							<div class="form-group">
-								<label for="email">E-mail *</label>
+								<label for="email" class="field-required">E-mail *</label>
 								<input name="email" id="email" class="form-control cadastro_enxadrista_input" type="text" />
 							</div>
 						</div>
 						<div class="col-md-6">
 							<div class="form-group">
-								<label for="pais_celular_id">País do Celular *</label>
+								<label for="pais_celular_id" class="field-required">País do Celular *</label>
 								<select id="pais_celular_id" name="pais_celular_id" class="form-control this_is_select2 cadastro_enxadrista_select">
 									<option value="">--- Selecione um país ---</option>
 									@foreach(\App\Pais::all() as $pais)
@@ -321,7 +341,7 @@
 						</div>
 						<div class="col-md-6">
 							<div class="form-group">
-								<label for="celular">Celular *</label>
+								<label for="celular" class="field-required">Celular *</label>
 								<input name="celular" id="celular" class="form-control cadastro_enxadrista_input" type="text" />
 							</div>
 						</div>
@@ -428,7 +448,7 @@
 					<div class="row">
 						<div class="col-md-4">
 							<div class="form-group">
-								<label for="cbx_id">ID CBX <span id="cbx_required" style="display:none">*</span></label>
+								<label for="cbx_id" id="cbx_id_label">ID CBX <span id="cbx_required" style="display:none">*</span></label>
 								<input name="cbx_id" id="cbx_id" class="form-control cadastro_enxadrista_input" type="text" />
 								É possível efetuar a pesquisa de ID CBX pelo site <a href="http://cbx.com.br" target="_blank">http://cbx.com.br</a> - Barra Lateral Direita - Buscar Jogadores.<br/>
 								<hr/>
@@ -437,7 +457,7 @@
 						</div>
 						<div class="col-md-4">
 							<div class="form-group">
-								<label for="fide_id">ID FIDE <span id="fide_required" style="display:none">*</span></label>
+								<label for="fide_id" id="fide_id_label">ID FIDE <span id="fide_required" style="display:none">*</span></label>
 								<input name="fide_id" id="fide_id" class="form-control cadastro_enxadrista_input" type="text" />
 								É possível efetuar a pesquisa de ID FIDE pelo site <a href="http://ratings.fide.com" target="_blank">http://ratings.fide.com</a> - Search Database - Clique no nome e procure pelo campo "FIDE ID" na página.<br/>
 								<hr/>
@@ -455,7 +475,7 @@
 						</div>
 						<div class="col-md-4">
 							<div class="form-group">
-								<label for="lichess_username">Nome de Usuário - Lichess.org <span id="lichess_required" style="display:none">*</span></label>
+								<label for="lichess_username" id="lichess_username_label">Nome de Usuário - Lichess.org <span id="lichess_required" style="display:none">*</span></label>
 								<input name="lichess_username" id="lichess_username" class="form-control cadastro_enxadrista_input" type="text" />
 								Site da Plataforma: <a href="http://lichess.org" target="_blank">http://lichess.org</a>.<br/>
                                 Tutorial para Cadastro no Lichess.org: <a href="https://youtu.be/FtXj5dHI-Mg" target="_blank">https://youtu.be/FtXj5dHI-Mg</a>
@@ -465,7 +485,7 @@
 						</div>
 						<div class="col-md-4">
 							<div class="form-group">
-								<label for="chess_com_username">Nome de Usuário - Chess.com <span id="chess_com_required" style="display:none">*</span></label>
+								<label for="chess_com_username" id="chess_com_username_label">Nome de Usuário - Chess.com <span id="chess_com_required" style="display:none">*</span></label>
 								<input name="chess_com_username" id="chess_com_username" class="form-control cadastro_enxadrista_input" type="text" />
 								Site da Plataforma: <a href="http://chess.com" target="_blank">http://chess.com</a>.<br/>
                                 Tutorial para Cadastro no Chess.com: <a href="https://youtu.be/H9eJW1Z3qzQ" target="_blank">https://youtu.be/H9eJW1Z3qzQ</a>
@@ -478,7 +498,7 @@
 				<div id="enxadrista_5" style="display:none">
 					<h4>Passo 5/5 - Vínculo do Enxadrista</h4>
 					<div class="form-group">
-						<label for="pais_id">País do Vínculo *</label>
+						<label for="pais_id" class="field-required">País do Vínculo *</label>
 						<select id="pais_id" name="pais_id" class="form-control this_is_select2 cadastro_enxadrista_select">
 							<option value="">--- Selecione um País ---</option>
 							@foreach(\App\Pais::all() as $pais)
@@ -487,14 +507,14 @@
 						</select>
 					</div>
 					<div class="form-group">
-						<label for="estados_id">Estado do Vínculo *</label>
+						<label for="estados_id" class="field-required">Estado do Vínculo *</label>
 						<select id="estados_id" name="estados_id" class="form-control this_is_select2 cadastro_enxadrista_select">
 							<option value="">--- Selecione um país antes ---</option>
 						</select>
                     	<button id="estadoNaoCadastradoEnxadrista" onclick="chamaCadastroEstado(0)" class="btn btn-success">O meu estado não está cadastrado</button>
 					</div>
 					<div class="form-group">
-						<label for="cidade_id">Cidade do Vínculo *</label>
+						<label for="cidade_id" class="field-required">Cidade do Vínculo *</label>
 						<select id="cidade_id" name="cidade_id" class="form-control this_is_select2 cadastro_enxadrista_select">
 							<option value="">--- Selecione um estado antes ---</option>
 						</select>
@@ -525,13 +545,13 @@
 				<h4>ID LBX: <span id="enxadrista_mostrar_id_lbx">Carregando...</span></h4>
 				<hr/>
 				<div class="form-group">
-					<label for="inscricao_categoria_id">Categoria *</label>
+					<label for="inscricao_categoria_id" class="field-required">Categoria *</label>
 					<select id="inscricao_categoria_id" class="this_is_select2 form-control">
 						<option value="">--- Selecione ---</option>
 					</select>
 				</div>
 				<div class="form-group">
-					<label for="inscricao_pais_id">País *</label>
+					<label for="inscricao_pais_id" class="field-required">País *</label>
 					<select id="inscricao_pais_id" class="pais_id this_is_select2 form-control">
 						<option value="">--- Selecione um país ---</option>
 						@foreach(\App\Pais::all() as $pais)
@@ -540,14 +560,14 @@
 					</select>
 				</div>
 				<div class="form-group">
-					<label for="inscricao_estados_id">Estado/Província *</label>
+					<label for="inscricao_estados_id" class="field-required">Estado/Província *</label>
 					<select id="inscricao_estados_id" class="estados_id this_is_select2 form-control">
 						<option value="">--- Selecione um país primeiro ---</option>
 					</select>
                     <button id="estadoNaoCadastradoInscricao" onclick="chamaCadastroEstado(1)" class="btn btn-success">O meu estado não está cadastrado</button>
 				</div>
 				<div class="form-group">
-					<label for="cidade_id">Cidade *</label>
+					<label for="cidade_id" class="field-required">Cidade *</label>
 					<select id="inscricao_cidade_id" class="cidade_id this_is_select2 form-control">
 						<option value="">--- Selecione um estado primeiro ---</option>
 					</select>
@@ -565,7 +585,7 @@
 				</div>
 				@foreach($evento->campos() as $campo)
 					<div class="form-group">
-						<label for="campo_personalizado_{{$campo->id}}">{{$campo->question}} @if($campo->is_required) * @endif </label>
+						<label for="campo_personalizado_{{$campo->id}}" @if($campo->is_required) class="field-required" @endif>{{$campo->question}} @if($campo->is_required) * @endif </label>
 						<select id="campo_personalizado_{{$campo->id}}" class="campo_personalizado form-control this_is_select2">
 							<option value="">--- Selecione uma opção ---</option>
 							@foreach($campo->opcoes->all() as $opcao)
@@ -600,13 +620,13 @@
 				<hr/>
 				<input type="hidden" id="enxadrista_id" />
 				<div class="form-group">
-					<label for="confirmacao_categoria_id">Categoria *</label>
+					<label for="confirmacao_categoria_id" class="field-required">Categoria *</label>
 					<select id="confirmacao_categoria_id" class="this_is_select2 form-control">
 						<option value="">--- Selecione ---</option>
 					</select>
 				</div>
 				<div class="form-group">
-					<label for="confirmacao_pais_id">País *</label>
+					<label for="confirmacao_pais_id" class="field-required">País *</label>
 					<select id="confirmacao_pais_id" class="pais_id this_is_select2 form-control">
 						<option value="">--- Selecione um país ---</option>
 						@foreach(\App\Pais::all() as $pais)
@@ -615,14 +635,14 @@
 					</select>
 				</div>
 				<div class="form-group">
-					<label for="confirmacao_estados_id">Estado/Província *</label>
+					<label for="confirmacao_estados_id" class="field-required">Estado/Província *</label>
 					<select id="confirmacao_estados_id" class="estados_id this_is_select2 form-control">
 						<option value="">--- Selecione um país primeiro ---</option>
 					</select>
                     <button id="estadoNaoCadastradoConfirmacao" onclick="chamaCadastroEstado(2)" class="btn btn-success">O meu estado não está cadastrado</button>
 				</div>
 				<div class="form-group">
-					<label for="confirmacao_cidade_id">Cidade *</label>
+					<label for="confirmacao_cidade_id" class="field-required">Cidade *</label>
 					<select id="confirmacao_cidade_id" class="cidade_id this_is_select2 form-control">
 						<option value="">--- Selecione um estado primeiro ---</option>
 					</select>
@@ -1085,6 +1105,8 @@
 
 	function novoEnxadrista(){
     	Loading.enable(loading_default_animation, 1000);
+        $("#alert_new_enxadrista").css("display","");
+        $("#alert_update_enxadrista").css("display","none");
 		$("#texto_pesquisa").attr("disabled","disabled");
 		$("#form_pesquisa").css("display","none");
 		$("#pesquisa").css("display","none");
@@ -1110,6 +1132,8 @@
 		$("#enxadrista_id").val(id);
 		$.getJSON("{{url("/inscricao/v2/".$evento->id."/enxadrista/conferencia")}}/".concat($("#enxadrista_id").val()),function(data){
 			if(data.ok == 0){
+				$("#alert_new_enxadrista").css("display","none");
+				$("#alert_update_enxadrista").css("display","");
 				// $(".cadastro_enxadrista_input").attr("disabled","disabled");
 				// $(".cadastro_enxadrista_select").attr("disabled","disabled");
 				$("#enviar_cadastro").css("display","none");
@@ -2019,7 +2043,7 @@
 					html = "";
 					html = html.concat('<div class="form-group">');
 					if(data.data[i].is_required){
-						html = html.concat('<label for="tipo_documento_').concat(data.data[i].id).concat('">').concat(data.data[i].name).concat(' *</label>');
+						html = html.concat('<label for="tipo_documento_').concat(data.data[i].id).concat('" class="field-required">').concat(data.data[i].name).concat(' *</label>');
 					}else{
 						html = html.concat('<label for="tipo_documento_').concat(data.data[i].id).concat('">').concat(data.data[i].name).concat('</label>');
 					}
@@ -2475,48 +2499,66 @@
 		@if($evento->calcula_fide && !$evento->calcula_cbx)
 			if($("#pais_nascimento_id").val() == 33){
 				$("#cbx_required").css("display","");
+				$("#cbx_id_label").addClass("field-required");
 				$("#fide_required").css("display","none");
+				$("#fide_required_label").removeClass("field-required");
 			}else{
 				$("#cbx_required").css("display","none");
+				$("#cbx_id_label").removeClass("field-required");
 				$("#fide_required").css("display","");
+				$("#fide_required_label").addClass("field-required");
 			}
 		@else
 			// Se Calcula CBX e não FIDE
 			@if(!$evento->calcula_fide && $evento->calcula_cbx)
 				$("#cbx_required").css("display","");
+				$("#cbx_id_label").addClass("field-required");
 				$("#fide_required").css("display","none");
+				$("#fide_required_label").removeClass("field-required");
 			@else
 				// Se Calcula CBX e FIDE
 				@if($evento->calcula_fide && $evento->calcula_cbx)
 					$("#cbx_required").css("display","");
+				    $("#cbx_id_label").addClass("field-required");
 					if($("#pais_nascimento_id").val() == 33){
 						$("#fide_required").css("display","none");
+				        $("#fide_required_label").removeClass("field-required");
 					}else{
 						$("#fide_required").css("display","");
+				        $("#fide_required_label").addClass("field-required");
 					}
 				@else
 					// Se FIDE é Obrigatório e não CBX
 					@if($evento->fide_required && !$evento->cbx_required)
 						if($("#pais_nascimento_id").val() == 33){
 							$("#cbx_required").css("display","");
+				            $("#cbx_id_label").addClass("field-required");
 							$("#fide_required").css("display","none");
+				            $("#fide_required_label").removeClass("field-required");
 						}else{
 							$("#cbx_required").css("display","none");
+				            $("#cbx_id_label").removeClass("field-required");
 							$("#fide_required").css("display","");
+				            $("#fide_required_label").addClass("field-required");
 						}
 					@else
 						// Se CBX é Obrigatório e não FIDE
 						@if(!$evento->fide_required && $evento->cbx_required)
 							$("#cbx_required").css("display","");
+				            $("#cbx_id_label").addClass("field-required");
 							$("#fide_required").css("display","none");
+				            $("#fide_required_label").removeClass("field-required");
 						@else
 							// Se CBX e FIDE são Obrigatórios
 							@if($evento->fide_required && $evento->cbx_required)
 								$("#cbx_required").css("display","");
+				                $("#cbx_id_label").removeClass("field-required");
 								if($("#pais_nascimento_id").val() == 33){
 									$("#fide_required").css("display","none");
+				                    $("#fide_required_label").removeClass("field-required");
 								}else{
 									$("#fide_required").css("display","");
+				                    $("#fide_required_label").addClass("field-required");
 								}
 							@else
 
@@ -2528,13 +2570,17 @@
 		@endif
 		@if($evento->is_lichess)
 			$("#lichess_required").css("display","");
+			$("#lichess_username_label").addClass("field-required");
         @else
 			$("#lichess_required").css("display","none");
+			$("#lichess_username_label").removeClass("field-required");
         @endif
 		@if($evento->is_chess_com)
 			$("#chess_com_required").css("display","");
+			$("#chess_com_username_label").addClass("field-required");
         @else
 			$("#chess_com_required").css("display","none");
+			$("#chess_com_username_label").removeClass("field-required");
         @endif
 	}
     function goToInscricao(){
