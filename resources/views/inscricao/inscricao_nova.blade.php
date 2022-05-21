@@ -854,7 +854,7 @@
 						html = html.concat("<p>A pesquisa não retornou resultado.</p><br/>");
 					}
 					if(!data.hasMore){
-						html = html.concat("<a class='btn btn-warning' onclick='novoEnxadrista()'>O(a) enxadrista não aparece na lista.</a><br/>");
+						html = html.concat("<a class='btn btn-warning' onclick='novoEnxadrista()'>O(a) enxadrista não aparece na lista. <strong>Clique aqui para cadastrar</strong></a><br/>");
 					}else{
 						html = html.concat("<p>Há um limte de até 30 nomes por consulta. Para permitir o cadastro de um novo enxadrista é necessário que o nome do enxadrista esteja completo para a pesquisa.</p><br/>");
 					}
