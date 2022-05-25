@@ -85,6 +85,8 @@ Route::group(["prefix"=>"inscricao"],function(){
         Route::get('/confirm', 'InscricaoLichessController@confirm')->name('evento.inscricao.lichess.confirm');
         Route::get('/clear', 'InscricaoLichessController@clear')->name('evento.inscricao.lichess.clear');
     });
+    Route::get('{uuid}/editar', 'InscricaoController@editar_inscricao')->name('inscricao.editar');
+    Route::post('{uuid}/editar', 'InscricaoController@editar_inscricao_post')->name('inscricao.editar.post');
 
 });
 
@@ -132,6 +134,9 @@ Route::group(["prefix"=>"evento"],function(){
     Route::get('/{id}/resultados/{categoria_id}/interno', 'EventoGerenciarController@resultados')->name('evento.resultados.interno');
 	Route::get('/{id}/inscricoes/list', 'EventoGerenciarController@visualizar_inscricoes')->name('evento.inscricoes.list');
 	Route::get('/{id}/enxadristas/sm', 'EventoGerenciarController@downloadListaManagerParaEvento')->name('evento.enxadristas.sm');
+    Route::group(["prefix"=>"{id}/rating"],function(){
+        Route::get('/calculate', 'EventoGerenciarController@calcular_rating')->name('evento.rating.calculate');
+    });
     Route::group(["prefix"=>"{id}/relatorios"],function(){
         Route::get('/premiados', 'EventoGerenciarController@relatorio_premiados')->name('evento.relatorios.premiados');
     });

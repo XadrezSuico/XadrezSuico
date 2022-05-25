@@ -12,7 +12,7 @@ class EventoController extends Controller
     {
         $evento = Evento::find($evento_id);
         if ($evento) {
-            return view("evento.publico.torneios.torneio_3.index", compact("evento"));
+            return view("evento.publico.torneios.emparceiramentos", compact("evento"));
         }
 
         return view("evento.publico.classificacaonao", compact("evento"));

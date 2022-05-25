@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Process\RatingController;
+
 use App\Categoria;
 use App\CategoriaEvento;
 use App\Cidade;
@@ -411,6 +413,28 @@ class EventoGerenciarController extends Controller
 
             $messageBag = new MessageBag;
             $messageBag->add("alerta", "O evento foi classificado com sucesso!");
+            $messageBag->add("type", "success");
+
+            return redirect("/evento/dashboard/" . $evento->id)->withErrors($messageBag);
+        }
+    }
+
+    public function calcular_rating($evento_id)
+    {
+        $user = Auth::user();
+        $evento = Evento::find($evento_id);
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionEventByPerfil($evento->id, [4]) &&
+            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
+        ) {
+            return redirect("/evento/dashboard".$evento->id);
+        }
+        if ($evento) {
+            RatingController::calculate($evento->id);
+
+            $messageBag = new MessageBag;
+            $messageBag->add("alerta", "O rating foi calculado com sucesso!");
             $messageBag->add("type", "success");
 
             return redirect("/evento/dashboard/" . $evento->id)->withErrors($messageBag);

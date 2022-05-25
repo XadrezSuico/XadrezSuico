@@ -121,6 +121,96 @@ class InscricaoController extends Controller
         return redirect("/inscricao/" . $id);
     }
 
+    public function editar_inscricao($uuid)
+    {
+        $inscricao_count = Inscricao::where([["uuid","=",$uuid]])->count();
+        if($inscricao_count > 0){
+            $inscricao = Inscricao::where([["uuid","=",$uuid]])->first();
+            if(!$inscricao->torneio->evento->inscricoes_encerradas(false,true)){
+                $evento = $inscricao->torneio->evento;
+                $categorias = $this->categoriasEnxadrista($evento, $inscricao->enxadrista);
+                return view("inscricao.editar_inscricao", compact("evento", "inscricao", "categorias"));
+            }else{
+                $evento = $inscricao->torneio->evento;
+                return view("inscricao.encerradas", compact("evento"));
+            }
+        }else{
+            return view("inscricao.naoha");
+        }
+    }
+
+    public function editar_inscricao_post($uuid,Request $request){
+        $inscricao_count = Inscricao::where([["uuid","=",$uuid]])->count();
+        if($inscricao_count > 0){
+            $inscricao = Inscricao::where([["uuid","=",$uuid]])->first();
+
+
+            if($inscricao->torneio->evento->inscricoes_encerradas(false,true)){
+                return response()->json(["ok" => 0, "error" => 1, "message" => "O período para edição de inscrição se esgotou."]);
+            }
+
+            if($request->has("categoria_id")){
+                if($request->input("categoria_id") > 0){
+                    $categoria = $request->input("categoria_id");
+                    $is_found = false;
+
+                    foreach($this->categoriasEnxadrista($inscricao->torneio->evento,$inscricao->enxadrista) as $categoria_possivel){
+                        if($categoria_possivel->categoria->id == $categoria){
+                            $is_found = true;
+                        }
+                    }
+                    if(!$is_found){
+                        return response()->json(["ok" => 0, "error" => 1, "message" => "O enxadrista não pode jogar nesta categoria."]);
+                    }
+
+                    $inscricao->categoria_id = $request->input("categoria_id");
+                }
+            }
+            if($request->has("cidade_id")){
+                if($request->input("cidade_id") > 0){
+                    $inscricao->cidade_id = $request->input("cidade_id");
+                }
+            }
+            if($request->has("clube_id")){
+                if($request->input("clube_id") > 0){
+                    $inscricao->clube_id = $request->input("clube_id");
+                }
+            }
+
+            $inscricao->save();
+
+            foreach ($inscricao->torneio->evento->campos() as $campo) {
+                if ($request->has("campo_personalizado_" . $campo->id)) {
+                    if ($request->input("campo_personalizado_" . $campo->id) != "") {
+                        if ($request->input("campo_personalizado_" . $campo->id) != null) {
+                            if ($request->input("campo_personalizado_" . $campo->id) != "null") {
+                                if(CampoPersonalizadoOpcaoInscricao::where([
+                                    ["inscricao_id","=",$inscricao->id],
+                                    ["campo_personalizados_id","=", $campo->id]
+                                    ])->count() > 0){
+                                     $opcao_inscricao = CampoPersonalizadoOpcaoInscricao::where([
+                                        ["inscricao_id","=",$inscricao->id],
+                                        ["campo_personalizados_id","=", $campo->id]
+                                        ])->first();
+                                }else{
+                                    $opcao_inscricao = new CampoPersonalizadoOpcaoInscricao;
+                                    $opcao_inscricao->inscricao_id = $inscricao->id;
+                                    $opcao_inscricao->campo_personalizados_id = $campo->id;
+                                }
+                                $opcao_inscricao->opcaos_id = $request->input("campo_personalizado_" . $campo->id);
+                                $opcao_inscricao->save();
+                            }
+                        }
+                    }
+                }
+            }
+
+
+            return response()->json(["ok"=>1,"error"=>0]);
+        }else{
+            return response()->json(["ok"=>0,"error"=>1,"message"=>"Inscrição não encontrada."]);
+        }
+    }
 
 
 
@@ -715,13 +805,13 @@ class InscricaoController extends Controller
         foreach(TipoDocumentoPais::where([["pais_id","=",$request->input("pais_nascimento_id")]])->get() as $tipo_documento_pais){
             if($tipo_documento_pais->e_requerido){
                 if(!$request->has("tipo_documento_".$tipo_documento_pais->tipo_documento->id)){
-                    return response()->json(["ok"=>0,"error"=>1,"Há um documento que é requerido que não foi informado.", "registred" => 0, "ask" => 0]);
+                    return response()->json(["ok"=>0,"error"=>1,"message"=>"Há um documento que é requerido que não foi informado.", "registred" => 0, "ask" => 0]);
                 }
                 if(
                     $request->input("tipo_documento_".$tipo_documento_pais->tipo_documento->id) == "" ||
                     $request->input("tipo_documento_".$tipo_documento_pais->tipo_documento->id) == NULL
                 ){
-                    return response()->json(["ok"=>0,"error"=>1,"Há um documento que é requerido que não foi informado.", "registred" => 0, "ask" => 0]);
+                    return response()->json(["ok"=>0,"error"=>1,"message"=>"Há um documento que é requerido que não foi informado.", "registred" => 0, "ask" => 0]);
                 }
             }
             if($request->has("tipo_documento_".$tipo_documento_pais->tipo_documento->id)){
@@ -762,6 +852,11 @@ class InscricaoController extends Controller
                             $array["esta_inscrito"] = false;
                         }
                         return response()->json($array);
+                    }
+
+                    $validacao = $this->documento_validaDocumento($request->input("tipo_documento_".$tipo_documento_pais->tipo_documento->id),$tipo_documento_pais->tipo_documento->id);
+                    if($validacao["ok"] == 0){
+                        return response()->json(["ok"=>0,"error"=>1,"message"=>$validacao["message"], "registred" => 0, "ask" => 0]);
                     }
 
                     $documento = new Documento;
@@ -1070,13 +1165,13 @@ class InscricaoController extends Controller
         foreach(TipoDocumentoPais::where([["pais_id","=",$request->input("pais_nascimento_id")]])->get() as $tipo_documento_pais){
             if($tipo_documento_pais->e_requerido){
                 if(!$request->has("tipo_documento_".$tipo_documento_pais->tipo_documento->id)){
-                    return response()->json(["ok"=>0,"error"=>1,"Há um documento que é requerido que não foi informado.", "registred" => 0, "ask" => 0]);
+                    return response()->json(["ok"=>0,"error"=>1,"message"=>"Há um documento que é requerido que não foi informado.", "registred" => 0, "ask" => 0]);
                 }
                 if(
                     $request->input("tipo_documento_".$tipo_documento_pais->tipo_documento->id) == "" ||
                     $request->input("tipo_documento_".$tipo_documento_pais->tipo_documento->id) == NULL
                 ){
-                    return response()->json(["ok"=>0,"error"=>1,"Há um documento que é requerido que não foi informado.", "registred" => 0, "ask" => 0]);
+                    return response()->json(["ok"=>0,"error"=>1,"message"=>"Há um documento que é requerido que não foi informado.", "registred" => 0, "ask" => 0]);
                 }
             }
             if($request->has("tipo_documento_".$tipo_documento_pais->tipo_documento->id)){
@@ -1084,17 +1179,18 @@ class InscricaoController extends Controller
                     $request->input("tipo_documento_".$tipo_documento_pais->tipo_documento->id) != "" &&
                     $request->input("tipo_documento_".$tipo_documento_pais->tipo_documento->id) != NULL
                 ){
+                    $documento_valor = trim($request->input("tipo_documento_".$tipo_documento_pais->tipo_documento->id));
 
-                    $temEnxadrista = Enxadrista::whereHas("documentos",function($q1) use($request, $tipo_documento_pais){
+                    $temEnxadrista = Enxadrista::whereHas("documentos",function($q1) use($request, $tipo_documento_pais,$documento_valor){
                         if($tipo_documento_pais->tipo_documento->id == 1){
                             $q1->where([
                                 ["tipo_documentos_id","=",$tipo_documento_pais->tipo_documento->id],
-                                ["numero","=",Util::numeros($request->input("tipo_documento_".$tipo_documento_pais->tipo_documento->id))],
+                                ["numero","=",Util::numeros($documento_valor)],
                             ]);
                         }else{
                             $q1->where([
                                 ["tipo_documentos_id","=",$tipo_documento_pais->tipo_documento->id],
-                                ["numero","=",$request->input("tipo_documento_".$tipo_documento_pais->tipo_documento->id)],
+                                ["numero","=",$documento_valor],
                             ]);
                         }
                     })
@@ -1123,12 +1219,18 @@ class InscricaoController extends Controller
                         return response()->json($array);
                     }
 
+
+                    $validacao = $this->documento_validaDocumento($documento_valor,$tipo_documento_pais->tipo_documento->id);
+                    if($validacao["ok"] == 0){
+                        return response()->json(["ok"=>0,"error"=>1,"message"=>$validacao["message"], "registred" => 0, "ask" => 0]);
+                    }
+
                     $documento = new Documento;
                     $documento->tipo_documentos_id = $tipo_documento_pais->tipo_documento->id;
                     if($tipo_documento_pais->tipo_documento->id == 1){
-                        $documento->numero = Util::numeros($request->input("tipo_documento_".$tipo_documento_pais->tipo_documento->id));
+                        $documento->numero = Util::numeros($documento_valor);
                     }else{
-                        $documento->numero = $request->input("tipo_documento_".$tipo_documento_pais->tipo_documento->id);
+                        $documento->numero = $documento_valor;
                     }
 
                     $documentos[] = $documento;
@@ -1598,6 +1700,9 @@ class InscricaoController extends Controller
         }
     }
 
+
+
+
     /*
      *
      *
@@ -1698,5 +1803,46 @@ class InscricaoController extends Controller
             }
         }
         return response()->json(["ok"=>0,"error"=>1]);
+    }
+
+
+
+
+
+    public function documento_validaDocumento($documento,$tipo_documento_id,$validador=null){
+        if($tipo_documento_id == 1){
+            $documento = Util::numeros($documento);
+        }
+        $documento_len = strlen($documento);
+
+        // tamanho
+        if($documento_len < 4){
+            return ["ok"=>0,"error"=>1,"message"=>"O documento informado é muito curto."];
+        }
+
+        // caracteres
+        $crc1 = substr($documento,0,1);
+        $all_caracts_is_same = true;
+        for($i = 1; $i < $documento_len; $i++){
+            if($crc1 != substr($documento,$i,1)){
+                $all_caracts_is_same = false;
+            }
+        }
+
+        if($all_caracts_is_same){
+            return ["ok"=>0,"error"=>1,"message"=>"O documento informado é inválido."];
+        }
+
+        if(
+            count(explode("NAO",strtoupper($documento))) > 1 ||
+            count(explode("NÃO",strtoupper($documento))) > 1 ||
+            count(explode("TENHO",strtoupper($documento))) > 1 ||
+            count(explode("TEM",strtoupper($documento))) > 1 ||
+            count(explode("TEM",strtoupper($documento))) > 1
+        ){
+            return ["ok" => 0, "error" => 1, "message" => "O documento informado é inválido."];
+        }
+
+        return ["ok"=>1,"error"=>0];
     }
 }

@@ -28,4 +28,13 @@ class Rodada extends Model
     {
         return $this->hasMany("App\Emparceiramento", "armageddon_rodadas_id", "id");
     }
+
+
+    public function isUltimaRodada(){
+        $last_round = $this->torneio->rodadas()->orderBy("numero","DESC")->first();
+        if($last_round->numero == $this->numero){
+            return true;
+        }
+        return false;
+    }
 }

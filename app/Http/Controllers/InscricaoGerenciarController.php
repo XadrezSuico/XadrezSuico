@@ -374,7 +374,11 @@ class InscricaoGerenciarController extends Controller
     private function generateTxt_0($inscricoes, $evento, $torneio){
         $texto = "No;Nome Completo;ID;FED;";
         if ($evento->tipo_rating) {
-            $texto .= "FIDE;";
+            if ($evento->usa_fide) {
+                $texto .= "FIDE;";
+                $texto .= "id FIDE;";
+            }
+            $texto .= "Elonac;";
             // $texto .= "K;";
         } else {
             if ($evento->usa_fide) {
@@ -409,36 +413,11 @@ class InscricaoGerenciarController extends Controller
             $texto .= $inscricao->enxadrista->pais_nascimento->codigo_iso.";";
 
             if ($evento->tipo_rating) {
-                if ($inscricao->enxadrista->showRatingInterno($evento->tipo_rating->id)) {
-                    $texto .= $inscricao->enxadrista->showRatingInterno($evento->tipo_rating->id) . ";";
-                } else {
-                    $fide = $inscricao->enxadrista->showRating(0, $evento->tipo_modalidade);
-                    $cbx = $inscricao->enxadrista->showRating(1, $evento->tipo_modalidade);
-                    $lbx = $inscricao->enxadrista->showRating(2, $evento->tipo_modalidade);
-
-                    $found = false;
-                    if($fide){
-                        if($fide > $evento->tipo_rating->tipo_rating->showRatingRegraIdade($inscricao->enxadrista->howOld(), $evento)){
-                            $texto .= $fide . ";";
-                            $found = true;
-                        }
-                    }
-                    if($lbx && !$found){
-                        if($lbx > $evento->tipo_rating->tipo_rating->showRatingRegraIdade($inscricao->enxadrista->howOld(), $evento)){
-                            $texto .= $lbx . ";";
-                            $found = true;
-                        }
-                    }
-                    if($cbx && !$found){
-                        if($cbx > $evento->tipo_rating->tipo_rating->showRatingRegraIdade($inscricao->enxadrista->howOld(), $evento)){
-                            $texto .= $cbx . ";";
-                            $found = true;
-                        }
-                    }
-
-                    if(!$found) $texto .= $evento->tipo_rating->tipo_rating->showRatingRegraIdade($inscricao->enxadrista->howOld(), $evento) . ";";
-                    // $texto .= $evento->tipo_rating->tipo_rating->showKRegraIdade($inscricao->enxadrista->howOld(), $evento) . ";";
+                if ($evento->usa_fide) {
+                    $texto .= $inscricao->enxadrista->showRating(0, $evento->tipo_modalidade) . ";";
+                    $texto .= $inscricao->enxadrista->fide_id . ";";
                 }
+                $texto .= $inscricao->enxadrista->ratingParaEvento($evento->id) . ";";
             } else {
                 if ($evento->usa_fide) {
                     $texto .= $inscricao->enxadrista->showRating(0, $evento->tipo_modalidade) . ";";
@@ -472,7 +451,11 @@ class InscricaoGerenciarController extends Controller
     private function generateTxt_3($inscricoes, $evento, $torneio){
         $texto = "No;Nome Completo;ID;FED;";
         if ($evento->tipo_rating) {
-            $texto .= "FIDE;";
+            if ($evento->usa_fide) {
+                $texto .= "FIDE;";
+                $texto .= "id FIDE;";
+            }
+            $texto .= "Elonac;";
         } else {
             if ($evento->usa_fide) {
                 $texto .= "FIDE;";
@@ -506,35 +489,11 @@ class InscricaoGerenciarController extends Controller
             $texto .= $inscricao->enxadrista->pais_nascimento->codigo_iso.";";
 
             if ($evento->tipo_rating) {
-                if ($inscricao->enxadrista->showRatingInterno($evento->tipo_rating->id)) {
-                    $texto .= $inscricao->enxadrista->showRatingInterno($evento->tipo_rating->id) . ";";
-                } else {
-                    $fide = $inscricao->enxadrista->showRating(0, $evento->tipo_modalidade);
-                    $cbx = $inscricao->enxadrista->showRating(1, $evento->tipo_modalidade);
-                    $lbx = $inscricao->enxadrista->showRating(2, $evento->tipo_modalidade);
-
-                    $found = false;
-                    if($fide){
-                        if($fide > $evento->tipo_rating->tipo_rating->showRatingRegraIdade($inscricao->enxadrista->howOld(), $evento)){
-                            $texto .= $fide . ";";
-                            $found = true;
-                        }
-                    }
-                    if($lbx && !$found){
-                        if($lbx > $evento->tipo_rating->tipo_rating->showRatingRegraIdade($inscricao->enxadrista->howOld(), $evento)){
-                            $texto .= $lbx . ";";
-                            $found = true;
-                        }
-                    }
-                    if($cbx && !$found){
-                        if($cbx > $evento->tipo_rating->tipo_rating->showRatingRegraIdade($inscricao->enxadrista->howOld(), $evento)){
-                            $texto .= $cbx . ";";
-                            $found = true;
-                        }
-                    }
-
-                    if(!$found) $texto .= $evento->tipo_rating->tipo_rating->showRatingRegraIdade($inscricao->enxadrista->howOld(), $evento) . ";";
+                if ($evento->usa_fide) {
+                    $texto .= $inscricao->enxadrista->showRating(0, $evento->tipo_modalidade) . ";";
+                    $texto .= $inscricao->enxadrista->fide_id . ";";
                 }
+                $texto .= $inscricao->enxadrista->ratingParaEvento($evento->id) . ";";
             } else {
                 if ($evento->usa_fide) {
                     $texto .= $inscricao->enxadrista->showRating(0, $evento->tipo_modalidade) . ";";

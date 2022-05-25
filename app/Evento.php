@@ -161,13 +161,28 @@ class Evento extends Model
         return $this->criterios->all();
     }
 
-    public function inscricoes_encerradas($api = false)
+    public function inscricoes_encerradas($api = false, $only_date = false)
     {
         if($this->is_inscricoes_bloqueadas){
             return true;
         }
         $datetime = DateTime::createFromFormat('Y-m-d H:i:s', $this->data_limite_inscricoes_abertas);
         if ($datetime) {
+            if($only_date){
+                if ($api) {
+                    if ($datetime->getTimestamp() + (60 * 5) >= time()) {
+                        return false;
+                    } else {
+                        return true;
+                    }
+                }
+                if ($datetime->getTimestamp() >= time()) {
+                    return false;
+                } else {
+                    return true;
+                }
+            }
+
             if ($api) {
                 if ($datetime->getTimestamp() + (60 * 5) >= time() && !$this->estaLotado()) {
                     return false;

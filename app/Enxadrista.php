@@ -399,7 +399,7 @@ class Enxadrista extends Model
             $rating_regra = TipoRatingRegras::where([
                 ["tipo_ratings_id", "=", $tipo_rating->id],
             ])
-                ->where(function ($q1) use ($evento, $enxadrista) {
+                ->where(function ($q1) use ($enxadrista) {
                     $q1->where([
                         ["idade_minima", "<=", $enxadrista->howOld()],
                         ["idade_maxima", "=", null],
@@ -414,7 +414,7 @@ class Enxadrista extends Model
                     ]);
                 })
                 ->first();
-            $rating = $this->ratings()->where([["tipo_ratings_id", "=", $evento->tipo_rating->tipo_ratings_id]])->first();
+            $rating = $this->ratings()->where([["tipo_ratings_id", "=", $tipo_rating->id]])->first();
             if ($rating) {
                 if ($rating->valor > 0) {
                     return ["ok" => 1, "rating" => $rating, "regra" => $rating_regra];

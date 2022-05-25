@@ -596,7 +596,11 @@
 				@endforeach
 				@if($permite_confirmacao)
 					<div class="form-group">
-							@if(!$evento->is_lichess_integration) <label><input type="checkbox" id="inscricao_confirmar"> Inscrição Confirmada</label><br/> @endif
+							@if(!$evento->is_lichess_integration)
+                                @if($evento->data_inicio <= date("Y-m-d",time() + (60*60*24)))
+                                    <label><input type="checkbox" id="inscricao_confirmar"> Inscrição Confirmada</label><br/>
+                                @endif
+                            @endif
 							<label><input type="checkbox" id="inscricao_atualizar"> Atualizar Cadastro (Cidade e Clube)</label><br/>
 					</div>
 				@else
@@ -836,7 +840,11 @@
 								if(data.results[i].status == 1){
 									html = html.concat("<a class='btn btn-default btn-large permitida_inscricao' onclick='selectEnxadrista(").concat(data.results[i].id).concat(",false)' title='Efetuar Inscrição'>").concat(data.results[i].name).concat("</a><br/>");
 								}else if(data.results[i].status == 2){
-									html = html.concat("<a class='btn btn-success btn-large permitida_inscricao' onclick='selectConfirmarEnxadrista(").concat(data.results[i].inscricao_id).concat(",false)' title='Confirmar Enxadrista'>").concat(data.results[i].name).concat(" (Inscrito)</a><br/>");
+                                    @if($evento->data_inicio <= date("Y-m-d",time() + (60*60*24)))
+    									html = html.concat("<a class='btn btn-success btn-large permitida_inscricao' onclick='selectConfirmarEnxadrista(").concat(data.results[i].inscricao_id).concat(",false)' title='Confirmar Enxadrista'>").concat(data.results[i].name).concat(" (Inscrito)</a><br/>");
+                                    @else
+    									html = html.concat("<a class='btn btn-default btn-large' disabled='disabled'>").concat(data.results[i].name).concat("</a><br/>");
+                                    @endif
 								}else if(data.results[i].status == 3){
 									html = html.concat("<a class='btn btn-danger btn-large permitida_inscricao' onclick='enviarDesconfirmacao(").concat(data.results[i].inscricao_id).concat(",false)' title='Desconfirmar Enxadrista'>").concat(data.results[i].name).concat(" (Confirmado)</a><br/>");
 								}

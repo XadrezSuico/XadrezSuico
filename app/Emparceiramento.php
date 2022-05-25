@@ -48,13 +48,29 @@ class Emparceiramento extends Model
 
     public function getResultadoA(){
         if($this->resultado_a){
-            return $this->resultado_a;
+            if($this->resultado_a == 1.0){
+                return (!$this->is_wo_b) ? $this->resultado_a : "+";
+            }else if($this->resultado_a == 0.5){
+                return $this->resultado_a;
+            }else{
+                return (!$this->is_wo_a) ? $this->resultado_a : "-";
+            }
+        }else{
+            return (!$this->is_wo_a) ? 0 : "-";
         }
         return 0;
     }
     public function getResultadoB(){
         if($this->resultado_b){
-            return $this->resultado_b;
+            if($this->resultado_b == 1.0){
+                return (!$this->is_wo_a) ? $this->resultado_b : "+";
+            }else if($this->resultado_b == 0.5){
+                return $this->resultado_b;
+            }else{
+                return (!$this->is_wo_b) ? $this->resultado_b : "-";
+            }
+        }else{
+            return (!$this->is_wo_b) ? 0 : "-";
         }
         return 0;
     }
