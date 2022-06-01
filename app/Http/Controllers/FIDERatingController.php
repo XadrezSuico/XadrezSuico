@@ -135,40 +135,49 @@ class FIDERatingController extends Controller
 
         $json = json_decode($html);
         if(!isset($json->reason)){
+            $enxadrista->encontrado_fide = true;
+            $enxadrista->save();
             if(isset($json->standard_elo)){
                 if(is_numeric($json->standard_elo)){
                     if($show_text) echo "STD:" . $json->standard_elo;
                     if($save_rating) $enxadrista->setRating($codigo_organizacao, 0, intval($json->standard_elo));
                 }else{
                     if($show_text) echo "STD: String (".$json->standard_elo.")";
+                    if($save_rating) $enxadrista->deleteRating($codigo_organizacao, 0);
                 }
             }else{
                 if($show_text) echo "STD: Not Found";
+                if($save_rating) $enxadrista->deleteRating($codigo_organizacao, 0);
             }
             if($show_text) echo "<br/>";
             if(isset($json->rapid_elo)){
                 if(is_numeric($json->rapid_elo)){
                     if($show_text) echo "RPD:" . $json->rapid_elo;
-                    if($save_rating) $enxadrista->setRating($codigo_organizacao, 0, intval($json->rapid_elo));
+                    if($save_rating) $enxadrista->setRating($codigo_organizacao, 1, intval($json->rapid_elo));
                 }else{
                     if($show_text) echo "RPD: String (".$json->rapid_elo.")";
+                    if($save_rating) $enxadrista->deleteRating($codigo_organizacao, 1);
                 }
             }else{
                 if($show_text) echo "RPD: Not Found";
+                if($save_rating) $enxadrista->deleteRating($codigo_organizacao, 1);
             }
             if($show_text) echo "<br/>";
             if(isset($json->blitz_elo)){
                 if(is_numeric($json->blitz_elo)){
                     if($show_text) echo "BTZ:" . $json->blitz_elo;
-                    if($save_rating) $enxadrista->setRating($codigo_organizacao, 0, intval($json->blitz_elo));
+                    if($save_rating) $enxadrista->setRating($codigo_organizacao, 2, intval($json->blitz_elo));
                 }else{
                     if($show_text) echo "BTZ: String (".$json->blitz_elo.")";
+                    if($save_rating) $enxadrista->deleteRating($codigo_organizacao, 2);
                 }
             }else{
                 if($show_text) echo "BTZ: Not Found";
+                if($save_rating) $enxadrista->deleteRating($codigo_organizacao, 2);
             }
         }else{
             $enxadrista->encontrado_fide = false;
+            $enxadrista->save();
         }
 
         if($save_rating) $enxadrista->fide_last_update = date("Y-m-d H:i:s");

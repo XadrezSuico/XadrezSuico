@@ -16,6 +16,8 @@ use App\Sexo;
 use App\Documento;
 use App\TipoDocumento;
 use App\TipoDocumentoPais;
+use App\Rating;
+use App\MovimentacaoRating;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Util\Util;
 use Illuminate\Http\Request;
@@ -526,9 +528,13 @@ class InscricaoController extends Controller
         ) {
             return response()->json(["ok" => 0, "error" => 1, "message" => "Você deve aceitar o termo de uso e política de privacidade da plataforma XadrezSuíço!", "registred" => 0]);
         } elseif (
-            !$request->has("xadrezsuico_aceito")
+            !$request->has("imagem_aceito")
         ) {
             return response()->json(["ok" => 0, "error" => 1, "message" => "Os direitos de imagem devem ser fornecidos para inscrição neste evento.", "registred" => 0]);
+        } elseif (
+            !$request->has("categoria_conferida")
+        ) {
+            return response()->json(["ok" => 0, "error" => 1, "message" => "Você deve verificar a categoria e marcar o campo 'Categoria conferida'.", "registred" => 0]);
         } elseif (
             !$request->has("enxadrista_id") ||
             !$request->has("categoria_id") ||
@@ -662,6 +668,28 @@ class InscricaoController extends Controller
                         }
                     }
                 }
+            }
+        }
+
+        if($evento->tipo_rating){
+            $rating_count = $inscricao->enxadrista->ratings()->where([
+                ["tipo_ratings_id","=",$evento->tipo_rating->id]
+            ])->count();
+            if($rating_count == 0){
+                $rating_inicial = $enxadrista->ratingParaEvento($evento->id);
+
+                $rating = new Rating;
+                $rating->tipo_ratings_id = $evento->tipo_rating->tipo_rating->id;
+                $rating->enxadrista_id = $enxadrista->id;
+                $rating->valor = $rating_inicial;
+                $rating->save();
+
+                $movimentacao = new MovimentacaoRating;
+                $movimentacao->tipo_ratings_id = $rating->tipo_ratings_id;
+                $movimentacao->ratings_id = $rating->id;
+                $movimentacao->valor = $rating_inicial;
+                $movimentacao->is_inicial = true;
+                $movimentacao->save();
             }
         }
 
@@ -882,7 +910,7 @@ class InscricaoController extends Controller
         if (!$enxadrista->setBorn($request->input("born"))) {
             return response()->json(["ok" => 0, "error" => 1, "message" => "A data de nascimento é inválida.", "registred" => 0, "ask" => 0]);
         }
-        if($enxadrista->howOldForEvento($evento->getYear()) >= 130){
+        if($enxadrista->howOldForEvento($evento->getYear()) > 130 || $enxadrista->howOldForEvento($evento->getYear()) < 0){
             return response()->json(["ok" => 0, "error" => 1, "message" => "A data de nascimento parece inválida. Por favor, verifique e tente novamente.", "registred" => 0, "ask" => 0]);
         }
 
@@ -1181,7 +1209,7 @@ class InscricaoController extends Controller
                 ){
                     $documento_valor = trim($request->input("tipo_documento_".$tipo_documento_pais->tipo_documento->id));
 
-                    $temEnxadrista = Enxadrista::whereHas("documentos",function($q1) use($request, $tipo_documento_pais,$documento_valor){
+                    $temEnxadrista_count = Enxadrista::whereHas("documentos",function($q1) use($request, $tipo_documento_pais,$documento_valor){
                         if($tipo_documento_pais->tipo_documento->id == 1){
                             $q1->where([
                                 ["tipo_documentos_id","=",$tipo_documento_pais->tipo_documento->id],
@@ -1197,8 +1225,25 @@ class InscricaoController extends Controller
                     ->where([
                         ["id","!=",$enxadrista->id]
                     ])
-                    ->first();
-                    if(count($temEnxadrista) > 0){
+                    ->count();
+                    if($temEnxadrista_count > 0){
+                        $temEnxadrista = Enxadrista::whereHas("documentos",function($q1) use($request, $tipo_documento_pais,$documento_valor){
+                            if($tipo_documento_pais->tipo_documento->id == 1){
+                                $q1->where([
+                                    ["tipo_documentos_id","=",$tipo_documento_pais->tipo_documento->id],
+                                    ["numero","=",Util::numeros($documento_valor)],
+                                ]);
+                            }else{
+                                $q1->where([
+                                    ["tipo_documentos_id","=",$tipo_documento_pais->tipo_documento->id],
+                                    ["numero","=",$documento_valor],
+                                ]);
+                            }
+                        })
+                        ->where([
+                            ["id","!=",$enxadrista->id]
+                        ])
+                        ->first();
                         $array = [
                             "ok"=>0,
                             "error"=>1,
@@ -1472,6 +1517,10 @@ class InscricaoController extends Controller
                 $request->input("evento_id") == null || $request->input("evento_id") == ""
             ) {
                 return response()->json(["ok" => 0, "error" => 1, "message" => "Um dos campos obrigatórios não está preenchido. Por favor, verifique e envie novamente!"]);
+            } elseif (
+                !$request->has("categoria_conferida")
+            ) {
+                return response()->json(["ok" => 0, "error" => 1, "message" => "Você deve verificar a categoria e marcar o campo 'Categoria conferida'.", "registred" => 0]);
             }
 
             $inscricao = Inscricao::find($request->input("inscricao_id"));

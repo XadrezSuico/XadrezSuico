@@ -19,4 +19,8 @@ class TipoRatingGrupoEvento extends Model
     {
         return $this->belongsTo("App\GrupoEvento", "grupo_evento_id", "id");
     }
+    public function tipo_rating()
+    {
+        return $this->belongsTo("App\TipoRating", "tipo_ratings_id", "id");
+    }
 }

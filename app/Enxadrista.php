@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 use Spatie\Activitylog\Traits\LogsActivity;
 use App\Util\Util;
 
+use Log;
+
 class Enxadrista extends Model
 {
     use LogsActivity;
@@ -329,6 +331,8 @@ class Enxadrista extends Model
                         }
                     }
 
+                    // Log::debug("Idade: ".$enxadrista->howOld());
+
                     return $rating_regra->inicial;
                 }
             } else {
@@ -559,6 +563,13 @@ class Enxadrista extends Model
             return $rating->valor;
         }
         return false;
+    }
+    public function deleteRating($entidade, $tipo_modalidade)
+    {
+        $rating = $this->getRating($entidade, $tipo_modalidade);
+        if ($rating) {
+            $rating->delete();
+        }
     }
 
     public function getNameToSM()

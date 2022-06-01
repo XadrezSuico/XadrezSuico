@@ -20,13 +20,17 @@ class CronController extends Controller
         $this->evento_players_not_in_lichess_schedule_email();
         $this->generateUuidOnInscricao();
         $this->generateConvertLichessChessComToLowerOnEnxadrista();
+        $this->generateRatingToInscricaoWithoutRating();
     }
 
     public function evento_check_players_in(){
         $torneios = Torneio::whereHas("evento",function($q1){
             $q1->whereNotNull("is_lichess_integration");
             $q1->whereNotNull("lichess_tournament_id");
-            $q1->where([["data_fim",">",date("Y-m-d",strtotime(time()+60*60*12))]]);
+            $q1->where([
+                ["data_fim",">",date("Y-m-d",strtotime(time()+60*60*12))],
+                ["classificavel","=",false]
+            ]);
         })
         ->where(function($q1){
             $q1->whereNull("lichess_last_update");
@@ -71,8 +75,6 @@ class CronController extends Controller
                             $inscricao->is_lichess_found = true;
                             $inscricao->is_last_lichess_found = true;
                             $inscricao->save();
-                        }else{
-                            $inscricao->is_lichess_found = false;
                         }
                     }
                 }
@@ -125,5 +127,21 @@ class CronController extends Controller
             $enxadrista->save();
         }
 
+    }
+
+    public function generateRatingToInscricaoWithoutRating(){
+        // $inscricoes = Inscricao::whereHas("torneio",function($q1){
+        //     $q1->whereHas("evento",function($q2){
+        //         $q2->whereHas("tipo_rating");
+        //         $q2->where([["data_inicio",">=",date("Y-m-d",time())]]);
+        //     });
+        // })
+        // ->whereHas("enxadrista",function($q1){
+        //     $q1->whereHas("ratings");
+        // })
+        // ->get();
+        // foreach($inscricoes as $inscricao){
+
+        // }
     }
 }

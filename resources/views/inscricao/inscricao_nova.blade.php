@@ -544,12 +544,16 @@
 				<h4>ID FIDE: <span id="enxadrista_mostrar_id_fide">Carregando...</span></h4>
 				<h4>ID LBX: <span id="enxadrista_mostrar_id_lbx">Carregando...</span></h4>
 				<hr/>
-				<div class="form-group">
-					<label for="inscricao_categoria_id" class="field-required">Categoria *</label>
-					<select id="inscricao_categoria_id" class="this_is_select2 form-control">
-						<option value="">--- Selecione ---</option>
-					</select>
-				</div>
+                <div class="alert alert-warning" role="alert">
+                    <h4><strong>Verifique a categoria da inscrição:</strong></h4>
+                    <div class="form-group">
+                        <label for="inscricao_categoria_id" class="field-required">Categoria *</label>
+                        <select id="inscricao_categoria_id" class="this_is_select2 form-control">
+                            <option value="">--- Selecione ---</option>
+                        </select>
+                    </div>
+					<label class="field-required"><input type="checkbox" id="inscricao_categoria_conferida"> Categoria conferida *</label><br/>
+                </div>
 				<div class="form-group">
 					<label for="inscricao_pais_id" class="field-required">País *</label>
 					<select id="inscricao_pais_id" class="pais_id this_is_select2 form-control">
@@ -623,12 +627,16 @@
 				<h4>ID LBX: <span id="enxadrista_confirmar_id_lbx">Carregando...</span></h4>
 				<hr/>
 				<input type="hidden" id="enxadrista_id" />
-				<div class="form-group">
-					<label for="confirmacao_categoria_id" class="field-required">Categoria *</label>
-					<select id="confirmacao_categoria_id" class="this_is_select2 form-control">
-						<option value="">--- Selecione ---</option>
-					</select>
-				</div>
+                <div class="alert alert-warning" role="alert">
+                    <h4><strong>Verifique a categoria da inscrição:</strong></h4>
+                    <div class="form-group">
+                        <label for="confirmacao_categoria_id" class="field-required">Categoria *</label>
+                        <select id="confirmacao_categoria_id" class="this_is_select2 form-control">
+                            <option value="">--- Selecione ---</option>
+                        </select>
+                    </div>
+					<label class="field-required"><input type="checkbox" id="confirmacao_categoria_conferida"> Categoria conferida *</label><br/>
+                </div>
 				<div class="form-group">
 					<label for="confirmacao_pais_id" class="field-required">País *</label>
 					<select id="confirmacao_pais_id" class="pais_id this_is_select2 form-control">
@@ -1247,6 +1255,8 @@
 				$("#regulamento_aceito").removeAttr('checked');
 				$("#xadrezsuico_aceito").prop('checked',false);
 				$("#xadrezsuico_aceito").removeAttr('checked');
+				$("#inscricao_categoria_conferida").removeAttr('checked');
+				$("#inscricao_categoria_conferida").prop('checked',false);
 				$("#imagem_aceito").prop('checked',false);
 				$("#imagem_aceito").removeAttr('checked');
 
@@ -1289,7 +1299,9 @@
 							var newOptionClube = new Option(data.data.clube.name, data.data.clube.id, false, false);
 							$('#inscricao_clube_id').append(newOptionClube).trigger('change');
 							$("#inscricao_clube_id").val(data.data.clube.id).change();
-						}
+						}else{
+							$("#inscricao_clube_id").val(0).change();
+                        }
 
 						$("#form_pesquisa").css("display","none");
 						$("#pesquisa").css("display","none");
@@ -1375,7 +1387,9 @@
 					var newOptionClube = new Option(data.data.clube.name, data.data.clube.id, false, false);
 					$('#confirmacao_clube_id').append(newOptionClube).trigger('change');
 					$("#confirmacao_clube_id").val(data.data.clube.id).change();
-				}
+				}else{
+                    $("#confirmacao_clube_id").val(0).change();
+                }
 
 				$("#form_pesquisa").css("display","none");
 				$("#pesquisa").css("display","none");
@@ -1664,6 +1678,9 @@
 				data = data.concat("&imagem_aceito=true");
 			}
 		@endif
+        if($("#inscricao_categoria_conferida").is(":checked")){
+            data = data.concat("&categoria_conferida=true");
+        }
 		@foreach($evento->campos() as $campo)
 			data = data.concat("&campo_personalizado_{{$campo->id}}=").concat($("#campo_personalizado_{{$campo->id}}").val());
 		@endforeach
@@ -1729,6 +1746,10 @@
 				data = data.concat("&token=").concat("{{$token}}");
 			@endif
 		@endif
+
+        if($("#confirmacao_categoria_conferida").is(":checked")){
+            data = data.concat("&categoria_conferida=true");
+        }
 		$.ajax({
 			type: "post",
 			url: "{{url("/inscricao/v2/".$evento->id."/inscricao/confirmar")}}",
@@ -1800,6 +1821,7 @@
 		$("#inscricao_pais_id").val(0).change();
 
 
+		$('#inscricao_categoria_conferida').prop( "checked", false );
 		$("#inscricao").css("display","none");
 		$("#form_pesquisa").css("display","");
 		$("#pesquisa").css("display","");
@@ -1934,7 +1956,7 @@
 					$("#barra_progresso_cadastro").css("width","100%");
 					zeraCadastro(true,false);
 					selectEnxadrista(data.enxadrista_id,function(){
-						$("#successMessage").html("<strong>O cadastro do enxadrista foi efetuado com sucesso!</strong>");
+						$("#successMessage").html("<strong>O cadastro do enxadrista foi efetuado com sucesso!</strong><hr/>Agora será possível <strong>efetuar a inscrição no evento!</strong>");
 						$("#success").modal();
 						Loading.destroy();
 					});

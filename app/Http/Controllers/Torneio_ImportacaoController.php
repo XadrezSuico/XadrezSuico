@@ -89,6 +89,7 @@ class Torneio_ImportacaoController extends Controller
             switch($torneio->evento->exportacao_sm_modelo){
                 case 0:
                 case 2:
+                case 3:
                     return $this->setResults_tipo_exportacao_0($file, $evento_id, $torneio_id);
                     break;
                 case 1:

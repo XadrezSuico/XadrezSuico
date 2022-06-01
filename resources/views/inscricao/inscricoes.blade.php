@@ -102,6 +102,18 @@
                         @if($evento->is_chess_com)
                             <th>Usuário Chess.com</th>
                         @endif
+                        @if($evento->tipo_rating)
+                            <th>Rating</th>
+                        @endif
+                        @if($evento->usa_fide)
+                            <th>FIDE</th>
+                        @endif
+                        @if($evento->usa_lbx)
+                            <th>LBX</th>
+                        @endif
+                        @if($evento->usa_cbx)
+                            <th>CBX</th>
+                        @endif
                         <th>Categoria Inscrição</th>
                         <th>Cidade</th>
                         <th>Clube</th>
@@ -121,6 +133,18 @@
                             @endif
                             @if($evento->is_chess_com)
                                 <td>@if($inscricao->chess_com_username) {{$inscricao->chess_com_username}} @else - @endif</td>
+                            @endif
+                            @if($evento->tipo_rating)
+                                <td>{{$inscricao->enxadrista->ratingParaEvento($evento->id)}}</td>
+                            @endif
+                            @if($evento->usa_fide)
+                                <td>{{$inscricao->enxadrista->showRating(0, $evento->tipo_modalidade)}}</td>
+                            @endif
+                            @if($evento->usa_lbx)
+                                <td>{{$inscricao->enxadrista->showRating(2, $evento->tipo_modalidade)}}</td>
+                            @endif
+                            @if($evento->usa_cbx)
+                                <td>{{$inscricao->enxadrista->showRating(1, $evento->tipo_modalidade)}}</td>
                             @endif
                             <td>{{$inscricao->categoria->name}}</td>
                             <td>{{$inscricao->getCidade()}}</td>
