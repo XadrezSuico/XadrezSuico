@@ -434,3 +434,6 @@ Route::get('/termosdeuso', function () {
 })->name('termosdeuso');
 
 
+Route::group(["prefix"=>"install"],function(){
+    Route::get('/migrate', 'InstallController@migrate')->name('install.migrate');
+});
