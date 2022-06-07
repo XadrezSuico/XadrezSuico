@@ -20,7 +20,6 @@ class CronController extends Controller
         $this->evento_players_not_in_lichess_schedule_email();
         $this->generateUuidOnInscricao();
         $this->generateConvertLichessChessComToLowerOnEnxadrista();
-        $this->generateRatingToInscricaoWithoutRating();
     }
 
     public function evento_check_players_in(){
@@ -127,21 +126,5 @@ class CronController extends Controller
             $enxadrista->save();
         }
 
-    }
-
-    public function generateRatingToInscricaoWithoutRating(){
-        // $inscricoes = Inscricao::whereHas("torneio",function($q1){
-        //     $q1->whereHas("evento",function($q2){
-        //         $q2->whereHas("tipo_rating");
-        //         $q2->where([["data_inicio",">=",date("Y-m-d",time())]]);
-        //     });
-        // })
-        // ->whereHas("enxadrista",function($q1){
-        //     $q1->whereHas("ratings");
-        // })
-        // ->get();
-        // foreach($inscricoes as $inscricao){
-
-        // }
     }
 }

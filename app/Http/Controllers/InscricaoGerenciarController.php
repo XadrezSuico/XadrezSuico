@@ -417,7 +417,7 @@ class InscricaoGerenciarController extends Controller
                     $texto .= $inscricao->enxadrista->showRating(0, $evento->tipo_modalidade) . ";";
                     $texto .= $inscricao->enxadrista->fide_id . ";";
                 }
-                $texto .= $inscricao->enxadrista->ratingParaEvento($evento->id) . ";";
+                $texto .= $inscricao->enxadrista->ratingParaEvento($evento->id,true) . ";";
             } else {
                 if ($evento->usa_fide) {
                     $texto .= $inscricao->enxadrista->showRating(0, $evento->tipo_modalidade) . ";";
@@ -493,7 +493,7 @@ class InscricaoGerenciarController extends Controller
                     $texto .= $inscricao->enxadrista->showRating(0, $evento->tipo_modalidade) . ";";
                     $texto .= $inscricao->enxadrista->fide_id . ";";
                 }
-                $texto .= $inscricao->enxadrista->ratingParaEvento($evento->id) . ";";
+                $texto .= $inscricao->enxadrista->ratingParaEvento($evento->id,true) . ";";
             } else {
                 if ($evento->usa_fide) {
                     $texto .= $inscricao->enxadrista->showRating(0, $evento->tipo_modalidade) . ";";
@@ -714,8 +714,8 @@ class InscricaoGerenciarController extends Controller
     {
         $evento = $inscrito_a->torneio->evento;
         if ($evento->tipo_rating) {
-            $r_a = $inscrito_a->enxadrista->ratingParaEvento($evento->id);
-            $r_b = $inscrito_b->enxadrista->ratingParaEvento($evento->id);
+            $r_a = $inscrito_a->enxadrista->ratingParaEvento($evento->id,true);
+            $r_b = $inscrito_b->enxadrista->ratingParaEvento($evento->id,true);
             if ($r_a == $r_b || !$r_a || !$r_b) {
                 return InscricaoGerenciarController::cmp_obj_alf($inscrito_a, $inscrito_b);
             } else {

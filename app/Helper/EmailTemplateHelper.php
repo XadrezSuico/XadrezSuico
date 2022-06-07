@@ -103,6 +103,10 @@ class EmailTemplateHelper
         $text = str_replace("{inscricao.id}",$inscricao->id,$text);
         $text = str_replace("{inscricao.lichess}",$inscricao->getLichessProcessLink(),$text);
 
+        if($inscricao->torneio->evento->permite_edicao_inscricao){
+            $text = str_replace("{inscricao.link_edicao}",url("/inscricao/".$inscricao->uuid."/editar"),$text);
+        }
+
         // Categoria
         $text = str_replace("{categoria.id}",$inscricao->categoria->id,$text);
         $text = str_replace("{categoria.name}",$inscricao->categoria->name,$text);

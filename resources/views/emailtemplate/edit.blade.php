@@ -79,6 +79,10 @@
             <ul>
                 <li><strong>{inscricao.id}</strong> - ID da Inscrição</li>
                 <li><strong>{inscricao.lichess}</strong> - Link para Prosseguir com a Inscrição no Lichess.org</li>
+                <li>
+                    <strong>{inscricao.link_edicao}</strong> - Link para Editar a Inscrição.<br/>
+                    <small><strong>IMPORTANTE!</strong> Este link só é preenchido caso o evento permita a edição da inscrição. A função fica disponível até o fim do prazo de inscrição.</small>
+                </li>
             </ul>
 
             <h3>Categoria da Inscrição</h3>

@@ -96,6 +96,17 @@
                                 @endif
                                 Inscricoes
                             </a>
+
+                            <a href="{{url("/evento/".$evento->id."/toggleedicaoinscricao")}}" class="btn btn-warning btn-app">
+                                @if($evento->permite_edicao_inscricao)
+                                    <i class="fa fa-lock"></i>
+                                    Restringir (Status Atual: Permitido)
+                                @else
+                                    <i class="fa fa-unlock"></i>
+                                    Permitir (Status Atual: Restringido)
+                                @endif
+                                Edição de Inscrição
+                            </a>
 							<hr/>
                             <h4>Divulgação de Emparceiramentos:</h4>
 							<a href="{{url("/evento/acompanhar/".$evento->id)}}" class="btn btn-app">

@@ -128,6 +128,10 @@ class InscricaoController extends Controller
         $inscricao_count = Inscricao::where([["uuid","=",$uuid]])->count();
         if($inscricao_count > 0){
             $inscricao = Inscricao::where([["uuid","=",$uuid]])->first();
+            if(!$inscricao->torneio->evento->permite_edicao_inscricao){
+                $evento = $inscricao->torneio->evento;
+                return view("inscricao.encerradas", compact("evento"));
+            }
             if(!$inscricao->torneio->evento->inscricoes_encerradas(false,true)){
                 $evento = $inscricao->torneio->evento;
                 $categorias = $this->categoriasEnxadrista($evento, $inscricao->enxadrista);
@@ -150,6 +154,9 @@ class InscricaoController extends Controller
             if($inscricao->torneio->evento->inscricoes_encerradas(false,true)){
                 return response()->json(["ok" => 0, "error" => 1, "message" => "O período para edição de inscrição se esgotou."]);
             }
+            if(!$inscricao->torneio->evento->permite_edicao_inscricao){
+                return response()->json(["ok" => 0, "error" => 1, "message" => "O evento não permite edição de inscrição."]);
+            }
 
             if($request->has("categoria_id")){
                 if($request->input("categoria_id") > 0){
@@ -165,7 +172,22 @@ class InscricaoController extends Controller
                         return response()->json(["ok" => 0, "error" => 1, "message" => "O enxadrista não pode jogar nesta categoria."]);
                     }
 
-                    $inscricao->categoria_id = $request->input("categoria_id");
+                    if ($inscricao->categoria_id != $request->input("categoria_id")) {
+                        $inscricao->categoria_id = $request->input("categoria_id");
+
+                        $torneio = null;
+
+                        foreach ($inscricao->torneio->evento->torneios->all() as $Torneio) {
+                            foreach ($Torneio->categorias->all() as $categoria) {
+                                if ($categoria->categoria_id == $request->input("categoria_id")) {
+                                    $torneio = $Torneio;
+                                }
+                            }
+                        }
+                        $inscricao->torneio_id = $torneio->id;
+
+                    }
+
                 }
             }
             if($request->has("cidade_id")){

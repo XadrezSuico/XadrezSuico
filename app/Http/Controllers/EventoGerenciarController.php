@@ -547,6 +547,27 @@ class EventoGerenciarController extends Controller
             return redirect("/evento/dashboard/" . $evento->id);
         }
     }
+    public function toggleEdicaoInscricao($evento_id)
+    {
+        $user = Auth::user();
+        $evento = Evento::find($evento_id);
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionEventByPerfil($evento->id, [4]) &&
+            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
+        ) {
+            return redirect("/evento/dashboard/".$evento->id);
+        }
+        if ($evento) {
+            if ($evento->permite_edicao_inscricao) {
+                $evento->permite_edicao_inscricao = false;
+            } else {
+                $evento->permite_edicao_inscricao = true;
+            }
+            $evento->save();
+            return redirect("/evento/dashboard/" . $evento->id);
+        }
+    }
 
     public function classificacao($evento_id)
     {

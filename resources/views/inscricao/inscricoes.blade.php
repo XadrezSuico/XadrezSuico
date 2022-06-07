@@ -135,7 +135,7 @@
                                 <td>@if($inscricao->chess_com_username) {{$inscricao->chess_com_username}} @else - @endif</td>
                             @endif
                             @if($evento->tipo_rating)
-                                <td>{{$inscricao->enxadrista->ratingParaEvento($evento->id)}}</td>
+                                <td>{{$inscricao->enxadrista->ratingParaEvento($evento->id,true)}}</td>
                             @endif
                             @if($evento->usa_fide)
                                 <td>{{$inscricao->enxadrista->showRating(0, $evento->tipo_modalidade)}}</td>

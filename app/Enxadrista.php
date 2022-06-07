@@ -7,6 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 use Spatie\Activitylog\Traits\LogsActivity;
 use App\Util\Util;
 
+use App\Rating;
+use App\MovimentacaoRating;
+
+
 use Log;
 
 class Enxadrista extends Model
@@ -272,7 +276,7 @@ class Enxadrista extends Model
         return false;
     }
 
-    public function ratingParaEvento($evento_id)
+    public function ratingParaEvento($evento_id,$gera_senao_houver = false)
     {
         $enxadrista = $this;
         $evento = Evento::find($evento_id);
@@ -310,6 +314,8 @@ class Enxadrista extends Model
                         }
                     }
 
+                    $rating_inicial = $rating_regra->inicial;
+
                     $fide = $enxadrista->showRating(0, $evento->tipo_modalidade);
                     $cbx = $enxadrista->showRating(1, $evento->tipo_modalidade);
                     $lbx = $enxadrista->showRating(2, $evento->tipo_modalidade);
@@ -317,23 +323,40 @@ class Enxadrista extends Model
                     $found = false;
                     if($fide){
                         if($fide > $evento->tipo_rating->tipo_rating->showRatingRegraIdade($enxadrista->howOld(), $evento)){
-                            return $fide;
+                            $rating_inicial = $fide;
+                            $found = true;
                         }
                     }
                     if($lbx && !$found){
                         if($lbx > $evento->tipo_rating->tipo_rating->showRatingRegraIdade($enxadrista->howOld(), $evento)){
-                            return $lbx;
+                            $rating_inicial =  $lbx;
+                            $found = true;
                         }
                     }
                     if($cbx && !$found){
                         if($cbx > $evento->tipo_rating->tipo_rating->showRatingRegraIdade($enxadrista->howOld(), $evento)){
-                            return $cbx;
+                            $rating_inicial = $cbx;
+                            $found = true;
                         }
                     }
 
                     // Log::debug("Idade: ".$enxadrista->howOld());
+                    if($gera_senao_houver){
+                        $rating = new Rating;
+                        $rating->tipo_ratings_id = $evento->tipo_rating->tipo_rating->id;
+                        $rating->enxadrista_id = $enxadrista->id;
+                        $rating->valor = $rating_inicial;
+                        $rating->save();
 
-                    return $rating_regra->inicial;
+                        $movimentacao = new MovimentacaoRating;
+                        $movimentacao->tipo_ratings_id = $rating->tipo_ratings_id;
+                        $movimentacao->ratings_id = $rating->id;
+                        $movimentacao->valor = $rating_inicial;
+                        $movimentacao->is_inicial = true;
+                        $movimentacao->save();
+                    }
+
+                    return $rating_inicial;
                 }
             } else {
                 if ($evento->usa_fide) {
