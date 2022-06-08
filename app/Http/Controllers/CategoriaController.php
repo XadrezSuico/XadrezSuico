@@ -65,9 +65,11 @@ class CategoriaController extends Controller
                     }
                     $j++;
                 } else {
+                    $inscricao->pontos_geral = null;
                     $inscricao->posicao_geral = null;
                 }
             } else {
+                $inscricao->pontos_geral = null;
                 $inscricao->posicao = null;
                 $inscricao->posicao_geral = null;
             }
