@@ -137,7 +137,7 @@
         <div class="modal-content">
             <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title">Cadastrar Novo Clube</h4>
+            <h4 class="modal-title">Cadastrar Novo Clube/Instituição/Escola</h4>
             </div>
             <div class="modal-body">
                 <div class="form-group">
@@ -323,9 +323,12 @@
 					<h4>Passo 3/5 - Outras Informações:</h4>
 					<div class="row">
 						<div class="col-md-12">
-							<div class="form-group">
-								<label for="email" class="field-required">E-mail *</label>
-								<input name="email" id="email" class="form-control cadastro_enxadrista_input" type="text" />
+                            <div class="alert alert-warning" role="alert">
+                                <div class="form-group">
+                                    <label for="email" class="field-required">E-mail *</label>
+                                    <input name="email" id="email" class="form-control cadastro_enxadrista_input" type="text" />
+                                </div>
+                                <p><strong>IMPORTANTE!</strong> Prefira por <u>um e-mail do <strong>Gmail</strong></u>, visto que os e-mails da Microsoft (Hotmail.com, Outlook.com, Live.com e etc) possuem dificuldades para recebimento dos e-mails.</p>
 							</div>
 						</div>
 						<div class="col-md-6">
@@ -521,14 +524,14 @@
                     	<button id="cidadeNaoCadastradaEnxadrista" onclick="chamaCadastroCidade(0)" class="btn btn-success">A minha cidade não está cadastrada</button>
 					</div>
 					<div class="form-group">
-						<label for="clube_id">Clube</label>
+						<label for="clube_id">Clube/Instituição/Escola</label>
 						<select id="clube_id" name="clube_id" class="form-control this_is_select2 cadastro_enxadrista_select">
-							<option value="">--- Você pode selecionar um clube ---</option>
+							<option value="">--- Você pode selecionar um clube/instituição/escola ---</option>
 							@foreach(\App\Clube::all() as $clube)
 								<option value="{{$clube->id}}">{{$clube->cidade->estado->pais->name}}-{{$clube->cidade->estado->name}}/{{$clube->cidade->name}} - {{$clube->name}}</option>
 							@endforeach
 						</select>
-                    	<button id="clubeNaoCadastradoEnxadrista" onclick="chamaCadastroClube(0)" class="btn btn-success">O meu clube não está cadastrado</button>
+                    	<button id="clubeNaoCadastradoEnxadrista" onclick="chamaCadastroClube(0)" class="btn btn-success">O meu clube/instituição/escola não está cadastrado</button>
 					</div>
 					<div class="form-group">
 						<label><input type="checkbox" id="enxadrista_xadrezsuico_aceito"> Eu aceito o <a href="{{url("/termosdeuso")}}" target="_blank">termo de uso</a> e a <a href="{{url("/politicadeprivacidade")}}" target="_blank">política de privacidade</a> da Plataforma de Gerenciamento de Circuitos de Xadrez - XadrezSuíço - Implementada pela <u>{{env("IMPLEMENTADO_POR")}}</u>.</label>
@@ -578,14 +581,14 @@
                     <button id="cidadeNaoCadastradaInscricao" onclick="chamaCadastroCidade(2)" class="btn btn-success">A minha cidade não está cadastrada</button>
 				</div>
 				<div class="form-group">
-					<label for="clube_id">Clube</label>
+					<label for="clube_id">Clube/Instituição/Escola</label>
 					<select id="inscricao_clube_id" class="clube_id this_is_select2 form-control">
-						<option value="">--- Você pode escolher um clube ---</option>
+						<option value="">--- Você pode escolher um clube/instituição/escola ---</option>
 						@foreach(\App\Clube::all() as $clube)
 							<option value="{{$clube->id}}">{{$clube->cidade->estado->pais->name}}-{{$clube->cidade->estado->name}}/{{$clube->cidade->name}} - {{$clube->name}}</option>
 						@endforeach
 					</select>
-                    <button id="clubeNaoCadastradoInscricao" onclick="chamaCadastroClube(1)" class="btn btn-success">O meu clube não está cadastrado</button>
+                    <button id="clubeNaoCadastradoInscricao" onclick="chamaCadastroClube(1)" class="btn btn-success">O meu clube/instituição/escola não está cadastrado</button>
 				</div>
 				@foreach($evento->campos() as $campo)
 					<div class="form-group">
@@ -661,14 +664,14 @@
                     <button id="cidadeNaoCadastradaConfirmacao" onclick="chamaCadastroCidade(2)" class="btn btn-success">A minha cidade não está cadastrada</button>
 				</div>
 				<div class="form-group">
-					<label for="confirmacao_clube_id">Clube</label>
+					<label for="confirmacao_clube_id">Clube/Instituição/Escola</label>
 					<select id="confirmacao_clube_id" class="clube_id this_is_select2 form-control">
-						<option value="">--- Você pode escolher um clube ---</option>
+						<option value="">--- Você pode escolher um clube/instituição/escola ---</option>
 						@foreach(\App\Clube::all() as $clube)
 							<option value="{{$clube->id}}">{{$clube->cidade->estado->pais->name}}-{{$clube->cidade->estado->name}}/{{$clube->cidade->name}} - {{$clube->name}}</option>
 						@endforeach
 					</select>
-                    <button id="clubeNaoCadastradoInscricao" onclick="chamaCadastroClube(2)" class="btn btn-success">O meu clube não está cadastrado</button>
+                    <button id="clubeNaoCadastradoInscricao" onclick="chamaCadastroClube(2)" class="btn btn-success">O meu clube/instituição/escola não está cadastrado</button>
 				</div>
 				<div class="form-group">
 					<label><input type="checkbox" id="atualizar_cadastro_confirmacao"> Atualizar Cadastro (Cidade e Clube)</label><br/>
@@ -2456,7 +2459,7 @@
 			success: function(data){
 				if(data.ok == 1){
 					Loading.destroy();
-					$("#successMessage").html("<strong>O clube foi cadastrado com sucesso!</strong>");
+					$("#successMessage").html("<strong>O clube/instituição/escola foi cadastrado com sucesso!</strong>");
 					$("#success").modal();
 					$("#novoClube").modal('hide');
 
