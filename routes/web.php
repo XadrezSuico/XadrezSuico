@@ -50,6 +50,7 @@ Route::get('/cron', 'CronController@index')->name('cron');
 // Novas Inscrições
 Route::group(["prefix"=>"inscricao"],function(){
     Route::get('/{id}', 'InscricaoController@inscricao')->name('inscricao.inscricao');
+    Route::get('/{id}/confirmacao', 'InscricaoController@confirmacao_publica')->name('inscricao.inscricao.confirmacao');
     Route::get('/{id}/busca/enxadrista', 'InscricaoController@buscaEnxadrista')->name('inscricao.busca.enxadrista');
     Route::get('/{id}/busca/categoria', 'InscricaoController@buscaCategoria')->name('inscricao.busca.categoria');
     Route::get('/{id}/busca/cidade', 'InscricaoController@buscaCidade')->name('inscricao.busca.cidade');
@@ -63,13 +64,16 @@ Route::group(["prefix"=>"inscricao"],function(){
     Route::get('/premiados/{id}', 'InscricaoController@visualizar_premiados')->name('inscricao.visualizar.premiados');
     Route::group(["prefix"=>"v2"],function(){
         Route::get('/{id}/busca/enxadrista', 'InscricaoController@telav2_buscaEnxadrista')->name('inscricao.v2.busca.enxadrista');
+        Route::get('/{id}/busca/enxadrista/confirmacao', 'InscricaoController@telav2_buscaEnxadrista_ConfirmacaoPublica')->name('inscricao.v2.busca.enxadrista.confirmacao');
         Route::get('/{id}/busca/estado/{pais_id}', 'InscricaoController@telav2_buscaEstado')->name('inscricao.v2.busca.estado');
         Route::get('/{id}/busca/cidade/{estados_id}', 'InscricaoController@telav2_buscaCidade')->name('inscricao.v2.busca.cidade');
         Route::get('/{id}/busca/clube', 'InscricaoController@telav2_buscaClube')->name('inscricao.v2.busca.clube');
         Route::get('/{id}/enxadrista/{enxadrista_id}', 'InscricaoController@telav2_buscarDadosEnxadrista')->name('inscricao.v2.enxadrista');
         Route::post('/{id}/inscricao', 'InscricaoController@telav2_adicionarNovaInscricao')->name('inscricao.v2.enviar');
         Route::get('/{id}/inscricao/get/{inscricao_id}', 'InscricaoController@telav2_getInscricaoDados')->name('inscricao.v2.get');
+        Route::get('/{id}/inscricao/get/{inscricao_id}/public', 'InscricaoController@telav2_getInscricaoDados_ConfirmacaoPublica')->name('inscricao.v2.get.public');
         Route::post('/{id}/inscricao/confirmar', 'InscricaoController@telav2_confirmarInscricao')->name('inscricao.v2.confirmar');
+        Route::post('/{id}/inscricao/confirmar/public', 'InscricaoController@telav2_confirmarInscricao_ConfirmacaoPublica')->name('inscricao.v2.confirmar.public');
         Route::get('/{id}/inscricao/desconfirmar/{inscricao_id}', 'InscricaoController@telav2_desconfirmarInscricao')->name('inscricao.v2.desconfirmar');
         Route::post('/{id}/enxadrista/novo', 'InscricaoController@telav2_adicionarNovoEnxadrista')->name('inscricao.v2.enxadrista.novo');
         Route::get('/{id}/enxadrista/conferencia/{enxadrista_id}', 'InscricaoController@telav2_conferenciaDados')->name('inscricao.v2.enxadrista.conferencia');

@@ -396,7 +396,17 @@ class Evento extends Model
         }
     }
 
+    public function consegueCalcularRating(){
+        $retorno = false;
 
+        foreach($this->torneios->all() as $torneio){
+            if($torneio->rodadas()->count() > 0){
+                $retorno = true;
+            }
+        }
+
+        return $retorno;
+    }
 
 
     public static function countAllReceivingRegister(){
@@ -405,5 +415,56 @@ class Evento extends Model
             if(!$evento->inscricoes_encerradas()) $count++;
         }
         return $count;
+    }
+
+
+
+    public function getConfirmacoesDataInicial()
+    {
+        $datetime = DateTime::createFromFormat('Y-m-d H:i:s', $this->confirmacao_publica_inicio);
+        if ($datetime) {
+            return $datetime->format("d/m/Y H:i");
+        } else {
+            return false;
+        }
+    }
+    public function getConfirmacoesDataFim()
+    {
+        $datetime = DateTime::createFromFormat('Y-m-d H:i:s', $this->confirmacao_publica_final);
+        if ($datetime) {
+            return $datetime->format("d/m/Y H:i");
+        } else {
+            return false;
+        }
+    }
+    public function setConfirmacoesDataInicial($data)
+    {
+        $datetime = DateTime::createFromFormat('d/m/Y H:i', $data);
+        if ($datetime) {
+            $this->confirmacao_publica_inicio = $datetime->format("Y-m-d H:i:s");
+        } else {
+            $this->confirmacao_publica_inicio = null;
+        }
+    }
+    public function setConfirmacoesDataFim($data)
+    {
+        $datetime = DateTime::createFromFormat('d/m/Y H:i', $data);
+        if ($datetime) {
+            $this->confirmacao_publica_final = $datetime->format("Y-m-d H:i:s");
+        } else {
+            $this->confirmacao_publica_final = null;
+        }
+    }
+
+
+    public function estaRecebendoConfirmacaoPublica(){
+        if($this->e_permite_confirmacao_publica){
+            if($this->confirmacao_publica_inicio && $this->confirmacao_publica_final){
+                if($this->confirmacao_publica_inicio <= date("Y-m-d H:i:s") && $this->confirmacao_publica_final >= date("Y-m-d H:i:s")){
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }

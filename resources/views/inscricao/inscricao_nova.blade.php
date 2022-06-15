@@ -40,6 +40,10 @@
         .field-required{
             color: red;
         }
+
+        #successMessage a.btn-default{
+            color: green !important;
+        }
 	</style>
 @endsection
 
@@ -1707,7 +1711,8 @@
                     if(data.is_lichess_integration == 1){
                         $("#successMessage").html("<strong>Sua inscrição foi efetuada no XadrezSuíço com sucesso!</strong><hr/>");
                         $("#successMessage").html($("#successMessage").html().concat("Você receberá em no máximo 30 minutos uma mensagem no endereço de e-mail do cadastro com a confirmação do preenchimento do formulário. Proceda com a inscrição no Lichess.org:<hr/>"));
-                        $("#successMessage").html($("#successMessage").html().concat("<a href=\"").concat(data.lichess_process_link).concat("\" class=\"btn btn-lg btn-success btn-block\" target=\"_blank\">Continue sua inscrição para o Torneio do Lichess.org</a><hr/>"));
+                        $("#successMessage").html($("#successMessage").html().concat("Agora você necessita entrar no torneio do Lichess.org para poder jogar:<br/>"));
+                        $("#successMessage").html($("#successMessage").html().concat("<a href=\"").concat(data.lichess_process_link).concat("\" class=\"btn btn-lg btn-default btn-block\" target=\"_blank\"><strong>Clique aqui</strong> e continue sua inscrição para o Torneio do Lichess.org</a><hr/>"));
                         @if($evento->e_permite_visualizar_lista_inscritos_publica)
                             //$("#successMessage").html($("#successMessage").html().concat("Caso não receba o e-mail, confira na lista de inscritos (Acessível no topo desta página em 'Visualizar Lista de Inscrições') e verifique se lá consta o nome do(a) enxadrista em questão."));
                             //$("#successMessage").html($("#successMessage").html().concat("Caso não apareça, tente novamente o processo de inscrição ou entre em contato com a organização."));

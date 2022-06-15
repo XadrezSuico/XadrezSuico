@@ -85,6 +85,20 @@
 								</a>
 							@endif
                             <br/>
+                            @if($evento->e_permite_confirmacao_publica)
+                                @if($evento->e_inscricao_apenas_com_link)
+                                    <a href="{{url("/inscricao/".$evento->id."/confirmacao?token=".$evento->token)}}" class="btn btn-success btn-app">
+                                        <i class="fa fa-link"></i>
+                                        Link para Divulgação
+                                    </a>
+                                @else
+                                    <a href="{{url("/inscricao/".$evento->id)}}/confirmacao" class="btn btn-success btn-app">
+                                        <i class="fa fa-link"></i>
+                                        Link para Divulgação
+                                    </a>
+                                @endif
+                            @endif
+                            <br/>
 
                             <a href="{{url("/evento/".$evento->id."/toggleinscricoes")}}" class="btn btn-warning btn-app">
                                 @if(!$evento->is_inscricoes_bloqueadas)
@@ -176,10 +190,17 @@
                                         @endif
                                     </a>
                                     @if($evento->is_rating_calculate_enabled)
-                                        <a href="{{url("/evento/".$evento->id)}}/rating/calculate" class="btn btn-app">
-                                            <i class="fa fa-calculator"></i>
-                                            Calcular Rating
-                                        </a>
+                                        @if ($evento->consegueCalcularRating() == 0)
+                                            <button type="button" class="btn btn-app disabled" disabled>
+                                                <i class="fa fa-calculator"></i>
+                                                Calcular Rating (Não foi importado o emparceiramento)
+                                            </button>
+                                        @else
+                                            <a href="{{url("/evento/".$evento->id)}}/rating/calculate" class="btn btn-app">
+                                                <i class="fa fa-calculator"></i>
+                                                Calcular Rating
+                                            </a>
+                                        @endif
                                     @endif
                                 @endif
 
@@ -426,6 +447,20 @@
                                         <small><strong>IMPORTANTE!</strong> Essa configuração serve para caso tenha um grupo de evento que classifica para este grupo de evento.</small>
                                     </div>
                                 @endif
+                                <hr/>
+                                <div class="form-group">
+                                    <label><input type="checkbox" id="e_permite_confirmacao_publica" name="e_permite_confirmacao_publica" @if($evento->e_permite_confirmacao_publica) checked="checked" @endif @if(!\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() && !\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4]) && !\Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])) disabled="disabled" @endif > Permite Confirmação Pública</label>
+                                </div>
+								<div class="form-group">
+									<label for="confirmacao_publica_inicio">Confirmações: Data e Hora Inicial</label>
+									<input name="confirmacao_publica_inicio" id="confirmacao_publica_inicio" class="form-control" type="text" value="{{$evento->getConfirmacoesDataInicial()}}" @if(!\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() && !\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4]) && !\Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])) disabled="disabled" @endif />
+                                    <small><strong>IMPORTANTE!</strong> Os campos de Data e Hora Inicial e Data e Hora Final devem estar preenchidos para que a confirmação pública fique disponível.</small>
+                                </div>
+								<div class="form-group">
+									<label for="confirmacao_publica_final">Confirmações: Data e Hora Final</label>
+									<input name="confirmacao_publica_final" id="confirmacao_publica_final" class="form-control" type="text" value="{{$evento->getConfirmacoesDataFim()}}" @if(!\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() && !\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4]) && !\Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])) disabled="disabled" @endif />
+                                    <small><strong>IMPORTANTE!</strong> Os campos de Data e Hora Inicial e Data e Hora Final devem estar preenchidos para que a confirmação pública fique disponível.</small>
+								</div>
 							</div>
 							<!-- /.box-body -->
 
@@ -977,7 +1012,7 @@
 					@if(
 						\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
 						\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4]) ||
-					\Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])
+					    \Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])
 					)
 						<div class="box box-primary collapsed-box">
 							<div class="box-header">
@@ -1185,6 +1220,8 @@
 		$("#evento_data_inicio").mask("00/00/0000");
 		$("#evento_data_fim").mask("00/00/0000");
 		$("#evento_data_limite_inscricoes_abertas").mask("00/00/0000 00:00");
+		$("#confirmacao_publica_inicio").mask("00/00/0000 00:00");
+		$("#confirmacao_publica_final").mask("00/00/0000 00:00");
   });
 </script>
 @endsection

@@ -267,6 +267,36 @@ class EventoGerenciarController extends Controller
             $evento->grupo_evento_classificador_id = null;
         }
 
+
+        if ($request->has("e_permite_confirmacao_publica")) {
+            $evento->e_permite_confirmacao_publica = true;
+
+            if($request->has("confirmacao_publica_inicio")){
+                if($request->input("confirmacao_publica_inicio") != ""){
+                    $evento->setConfirmacoesDataInicial($request->input("confirmacao_publica_inicio"));
+                }else{
+                    $evento->confirmacao_publica_inicio = NULL;
+                }
+            }else{
+                $evento->confirmacao_publica_inicio = NULL;
+            }
+
+            if($request->has("confirmacao_publica_final")){
+                if($request->input("confirmacao_publica_final") != ""){
+                    $evento->setConfirmacoesDataFim($request->input("confirmacao_publica_final"));
+                }else{
+                    $evento->confirmacao_publica_final = NULL;
+                }
+            }else{
+                $evento->confirmacao_publica_final = NULL;
+            }
+        }else{
+            $evento->e_permite_confirmacao_publica = false;
+            $evento->confirmacao_publica_inicio = false;
+            $evento->confirmacao_publica_final = false;
+        }
+
+
         $evento->save();
 
         if ($request->has("tipo_ratings_id")) {
@@ -292,7 +322,7 @@ class EventoGerenciarController extends Controller
             }
         }
 
-        return redirect("/evento/dashboard/" . $id);
+        return redirect("/evento/dashboard/" . $id. "?tab=editar_evento");
     }
 
     public function edit_pagina_post($id, Request $request)
@@ -304,7 +334,7 @@ class EventoGerenciarController extends Controller
             !$user->hasPermissionEventByPerfil($evento->id, [4]) &&
             !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
         ) {
-            return redirect("/evento/dashboard/" . $evento->id);
+            return redirect("/evento/dashboard/" . $evento->id. "?tab=pagina");
         }
 
         $evento = Evento::find($id);

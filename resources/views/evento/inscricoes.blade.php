@@ -65,6 +65,9 @@
                                 <th>{{$campo->name}}</th>
                             @endforeach
                         @endif
+                        @if($evento->is_lichess_integration)
+                            <th>Link de Acesso</th>
+                        @endif
                     </tr>
                 </thead>
                 <tbody>
@@ -97,6 +100,19 @@
                                         <td>-</td>
                                     @endif
                                 @endforeach
+                            @endif
+                            @if($evento->is_lichess_integration)
+                                <td>
+                                    @if(!$inscricao->is_lichess_found)
+                                        <a href="{{$inscricao->getLichessProcessLink()}}" class="btn btn-sm btn-success">
+                                            <strong>Link para Inscrição no Torneio do Lichess.org - Para encaminhar para o enxadrista se inscrever.</strong>
+                                        </a>
+                                    @else
+                                        <a href="{{$evento->getLichessTournamentLink()}}" class="btn btn-sm btn-warning">
+                                            <strong>Já Está no Torneio</strong> - Link do Torneio
+                                        </a>
+                                    @endif
+                                </td>
                             @endif
                         </tr>
                     @endforeach

@@ -98,6 +98,72 @@ class InscricaoController extends Controller
             return view("inscricao.naoha");
         }
     }
+    public function confirmacao_publica($id, Request $request)
+    {
+        $evento = Evento::find($id);
+        $sexos = Sexo::all();
+        $token = "";
+        $user = Auth::user();
+        $permite_confirmacao = false;
+        if ($evento) {
+
+            if (
+                $evento->estaRecebendoConfirmacaoPublica()
+            ) {
+                $permite_confirmacao = true;
+            }
+
+
+            if ($evento->e_inscricao_apenas_com_link) {
+                if ($evento->inscricaoLiberada($request->input("token"))) {
+                    if (!$evento->estaRecebendoConfirmacaoPublica()) {
+                        if(!$user){
+                            return view("inscricao.encerradas", compact("evento"));
+                        }
+                        if (
+                            !$user->hasPermissionGlobal() &&
+                            !$user->hasPermissionEventByPerfil($evento->id, [3, 4, 5]) &&
+                            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [6,7])
+                        ) {
+                            return view("inscricao.encerradas", compact("evento"));
+                        }
+                    }
+                    $token = $request->input("token");
+
+                    $go_to_inscricao = false;
+                    if($request->has("inscrever")){
+                        $go_to_inscricao = true;
+                    }
+
+                    return view("inscricao.confirmacao_publica", compact("evento", "sexos", "token","user","permite_confirmacao","go_to_inscricao"));
+                } else {
+                    return view("inscricao.naopermitida");
+                }
+            } else {
+                if (!$evento->estaRecebendoConfirmacaoPublica()) {
+                    if(!$user){
+                        return view("inscricao.encerradas", compact("evento"));
+                    }
+                    if (
+                        !$user->hasPermissionGlobal() &&
+                        !$user->hasPermissionEventByPerfil($evento->id, [3, 4, 5]) &&
+                        !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [6,7])
+                    ) {
+                        return view("inscricao.encerradas", compact("evento"));
+                    }
+                }
+
+                $go_to_inscricao = false;
+                if($request->has("inscrever")){
+                    $go_to_inscricao = true;
+                }
+
+                return view("inscricao.confirmacao_publica", compact("evento", "sexos","user","permite_confirmacao","go_to_inscricao"));
+            }
+        } else {
+            return view("inscricao.naoha");
+        }
+    }
 
 
     public function visualizar_inscricoes($id)
@@ -1691,7 +1757,8 @@ class InscricaoController extends Controller
         $estado = new Estado;
 
         $temEstado = Estado::where([["nome", "=", mb_strtoupper($request->input("name"))],["pais_id","=",$request->input("pais_id")]])->first();
-        if (count($temEstado) > 0) {
+        $temEstado_count = Estado::where([["nome", "=", mb_strtoupper($request->input("name"))],["pais_id","=",$request->input("pais_id")]])->count();
+        if ($temEstado_count > 0) {
             return response()->json(["ok" => 0, "error" => 1, "message" => "Este estado já está cadastrado! Selecionamos ele para você.", "registred" => 1, "estados_id" => $temEstado->id, "pais_id" => $temEstado->pais->id]);
         }
 
@@ -1728,7 +1795,8 @@ class InscricaoController extends Controller
         $cidade = new Cidade;
 
         $temCidade = Cidade::where([["name", "=", mb_strtoupper($request->input("name"))],["estados_id","=",$request->input("estados_id")]])->first();
-        if (count($temCidade) > 0) {
+        $temCidade_count = Cidade::where([["name", "=", mb_strtoupper($request->input("name"))],["estados_id","=",$request->input("estados_id")]])->count();
+        if ($temCidade_count > 0) {
             return response()->json(["ok" => 0, "error" => 1, "message" => "Esta cidade já está cadastrada! Selecionamos ela para você.", "registred" => 1, "cidade_id" => $temCidade->id, "estados_id" => $temCidade->estado->id, "pais_id" => $temCidade->estado->pais->id]);
         }
 
@@ -1757,7 +1825,8 @@ class InscricaoController extends Controller
         $clube = new Clube;
 
         $temClube = Clube::where([["name", "=", mb_strtoupper($request->input("name"))], ["cidade_id", "=", $request->input("cidade_id")]])->first();
-        if (count($temClube) > 0) {
+        $temClube_count = Clube::where([["name", "=", mb_strtoupper($request->input("name"))], ["cidade_id", "=", $request->input("cidade_id")]])->count();
+        if ($temClube_count > 0) {
             return response()->json(["ok" => 0, "error" => 1, "message" => "Este clube já está cadastrado! Selecionamos ele para você.", "registred" => 1, "clube_id" => $temClube->id, "clube_nome" => $temClube->name, "cidade_nome" => $temClube->cidade->estado->pais->nome."-".$temClube->cidade->name."/".$temClube->cidade->estado->nome]);
         }
 
@@ -1915,5 +1984,268 @@ class InscricaoController extends Controller
         }
 
         return ["ok"=>1,"error"=>0];
+    }
+
+
+
+    /*
+     *
+     * FUNÇÕES DA TELA DE CONFIRMAÇÃO PÚBLICA
+     *
+     */
+
+    public function telav2_buscaEnxadrista_ConfirmacaoPublica($id,Request $request)
+    {
+        $user = Auth::user();
+        $evento = Evento::find($id);
+
+        if(!$evento->estaRecebendoConfirmacaoPublica()){
+            if (!$user) {
+                return response()->json(["ok" => 0, "error" => 1, "message" => "O evento não está recebendo ou o prazo para confirmação pública se findou.", "registred" => 0]);
+            }else if (
+                !$user->hasPermissionGlobal() &&
+                !$user->hasPermissionEventByPerfil($evento->id, [4,5]) &&
+                !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
+            ) {
+                return response()->json(["ok" => 0, "error" => 1, "message" => "O evento não está recebendo ou o prazo para confirmação pública se findou.", "registred" => 0]);
+            }
+        }
+
+        // $enxadristas = Enxadrista::where([
+        //     ["id", "like", "%" . $request->input("q") . "%"],
+        // ])
+        // ->orWhere([
+        //     ["name", "like", "%" . $request->input("q") . "%"],
+        // ])
+        // ->orWhere(function($q1) use ($request){
+        //     $q1->whereHas("documentos",function($q2) use ($request){
+        //         $q2->where([
+        //             ["numero","=",$request->input("q")]
+        //         ]);
+        //     });
+        // })->orderBy("name", "ASC")->limit(30)->get();
+
+        $inscricoes = Inscricao::whereHas("enxadrista",function($q1) use ($request){
+            $q1->where([
+                ["id", "like", "%" . $request->input("q") . "%"],
+            ])
+            ->orWhere([
+                ["name", "like", "%" . $request->input("q") . "%"],
+            ])
+            ->orWhere(function($q1) use ($request){
+                $q1->whereHas("documentos",function($q2) use ($request){
+                    $q2->where([
+                        ["numero","=",$request->input("q")]
+                    ]);
+                });
+            });
+        })
+        ->whereHas("torneio",function($q1) use ($evento){
+            $q1->where([["evento_id","=",$evento->id]]);
+        })
+        ->limit(30)->get();
+
+        $results = array();
+        foreach ($inscricoes as $inscricao) {
+            $enxadrista = $inscricao->enxadrista;
+            $rating = $enxadrista->ratingParaEvento($evento->id);
+            $item = array();
+            $item["id"] = $enxadrista->id;
+            $item["name"] = "<strong>#".$enxadrista->id." - ".$enxadrista->name . "</strong>";
+            $item["text"] = $enxadrista->getNascimentoPublico() . " | ".$enxadrista->cidade->name;
+            $item["permitida_inscricao"] = true;
+            if($enxadrista->clube){
+                $item["text"] .= " | Clube: ".$enxadrista->clube->name;
+            }
+            if ($rating) {
+                $item["text"] .= " | Rating: ".$rating;
+            }
+
+            // Inscrito - Não Confirmado
+            $item["status"] = 2;
+            $item["inscricao_id"] = $inscricao->id;
+            if($inscricao->confirmado){
+                $item["status"] = 3;
+            }
+
+            $results[] = $item;
+        }
+
+        $total = Inscricao::whereHas("enxadrista",function($q1) use ($request){
+            $q1->where([
+                ["id", "like", "%" . $request->input("q") . "%"],
+            ])
+            ->orWhere([
+                ["name", "like", "%" . $request->input("q") . "%"],
+            ])
+            ->orWhere(function($q1) use ($request){
+                $q1->whereHas("documentos",function($q2) use ($request){
+                    $q2->where([
+                        ["numero","=",$request->input("q")]
+                    ]);
+                });
+            });
+        })
+        ->whereHas("torneio",function($q1) use ($evento){
+            $q1->where([["evento_id","=",$evento->id]]);
+        })
+        ->count();
+
+        return response()->json(["results" => $results, "hasMore" => ($total > 30) ? true : false]);
+    }
+
+    public function telav2_getInscricaoDados_ConfirmacaoPublica($id, $inscricao_id)
+    {
+        $user = Auth::user();
+        $evento = Evento::find($id);
+        if(!$evento->estaRecebendoConfirmacaoPublica()){
+            if (!$user) {
+                return response()->json(["ok" => 0, "error" => 1, "message" => "O evento não está recebendo ou o prazo para confirmação pública se findou.", "registred" => 0]);
+            }else if (
+                !$user->hasPermissionGlobal() &&
+                !$user->hasPermissionEventByPerfil($evento->id, [4,5]) &&
+                !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
+            ) {
+                return response()->json(["ok" => 0, "error" => 1, "message" => "O evento não está recebendo ou o prazo para confirmação pública se findou.", "registred" => 0]);
+            }
+        }
+
+        $inscricao = Inscricao::find($inscricao_id);
+        if ($inscricao) {
+
+            $retorno = array();
+            $retorno["id"] = $inscricao->enxadrista->id;
+            $retorno["name"] = $inscricao->enxadrista->name;
+            $retorno["cbx_id"] = $inscricao->enxadrista->cbx_id;
+            $retorno["fide_id"] = $inscricao->enxadrista->fide_id;
+            $retorno["lbx_id"] = $inscricao->enxadrista->lbx_id;
+            $retorno["chess_com_username"] = $inscricao->enxadrista->chess_com_username;
+            $retorno["lichess_username"] = $inscricao->enxadrista->lichess_username;
+            $retorno["born"] = $inscricao->enxadrista->getBorn();
+            $retorno["cidade"] = array("id"=>$inscricao->cidade->id,"name"=>$inscricao->cidade->name);
+            $retorno["cidade"]["estado"] = array("id"=>$inscricao->cidade->estado->id,"name"=>$inscricao->cidade->estado->nome);
+            $retorno["cidade"]["estado"]["pais"] = array("id"=>$inscricao->cidade->estado->pais->id,"name"=>$inscricao->cidade->estado->pais->nome);
+            $retorno["clube"] = ($inscricao->clube) ? array("id"=>$inscricao->clube->id,"name"=>$inscricao->clube->name) : array("id" => 0);
+            $retorno["categoria"] = array("id"=>$inscricao->categoria->id,"name"=>$inscricao->categoria->name);
+            $retorno["categorias"] = array();
+            $categorias = $this->categoriasEnxadrista($evento,$inscricao->enxadrista);
+            if(count($categorias) == 0){
+                return response()->json(["ok" => 0, "error"=>1, "message" => "Não há categorias que você pode se inscrever neste evento."]);
+            }
+            foreach($categorias as $categoria){
+                $retorno["categorias"][] = array("id"=>$categoria->categoria->id,"name"=>$categoria->categoria->name);
+            }
+            return response()->json(["ok" => 1, "error"=>0, "data" => $retorno]);
+
+
+            // if ($inscricao->clube) {
+            //     return response()->json(["ok" => 1, "error" => 0, "enxadrista_id" => $inscricao->enxadrista->id, "cidade_id" => $inscricao->cidade->id, "categoria_id" => $inscricao->categoria->id, "clube_id" => $inscricao->clube->id]);
+            // } else {
+            //     return response()->json(["ok" => 1, "error" => 0, "enxadrista_id" => $inscricao->enxadrista->id, "cidade_id" => $inscricao->cidade->id, "categoria_id" => $inscricao->categoria->id, "clube_id" => 0]);
+            // }
+        } else {
+            return response()->json(["ok" => 0, "error" => 1, "message" => "Não há enxadrista com esse código!"]);
+        }
+    }
+
+
+    public function telav2_confirmarInscricao_ConfirmacaoPublica($id,Request $request)
+    {
+        $user = Auth::user();
+        $evento = Evento::find($id);
+        if(!$evento->estaRecebendoConfirmacaoPublica()){
+            if (!$user) {
+                return response()->json(["ok" => 0, "error" => 1, "message" => "O evento não está recebendo ou o prazo para confirmação pública se findou.", "registred" => 0]);
+            }else if (
+                !$user->hasPermissionGlobal() &&
+                !$user->hasPermissionEventByPerfil($evento->id, [4,5]) &&
+                !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
+            ) {
+                return response()->json(["ok" => 0, "error" => 1, "message" => "O evento não está recebendo ou o prazo para confirmação pública se findou.", "registred" => 0]);
+            }
+        }
+
+        if (
+            !$request->has("inscricao_id") || !$request->has("categoria_id") || !$request->has("cidade_id") || !$request->has("evento_id")
+        ) {
+            return response()->json(["ok" => 0, "error" => 1, "message" => "Um dos campos obrigatórios não está preenchido. Por favor, verifique e envie novamente!", "registred" => 0]);
+        } elseif (
+            $request->input("inscricao_id") == null || $request->input("inscricao_id") == "" ||
+            $request->input("categoria_id") == null || $request->input("categoria_id") == "" ||
+            $request->input("cidade_id") == null || $request->input("cidade_id") == "" ||
+            $request->input("evento_id") == null || $request->input("evento_id") == ""
+        ) {
+            return response()->json(["ok" => 0, "error" => 1, "message" => "Um dos campos obrigatórios não está preenchido. Por favor, verifique e envie novamente!"]);
+        } elseif (
+            !$request->has("categoria_conferida")
+        ) {
+            return response()->json(["ok" => 0, "error" => 1, "message" => "Você deve verificar a categoria e marcar o campo 'Categoria conferida'.", "registred" => 0]);
+        }
+
+        $inscricao = Inscricao::find($request->input("inscricao_id"));
+        if (!$inscricao) {
+            return response()->json(["ok" => 0, "error" => 1, "message" => "Não existe um inscrição com o código informado!"]);
+        }
+        if ($inscricao->confirmado) {
+            return response()->json(["ok" => 0, "error" => 1, "message" => "A inscrição já está confirmada!"]);
+        }
+        $enxadrista = $inscricao->enxadrista;
+        $torneio = null;
+        if ($request->input("categoria_id") != $inscricao->categoria_id) {
+            $evento = Evento::find($request->input("evento_id"));
+
+            foreach ($evento->torneios->all() as $Torneio) {
+                foreach ($Torneio->categorias->all() as $categoria) {
+                    if ($categoria->categoria_id == $request->input("categoria_id")) {
+                        $torneio = $Torneio;
+                    }
+                }
+            }
+            if (!$torneio) {
+                return response()->json(["ok" => 0, "error" => 1, "message" => "Ocorreu um erro inesperado de pesquisa de Torneio. Por favor, tente novamente mais tarde."]);
+            }
+
+            $categoria = Categoria::find($request->input("categoria_id"));
+            if ($categoria) {
+                if ($categoria->idade_minima) {
+                    if (!($categoria->idade_minima <= $enxadrista->howOldForEvento($evento->getYear()))) {
+                        return response()->json(["ok" => 0, "error" => 1, "message" => "Você não está apto a participar da categoria que você enviou! Motivo: Não possui idade mínima."]);
+                    }
+                }
+                if ($categoria->idade_maxima) {
+                    if (!($categoria->idade_maxima >= $enxadrista->howOldForEvento($evento->getYear()))) {
+                        return response()->json(["ok" => 0, "error" => 1, "message" => "Você não está apto a participar da categoria que você enviou! Motivo: Idade ultrapassa a máxima."]);
+                    }
+                }
+            }
+            $inscricao->categoria_id = $categoria->id;
+            $inscricao->torneio_id = $torneio->id;
+        }
+
+        if ($inscricao->cidade_id != $request->input("cidade_id")) {
+            $inscricao->cidade_id = $request->input("cidade_id");
+        }
+
+        if ($inscricao->clube_id != $request->input("clube_id")) {
+            if ($request->has("clube_id")) {
+                if ($request->input("clube_id") > 0) {
+                    $inscricao->clube_id = $request->input("clube_id");
+                }
+            }
+        }
+
+        $inscricao->confirmado = true;
+        $inscricao->regulamento_aceito = true;
+        $inscricao->save();
+
+        if ($inscricao->id > 0) {
+            if ($inscricao->confirmado) {
+                return response()->json(["ok" => 1, "error" => 0, "updated" => 0, "confirmed" => 1]);
+            } else {
+                return response()->json(["ok" => 1, "error" => 0, "updated" => 0, "confirmed" => 0]);
+            }
+        } else {
+            return response()->json(["ok" => 0, "error" => 1, "message" => "Um erro inesperado aconteceu. Por favor, tente novamente mais tarde.", "updated" => 0]);
+        }
     }
 }

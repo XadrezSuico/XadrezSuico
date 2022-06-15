@@ -26,6 +26,7 @@
 <!-- Main row -->
 <ul class="nav nav-pills">
   <li role="presentation"><a href="/inscricao/{{$evento->id}}">Voltar ao Formulário de Nova Inscrição</a></li>
+  @if($evento->estaRecebendoConfirmacaoPublica()) <li role="presentation"><a href="/inscricao/{{$evento->id}}/confirmacao">Voltar ao Formulário de Confirmação</a></li> @endif
 </ul>
 <div class="row">
   <!-- Left col -->
@@ -92,6 +93,7 @@
                     <tr>
                         <th>Código Enxadrista</th>
                         <th>Nome do Enxadrista</th>
+                        @if($evento->data_inicio <= date("Y-m-d")) <th>Confirmado?</th> @endif
                         <th>Data de Nascimento</th>
                         @if($evento->is_lichess_integration)
                             <th>Usuário Lichess.org</th>
@@ -124,6 +126,7 @@
                         <tr>
                             <td>{{$inscricao->enxadrista->id}}</td>
                             <td>{{$inscricao->enxadrista->getNomePublico()}}</td>
+                            @if($evento->data_inicio <= date("Y-m-d")) <td> @if($inscricao->confirmado) Sim @endif </td> @endif
                             <td>{{$inscricao->enxadrista->getNascimentoPublico()}}</td>
                             @if($evento->is_lichess_integration)
                                 <td>@if($inscricao->lichess_username) {{$inscricao->lichess_username}} @else - @endif</td>
