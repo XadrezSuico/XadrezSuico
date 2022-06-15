@@ -2025,7 +2025,10 @@ class InscricaoController extends Controller
         //     });
         // })->orderBy("name", "ASC")->limit(30)->get();
 
-        $inscricoes = Inscricao::whereHas("enxadrista",function($q1) use ($request){
+        $inscricoes = Inscricao::
+        select('inscricao.*')
+        ->join('enxadrista', 'enxadrista.id', '=', 'inscricao.enxadrista_id')
+        ->whereHas("enxadrista",function($q1) use ($request){
             $q1->where([
                 ["id", "like", "%" . $request->input("q") . "%"],
             ])
@@ -2043,7 +2046,9 @@ class InscricaoController extends Controller
         ->whereHas("torneio",function($q1) use ($evento){
             $q1->where([["evento_id","=",$evento->id]]);
         })
-        ->limit(30)->get();
+        ->orderBy("name", "ASC")
+        ->limit(30)
+        ->get();
 
         $results = array();
         foreach ($inscricoes as $inscricao) {
