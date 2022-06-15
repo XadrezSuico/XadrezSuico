@@ -292,8 +292,8 @@ class EventoGerenciarController extends Controller
             }
         }else{
             $evento->e_permite_confirmacao_publica = false;
-            $evento->confirmacao_publica_inicio = false;
-            $evento->confirmacao_publica_final = false;
+            $evento->confirmacao_publica_inicio = NULL;
+            $evento->confirmacao_publica_final = NULL;
         }
 
 
