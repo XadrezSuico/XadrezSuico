@@ -88,13 +88,13 @@
                             @if($evento->e_permite_confirmacao_publica)
                                 @if($evento->e_inscricao_apenas_com_link)
                                     <a href="{{url("/inscricao/".$evento->id."/confirmacao?token=".$evento->token)}}" class="btn btn-success btn-app">
-                                        <i class="fa fa-link"></i>
-                                        Link para Divulgação
+                                        <i class="fa fa-check"></i>
+                                        Link para Confirmação Pública
                                     </a>
                                 @else
                                     <a href="{{url("/inscricao/".$evento->id)}}/confirmacao" class="btn btn-success btn-app">
-                                        <i class="fa fa-link"></i>
-                                        Link para Divulgação
+                                        <i class="fa fa-check"></i>
+                                        Link para Confirmação Pública
                                     </a>
                                 @endif
                             @endif
