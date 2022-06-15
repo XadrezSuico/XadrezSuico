@@ -58,6 +58,19 @@ CLARO! Faça um fork do projeto e nos ajude a deixar esse projeto ainda com aind
 -----
 
 ## O que há de novo?
+### Versão 0.1.0.1 Beta
+ - Agora o cálculo de rating é efetuado pelo XadrezSuíço. Para tal, o evento deve calcular o rating e estar vinculado com o Tipo de Rating que é gerenciado pelo XadrezSuíço, e além de importar os resultados, deve-se importar os emparceiramentos com os seus devidos resultados. Além disso, deve-se atentar aos W.O.s para que não seja efetuado o cálculo erroneamente - Issue #54.
+ - Em toda inscrição há um campo onde o(a) enxadrista cede seus direitos de imagem para a organização - Issue #47.
+ - Há forma de criar emparceiramento de chave de semi-final/final sem disputa de 3º e 4º - #42.
+ - Nova tela onde engloba tanto a inscrição quanto a confirmação - Issue #35.
+ - Criada verificação se no cadastro do enxadrista falta alguma informação obrigatória para aquele evento, caso falte, encaminha o enxadrista para atualização cadastral - #34.
+ - Criado cadastro de documento, a fim de que ocorra menor quantidade de duplicidades de cadastros no sistema - #32.
+ - Adicionado o país de nascimento do enxadrista, necessário para poder aparecer os documentos disponíveis para aquele país - #33.
+ - Adicionado o código IBGE no cadastro de Cidade - #31.
+ - Melhoria na validação de documentos - #46.
+ - Implementado a confirmação pública - #55.
+ - Diversas outras melhorias e correções de bugs.
+
 ### Versão 0.1.0.0 Beta
  - As versões anteriores deixam de serem compatíveis com as versões a partir da 0.1.0.0, sendo necessária uma instalação limpa do sistema a fim de ter o seu uso.
  - Categorias: As categorias agora estão vinculadas ao Grupo de Evento ou Evento, e para poder gerenciá-las, é necessário acessar a Dashboard de onde ela foi cadastrada, seja no Grupo de Evento ou então no Evento.
