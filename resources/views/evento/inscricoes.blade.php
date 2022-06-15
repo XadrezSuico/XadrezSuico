@@ -55,6 +55,10 @@
                         <th>Categoria Inscrição</th>
                         <th>Cidade</th>
                         <th>Clube</th>
+                        @if($evento->tipo_rating)
+                            <th>Rating</th>
+                            <th>Possui rating?</th>
+                        @endif
                         <th>Inscrição Inicial</th>
                         <th>Posição</th>
 				    	@foreach($evento->campos() as $campo)
@@ -83,6 +87,10 @@
                             <td>{{$inscricao->categoria->name}}</td>
                             <td>{{$inscricao->getCidade()}}</td>
                             <td>@if($inscricao->clube) {{$inscricao->clube->name}} @else - @endif</td>
+                            @if($evento->tipo_rating)
+                                <td>{{$inscricao->enxadrista->ratingParaEvento($evento->id,true)}}</td>
+                                <td>@if($inscricao->enxadrista->hasRatingParaEvento($evento->id)) Sim @endif</td>
+                            @endif
                             <td>@if($inscricao->from) {{$inscricao->from->id}} @else - @endif</td>
                             <td>@if($inscricao->from) @if($inscricao->from->posicao) {{$inscricao->from->posicao}} @else - @endif @else - @endif</td>
                             @foreach($evento->campos() as $campo)
