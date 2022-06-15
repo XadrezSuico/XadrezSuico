@@ -133,6 +133,107 @@ class RatingController extends Controller
                                         $emparceiramento->rating_b_final = $emparceiramento->rating_b + $emparceiramento->rating_b_mov;
 
                                         $emparceiramento->save();
+                                    }else{
+                                        if($emparceiramento->rating_a){
+                                            $emparceiramento->rating_a_if_win = 0;
+                                            $emparceiramento->rating_a_if_drw = 0;
+                                            $emparceiramento->rating_a_if_los = 0;
+                                            $emparceiramento->rating_a_mov = 0;
+                                            $emparceiramento->rating_a_final = $emparceiramento->rating_a;
+                                        }
+                                        if($emparceiramento->rating_b){
+                                            $emparceiramento->rating_b_if_win = 0;
+                                            $emparceiramento->rating_b_if_drw = 0;
+                                            $emparceiramento->rating_b_if_los = 0;
+                                            $emparceiramento->rating_b_mov = 0;
+                                            $emparceiramento->rating_b_final = $emparceiramento->rating_b;
+                                        }
+                                        $emparceiramento->save();
+                                    }
+                                }else{
+                                    if($emparceiramento->inscricao_a){
+                                        if($rodada->numero == 1){
+                                            $ratingdia_a = $rating_dia_controller->getRatingDia($tipo_rating->id, $emparceiramento->inscricao_A->enxadrista->id,date("Y-m-d",strtotime($evento->data_inicio) - (60*60*24)));
+
+                                            $emparceiramento->rating_a = $ratingdia_a->value;
+
+                                            // print_r($emparceiramento);
+                                        }else{
+                                            $rodada_ant_num = $rodada->numero;
+
+                                            while($rodada_ant_num > 1 && !$emparceiramento->rating_a){
+                                                $rodada_ant_num--;
+
+                                                // TO DO BUSCAR RATING DA ÚLTIMA RODADA
+                                                $rodada_anterior = $torneio->rodadas()->where([["numero","=",$rodada_ant_num]])->first();
+                                                if(!$emparceiramento->rating_a){
+                                                    $emparceiramento_a_rodada_anterior = $rodada_anterior
+                                                        ->emparceiramentos()
+                                                        ->where(function($q1) use ($emparceiramento){
+                                                            $q1->where([["inscricao_a","=",$emparceiramento->inscricao_a]]);
+                                                            $q1->orWhere([["inscricao_b","=",$emparceiramento->inscricao_a]]);
+                                                        })
+                                                        ->where([["rodadas_id","=",$rodada_anterior->id]])
+                                                        ->first();
+                                                    // print_r($emparceiramento_a_rodada_anterior);
+                                                    if($emparceiramento_a_rodada_anterior){
+                                                        if($emparceiramento->inscricao_a == $emparceiramento_a_rodada_anterior->inscricao_a){
+                                                            $emparceiramento->rating_a = $emparceiramento_a_rodada_anterior->rating_a_final;
+                                                        }else{
+                                                            $emparceiramento->rating_a = $emparceiramento_a_rodada_anterior->rating_b_final;
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        if($emparceiramento->rating_a){
+                                            $emparceiramento->rating_a_if_win = 0;
+                                            $emparceiramento->rating_a_if_drw = 0;
+                                            $emparceiramento->rating_a_if_los = 0;
+                                            $emparceiramento->rating_a_mov = 0;
+                                            $emparceiramento->rating_a_final = $emparceiramento->rating_a;
+                                        }
+                                        $emparceiramento->save();
+                                    }
+
+                                    if($emparceiramento->inscricao_b){
+                                        if($rodada->numero == 1){
+                                            $ratingdia_b = $rating_dia_controller->getRatingDia($tipo_rating->id, $emparceiramento->inscricao_B->enxadrista->id,date("Y-m-d",strtotime($evento->data_inicio) - (60*60*24)));
+
+                                            $emparceiramento->rating_b = $ratingdia_b->value;
+                                        }else{
+                                            $rodada_ant_num = $rodada->numero;
+
+                                            while($rodada_ant_num > 1 && !$emparceiramento->rating_b){
+                                                $rodada_ant_num--;
+
+                                                if(!$emparceiramento->rating_b){
+                                                    $emparceiramento_b_rodada_anterior = $rodada_anterior
+                                                        ->emparceiramentos()
+                                                        ->where(function($q1) use ($emparceiramento){
+                                                            $q1->where([["inscricao_a","=",$emparceiramento->inscricao_b]]);
+                                                            $q1->orWhere([["inscricao_b","=",$emparceiramento->inscricao_b]]);
+                                                        })
+                                                        ->where([["rodadas_id","=",$rodada_anterior->id]])
+                                                        ->first();
+                                                    if($emparceiramento_b_rodada_anterior){
+                                                        if($emparceiramento->inscricao_b == $emparceiramento_b_rodada_anterior->inscricao_a){
+                                                            $emparceiramento->rating_b = $emparceiramento_b_rodada_anterior->rating_a_final;
+                                                        }else{
+                                                            $emparceiramento->rating_b = $emparceiramento_b_rodada_anterior->rating_b_final;
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        if($emparceiramento->rating_b){
+                                            $emparceiramento->rating_b_if_win = 0;
+                                            $emparceiramento->rating_b_if_drw = 0;
+                                            $emparceiramento->rating_b_if_los = 0;
+                                            $emparceiramento->rating_b_mov = 0;
+                                            $emparceiramento->rating_b_final = $emparceiramento->rating_b;
+                                        }
+                                        $emparceiramento->save();
                                     }
                                 }
                             }
