@@ -1048,6 +1048,12 @@ class InscricaoController extends Controller
         $enxadrista->pais_id = $request->input("pais_nascimento_id");
         $enxadrista->pais_celular_id = $request->input("pais_celular_id");
         $enxadrista->celular = $request->input("celular");
+        $enxadrista->cidade_id = $request->input("cidade_id");
+        if ($request->has("clube_id")) {
+            if ($request->input("clube_id") > 0) {
+                $enxadrista->clube_id = $request->input("clube_id");
+            }
+        }
         if ($request->has("cbx_id")) {
             if ($request->input("cbx_id") > 0) {
                 $enxadrista->cbx_id = $request->input("cbx_id");
@@ -1094,12 +1100,6 @@ class InscricaoController extends Controller
                 }else{
                     return response()->json(["ok" => 0, "error" => 1, "message" => "O usuário do Lichess.org não existe. Por favor, verifique esta informação e tente novamente. Lembrando que esta informação DEVE SER válida e deve corresponder ao seu cadastro!", "registred" => 0, "ask" => 0]);
                 }
-            }
-        }
-        $enxadrista->cidade_id = $request->input("cidade_id");
-        if ($request->has("clube_id")) {
-            if ($request->input("clube_id") > 0) {
-                $enxadrista->clube_id = $request->input("clube_id");
             }
         }
         $enxadrista->last_cadastral_update = date("Y-m-d H:i:s");
@@ -2242,6 +2242,16 @@ class InscricaoController extends Controller
         $inscricao->confirmado = true;
         $inscricao->regulamento_aceito = true;
         $inscricao->save();
+
+
+        if ($inscricao->enxadrista->email) {
+            EmailController::schedule(
+                $inscricao->enxadrista->email,
+                $inscricao,
+                EmailType::InscricaoConfirmada,
+                $inscricao->enxadrista
+            );
+        }
 
         if ($inscricao->id > 0) {
             if ($inscricao->confirmado) {

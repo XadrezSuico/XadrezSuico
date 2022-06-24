@@ -24,6 +24,9 @@ class EmailTemplateHelper
             case EmailType::AvisoNecessidadeInscricaoLichess:
                 return $this->generateAvisoNecessidadeInscricaoLichess($object);
                 break;
+            case EmailType::InscricaoConfirmada:
+                return $this->generateInscricaoConfirmada($object);
+                break;
         }
     }
 
@@ -87,6 +90,25 @@ class EmailTemplateHelper
             }else{
                 // Busca Template de E-mail Geral
                 $email_template = EmailTemplate::where([["email_type","=",EmailType::AvisoNecessidadeInscricaoLichess]])->whereNull("evento_id")->whereNull("grupo_evento_id")->first();
+            }
+        $email_template->subject = $this->fillInscricaoFields($email_template->subject,$inscricao);
+        $email_template->message = $this->fillInscricaoFields($email_template->message,$inscricao);
+
+        return $email_template;
+    }
+
+    private function generateInscricaoConfirmada($inscricao){
+        $email_template = NULL;
+        // Busca Template de E-mail no Evento
+        if($inscricao->torneio->evento->email_templates()->where([["email_type","=",EmailType::InscricaoConfirmada]])->count() > 0){
+            $email_template = $inscricao->torneio->evento->email_templates()->where([["email_type","=",EmailType::InscricaoConfirmada]])->first();
+        }else
+            // Busca Template de E-mail no Grupo de Evento
+            if($inscricao->torneio->evento->grupo_evento->email_templates()->where([["email_type","=",EmailType::InscricaoConfirmada]])->count() > 0){
+                $email_template = $inscricao->torneio->grupo_evento->email_templates()->where([["email_type","=",EmailType::InscricaoConfirmada]])->first();
+            }else{
+                // Busca Template de E-mail Geral
+                $email_template = EmailTemplate::where([["email_type","=",EmailType::InscricaoConfirmada]])->whereNull("evento_id")->whereNull("grupo_evento_id")->first();
             }
         $email_template->subject = $this->fillInscricaoFields($email_template->subject,$inscricao);
         $email_template->message = $this->fillInscricaoFields($email_template->message,$inscricao);
