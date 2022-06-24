@@ -504,7 +504,8 @@
 				$("#enxadrista").css("display","none");
 				$("#inscricao").css("display","none");
 				$("#confirmacao").css("display","");
-                $("#confirmacao_categoria_conferida").prop("checked","");
+                $("#confirmacao_categoria_conferida").removeAttr('checked');
+                $("#confirmacao_categoria_conferida").prop("checked",false);
 
 				if(callback_on_ok){
 					callback_on_ok();
