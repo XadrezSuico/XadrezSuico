@@ -224,36 +224,41 @@ class InscricaoController extends Controller
                 return response()->json(["ok" => 0, "error" => 1, "message" => "O evento não permite edição de inscrição."]);
             }
 
-            if($request->has("categoria_id")){
-                if($request->input("categoria_id") > 0){
-                    $categoria = $request->input("categoria_id");
-                    $is_found = false;
+            if($inscricao->categoria->is_changeable){
+                if($request->has("categoria_id")){
+                    if($request->input("categoria_id") > 0){
+                        $categoria = $request->input("categoria_id");
+                        $is_found = false;
 
-                    foreach($this->categoriasEnxadrista($inscricao->torneio->evento,$inscricao->enxadrista) as $categoria_possivel){
-                        if($categoria_possivel->categoria->id == $categoria){
-                            $is_found = true;
-                        }
-                    }
-                    if(!$is_found){
-                        return response()->json(["ok" => 0, "error" => 1, "message" => "O enxadrista não pode jogar nesta categoria."]);
-                    }
-
-                    if ($inscricao->categoria_id != $request->input("categoria_id")) {
-                        $inscricao->categoria_id = $request->input("categoria_id");
-
-                        $torneio = null;
-
-                        foreach ($inscricao->torneio->evento->torneios->all() as $Torneio) {
-                            foreach ($Torneio->categorias->all() as $categoria) {
-                                if ($categoria->categoria_id == $request->input("categoria_id")) {
-                                    $torneio = $Torneio;
-                                }
+                        foreach($this->categoriasEnxadrista($inscricao->torneio->evento,$inscricao->enxadrista) as $categoria_possivel){
+                            if($categoria_possivel->categoria->id == $categoria){
+                                $is_found = true;
                             }
                         }
-                        $inscricao->torneio_id = $torneio->id;
+                        if($inscricao->categoria->id == $categoria){
+                            $is_found = true;
+                        }
+                        if(!$is_found){
+                            return response()->json(["ok" => 0, "error" => 1, "message" => "O enxadrista não pode jogar nesta categoria."]);
+                        }
+
+                        if ($inscricao->categoria_id != $request->input("categoria_id")) {
+                            $inscricao->categoria_id = $request->input("categoria_id");
+
+                            $torneio = null;
+
+                            foreach ($inscricao->torneio->evento->torneios->all() as $Torneio) {
+                                foreach ($Torneio->categorias->all() as $categoria) {
+                                    if ($categoria->categoria_id == $request->input("categoria_id")) {
+                                        $torneio = $Torneio;
+                                    }
+                                }
+                            }
+                            $inscricao->torneio_id = $torneio->id;
+
+                        }
 
                     }
-
                 }
             }
             if($request->has("cidade_id")){
@@ -1850,45 +1855,55 @@ class InscricaoController extends Controller
      *
      *
      */
-    public function categoriasEnxadrista($evento, $enxadrista)
+    public function categoriasEnxadrista($evento, $enxadrista, $is_user_with_permission = false)
     {
-        $categorias = $evento->categorias()->whereHas("categoria", function ($q1) use ($enxadrista, $evento) {
+        if(
+            Auth::user()->hasPermissionGlobal() ||
+            Auth::user()->hasPermissionEventByPerfil($evento->id,[3,4]) ||
+            Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[6])
+        ){
+            $is_user_with_permission = true;
+        }
+        $categorias = $evento->categorias()->whereHas("categoria", function ($q1) use ($enxadrista, $evento, $is_user_with_permission) {
             $q1->where(function ($q2) use ($enxadrista, $evento) {
-                    $q2->where(function ($q3) use ($enxadrista, $evento) {
+                $q2->where(function ($q3) use ($enxadrista, $evento) {
+                    $q3->where([["idade_minima", "<=", $enxadrista->howOldForEvento($evento->getYear())]]);
+                    $q3->where([["idade_maxima", ">=", $enxadrista->howOldForEvento($evento->getYear())]]);
+                })
+                    ->orWhere(function ($q3) use ($enxadrista, $evento) {
                         $q3->where([["idade_minima", "<=", $enxadrista->howOldForEvento($evento->getYear())]]);
+                        $q3->where([["idade_maxima", "=", null]]);
+                    })
+                    ->orWhere(function ($q3) use ($enxadrista, $evento) {
+                        $q3->where([["idade_minima", "=", null]]);
                         $q3->where([["idade_maxima", ">=", $enxadrista->howOldForEvento($evento->getYear())]]);
                     })
-                        ->orWhere(function ($q3) use ($enxadrista, $evento) {
-                            $q3->where([["idade_minima", "<=", $enxadrista->howOldForEvento($evento->getYear())]]);
-                            $q3->where([["idade_maxima", "=", null]]);
-                        })
-                        ->orWhere(function ($q3) use ($enxadrista, $evento) {
-                            $q3->where([["idade_minima", "=", null]]);
-                            $q3->where([["idade_maxima", ">=", $enxadrista->howOldForEvento($evento->getYear())]]);
-                        })
-                        ->orWhere(function ($q3) {
-                            $q3->where([["idade_minima", "=", null]]);
-                            $q3->where([["idade_maxima", "=", null]]);
-                        });
-                })
-                ->where(function ($q2) use ($enxadrista) {
-                    $q2->where(function ($q3) use ($enxadrista) {
-                        if ($enxadrista->sexos_id) {
-                            $q3->where(function ($q4) use ($enxadrista) {
-                                $q4->whereHas("sexos", function ($q5) use ($enxadrista) {
-                                    $q5->where([["sexos_id", "=", $enxadrista->sexos_id]]);
-                                });
-                            });
-                            $q3->orWhere(function ($q4) {
-                                $q4->doesntHave("sexos");
-                            });
-                        } else {
-                            $q3->whereDoesntHave("sexos");
-                        }
+                    ->orWhere(function ($q3) {
+                        $q3->where([["idade_minima", "=", null]]);
+                        $q3->where([["idade_maxima", "=", null]]);
                     });
+            })
+            ->where(function ($q2) use ($enxadrista) {
+                $q2->where(function ($q3) use ($enxadrista) {
+                    if ($enxadrista->sexos_id) {
+                        $q3->where(function ($q4) use ($enxadrista) {
+                            $q4->whereHas("sexos", function ($q5) use ($enxadrista) {
+                                $q5->where([["sexos_id", "=", $enxadrista->sexos_id]]);
+                            });
+                        });
+                        $q3->orWhere(function ($q4) {
+                            $q4->doesntHave("sexos");
+                        });
+                    } else {
+                        $q3->whereDoesntHave("sexos");
+                    }
                 });
+            });
+            if(!$is_user_with_permission){
+                $q1->where([["is_private","=",false]]);
+            }
         })
-            ->get();
+        ->get();
         // echo ($categorias); exit();
         $results = array();
         foreach ($categorias as $categoria) {
@@ -2131,14 +2146,18 @@ class InscricaoController extends Controller
             $retorno["cidade"]["estado"] = array("id"=>$inscricao->cidade->estado->id,"name"=>$inscricao->cidade->estado->nome);
             $retorno["cidade"]["estado"]["pais"] = array("id"=>$inscricao->cidade->estado->pais->id,"name"=>$inscricao->cidade->estado->pais->nome);
             $retorno["clube"] = ($inscricao->clube) ? array("id"=>$inscricao->clube->id,"name"=>$inscricao->clube->name) : array("id" => 0);
-            $retorno["categoria"] = array("id"=>$inscricao->categoria->id,"name"=>$inscricao->categoria->name);
+            $retorno["categoria"] = array("id"=>$inscricao->categoria->id,"name"=>$inscricao->categoria->name,"is_changeable"=>$inscricao->categoria->is_changeable);
             $retorno["categorias"] = array();
             $categorias = $this->categoriasEnxadrista($evento,$inscricao->enxadrista);
             if(count($categorias) == 0){
                 return response()->json(["ok" => 0, "error"=>1, "message" => "Não há categorias que você pode se inscrever neste evento."]);
             }
-            foreach($categorias as $categoria){
-                $retorno["categorias"][] = array("id"=>$categoria->categoria->id,"name"=>$categoria->categoria->name);
+            if($inscricao->categoria->is_changeable){
+                foreach ($categorias as $categoria) {
+                    $retorno["categorias"][] = array("id" => $categoria->categoria->id, "name" => $categoria->categoria->name);
+                }
+            }else{
+                $retorno["categorias"][] = array("id" => $inscricao->categoria->id, "name" => $inscricao->categoria->name);
             }
             return response()->json(["ok" => 1, "error"=>0, "data" => $retorno]);
 
@@ -2196,35 +2215,37 @@ class InscricaoController extends Controller
         }
         $enxadrista = $inscricao->enxadrista;
         $torneio = null;
-        if ($request->input("categoria_id") != $inscricao->categoria_id) {
-            $evento = Evento::find($request->input("evento_id"));
+        if($inscricao->categoria->is_changeable){
+            if ($request->input("categoria_id") != $inscricao->categoria_id) {
+                $evento = Evento::find($request->input("evento_id"));
 
-            foreach ($evento->torneios->all() as $Torneio) {
-                foreach ($Torneio->categorias->all() as $categoria) {
-                    if ($categoria->categoria_id == $request->input("categoria_id")) {
-                        $torneio = $Torneio;
+                foreach ($evento->torneios->all() as $Torneio) {
+                    foreach ($Torneio->categorias->all() as $categoria) {
+                        if ($categoria->categoria_id == $request->input("categoria_id")) {
+                            $torneio = $Torneio;
+                        }
                     }
                 }
-            }
-            if (!$torneio) {
-                return response()->json(["ok" => 0, "error" => 1, "message" => "Ocorreu um erro inesperado de pesquisa de Torneio. Por favor, tente novamente mais tarde."]);
-            }
+                if (!$torneio) {
+                    return response()->json(["ok" => 0, "error" => 1, "message" => "Ocorreu um erro inesperado de pesquisa de Torneio. Por favor, tente novamente mais tarde."]);
+                }
 
-            $categoria = Categoria::find($request->input("categoria_id"));
-            if ($categoria) {
-                if ($categoria->idade_minima) {
-                    if (!($categoria->idade_minima <= $enxadrista->howOldForEvento($evento->getYear()))) {
-                        return response()->json(["ok" => 0, "error" => 1, "message" => "Você não está apto a participar da categoria que você enviou! Motivo: Não possui idade mínima."]);
+                $categoria = Categoria::find($request->input("categoria_id"));
+                if ($categoria) {
+                    if ($categoria->idade_minima) {
+                        if (!($categoria->idade_minima <= $enxadrista->howOldForEvento($evento->getYear()))) {
+                            return response()->json(["ok" => 0, "error" => 1, "message" => "Você não está apto a participar da categoria que você enviou! Motivo: Não possui idade mínima."]);
+                        }
+                    }
+                    if ($categoria->idade_maxima) {
+                        if (!($categoria->idade_maxima >= $enxadrista->howOldForEvento($evento->getYear()))) {
+                            return response()->json(["ok" => 0, "error" => 1, "message" => "Você não está apto a participar da categoria que você enviou! Motivo: Idade ultrapassa a máxima."]);
+                        }
                     }
                 }
-                if ($categoria->idade_maxima) {
-                    if (!($categoria->idade_maxima >= $enxadrista->howOldForEvento($evento->getYear()))) {
-                        return response()->json(["ok" => 0, "error" => 1, "message" => "Você não está apto a participar da categoria que você enviou! Motivo: Idade ultrapassa a máxima."]);
-                    }
-                }
+                $inscricao->categoria_id = $categoria->id;
+                $inscricao->torneio_id = $torneio->id;
             }
-            $inscricao->categoria_id = $categoria->id;
-            $inscricao->torneio_id = $torneio->id;
         }
 
         if ($inscricao->cidade_id != $request->input("cidade_id")) {
