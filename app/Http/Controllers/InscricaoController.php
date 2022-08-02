@@ -1857,12 +1857,14 @@ class InscricaoController extends Controller
      */
     public function categoriasEnxadrista($evento, $enxadrista, $is_user_with_permission = false)
     {
-        if(
-            Auth::user()->hasPermissionGlobal() ||
-            Auth::user()->hasPermissionEventByPerfil($evento->id,[3,4]) ||
-            Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[6])
-        ){
-            $is_user_with_permission = true;
+        if(Auth::check()){
+            if(
+                Auth::user()->hasPermissionGlobal() ||
+                Auth::user()->hasPermissionEventByPerfil($evento->id,[3,4]) ||
+                Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[6])
+            ){
+                $is_user_with_permission = true;
+            }
         }
         $categorias = $evento->categorias()->whereHas("categoria", function ($q1) use ($enxadrista, $evento, $is_user_with_permission) {
             $q1->where(function ($q2) use ($enxadrista, $evento) {
