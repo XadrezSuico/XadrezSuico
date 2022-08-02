@@ -83,7 +83,7 @@
             <hr/>
             <div class="form-group">
                 <label for="inscricao_categoria_id" class="field-required">Categoria *</label>
-                <select id="inscricao_categoria_id" class="this_is_select2 form-control" disabled>
+                <select id="inscricao_categoria_id" class="this_is_select2 form-control" @if(!$inscricao->categoria->is_changeable) disabled @endif >
                     @if($inscricao->categoria->is_changeable)
                         <option value="">--- Selecione ---</option>
                         @foreach($categorias as $categoria)
