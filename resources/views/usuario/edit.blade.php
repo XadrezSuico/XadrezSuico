@@ -32,7 +32,7 @@
 									<span class="help-block">
 											<strong>{{ $errors->first('name') }}</strong>
 									</span>
-							@endif						
+							@endif
 						</div>
 						<div class="form-group {{ $errors->has('email') ? ' has-error' : '' }}">
 							<label for="email">Email</label>
@@ -60,22 +60,25 @@
 							<label for="perfils_id">Perfil</label>
 							<select class="form-control" name="perfils_id" id="perfils_id">
 								<option value=""> --- Selecione ---</option>
-								@if(\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobalbyPerfil([1])) 
+								@if(\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobalbyPerfil([1]))
 									<option value="1">1 - Super-Administrador</option>
 									<option value="2">2 - Administrador</option>
 								@endif
-								@if(\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() || \Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventsByPerfil([7]))) 
+								@if(\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() || \Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventsByPerfil([7])))
 									<option value="3">3 - Diretor de Torneio</option>
 									<option value="4">4 - Árbitro Mesa</option>
 									<option value="5">5 - Árbitro de Confirmação</option>
 									<option value="6">6 - Diretor de Grupo de Evento</option>
 									<option value="7">7 - Administrador de Grupo de Evento</option>
 								@endif
-								@if(\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobalbyPerfil([1])) 
+								@if(\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobalbyPerfil([1]))
 									<option value="8">8 - Coordenador de Cadastro de Cidades e Clubes</option>
 									<option value="9">9 - Coordenador de Enxadristas</option>
+                                    @if(env("ENTITY_DOMAIN",null) == "fexpar.com.br")
+									    <option value="10">10 - FEXPAR - Gestor de Vínculos Federativos</option>
+                                    @endif
 								@endif
-							</select>						
+							</select>
 						</div>
 						<div class="form-group" id="grupo_evento" style="display: none">
 							<label for="grupo_evento_id">Grupo de Evento</label>
@@ -86,7 +89,7 @@
 										<option value="{{$grupo_evento->id}}">{{$grupo_evento->id}} - {{$grupo_evento->name}}</option>
 									@endif
 								@endforeach
-							</select>						
+							</select>
 						</div>
 						<div class="form-group" id="evento" style="display: none">
 							<label for="evento_id">Evento</label>
@@ -97,7 +100,7 @@
 										<option value="{{$evento->id}}">{{$evento->id}} - {{$evento->name}}</option>
 									@endif
 								@endforeach
-							</select>						
+							</select>
 						</div>
 						<button type="submit" class="btn btn-success">Enviar</button>
 						<input type="hidden" name="_token" value="{{ csrf_token() }}">
@@ -181,7 +184,7 @@
 		$("#grupo_evento_id").select2();
 		$("#evento_id").select2();
 
-		$("#perfils_id").on('select2:select',function(){			
+		$("#perfils_id").on('select2:select',function(){
 			// if(!$("#grupo_evento").css('display') == 'none'){
 				$("#grupo_evento").hide(100);
 			// }

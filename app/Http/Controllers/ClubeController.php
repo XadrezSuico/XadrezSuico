@@ -42,6 +42,12 @@ class ClubeController extends Controller
         $clube = new Clube;
         $clube->name = $request->input("name");
         $clube->cidade_id = $request->input("cidade_id");
+
+        if(env("ENTITY_DOMAIN",null) == "fexpar.com.br"){
+            $clube->is_fexpar___clube_filiado = $request->has("is_fexpar___clube_filiado");
+            $clube->is_fexpar___clube_valido_vinculo_federativo = $request->has("is_fexpar___clube_valido_vinculo_federativo");
+        }
+
         $clube->save();
         return redirect("/clube/edit/" . $clube->id);
     }
@@ -66,6 +72,11 @@ class ClubeController extends Controller
         $clube = Clube::find($id);
         $clube->name = $request->input("name");
         $clube->cidade_id = $request->input("cidade_id");
+
+        if(env("ENTITY_DOMAIN",null) == "fexpar.com.br"){
+            $clube->is_fexpar___clube_filiado = $request->has("is_fexpar___clube_filiado");
+            $clube->is_fexpar___clube_valido_vinculo_federativo = $request->has("is_fexpar___clube_valido_vinculo_federativo");
+        }
         $clube->save();
         return redirect("/clube/edit/" . $clube->id);
     }

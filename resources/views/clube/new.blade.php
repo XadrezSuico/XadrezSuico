@@ -43,6 +43,14 @@
 							@endforeach
 						</select>
 					</div>
+                    @if(env("ENTITY_DOMAIN",null) == "fexpar.com.br")
+                        <div class="form-group">
+                            <label><input type="checkbox" name="is_fexpar___clube_filiado" /></label>
+                        </div>
+                        <div class="form-group">
+                            <label><input type="checkbox" name="is_fexpar___clube_valido_vinculo_federativo" /></label>
+                        </div>
+                    @endif
 				</div>
 			<!-- /.box-body -->
 

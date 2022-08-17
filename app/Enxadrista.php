@@ -63,6 +63,10 @@ class Enxadrista extends Model
     {
         return $this->hasMany("App\EnxadristaCriterioDesempateGeral", "enxadrista_id", "id");
     }
+    public function vinculos()
+    {
+        return $this->hasMany("App\Vinculo", "enxadrista_id", "id");
+    }
 
     public function isDeletavel()
     {
