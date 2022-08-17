@@ -441,7 +441,12 @@ Route::get('/termosdeuso', function () {
 
 Route::group(["prefix"=>"install"],function(){
     Route::get('/migrate', 'InstallController@migrate')->name('install.migrate');
+    Route::group(["prefix" => "vinculos"], function () {
+        Route::get('/pre_vinculate', 'InstallController@vinculos_pre_vinculate')->name('install.vinculos.pre_vinculate');
+        Route::get('/vinculate', 'InstallController@vinculos_vinculate')->name('install.vinculos.vinculate');
+    });
 });
+
 
 Route::group(["prefix" => "especiais"], function () {
     Route::group(["prefix" => "fexpar"], function () {

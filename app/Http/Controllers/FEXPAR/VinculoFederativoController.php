@@ -15,10 +15,6 @@ use Auth;
 
 class VinculoFederativoController extends Controller
 {
-    public function __construct()
-    {
-        return $this->middleware("auth");
-    }
     public function vinculos(){
         if(env("ENTITY_DOMAIN",NULL) == "fexpar.com.br"){
             $vinculos = Vinculo::where([

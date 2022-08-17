@@ -16,6 +16,7 @@
     <div class="box">
         <div class="box-body">
             <h3>Vínculo <strong>#{{$vinculo_consulta->vinculo->uuid}}</strong></h3>
+            <h4><strong>Ano:</strong> {{$vinculo_consulta->ano}}</h4>
             <hr/>
             <h4>Enxadrista:</h4>
             <h5><strong>Nome:</strong> {{$vinculo_consulta->enxadrista->name}}</h5>
@@ -24,8 +25,8 @@
             <h5><strong>ID FIDE:</strong> {{$vinculo_consulta->enxadrista->fide_id}}</h5>
             <hr/>
             <h4>Vínculo:</h4>
-            <h5><strong>Cidade:</strong> {{$vinculo_consulta->enxadrista->cidade->name}}</h5>
-            <h5><strong>Clube:</strong> {{$vinculo_consulta->enxadrista->cidade->clube}}</h5>
+            <h5><strong>Cidade:</strong> {{$vinculo_consulta->cidade->name}}</h5>
+            <h5><strong>Clube:</strong> {{$vinculo_consulta->clube->name}}</h5>
             <hr/>
             <h4>Dados:</h4>
             <h5><strong>Tipo de Vínculo:</strong> {{$vinculo_consulta->getVinculoType()}}</h5>
