@@ -102,4 +102,21 @@ class VinculoFederativoController extends Controller
         }
         return abort(404);
     }
+
+
+    public function qrcode($uuid){
+        if(env("ENTITY_DOMAIN",NULL) == "fexpar.com.br"){
+            if(VinculoConsulta::where([
+                ["uuid","=",$uuid],
+            ])
+            ->count() > 0){
+                $vinculo_consulta = VinculoConsulta::where([
+                    ["uuid","=",$uuid],
+                ])
+                ->first();
+                return $vinculo_consulta->getQrCode();
+            }
+        }
+        return abort(404);
+    }
 }

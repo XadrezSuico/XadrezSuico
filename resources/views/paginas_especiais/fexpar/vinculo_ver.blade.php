@@ -49,8 +49,8 @@
             Consulta realizada em {{$vinculo_consulta->getCreatedAt()}} através do IP {{$vinculo_consulta->ip}} e ficou registrada pelo código #{{$vinculo_consulta->uuid}}.<br/>
             Por questões de segurança, seu IP e a data e hora de acesso foram registradas à esta consulta.
             <hr/>
-            Acesso à esta consulta:
-
+            <h4>Acesso à esta consulta:</h4>
+            {!!$vinculo_consulta->getQrCode()!!}
         </div>
     </div>
 @endsection

@@ -8,6 +8,9 @@ use Illuminate\Support\Str;
 
 use DateTime;
 
+use QrCode;
+
+
 class VinculoConsulta extends Model
 {
     use LogsActivity;
@@ -59,5 +62,10 @@ class VinculoConsulta extends Model
         }else{
             return "SEM VÍNCULO";
         }
+    }
+
+
+    public function getQrCode(){
+        return QrCode::size(150)->generate(url("/especiais/fexpar/vinculos/consulta/".$this->uuid));
     }
 }
