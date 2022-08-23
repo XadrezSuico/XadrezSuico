@@ -296,6 +296,9 @@ Route::group(["prefix"=>"clube"],function(){
 	Route::get('/edit/{id}', 'ClubeController@edit')->name('clube.edit');
 	Route::post('/edit/{id}', 'ClubeController@edit_post')->name('clube.edit.post');
 	Route::get('/delete/{id}', 'ClubeController@delete')->name('clube.delete');
+
+    Route::get('/union/{clube_id}', 'ClubeController@union')->name('clube.union');
+    Route::post('/union/{clube_id}', 'ClubeController@union_post')->name('clube.union.post');
 });
 
 Route::group(["prefix"=>"enxadrista"],function(){

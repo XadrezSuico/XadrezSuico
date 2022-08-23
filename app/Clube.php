@@ -34,12 +34,18 @@ class Clube extends Model
         return $this->hasMany("App\Inscricao", "clube_id", "id");
     }
 
+    public function vinculos()
+    {
+        return $this->hasMany("App\Vinculo", "clube_id", "id");
+    }
+
     public function isDeletavel()
     {
         if ($this->id != null) {
             if (
                 $this->enxadristas()->count() > 0 ||
-                $this->inscricoes()->count() > 0
+                $this->inscricoes()->count() > 0 ||
+                $this->vinculos()->count() > 0
             ) {
                 return false;
             }
@@ -52,5 +58,28 @@ class Clube extends Model
     public function getName()
     {
         return mb_strtoupper($this->name);
+    }
+
+    public function getPlace()
+    {
+        $retorno = "";
+        if($this->cidade){
+            $cidade = $this->cidade->name;
+            if($this->cidade->estado){
+                if($this->cidade->estado->pais){
+                    if($this->cidade->estado->pais->codigo_iso){
+                        $retorno .= $this->cidade->estado->pais->codigo_iso . " - ";
+                    }else{
+                        $retorno .= $this->cidade->estado->pais->name . " - ";
+                    }
+                }
+                if($this->cidade->estado->abbr){
+                    $retorno .= $cidade. "/" .$this->cidade->estado->abbr;
+                }else{
+                    $retorno .= $cidade. "/" .$this->cidade->estado->name;
+                }
+            }
+        }
+        return mb_strtoupper($retorno);
     }
 }

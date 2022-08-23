@@ -36,6 +36,8 @@
                             <td>
                                 <a class="btn btn-default" href="{{url("/clube/edit/".$clube->id)}}" role="button">Editar</a>
                                 @if($clube->isDeletavel()) <a class="btn btn-danger" href="{{url("/clube/delete/".$clube->id)}}" role="button">Apagar</a> @endif
+                                <hr/>
+                                <a class="btn btn-warning" href="{{url("/clube/union/".$clube->id)}}" role="button">Unir para Este Clube</a>
                             </td>
                         </tr>
                     @endforeach

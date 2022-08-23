@@ -95,4 +95,64 @@ class ClubeController extends Controller
         return redirect("/clube");
     }
 
+
+    public function union($id)
+    {
+        $user = Auth::user();
+        if (!$user->hasPermissionGlobalbyPerfil([1, 2, 8])) {
+            return redirect("/clube");
+        }
+
+        $clube_base = Clube::find($id);
+        $clubes = Clube::where([["id", "!=", $id]])->get();
+        return view('clube.union', compact("clube_base", "clubes"));
+    }
+    public function union_post($id, Request $request)
+    {
+        if (!$request->has("clube_a_ser_unido")) {
+            return redirect()->back();
+        } elseif ($request->input("clube_a_ser_unido") == "") {
+            return redirect()->back();
+        }
+
+        $user = Auth::user();
+        if (!$user->hasPermissionGlobalbyPerfil([1, 2, 8])) {
+            return redirect("/clube");
+        }
+
+        $clube_base = Clube::find($id);
+        $clube_a_ser_unido = Clube::find($request->input("clube_a_ser_unido"));
+
+        if ($clube_base && $clube_a_ser_unido) {
+
+            activity("club_union")
+            ->causedBy(Auth::user())
+            ->performedOn($clube_a_ser_unido)
+            ->withProperties(['clube_base' => $clube_base,"clube_a_ser_unido"=>$clube_a_ser_unido])
+            ->log('Unificação de Clube realizada.');
+
+
+            foreach($clube_a_ser_unido->inscricoes->all() as $inscricao){
+                $inscricao->clube_id = $clube_base->id;
+                $inscricao->save();
+            }
+
+            foreach($clube_a_ser_unido->enxadristas->all() as $enxadrista){
+                $enxadrista->clube_id = $clube_base->id;
+                $enxadrista->save();
+            }
+
+            foreach($clube_a_ser_unido->vinculos->all() as $vinculo){
+                $vinculo->clube_id = $clube_base->id;
+                $vinculo->save();
+            }
+
+            $clube_a_ser_unido->delete();
+
+            return redirect("/clube");
+        }
+
+        return redirect()->back();
+    }
+
 }
