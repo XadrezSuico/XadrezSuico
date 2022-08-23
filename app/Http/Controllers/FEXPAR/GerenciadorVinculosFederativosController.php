@@ -22,7 +22,7 @@ class GerenciadorVinculosFederativosController extends Controller
                 return view("_fexpar.vinculos.index",compact("enxadristas"));
             }
         }
-        return abort(404);
+        return abort(403);
     }
 
 

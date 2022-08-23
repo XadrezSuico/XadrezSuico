@@ -450,6 +450,13 @@ Route::group(["prefix"=>"install"],function(){
     });
 });
 
+Route::group(["prefix" => "fexpar"], function () {
+    Route::group(["prefix" => "vinculos"], function () {
+        Route::get('/', 'FEXPAR\GerenciadorVinculosFederativosController@index')->name('fexpar.vinculos.index');
+        Route::get('/api/searchList', 'FEXPAR\GerenciadorVinculosFederativosController@searchEnxadristasList')->name('fexpar.vinculos.api.list');
+    });
+});
+
 
 Route::group(["prefix" => "especiais"], function () {
     Route::group(["prefix" => "fexpar"], function () {
@@ -458,12 +465,6 @@ Route::group(["prefix" => "especiais"], function () {
         Route::get('/vinculos/consulta/{uuid}', 'FEXPAR\VinculoFederativoController@consulta')->name('especiais.fexpar.consulta');
         Route::get('/vinculos/qrcode/{uuid}', 'FEXPAR\VinculoFederativoController@qrcode')->name('especiais.fexpar.qrcode');
         Route::get('/todos_enxadristas', 'FEXPAR\ListaEnxadristasController@todos')->name('especiais.fexpar.todos');
-    });
-});
-Route::group(["prefix" => "fexpar"], function () {
-    Route::group(["prefix" => "vinculos"], function () {
-        Route::get('/', 'FEXPAR\GerenciadorVinculosFederativosController@index')->name('fexpar.vinculos.index');
-	    Route::get('/api/searchList', 'FEXPAR\GerenciadorVinculosFederativosController@searchEnxadristasList')->name('fexpar.vinculos.api.list');
     });
 });
 
