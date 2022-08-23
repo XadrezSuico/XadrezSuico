@@ -68,15 +68,15 @@ class Clube extends Model
             if($this->cidade->estado){
                 if($this->cidade->estado->pais){
                     if($this->cidade->estado->pais->codigo_iso){
-                        $retorno .= $this->cidade->estado->pais->codigo_iso . " - ";
+                        $retorno .= trim($this->cidade->estado->pais->codigo_iso) . " - ";
                     }else{
-                        $retorno .= $this->cidade->estado->pais->name . " - ";
+                        $retorno .= trim($this->cidade->estado->pais->name) . " - ";
                     }
                 }
                 if($this->cidade->estado->abbr){
-                    $retorno .= $cidade. "/" .$this->cidade->estado->abbr;
+                    $retorno .= trim($cidade). "/" .trim($this->cidade->estado->abbr);
                 }else{
-                    $retorno .= $cidade. "/" .$this->cidade->estado->name;
+                    $retorno .= trim($cidade). "/" .trim($this->cidade->estado->name);
                 }
             }
         }
