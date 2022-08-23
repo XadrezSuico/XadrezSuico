@@ -82,11 +82,8 @@ class VinculoFederativoController extends Controller
         ->get();
 
         foreach($enxadristas as $enxadrista){
-            Log::debug("1");
             if($enxadrista->vinculos()->where([["ano","=",date("Y")],["is_confirmed_manually","=",true]])->count() == 0){
-                Log::debug("2");
                 if($enxadrista->vinculos()->where([["ano","=",date("Y")]])->count() == 0){
-                    Log::debug("3");
                     $vinculo = new Vinculo;
                     $vinculo->ano = date("Y");
                     $vinculo->enxadrista_id = $enxadrista->id;

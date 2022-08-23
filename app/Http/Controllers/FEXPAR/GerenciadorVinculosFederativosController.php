@@ -121,21 +121,44 @@ class GerenciadorVinculosFederativosController extends Controller
                 $p[6] = "Não possui clube";
             }
 
-            $p[7] = "";
-            if($enxadrista->vinculos()->where([["ano","=",2022]])->count() > 0){
-                if($enxadrista->vinculos()->where([["ano","=",2022],["is_confirmed_system","=",true]])->count() > 0){
-                    $p[7] = "<strong>Sim</strong> - Vínculo <strong>AUTOMÁTICO</strong>";
-                }else{
-                    $p[7] = "<strong>Sim</strong> - Vínculo Manual";
-                }
-            }else{
-                $p[7] = "Não";
-            }
-
             $p[8] = "";
             if ($permitido_edicao) {
                 $p[8] .= '<a href="' . url("/enxadrista/edit/" . $enxadrista->id) . '" title="Editar Enxadrista: ' . $enxadrista->id . ' ' . $enxadrista->name . '" class="btn btn-success btn-sm" data-toggle="tooltip" data-original-title="Editar Enxadrista"><i class="fa fa-edit"></i></a> ';
                 $p[8] .= '<a href="' . url("/fexpar/vinculos/" . $enxadrista->id ."/edit") . '" title="Gerenciar Vínculo: ' . $enxadrista->id . ' ' . $enxadrista->name . '" class="btn btn-warning btn-sm" data-toggle="tooltip" data-original-title="Gerenciar Vínculo"><i class="fa fa-anchor"></i></a>';
+            }
+
+            $p[7] = "";
+            if($enxadrista
+                ->vinculos()
+                ->where([["ano","=",date("Y")]])
+                ->where(function($q1){
+                    $q1->where([["is_confirmed_system","=",true]])
+                    ->orWhere([["is_confirmed_manually","=",true]]);
+                })
+                ->count() > 0){
+
+                $vinculo = $enxadrista
+                        ->vinculos()
+                        ->where([["ano","=",date("Y")]])
+                        ->where(function($q1){
+                            $q1->where([["is_confirmed_system","=",true]])
+                            ->orWhere([["is_confirmed_manually","=",true]]);
+                        })->first();
+
+                if($vinculo->is_confirmed_system){
+                    $p[7] = "<strong>Sim</strong> - Vínculo <strong>AUTOMÁTICO</strong>";
+                }else{
+                    $p[7] = "<strong>Sim</strong> - Vínculo <strong>MANUAL</strong>";
+                }
+
+                $p[5] .= "<hr/>Vinculo por: <strong>#".$vinculo->cidade->id." - ".$vinculo->cidade->name."</strong>";
+                $p[6] .= "<hr/>Vinculo por: <strong>#".$vinculo->clube->id." - ".$vinculo->clube->name."</strong>";
+
+                $p[8] .= '<hr/><a href="' . url("/especiais/fexpar/vinculos/" . $vinculo->uuid) . '" title="Visualização Pública do Vínculo: ' . $enxadrista->id . ' ' . $enxadrista->name . '" class="btn btn-warning btn-sm" data-toggle="tooltip" data-original-title="Visualização Pública Vínculo" target="_blank"><i class="fa fa-eye"></i></a>';
+            }elseif($enxadrista->vinculos()->where([["ano","=",date("Y")],["is_confirmed_system","=",false],["is_confirmed_manually","=",false]])->count() > 0){
+                $p[7] = "<strong>Pré-vinculado</strong>";
+            }else{
+                $p[7] = "Não";
             }
 
             $retorno["data"][] = $p;
