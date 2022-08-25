@@ -180,7 +180,13 @@
 											<th>#</th>
 											<th>Nome</th>
 											<th>Período</th>
-											<th>Status</th>
+                                            @if(
+                                                \Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
+                                                \Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4,5]) ||
+                                                \Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])
+                                            )
+											    <th>Status</th>
+                                            @endif
 											<th>Local</th>
 											<th>Inscritos</th>
 											<th width="20%">Opções</th>
@@ -203,34 +209,40 @@
                                                             {{$evento->getDataInicio()}}<br/>{{$evento->getDataFim()}}
                                                         @endif
                                                     </td>
-                                                    <td>
-                                                        @if($evento->estaRecebendoConfirmacaoPublica())
-                                                            <strong>Recebendo</strong> Inscrições
-                                                        @else
-                                                            Inscrições Encerradas e/ou Bloqueadas
-                                                        @endif
-                                                        <hr/>
-
-                                                        @if($evento->classificavel)
-                                                            @if($evento->consegueCalcularClassificacaoGeral())
-                                                                <strong>Apto</strong> para Classificação Geral
+                                                    @if(
+                                                        \Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
+                                                        \Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4,5]) ||
+                                                        \Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])
+                                                    )
+                                                        <td>
+                                                            @if($evento->estaRecebendoConfirmacaoPublica())
+                                                                <strong>Recebendo</strong> Inscrições
                                                             @else
-                                                                Não Liberado para Classificação Geral - Há Torneios não importados.
-                                                            @endif
-                                                        @else
-                                                            Não Liberado para Classificação Geral - Não está liberado para cálculo da classificação geral.
-                                                        @endif
-                                                        <hr/>
-
-                                                        @if($evento->tipo_rating)
-                                                            @if($evento->consegueCalcularRating())
-                                                                <strong>Apto</strong> para Cálculo de Rating
-                                                            @else
-                                                                Inapto para Cálculo de Rating - Falta importar emparceiramentos
+                                                                Inscrições Encerradas e/ou Bloqueadas
                                                             @endif
                                                             <hr/>
-                                                        @endif
-                                                    </td>
+
+                                                            @if($evento->classificavel)
+                                                                @if($evento->consegueCalcularClassificacaoGeral())
+                                                                    <strong>Apto</strong> para Classificação Geral
+                                                                @else
+                                                                    Não Liberado para Classificação Geral - Há Torneios não importados.
+                                                                @endif
+                                                            @else
+                                                                Não Liberado para Classificação Geral - Não está liberado para cálculo da classificação geral.
+                                                            @endif
+                                                            <hr/>
+
+                                                            @if($evento->tipo_rating)
+                                                                @if($evento->consegueCalcularRating())
+                                                                    <strong>Apto</strong> para Cálculo de Rating
+                                                                @else
+                                                                    Inapto para Cálculo de Rating - Falta importar emparceiramentos
+                                                                @endif
+                                                                <hr/>
+                                                            @endif
+                                                        </td>
+                                                    @endif
 													<td>{{$evento->cidade->getName()}} <br/> {{$evento->local}}</td>
 													<td>
                                                         Total de Inscritos: {{$evento->quantosInscritos()}}<br/>

@@ -412,7 +412,7 @@ class Evento extends Model
         $retorno = true;
 
         foreach($this->torneios->all() as $torneio){
-            if($torneio->getIsResultadosImportados()){
+            if(!$torneio->getIsResultadosImportados()){
                 $retorno = false;
             }
         }
