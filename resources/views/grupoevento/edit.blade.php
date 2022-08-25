@@ -180,6 +180,7 @@
 											<th>#</th>
 											<th>Nome</th>
 											<th>Período</th>
+											<th>Status</th>
 											<th>Local</th>
 											<th>Inscritos</th>
 											<th width="20%">Opções</th>
@@ -200,6 +201,34 @@
                                                             {{$evento->getDataInicio()}}
                                                         @else
                                                             {{$evento->getDataInicio()}}<br/>{{$evento->getDataFim()}}
+                                                        @endif
+                                                    </td>
+                                                    <td>
+                                                        @if($evento->estaRecebendoConfirmacaoPublica())
+                                                            <strong>Recebendo</strong> Inscrições
+                                                        @else
+                                                            Inscrições Encerradas e/ou Bloqueadas
+                                                        @endif
+                                                        <hr/>
+
+                                                        @if($evento->classificavel)
+                                                            @if($evento->consegueCalcularClassificacaoGeral())
+                                                                <strong>Apto</strong> para Classificação Geral
+                                                            @else
+                                                                Não Liberado para Classificação Geral - Há Torneios não importados.
+                                                            @endif
+                                                        @else
+                                                            Não Liberado para Classificação Geral - Não está liberado para cálculo da classificação geral.
+                                                        @endif
+                                                        <hr/>
+
+                                                        @if($evento->tipo_rating)
+                                                            @if($evento->consegueCalcularRating())
+                                                                <strong>Apto</strong> para Cálculo de Rating
+                                                            @else
+                                                                Inapto para Cálculo de Rating - Falta importar emparceiramentos
+                                                            @endif
+                                                            <hr/>
                                                         @endif
                                                     </td>
 													<td>{{$evento->cidade->getName()}} <br/> {{$evento->local}}</td>

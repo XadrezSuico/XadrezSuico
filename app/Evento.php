@@ -408,6 +408,18 @@ class Evento extends Model
         return $retorno;
     }
 
+    public function consegueCalcularClassificacaoGeral(){
+        $retorno = true;
+
+        foreach($this->torneios->all() as $torneio){
+            if($torneio->getIsResultadosImportados()){
+                $retorno = false;
+            }
+        }
+
+        return $retorno;
+    }
+
 
     public static function countAllReceivingRegister(){
         $count = 0;
