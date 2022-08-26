@@ -20,7 +20,8 @@
                 <li>Possuem cadastro com CPF e RG;</li>
                 <li>Possuem vínculo de cidade em alguma cidade do Paraná em seu cadastro de Enxadrista;</li>
                 <li>Possuem vínculo de clube em alguma entidade apta para Vínculo do Paraná em seu cadastro de Enxadrista;</li>
-                <li>Jogou algum evento registrado pelo sistema XadrezSuíço entre 01 de Janeiro de {{date("Y")}} e 31 de Dezembro de {{date("Y")}}.</li>
+                <li>Para vínculo manual, que o mesmo faça o pedido conforme regulamento publicado em página específica no site <a href="http://fexpar.com.br" target="_blank">http://fexpar.com.br</a>.</li>
+                <li>Para vínculo automático, jogou algum evento registrado pelo sistema XadrezSuíço entre 01 de Janeiro de {{date("Y")}} e 31 de Dezembro de {{date("Y")}} pelo clube filiado que está vinculado ao seu cadastro de enxadrista.</li>
             </ol>
             <p></p>
             <hr/>

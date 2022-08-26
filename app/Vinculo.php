@@ -38,6 +38,10 @@ class Vinculo extends Model
         return $this->belongsTo("App\Clube","clube_id","id");
     }
 
+    public function consultas(){
+        return $this->hasMany("App\VinculoConsulta","vinculos_id","id");
+    }
+
     public function getCreatedAt()
     {
         $datetime = DateTime::createFromFormat('Y-m-d H:i:s', $this->created_at);
