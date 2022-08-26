@@ -677,4 +677,21 @@ class Enxadrista extends Model
         }
         return $this->inscricoes()->where([["clube_id","=",$clube_id]])->get();
     }
+
+
+    public function getClubePublico(){
+        if($this->last_cadastral_update > "2022-01-01 00:00:00"){
+            return $this->clube->name;
+        }else{
+            if(env("ENTITY_DOMAIN",NULL) == "fexpar.com.br"){
+                if($this->clube->is_fexpar___clube_filiado){
+                    return $this->clube->name;
+                }
+            }
+            if($this->howOld() >= 18){
+                return $this->clube->name;
+            }
+            return "-- Clube Não Liberado para Esta Lista --";
+        }
+    }
 }
