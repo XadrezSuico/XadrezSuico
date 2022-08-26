@@ -309,15 +309,15 @@ class GerenciadorVinculosFederativosController extends Controller
                     $p[7] = "<strong>Sim</strong> - Vínculo <strong>MANUAL</strong>";
                 }
 
-                $p[5] .= "<hr/>Vinculo por: <strong>#".$vinculo->cidade->id." - ".$vinculo->cidade->name."</strong>";
-                $p[6] .= "<hr/>Vinculo por: <strong>#".$vinculo->clube->id." - ".$vinculo->clube->name."</strong>";
+                $p[5] .= "<hr/>Vínculo por: <strong>#".$vinculo->cidade->id." - ".$vinculo->cidade->name."</strong>";
+                $p[6] .= "<hr/>Vínculo por: <strong>#".$vinculo->clube->id." - ".$vinculo->clube->name."</strong>";
 
                 $p[8] .= '<hr/><a href="' . url("/especiais/fexpar/vinculos/" . $vinculo->uuid) . '" title="Visualização Pública do Vínculo: ' . $enxadrista->id . ' ' . $enxadrista->name . '" class="btn btn-warning btn-sm" data-toggle="tooltip" data-original-title="Visualização Pública Vínculo" target="_blank"><i class="fa fa-eye"></i></a>';
             }elseif($enxadrista->vinculos()->where([["ano","=",date("Y")],["is_confirmed_system","=",false],["is_confirmed_manually","=",false]])->count() > 0){
                 $pre_vinculo = $enxadrista->vinculos()->where([["ano","=",date("Y")],["is_confirmed_system","=",false],["is_confirmed_manually","=",false]])->first();
                 $p[7] = "<strong>Pré-vinculado</strong>";
-                $p[5] .= "<hr/>Pré-Vinculo por: <strong>#".$pre_vinculo->cidade->id." - ".$pre_vinculo->cidade->name."</strong>";
-                $p[6] .= "<hr/>Pré-Vinculo por: <strong>#".$pre_vinculo->clube->id." - ".$pre_vinculo->clube->name."</strong>";
+                $p[5] .= "<hr/>Pré-Vínculo por: <strong>#".$pre_vinculo->cidade->id." - ".$pre_vinculo->cidade->name."</strong>";
+                $p[6] .= "<hr/>Pré-Vínculo por: <strong>#".$pre_vinculo->clube->id." - ".$pre_vinculo->clube->name."</strong>";
             }else{
                 $p[7] = "Não";
             }

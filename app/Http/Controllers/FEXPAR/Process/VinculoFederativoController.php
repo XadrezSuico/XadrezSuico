@@ -130,7 +130,7 @@ class VinculoFederativoController extends Controller
                 $vinculo->save();
                 activity()
                 ->performedOn($vinculo)
-                ->log('Vinculo confirmado automaticamente.');
+                ->log('Vínculo confirmado automaticamente.');
 
             }else{
                 $vinculo->is_confirmed_system = false;

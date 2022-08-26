@@ -1,9 +1,9 @@
 @extends('adminlte::page')
 
-@section('title', "Vinculos Federativos para ".date("Y")." (Consulta em ".date("d/m/Y H:i:s")." - Link: ".url("/especiais/fexpar/vinculos").")")
+@section('title', "Vínculos Federativos para ".date("Y")." (Consulta em ".date("d/m/Y H:i:s")." - Link: ".url("/especiais/fexpar/vinculos").")")
 
 @section('content_header')
-    <h1>Vinculos Federativos para {{date("Y")}}</h1>
+    <h1>Vínculos Federativos para {{date("Y")}}</h1>
 @stop
 
 @section('content')
@@ -19,7 +19,7 @@
             <ol>
                 <li>Possuem cadastro com CPF e RG;</li>
                 <li>Possuem vínculo de cidade em alguma cidade do Paraná em seu cadastro de Enxadrista;</li>
-                <li>Possuem vínculo de clube em alguma entidade do Paraná em seu cadastro de Enxadrista;</li>
+                <li>Possuem vínculo de clube em alguma entidade apta para Vínculo do Paraná em seu cadastro de Enxadrista;</li>
                 <li>Jogou algum evento registrado pelo sistema XadrezSuíço entre 01 de Janeiro de {{date("Y")}} e 31 de Dezembro de {{date("Y")}}.</li>
             </ol>
             <p></p>

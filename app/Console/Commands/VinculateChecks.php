@@ -20,7 +20,7 @@ class VinculateChecks extends Command
      *
      * @var string
      */
-    protected $description = 'Efetua os processos dos vinculos';
+    protected $description = 'Efetua os processos dos vínculos';
 
     /**
      * Create a new command instance.

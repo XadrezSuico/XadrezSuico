@@ -232,20 +232,20 @@
                 <li><strong>{enxadrista.pais.iso}</strong> - <a href="https://www.sport-histoire.fr/pt/Geografia/Codigos_ISO_Paises.php" target="_blank">Código ISO</a> do País</li>
             </ul>
 
-            <h3>Cidade de Vinculo do Enxadrista</h3>
+            <h3>Cidade de Vínculo do Enxadrista</h3>
             <ul>
                 <li><strong>{enxadrista.cidade.id}</strong> - ID da Cidade</li>
                 <li><strong>{enxadrista.cidade.name}</strong> - Nome da Cidade</li>
             </ul>
 
-            <h3>Estado da Cidade de Vinculo do Enxadrista</h3>
+            <h3>Estado da Cidade de Vínculo do Enxadrista</h3>
             <ul>
                 <li><strong>{enxadrista.cidade.estado.id}</strong> - ID do Estado</li>
                 <li><strong>{enxadrista.cidade.estado.name}</strong> - Nome do Estado</li>
                 <li><strong>{enxadrista.cidade.estado.uf}</strong> - UF do Estado</li>
             </ul>
 
-            <h3>País do Estado da Cidade de Vinculo do Enxadrista</h3>
+            <h3>País do Estado da Cidade de Vínculo do Enxadrista</h3>
             <ul>
                 <li><strong>{enxadrista.cidade.estado.pais.id}</strong> - ID do País</li>
                 <li><strong>{enxadrista.cidade.estado.pais.name}</strong> - Nome do País</li>

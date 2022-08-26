@@ -42,11 +42,11 @@
     $(document).ready(function(){
         $("#tabela").DataTable({
             responsive: true,
-            pageLength: 50,
+            pageLength: 10,
             processing: true,
             serverSide: true,
             searchDelay: 500,
-            ajax: '{{url("/especiais/fexpar/todos_enxadristas/api/searchList")}}',
+            ajax: '{{url("/especiais/fexpar/todos_enxadristas/searchList")}}',
             language: {
                 "decimal":        "",
                 "emptyTable":     "Não há dados na tabela",

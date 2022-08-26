@@ -817,7 +817,7 @@
 														@if($categoria->categoria->evento_id)
 															Evento: #{{$categoria->categoria->evento->id}} - {{$categoria->categoria->evento->name}}
 														@else
-															Estou Confuso. Não há vinculo.
+															Estou Confuso. Não há vínculo.
 														@endif
 													@endif
 												</td>

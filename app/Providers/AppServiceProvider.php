@@ -105,8 +105,10 @@ class AppServiceProvider extends ServiceProvider
                         'icon' => 'users'
                     ]);
                 };
-                if(env("ENTITY_DOMAIN",NULL) == "fexpar.com.br"){
-                    $event->menu->add("FEXPAR");
+            }
+            if(env("ENTITY_DOMAIN",NULL) == "fexpar.com.br"){
+                $event->menu->add("FEXPAR");
+                if(Auth::check()){
                     if(
                         $user->hasPermissionGlobalByPerfil([10])
                     ){
@@ -115,8 +117,20 @@ class AppServiceProvider extends ServiceProvider
                             'url'  => '/fexpar/vinculos',
                             'icon' => 'id-card'
                         ]);
-                    };
+                    }
                 }
+                $event->menu->add([
+                    'text' => 'Enxadristas',
+                    'url'  => '/especiais/fexpar/todos_enxadristas',
+                    'icon' => 'users'
+                ]);
+                $event->menu->add([
+                    'text' => 'Vínculos Federativos',
+                    'url'  => '/especiais/fexpar/vinculos',
+                    'icon' => 'id-card'
+                ]);
+            }
+            if(Auth::check()){
                 $event->menu->add("XADREZSUÍÇO");
                 $event->menu->add([
                     'text' => 'O que há de novo?',

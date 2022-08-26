@@ -469,15 +469,14 @@ Route::group(["prefix" => "especiais"], function () {
         Route::group(["prefix" => "vinculos"], function () {
             Route::get('/', 'FEXPAR\VinculoFederativoController@vinculos')->name('especiais.fexpar.vinculos');
             Route::get('/consulta', 'FEXPAR\VinculoFederativoController@consulta_form')->name('especiais.fexpar.consulta');
+            Route::get('/validacao', 'FEXPAR\VinculoFederativoController@consulta_form')->name('especiais.fexpar.consulta');
             Route::get('/{uuid}', 'FEXPAR\VinculoFederativoController@vinculo')->name('especiais.fexpar.vinculo'); // uuid do vinculo
             Route::get('/consulta/{uuid}', 'FEXPAR\VinculoFederativoController@consulta')->name('especiais.fexpar.vinculos.consulta'); // uuid da consulta
             Route::get('/qrcode/{uuid}', 'FEXPAR\VinculoFederativoController@qrcode')->name('especiais.fexpar.qrcode');
         });
         Route::group(["prefix" => "todos_enxadristas"], function () {
             Route::get('/', 'FEXPAR\ListaEnxadristasController@todos')->name('especiais.fexpar.todos');
-            Route::group(["prefix" => "api"], function () {
-                Route::get('/searchList', 'FEXPAR\ListaEnxadristasController@searchEnxadristasList')->name('especiais.fexpar.todos.api.list');
-            });
+            Route::get('/searchList', 'FEXPAR\ListaEnxadristasController@searchEnxadristasList')->name('especiais.fexpar.todos.api.list')->middleware("ajax");
         });
     });
 });

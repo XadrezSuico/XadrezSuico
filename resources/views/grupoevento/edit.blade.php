@@ -182,8 +182,8 @@
 											<th>Período</th>
                                             @if(
                                                 \Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
-                                                \Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4,5]) ||
-                                                \Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])
+                                                \Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfilByGroupEvent($grupo_evento->id,[4,5]) ||
+                                                \Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($grupo_evento->id,[7])
                                             )
 											    <th>Status</th>
                                             @endif
