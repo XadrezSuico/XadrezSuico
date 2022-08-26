@@ -59,6 +59,7 @@ class VinculoFederativoController extends Controller
                 $vinculo_consulta->system_inscricoes_in_this_club_confirmed = $vinculo->system_inscricoes_in_this_club_confirmed;
                 $vinculo_consulta->events_played = $vinculo->events_played;
                 $vinculo_consulta->obs = $vinculo->obs;
+                $vinculo_consulta->vinculated_at = $vinculo->vinculated_at;
                 $vinculo_consulta->save();
 
                 return redirect("/especiais/fexpar/vinculos/consulta/".$vinculo_consulta->uuid);

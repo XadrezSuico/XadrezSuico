@@ -53,6 +53,15 @@ class VinculoConsulta extends Model
         return false;
     }
 
+    public function getVinculatedAt()
+    {
+        $datetime = DateTime::createFromFormat('Y-m-d H:i:s', $this->vinculated_at);
+        if ($datetime) {
+            return $datetime->format("d/m/Y H:i:s");
+        }
+        return false;
+    }
+
 
     public function getVinculoType(){
         if($this->is_confirmed_system){

@@ -129,6 +129,7 @@ class GerenciadorVinculosFederativosController extends Controller
                         $vinculo->enxadrista_id = $enxadrista->id;
                         $vinculo->is_confirmed_manually = true;
                         $vinculo->ano = date("Y");
+                        $vinculo->vinculated_at = date("Y-m-d H:i:s");
                     }
 
                     if($vinculo->is_confirmed_system){

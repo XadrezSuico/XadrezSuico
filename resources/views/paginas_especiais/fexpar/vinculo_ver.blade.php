@@ -24,6 +24,7 @@
         <div class="box-body">
             <h3>Vínculo <strong>#{{$vinculo_consulta->vinculo->uuid}}</strong></h3>
             <h4><strong>Ano:</strong> {{$vinculo_consulta->ano}}</h4>
+            <h5>Data e Hora de Vínculo: {{$vinculo_consulta->getVinculatedAt()}}</h5>
             <h5>Consulta #{{$vinculo_consulta->uuid}} // Consulta por este código pode ser realizada em <u>{{url("/especiais/fexpar/vinculos/validacao")}}</u>.</h5>
             <hr/>
             <h4>Enxadrista:</h4>

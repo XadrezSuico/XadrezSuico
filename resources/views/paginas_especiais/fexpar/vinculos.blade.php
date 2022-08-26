@@ -35,6 +35,7 @@
                         <th>Data de Nascimento</th>
                         <th>Cidade</th>
                         <th>Clube</th>
+                        <th>Data de Vínculo</th>
                         <th width="20%">Opções</th>
                     </tr>
                 </thead>
@@ -48,6 +49,7 @@
                             <td>{{$vinculo->enxadrista->getBorn()}}</td>
                             <td>{{$vinculo->enxadrista->cidade->name}}</td>
                             <td>{{$vinculo->enxadrista->clube->name}}</td>
+                            <td>{{$vinculo->getVinculatedAt()}}</td>
                             <td>
                                 <a class="btn btn-default" href="{{url("/especiais/fexpar/vinculos/".$vinculo->uuid)}}" role="button">Visualizar</a>
                             </td>
