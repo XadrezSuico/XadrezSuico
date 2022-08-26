@@ -18,7 +18,7 @@
         <li>Data de Nascimento;</li>
         <li>Sexo;</li>
         <li>País de Nascimento;</li>
-        <li>Um ou mais documentos dentre estes: Certidão de Nascimento, CPF, Passaporte;</li>
+        <li>Um ou mais documentos dentre estes: RG, CPF, Passaporte;</li>
         <li>E-mail;</li>
         <li>Celular e País do mesmo;</li>
         <li>ID de Cadastro na Entidade Confederação Brasileira de Xadrez (CBX);</li>
