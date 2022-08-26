@@ -20,7 +20,7 @@
             <ul>
                 <li>
                     <strong>Automático:</strong> É o vínculo identificado pelo XadrezSuíço, onde segue alguns critérios para tal.<br/>
-                    O primeiro é que o clube deve estar vinculado a uma cidade do Paraná e estar habilitado para vínculo (Campo <strong>É clube válido para vinculo federativo?</strong> no cadastro de Clube).<br/>
+                    O primeiro é que o clube deve estar vinculado a uma cidade do Paraná e estar habilitado para vínculo (Campo <strong>É clube válido para vínculo federativo?</strong> no cadastro de Clube).<br/>
                     Após isso, de madrugada é efetuado em duas etapas os vínculos: a Pré-vinculação e a Vinculação.
                     <ul>
                         <li>
@@ -31,10 +31,10 @@
                                 <li>Possuir vínculo de clube em alguma entidade do Paraná apta em seu cadastro de Enxadrista;</li>
                                 <li>Ter participado (confirmado sem W.O.) em algum evento no ano de {{date("Y")}} gerenciado por completo no XadrezSuíço.</li>
                             </ol>
-                            Os enxadristas que atendem estes requisitos, automaticamente recebem um pré-vinculo ao clube que está no cadastro de enxadrista. O qual poderá ser confirmado na noite subsequente.
+                            Os enxadristas que atendem estes requisitos, automaticamente recebem um pré-vínculo ao clube que está no cadastro de enxadrista. O qual poderá ser confirmado na noite subsequente.
                         </li>
                         <li>
-                            <strong>Vinculação:</strong> É o processo que verifica se os enxadristas com pré-vinculo possuem o principal requisito para vínculo: Ter participado de ao menos um evento válido por este clube.<br/>
+                            <strong>Vinculação:</strong> É o processo que verifica se os enxadristas com pré-vínculo possuem o principal requisito para vínculo: Ter participado de ao menos um evento válido por este clube.<br/>
                             Este processo é efetuado diariamente durante a madrugada, e se houver uma inscrição do enxadrista (inscrição confirmada e sem W.O.) há a confirmação do vínculo, e assim a permissão do uso dele para esta entidade.
                         </li>
                     </ul>
@@ -68,7 +68,7 @@
                         <th>ID FIDE</th>
                         <th>Cidade</th>
                         <th>Clube</th>
-                        <th>Tem vinculo para {{date("Y")}}?</th>
+                        <th>Tem vínculo para {{date("Y")}}?</th>
                         <th width="20%">Opções</th>
                     </tr>
                 </thead>

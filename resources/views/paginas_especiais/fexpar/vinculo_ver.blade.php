@@ -1,9 +1,9 @@
 @extends('adminlte::page')
 
-@section('title', "Vinculos Federativos para ".$vinculo_consulta->vinculo->ano." - Vínculo #".$vinculo_consulta->vinculo->uuid)
+@section('title', "Vínculos Federativos para ".$vinculo_consulta->vinculo->ano." - Vínculo #".$vinculo_consulta->vinculo->uuid)
 
 @section('content_header')
-    <h1>Vinculos Federativos para {{$vinculo_consulta->vinculo->ano}} - Vínculo #{{$vinculo_consulta->vinculo->uuid}}</h1>
+    <h1>Vínculos Federativos para {{$vinculo_consulta->vinculo->ano}} - Vínculo #{{$vinculo_consulta->vinculo->uuid}}</h1>
 @stop
 
 @section('content')

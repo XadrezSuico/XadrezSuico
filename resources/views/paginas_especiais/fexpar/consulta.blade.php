@@ -1,9 +1,9 @@
 @extends('adminlte::page')
 
-@section('title', 'Vinculo Federativo - Consulta')
+@section('title', 'Vínculo Federativo - Consulta')
 
 @section('content_header')
-    <h1>Vinculo Federativo - Consulta</h1>
+    <h1>Vínculo Federativo - Consulta</h1>
 @stop
 
 @section('content')
