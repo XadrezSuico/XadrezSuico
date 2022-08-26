@@ -115,4 +115,11 @@ class VinculoFederativoController extends Controller
         }
         return abort(404);
     }
+
+    public function consulta_form(){
+        if(env("ENTITY_DOMAIN",NULL) == "fexpar.com.br"){
+            return view("paginas_especiais.fexpar.consulta");
+        }
+        return abort(404);
+    }
 }

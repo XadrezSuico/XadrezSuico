@@ -467,8 +467,9 @@ Route::group(["prefix" => "fexpar"], function () {
 Route::group(["prefix" => "especiais"], function () {
     Route::group(["prefix" => "fexpar"], function () {
         Route::get('/vinculos', 'FEXPAR\VinculoFederativoController@vinculos')->name('especiais.fexpar.vinculos');
-        Route::get('/vinculos/{uuid}', 'FEXPAR\VinculoFederativoController@vinculo')->name('especiais.fexpar.vinculo');
-        Route::get('/vinculos/consulta/{uuid}', 'FEXPAR\VinculoFederativoController@consulta')->name('especiais.fexpar.consulta');
+        Route::get('/vinculos/consulta', 'FEXPAR\VinculoFederativoController@consulta_form')->name('especiais.fexpar.consulta');
+        Route::get('/vinculos/{uuid}', 'FEXPAR\VinculoFederativoController@vinculo')->name('especiais.fexpar.vinculo'); // uuid do vinculo
+        Route::get('/vinculos/consulta/{uuid}', 'FEXPAR\VinculoFederativoController@consulta')->name('especiais.fexpar.vinculos.consulta'); // uuid da consulta
         Route::get('/vinculos/qrcode/{uuid}', 'FEXPAR\VinculoFederativoController@qrcode')->name('especiais.fexpar.qrcode');
         Route::get('/todos_enxadristas', 'FEXPAR\ListaEnxadristasController@todos')->name('especiais.fexpar.todos');
     });

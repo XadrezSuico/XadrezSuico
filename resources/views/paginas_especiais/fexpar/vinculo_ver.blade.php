@@ -13,6 +13,13 @@
         </div>
     @endif
 
+    @if(!$vinculo_consulta->eConsultaAmazenadaIgualVinculo())
+        <div class="alert alert-warning alert-dismissible">
+            <h4><i class="icon fa fa-warning"></i> Aviso!</h4>
+            Esta consulta de vínculo <strong>não está mais igual ao vínculo do enxadrista</strong>. É necessária a <a href="{{url("/especiais/fexpar/vinculos/".$vinculo_consulta->vinculo->uuid)}}">a realização de uma nova consulta</a> para obter as informações atualizadas.
+        </div>
+    @endif
+
     <div class="box">
         <div class="box-body">
             <h3>Vínculo <strong>#{{$vinculo_consulta->vinculo->uuid}}</strong></h3>

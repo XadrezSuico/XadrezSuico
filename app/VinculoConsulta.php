@@ -68,4 +68,21 @@ class VinculoConsulta extends Model
     public function getQrCode(){
         return QrCode::size(150)->generate(url("/especiais/fexpar/vinculos/consulta/".$this->uuid));
     }
+
+
+    public function eConsultaAmazenadaIgualVinculo(){
+        if(
+            $this->vinculo->ano == $this->ano &&
+            $this->vinculo->cidade_id == $this->cidade_id &&
+            $this->vinculo->clube_id == $this->clube_id &&
+            $this->vinculo->is_confirmed_system == $this->is_confirmed_system &&
+            $this->vinculo->is_confirmed_manually == $this->is_confirmed_manually &&
+            $this->vinculo->system_inscricoes_in_this_club_confirmed == $this->system_inscricoes_in_this_club_confirmed &&
+            $this->vinculo->events_played == $this->events_played &&
+            $this->vinculo->obs == $this->obs
+        ){
+            return true;
+        }
+        return false;
+    }
 }
