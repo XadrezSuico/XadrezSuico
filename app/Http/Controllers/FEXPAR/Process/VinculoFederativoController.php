@@ -87,7 +87,7 @@ class VinculoFederativoController extends Controller
                     $vinculo = new Vinculo;
                     $vinculo->ano = date("Y");
                     $vinculo->enxadrista_id = $enxadrista->id;
-                    $vinculo->cidade_id = $enxadrista->cidade_id;
+                    $vinculo->cidade_id = $enxadrista->clube->cidade_id;
                     $vinculo->clube_id = $enxadrista->clube_id;
                     $vinculo->save();
                 }
