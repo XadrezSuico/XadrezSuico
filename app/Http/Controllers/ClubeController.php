@@ -155,4 +155,42 @@ class ClubeController extends Controller
         return redirect()->back();
     }
 
+    public function searchList(Request $request)
+    {
+        if($request->has("is_fexpar___clube_valido_vinculo_federativo")){
+            $clubes = Clube::where([["is_fexpar___clube_valido_vinculo_federativo","=",true]])
+            ->where(function($q1) use ($request) {
+                $q1->where([
+                    ["name", "like", "%" . $request->input("q") . "%"],
+                ])->orWhere(function ($q) use ($request) {
+                    $q->whereHas("cidade", function ($Q) use ($request) {
+                        $Q->where([
+                            ["name", "like", "%" . $request->input("q") . "%"],
+                        ]);
+                    });
+                });
+            })
+            ->limit(30)
+            ->get();
+        }else{
+            $clubes = Clube::where([
+                ["name", "like", "%" . $request->input("q") . "%"],
+            ])->orWhere(function ($q) use ($request) {
+                $q->whereHas("cidade", function ($Q) use ($request) {
+                    $Q->where([
+                        ["name", "like", "%" . $request->input("q") . "%"],
+                    ]);
+                });
+            })
+            ->limit(30)
+            ->get();
+        }
+        $results = array();
+        if(!$request->has("is_fexpar___clube_valido_vinculo_federativo")) $results[] = array("id" => -1, "text" => "Sem Clube");
+        foreach ($clubes as $clube) {
+            $results[] = array("id" => $clube->id, "text" => $clube->cidade->estado->pais->nome . "-" . $clube->cidade->name . "/" . $clube->cidade->estado->nome . " | ".$clube->id." -  " . $clube->name);
+        }
+        return response()->json(["results" => $results, "pagination" => true]);
+    }
+
 }

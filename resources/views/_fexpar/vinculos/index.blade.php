@@ -45,6 +45,19 @@
                 </li>
             </ul>
             <hr/>
+
+            <ul class="nav nav-pills">
+                <li role="presentation"><a href="{{url("/especiais/fexpar/vinculos")}}" target="_blank">Página Pública</a></li>
+            </ul>
+            <hr/>
+
+            <h4>Filtros:</h4>
+            <ul class="nav nav-pills">
+                <li role="presentation" @if($type == null) class="active" @endif><a href="{{url("/fexpar/vinculos")}}">Todos</a></li>
+                <li role="presentation" @if($type == 1) class="active" @endif><a href="{{url("/fexpar/vinculos")}}?type=1" class="nav-link">Apenas Vínculados</a></li>
+                <li role="presentation" @if($type == 2) class="active" @endif><a href="{{url("/fexpar/vinculos")}}?type=2" class="nav-link">Apenas Vínculados Automaticamente</a></li>
+                <li role="presentation" @if($type == 3) class="active" @endif><a href="{{url("/fexpar/vinculos")}}?type=3" class="nav-link disabled">Apenas Vínculados Manualmente</a></li>
+            </ul>
             <table id="tabela" class="table-responsive table-condensed table-striped" style="width: 100%">
                 <thead>
                     <tr>
@@ -73,7 +86,7 @@
             processing: true,
             serverSide: true,
             searchDelay: 500,
-            ajax: '{{url("/fexpar/vinculos/api/searchList/")}}',
+            ajax: '{{url("/fexpar/vinculos/api/searchList/?type=".$type)}}',
             language: {
                 "decimal":        "",
                 "emptyTable":     "Não há dados na tabela",

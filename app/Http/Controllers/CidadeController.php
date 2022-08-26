@@ -92,4 +92,25 @@ class CidadeController extends Controller
         return response()->json(["results" => $results, "pagination" => true]);
     }
 
+    public function searchList($estados_id, Request $request)
+    {
+        $cidades = Cidade::where([
+            ["estados_id", "=", $estados_id],
+        ])
+        ->where(function($q1) use ($request){
+            $q1->where([
+                ["id", "like", "%" . $request->input("q") . "%"],
+            ])
+            ->orWhere([
+                ["name", "like", "%" . $request->input("q") . "%"],
+            ]);
+        })
+        ->get();
+        $results = array();
+        foreach ($cidades as $cidade) {
+            $results[] = array("id" => $cidade->id, "text" => $cidade->name);
+        }
+        return response()->json(["results" => $results, "pagination" => true]);
+    }
+
 }

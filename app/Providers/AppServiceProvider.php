@@ -105,6 +105,18 @@ class AppServiceProvider extends ServiceProvider
                         'icon' => 'users'
                     ]);
                 };
+                if(env("ENTITY_DOMAIN",NULL) == "fexpar.com.br"){
+                    $event->menu->add("FEXPAR");
+                    if(
+                        $user->hasPermissionGlobalByPerfil([10])
+                    ){
+                        $event->menu->add([
+                            'text' => 'Gerenciar Vínculos',
+                            'url'  => '/fexpar/vinculos',
+                            'icon' => 'id-card'
+                        ]);
+                    };
+                }
                 $event->menu->add("XADREZSUÍÇO");
                 $event->menu->add([
                     'text' => 'O que há de novo?',

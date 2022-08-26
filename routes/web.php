@@ -287,6 +287,8 @@ Route::group(["prefix"=>"cidade"],function(){
 	Route::post('/edit/{id}', 'CidadeController@edit_post')->name('cidade.edit.post');
 	Route::get('/delete/{id}', 'CidadeController@delete')->name('cidade.delete');
 	Route::get('/search/{estados_id}', 'CidadeController@buscaCidade')->name('cidade.search');
+
+	Route::get('/api/searchList/{estados_id}', 'CidadeController@searchList')->name('cidade.api.list');
 });
 
 Route::group(["prefix"=>"clube"],function(){
@@ -299,6 +301,8 @@ Route::group(["prefix"=>"clube"],function(){
 
     Route::get('/union/{clube_id}', 'ClubeController@union')->name('clube.union');
     Route::post('/union/{clube_id}', 'ClubeController@union_post')->name('clube.union.post');
+
+	Route::get('/api/searchList', 'ClubeController@searchList')->name('clube.api.list');
 });
 
 Route::group(["prefix"=>"enxadrista"],function(){
@@ -454,6 +458,8 @@ Route::group(["prefix" => "fexpar"], function () {
     Route::group(["prefix" => "vinculos"], function () {
         Route::get('/', 'FEXPAR\GerenciadorVinculosFederativosController@index')->name('fexpar.vinculos.index');
         Route::get('/api/searchList', 'FEXPAR\GerenciadorVinculosFederativosController@searchEnxadristasList')->name('fexpar.vinculos.api.list');
+        Route::get('/{uuid}/edit', 'FEXPAR\GerenciadorVinculosFederativosController@edit')->name('fexpar.vinculos.edit');
+        Route::post('/{uuid}/edit', 'FEXPAR\GerenciadorVinculosFederativosController@edit_post')->name('fexpar.vinculos.edit.post');
     });
 });
 

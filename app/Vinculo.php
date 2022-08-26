@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Illuminate\Support\Str;
 
+use DateTime;
+
 class Vinculo extends Model
 {
     use LogsActivity;
@@ -34,6 +36,15 @@ class Vinculo extends Model
     }
     public function clube(){
         return $this->belongsTo("App\Clube","clube_id","id");
+    }
+
+    public function getCreatedAt()
+    {
+        $datetime = DateTime::createFromFormat('Y-m-d H:i:s', $this->created_at);
+        if ($datetime) {
+            return $datetime->format("d/m/Y H:i:s");
+        }
+        return false;
     }
 
 

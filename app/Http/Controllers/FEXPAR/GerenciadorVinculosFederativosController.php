@@ -8,10 +8,17 @@ use App\Http\Controllers\Controller;
 use Auth;
 
 use App\Enxadrista;
+use App\Vinculo;
+
+use App\Helper\IPHelper;
 
 class GerenciadorVinculosFederativosController extends Controller
 {
-    public function index(){
+    public function __construct(){
+        $this->middleware("auth");
+    }
+
+    public function index(Request $request){
         $user = Auth::user();
         if (
             $user->hasPermissionGlobalbyPerfil([10])
@@ -19,12 +26,138 @@ class GerenciadorVinculosFederativosController extends Controller
             if(env("ENTITY_DOMAIN",NULL) == "fexpar.com.br"){
                 $enxadristas = Enxadrista::all();
 
-                return view("_fexpar.vinculos.index",compact("enxadristas"));
+                $type = null;
+                if($request->has("type")){
+                    switch($request->input("type")){
+                        // apenas vinculados
+                        case 1:
+                            $type = 1;
+                            break;
+                        // apenas automatica
+                        case 2:
+                            $type = 2;
+                            break;
+                        // apenas manual
+                        case 3:
+                            $type = 3;
+                            break;
+                    }
+                }
+
+                return view("_fexpar.vinculos.index",compact("enxadristas","type"));
             }
         }
         return abort(403);
     }
 
+    public function edit($enxadrista_id){
+        $user = Auth::user();
+        if (
+            $user->hasPermissionGlobalbyPerfil([10])
+        ) {
+            if(env("ENTITY_DOMAIN",NULL) == "fexpar.com.br"){
+                if(Enxadrista::where([
+                    ["id","=",$enxadrista_id],
+                ])
+                ->count() > 0){
+                    $enxadrista = Enxadrista::where([
+                        ["id","=",$enxadrista_id],
+                    ])
+                    ->first();
+
+                    $vinculo = null;
+                    if(Vinculo::where([
+                        ["enxadrista_id","=",$enxadrista->id],
+                        ["ano","=",date("Y")],
+                    ])
+                    ->count() > 0){
+                        $vinculo = Vinculo::where([
+                            ["enxadrista_id","=",$enxadrista->id],
+                            ["ano","=",date("Y")],
+                        ])
+                        ->first();
+                    }
+
+                    return view("_fexpar.vinculos.edit",compact("enxadrista","vinculo"));
+                }
+            }
+        }
+        return abort(403);
+    }
+    public function edit_post($enxadrista_id, Request $request){
+        $user = Auth::user();
+        if (
+            $user->hasPermissionGlobalbyPerfil([10])
+        ) {
+            if(env("ENTITY_DOMAIN",NULL) == "fexpar.com.br"){
+                if(Enxadrista::where([
+                    ["id","=",$enxadrista_id],
+                ])
+                ->count() > 0){
+                    $enxadrista = Enxadrista::where([
+                        ["id","=",$enxadrista_id],
+                    ])
+                    ->first();
+
+                    if(
+                        !$request->has("cidade_id") ||
+                        !$request->has("clube_id")
+                    ){
+                        return redirect("/fexpar/vinculos/".$enxadrista->id."/edit");
+                    }
+
+                    if(
+                        $request->input("cidade_id") == "" ||
+                        $request->input("clube_id") == ""
+                    ){
+                        return redirect("/fexpar/vinculos/".$enxadrista->id."/edit");
+                    }
+
+                    $vinculo = null;
+                    if(Vinculo::where([
+                        ["enxadrista_id","=",$enxadrista->id],
+                        ["ano","=",date("Y")],
+                    ])
+                    ->count() > 0){
+                        $vinculo = Vinculo::where([
+                            ["enxadrista_id","=",$enxadrista->id],
+                            ["ano","=",date("Y")],
+                        ])
+                        ->first();
+                    }else{
+                        $vinculo = new Vinculo;
+                        $vinculo->enxadrista_id = $enxadrista->id;
+                        $vinculo->is_confirmed_manually = true;
+                        $vinculo->ano = date("Y");
+                    }
+
+                    if($vinculo->is_confirmed_system){
+                        $ip = IPHelper::getIp();
+
+                        activity('change_type_vinculo')
+                            ->causedBy(Auth::user())
+                            ->performedOn($vinculo)
+                            ->withProperties(['ip' => $ip])
+                            ->log('O usuário em questão efetuou a mudança do tipo de vínculo.');
+
+                        $vinculo->is_confirmed_system = false;
+                        $vinculo->system_inscricoes_in_this_club_confirmed = null;
+
+                        $vinculo->is_confirmed_manually = true;
+                    }
+
+                    $vinculo->cidade_id = $request->input("cidade_id");
+                    $vinculo->clube_id = $request->input("clube_id");
+
+                    $vinculo->events_played = $request->input("events_played");
+                    $vinculo->obs = $request->input("obs");
+                    $vinculo->save();
+                }
+            }
+            return redirect("/fexpar/vinculos/".$enxadrista->id."/edit");
+        }
+        return abort(403);
+    }
 
     /*
      *
@@ -47,33 +180,58 @@ class GerenciadorVinculosFederativosController extends Controller
         $enxadristaBorn = new Enxadrista();
 
         $recordsTotal = Enxadrista::count();
-        $enxadristas = Enxadrista::where([["name", "like", "%" . $requisicao["search"]["value"] . "%"]]);
-        $enxadristas->orWhere([["id", "=", $requisicao["search"]["value"]]]);
-        $enxadristas->orWhere(function ($q1) use ($requisicao) {
-            $q1->whereHas("sexo", function ($q2) use ($requisicao) {
-                $q2->where([["name", "like", "%" . $requisicao["search"]["value"] . "%"]]);
-                $q2->orWhere([["abbr", "like", "%" . $requisicao["search"]["value"] . "%"]]);
+        $enxadristas = Enxadrista::where(function($q1) use ($requisicao, $enxadristaBorn){
+            $q1->where([["name", "like", "%" . $requisicao["search"]["value"] . "%"]]);
+            $q1->orWhere([["id", "=", $requisicao["search"]["value"]]]);
+            $q1->orWhere(function ($q2) use ($requisicao) {
+                $q2->whereHas("sexo", function ($q3) use ($requisicao) {
+                    $q3->where([["name", "like", "%" . $requisicao["search"]["value"] . "%"]]);
+                    $q3->orWhere([["abbr", "like", "%" . $requisicao["search"]["value"] . "%"]]);
+                });
+            });
+
+            $enxadristaBorn->setBorn($requisicao["search"]["value"]);
+            if ($enxadristaBorn->getBorn()) {
+                $q1->orWhere([["born", "=", $enxadristaBorn->getBorn()]]);
+            }
+
+            $q1->orWhere([["fide_id", "=", $requisicao["search"]["value"]]]);
+            $q1->orWhere([["cbx_id", "=", $requisicao["search"]["value"]]]);
+            $q1->orWhere([["lbx_id", "=", $requisicao["search"]["value"]]]);
+            $q1->orWhere(function ($q2) use ($requisicao) {
+                $q2->whereHas("cidade", function ($q3) use ($requisicao) {
+                    $q3->where([["name", "like", "%" . $requisicao["search"]["value"] . "%"]]);
+                });
+            });
+            $q1->orWhere(function ($q2) use ($requisicao) {
+                $q2->whereHas("clube", function ($q3) use ($requisicao) {
+                    $q3->where([["name", "like", "%" . $requisicao["search"]["value"] . "%"]]);
+                });
             });
         });
 
-        $enxadristaBorn->setBorn($requisicao["search"]["value"]);
-        if ($enxadristaBorn->getBorn()) {
-            $enxadristas->orWhere([["born", "=", $enxadristaBorn->getBorn()]]);
+        if($request->has("type")){
+            switch($request->input("type")){
+                // apenas vinculados
+                case 1:
+                    $enxadristas->whereHas("vinculos",function($q1) use ($request){
+                        $q1->where([["ano","=",date("Y")]]);
+                    });
+                    break;
+                // apenas automatica
+                case 2:
+                    $enxadristas->whereHas("vinculos",function($q1) use ($request){
+                        $q1->where([["is_confirmed_system","=",true],["ano","=",date("Y")]]);
+                    });
+                    break;
+                // apenas manual
+                case 3:
+                    $enxadristas->whereHas("vinculos",function($q1) use ($request){
+                        $q1->where([["is_confirmed_manually","=",true],["ano","=",date("Y")]]);
+                    });
+                    break;
+            }
         }
-
-        $enxadristas->orWhere([["fide_id", "=", $requisicao["search"]["value"]]]);
-        $enxadristas->orWhere([["cbx_id", "=", $requisicao["search"]["value"]]]);
-        $enxadristas->orWhere([["lbx_id", "=", $requisicao["search"]["value"]]]);
-        $enxadristas->orWhere(function ($q1) use ($requisicao) {
-            $q1->whereHas("cidade", function ($q2) use ($requisicao) {
-                $q2->where([["name", "like", "%" . $requisicao["search"]["value"] . "%"]]);
-            });
-        });
-        $enxadristas->orWhere(function ($q1) use ($requisicao) {
-            $q1->whereHas("clube", function ($q2) use ($requisicao) {
-                $q2->where([["name", "like", "%" . $requisicao["search"]["value"] . "%"]]);
-            });
-        });
 
         switch ($requisicao["order"][0]["column"]) {
             case 1:
@@ -123,7 +281,7 @@ class GerenciadorVinculosFederativosController extends Controller
 
             $p[8] = "";
             if ($permitido_edicao) {
-                $p[8] .= '<a href="' . url("/enxadrista/edit/" . $enxadrista->id) . '" title="Editar Enxadrista: ' . $enxadrista->id . ' ' . $enxadrista->name . '" class="btn btn-success btn-sm" data-toggle="tooltip" data-original-title="Editar Enxadrista"><i class="fa fa-edit"></i></a> ';
+                $p[8] .= '<a href="' . url("/enxadrista/edit/" . $enxadrista->id) . '" title="Editar Enxadrista: ' . $enxadrista->id . ' ' . $enxadrista->name . '" class="btn btn-success btn-sm" data-toggle="tooltip" data-original-title="Editar Enxadrista" target="_blank"><i class="fa fa-edit"></i></a> ';
                 $p[8] .= '<a href="' . url("/fexpar/vinculos/" . $enxadrista->id ."/edit") . '" title="Gerenciar Vínculo: ' . $enxadrista->id . ' ' . $enxadrista->name . '" class="btn btn-warning btn-sm" data-toggle="tooltip" data-original-title="Gerenciar Vínculo"><i class="fa fa-anchor"></i></a>';
             }
 

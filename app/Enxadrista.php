@@ -647,4 +647,34 @@ class Enxadrista extends Model
         }
         return false;
     }
+
+
+    public function getInscricoesByClube($clube_id, $year = null, $is_confirmed = true){
+        if(!$year){
+            $year = date("Y");
+        }
+        if($is_confirmed){
+            return $this->inscricoes()->where([
+                ["clube_id","=",$clube_id],
+                ["confirmado", "=", true],
+                ["is_desclassificado", "=", false],
+                ["desconsiderar_pontuacao_geral", "=", false],
+                ["desconsiderar_classificado", "=", false],
+            ])
+            ->whereHas("torneio", function ($q2) use ($year) {
+                $q2->whereHas("evento", function ($q3) use ($year) {
+                    $q3->where([
+                        ["data_inicio", ">=", $year . "-01-01"],
+                        ["data_fim", "<=", $year . "-12-31"],
+                    ])
+                    ->where(function($q4){
+                        $q4->where([["classificavel","=",true]]);
+                        $q4->orWhere([["mostrar_resultados","=",true]]);
+                    });
+                });
+            })
+            ->get();
+        }
+        return $this->inscricoes()->where([["clube_id","=",$clube_id]])->get();
+    }
 }

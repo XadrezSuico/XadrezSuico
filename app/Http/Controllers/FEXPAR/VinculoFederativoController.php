@@ -83,12 +83,12 @@ class VinculoFederativoController extends Controller
                     activity('access_vinculo_consulta')
                     ->causedBy(Auth::user())
                     ->performedOn($vinculo_consulta)
-                    ->withProperties(['ip' => $ip])
+                    ->withProperties(['ip' => $ip,"vinculo_consulta_uuid"=>$vinculo_consulta->uuid])
                     ->log('Acesso à consulta de vínculo efetuada.');
                 }else{
                     activity('access_vinculo_consulta')
                     ->performedOn($vinculo_consulta)
-                    ->withProperties(['ip' => $ip])
+                    ->withProperties(['ip' => $ip,"vinculo_consulta_uuid"=>$vinculo_consulta->uuid])
                     ->log('Acesso à consulta de vínculo efetuada.');
                 }
 
