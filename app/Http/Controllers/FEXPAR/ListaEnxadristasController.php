@@ -63,27 +63,33 @@ class ListaEnxadristasController extends Controller
 
         switch ($requisicao["order"][0]["column"]) {
             case 1:
-                $enxadristas->orderBy("name", mb_strtoupper($requisicao["order"][1]["dir"]));
+                $enxadristas->orderBy("name", mb_strtoupper($requisicao["order"][0]["dir"]));
                 break;
             case 2:
-                $enxadristas->orderBy("born", mb_strtoupper($requisicao["order"][2]["dir"]));
+                $enxadristas->orderBy("born", mb_strtoupper($requisicao["order"][0]["dir"]));
                 break;
             case 3:
-                $enxadristas->orderBy("cbx_id", mb_strtoupper($requisicao["order"][3]["dir"]));
+                $enxadristas->orderBy("cbx_id", mb_strtoupper($requisicao["order"][0]["dir"]));
                 break;
             case 4:
-                $enxadristas->orderBy("fide_id", mb_strtoupper($requisicao["order"][4]["dir"]));
+                $enxadristas->orderBy("fide_id", mb_strtoupper($requisicao["order"][0]["dir"]));
                 break;
             case 5:
-                $enxadristas->orderBy("cidade_id", mb_strtoupper($requisicao["order"][5]["dir"]));
+                $enxadristas->orderBy("cidade_id", mb_strtoupper($requisicao["order"][0]["dir"]));
                 break;
             case 6:
-                $enxadristas->orderBy("clube_id", mb_strtoupper($requisicao["order"][6]["dir"]));
+                $enxadristas->orderBy("clube_id", mb_strtoupper($requisicao["order"][0]["dir"]));
                 break;
             default:
                 $enxadristas->orderBy("id", mb_strtoupper($requisicao["order"][0]["dir"]));
         }
         $total = count($enxadristas->get());
+        if($requisicao["length"] == NULL){
+            $requisicao["length"] = 10;
+        }
+        if($requisicao["length"] == NULL || $requisicao["length"] > 100){
+            $requisicao["length"] = 100;
+        }
         $enxadristas->limit($requisicao["length"]);
         $enxadristas->skip($requisicao["start"]);
 
@@ -99,7 +105,7 @@ class ListaEnxadristasController extends Controller
 
             $p[4] = ($enxadrista->fide_id) ? $enxadrista->fide_id : "";
 
-            $p[5] = "#" . $enxadrista->cidade->id . " - " . $enxadrista->cidade->name;
+            $p[5] = trim($enxadrista->cidade->estado->pais->nome) . " - " . trim($enxadrista->cidade->name) . "/" . trim($enxadrista->cidade->estado->abbr) ?? trim($enxadrista->cidade->estado->nome);
 
             if ($enxadrista->clube) {
                 $p[6] = $enxadrista->getClubePublico();
