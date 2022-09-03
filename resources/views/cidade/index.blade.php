@@ -23,20 +23,12 @@
                     <tr>
                         <th>#</th>
                         <th>Nome</th>
+                        <th>Estado</th>
+                        <th>País</th>
                         <th width="20%">Opções</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($cidades as $cidade)
-                        <tr>
-                            <td>{{$cidade->id}}</td>
-                            <td>{{$cidade->name}}</td>
-                            <td>
-                                <a class="btn btn-default" href="{{url("/cidade/edit/".$cidade->id)}}" role="button">Editar</a>
-                                @if($cidade->isDeletavel()) <a class="btn btn-danger" href="{{url("/cidade/delete/".$cidade->id)}}" role="button">Apagar</a> @endif
-                            </td>
-                        </tr>
-                    @endforeach
                 </tbody>
             </table>
         </div>
@@ -46,8 +38,38 @@
 @section("js")
 <script type="text/javascript">
     $(document).ready(function(){
+        // $("#tabela").DataTable({
+        //     responsive: true,
+        // });
         $("#tabela").DataTable({
-            responsive: true,
+            processing: true,
+            serverSide: true,
+            searchDelay: 500,
+            ajax: '{{url("/cidade/api/searchList")}}',
+            language: {
+                "decimal":        "",
+                "emptyTable":     "Não há dados na tabela",
+                "info":           "Mostrando de _START_ para _END_ de um total de _TOTAL_ registros",
+                "infoEmpty":      "Mostrando de 0 para 0 de um total de 0 registros",
+                "infoFiltered":   "(filtrado de um total de _MAX_ registros)",
+                "infoPostFix":    "",
+                "thousands":      ",",
+                "lengthMenu":     "Mostrar _MENU_",
+                "loadingRecords": "Carregando...",
+                "processing":     "Processando...",
+                "search":         "Pesquisar:",
+                "zeroRecords":    "Não foram encontrados registros seguindo o filtro",
+                "paginate": {
+                    "first":      "Primeiro",
+                    "last":       "Último",
+                    "next":       "Próximo",
+                    "previous":   "Anterior"
+                },
+                "aria": {
+                    "sortAscending":  ": ativar para organizar em ordem crescente da coluna",
+                    "sortDescending": ": ativar para organizar em ordem descrescente da coluna"
+                }
+            }
         });
     });
 </script>

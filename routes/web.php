@@ -288,7 +288,8 @@ Route::group(["prefix"=>"cidade"],function(){
 	Route::get('/delete/{id}', 'CidadeController@delete')->name('cidade.delete');
 	Route::get('/search/{estados_id}', 'CidadeController@buscaCidade')->name('cidade.search');
 
-	Route::get('/api/searchList/{estados_id}', 'CidadeController@searchList')->name('cidade.api.list');
+	Route::get('/api/searchList', 'CidadeController@searchList')->name('cidade.api.list');
+	Route::get('/api/searchList/{estados_id}', 'CidadeController@searchListByEstado')->name('cidade.api.list.estado');
 });
 
 Route::group(["prefix"=>"clube"],function(){
