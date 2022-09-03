@@ -39,5 +39,10 @@ class Rating extends Model
             $this->valor += $movimentacao->valor;
         }
         $this->save();
+
+
+        activity("rating__calculate_update")
+            ->performedOn($this)
+            ->log("Rating atualizado.");
     }
 }

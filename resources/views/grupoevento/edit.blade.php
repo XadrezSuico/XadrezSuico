@@ -567,6 +567,7 @@
 											<tr>
 												<th>#</th>
 												<th>Nome</th>
+												<th>Código para Identificação da Categoria no SM</th>
 												<th>Classificar?</th>
 												<th width="20%">Opções</th>
 											</tr>
@@ -576,6 +577,7 @@
 												<tr>
 													<td>{{$categoria->id}}</td>
 													<td>{{$categoria->name}}</td>
+													<td>{{$categoria->code}}</td>
 													<td>@if(!$categoria->nao_classificar) Sim @else Não @endif</td>
 													<td>
 														<a class="btn btn-success" href="{{url("/grupoevento/".$grupo_evento->id."/categorias/dashboard/".$categoria->id)}}" role="button"><i class="fa fa-dashboard"></i></a>

@@ -681,17 +681,83 @@ class Enxadrista extends Model
 
     public function getClubePublico(){
         if($this->last_cadastral_update > "2022-01-01 00:00:00"){
-            return $this->clube->name;
+            return "#".$this->clube->id." - ".$this->clube->name;
         }else{
             if(env("ENTITY_DOMAIN",NULL) == "fexpar.com.br"){
                 if($this->clube->is_fexpar___clube_filiado){
-                    return $this->clube->name;
+                    return "#".$this->clube->id." - ".$this->clube->name;
                 }
             }
             if($this->howOld() >= 18){
-                return $this->clube->name;
+                return "#".$this->clube->id." - ".$this->clube->name;
             }
             return "-- Clube Não Liberado para Esta Lista --";
         }
+    }
+
+
+    public function estaAptoParaPreVinculacao(){
+        if(!$this->pais_id){
+            return -7;
+        }
+        if($this->pais_id == 33){
+            if($this->documentos()->where([
+                ["tipo_documentos_id", "=", 1],
+            ])->count() == 0){
+                return -1;
+            }
+            if($this->documentos()->where([
+                ["tipo_documentos_id", "=", 2],
+            ])->count() == 0){
+                return -2;
+            }
+        }else{
+            if($this->documentos()->whereIn("tipo_documentos_id", [3,4])->count() == 0){
+                return -3;
+            }
+        }
+        if($this->cidade()->whereHas("estado", function ($q2) {
+                $q2->where([
+                    ["ibge_id", "=", 41],
+                ]);
+            })
+            ->count() == 0){
+            return -4;
+        }
+        if($this->clube()->whereHas("cidade", function ($q2) {
+            $q2->whereHas("estado", function ($q3) {
+                $q3->where([
+                    ["ibge_id", "=", 41],
+                ]);
+            });
+        })
+        ->where([["is_fexpar___clube_valido_vinculo_federativo", "=", true]])
+        ->count() == 0){
+            return -5;
+        }
+
+        if($this->inscricoes()->where([
+            ["confirmado", "=", true],
+            ["is_desclassificado", "=", false],
+            ["desconsiderar_pontuacao_geral", "=", false],
+            ["desconsiderar_classificado", "=", false],
+        ])
+        ->whereHas("torneio", function ($q2) {
+            $q2->whereHas("evento", function ($q3) {
+                $q3->where([
+                    ["data_inicio", ">=", date("Y") . "-01-01"],
+                    ["data_fim", "<=", date("Y") . "-12-31"],
+                ])
+                ->where(function($q4){
+                    $q4->where([["classificavel","=",true]]);
+                    $q4->orWhere([["mostrar_resultados","=",true]]);
+                });
+            });
+        })
+        ->count() == 0){
+            return -6;
+        }
+
+        return true;
     }
 }

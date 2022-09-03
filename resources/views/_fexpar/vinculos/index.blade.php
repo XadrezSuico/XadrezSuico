@@ -26,7 +26,7 @@
                         <li>
                             <strong>Pré-vinculação:</strong> É o processo que verifica se o enxadrista está apto para vínculo. Nesta etapa verifica-se se o mesmo atende os seguintes requisitos:
                             <ol>
-                                <li>Cadastro com CPF e RG;</li>
+                                <li>Cadastro com CPF e RG para Brasileiros - Identidade ou Passaporte para Estrangeiros;</li>
                                 <li>Possuir vínculo de cidade em alguma cidade do Paraná em seu cadastro de Enxadrista;</li>
                                 <li>Possuir vínculo de clube em alguma entidade do Paraná apta em seu cadastro de Enxadrista;</li>
                                 <li>Ter participado (confirmado sem W.O.) em algum evento no ano de {{date("Y")}} gerenciado por completo no XadrezSuíço.</li>
@@ -44,6 +44,8 @@
                     Este processo serve também para vincular enxadristas que participaram em algum evento válido para vínculo não gerenciado pelo XadrezSuíço. É necessário que o usuário informe manualmente os nomes dos eventos que geraram este vínculo.
                 </li>
             </ul>
+            <hr/>
+            <p><strong>Importante!</strong> Quando não houver o vínculo, retornará se o mesmo está apto para Pré-vinculação ou então se o mesmo possui alguma pendência que impede, e informará a primeira pendência encontrada. Vale constar que pode haver mais pendências, mas sempre retornará a primeira, seguindo a sequência de requisitos de Pré-Vinculação citadas acima.</p>
             <hr/>
 
             <ul class="nav nav-pills">

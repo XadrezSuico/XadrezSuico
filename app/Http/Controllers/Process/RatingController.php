@@ -271,6 +271,12 @@ class RatingController extends Controller
                                         $movimentacao->valor = $movimentacao_total;
                                         $movimentacao->is_inicial = false;
                                         $movimentacao->save();
+
+
+                                        activity("rating__move_calculate")
+                                            ->performedOn($movimentacao)
+                                            ->log("Movimentação de Rating calculada para o Evento #".$evento->id." e Rating #".$movimentacao->rating->id);
+
                                         // $retornos[] = date("d/m/Y H:i:s") . " - Movimentação salva. Calculando e atualizando rating do enxadrista.";
                                         $rating->calcular();
                                     }
@@ -284,5 +290,27 @@ class RatingController extends Controller
             }
         }
         // exit();
+    }
+
+    public static function checkMovesWithoutInscricao(){
+        foreach(MovimentacaoRating::whereDoesntHave("inscricao")->where([["is_inicial","=",false]])->get() as $movimentacao){
+            if($movimentacao->rating){
+                activity("rating__check_moves")
+                    ->performedOn($movimentacao)
+                    ->withProperties(['rating' => $movimentacao->rating->id])
+                    ->log("Cron checkMovesWithoutInscricao: Movimentação sem inscrição. Movimentação excluída.");
+
+                $rating = $movimentacao->rating;
+
+                $movimentacao->delete();
+
+                $rating->calcular();
+            }else{
+                activity("rating__check_moves")
+                    ->performedOn($movimentacao)
+                    ->log("Cron checkMovesWithoutInscricao: Movimentação sem inscrição. Movimentação excluída.");
+                $movimentacao->delete();
+            }
+        }
     }
 }

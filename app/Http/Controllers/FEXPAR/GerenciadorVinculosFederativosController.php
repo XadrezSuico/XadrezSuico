@@ -320,7 +320,38 @@ class GerenciadorVinculosFederativosController extends Controller
                 $p[5] .= "<hr/>Pré-Vínculo por: <strong>#".$pre_vinculo->cidade->id." - ".$pre_vinculo->cidade->name."</strong>";
                 $p[6] .= "<hr/>Pré-Vínculo por: <strong>#".$pre_vinculo->clube->id." - ".$pre_vinculo->clube->name."</strong>";
             }else{
-                $p[7] = "Não";
+                $apto_para_previnculacao = $enxadrista->estaAptoParaPreVinculacao();
+                if($apto_para_previnculacao > 0){
+                    $p[7] = "Não - Apto para Pré-Vinculação";
+                }else{
+
+
+                    $p[7] = "Não (".$apto_para_previnculacao.")<br/>";
+
+                    switch($apto_para_previnculacao){
+                        case -1:
+                            $p[7] .= "CPF (Brasileiro)";
+                            break;
+                        case -2:
+                            $p[7] .= "RG (Brasileiro)";
+                            break;
+                        case -3:
+                            $p[7] .= "Identidade/Passaporte (Extrangeiro)";
+                            break;
+                        case -4:
+                            $p[7] .= "Cidade";
+                            break;
+                        case -5:
+                            $p[7] .= "Clube";
+                            break;
+                        case -6:
+                            $p[7] .= "Inscrição em Evento (".date("Y").")";
+                            break;
+                        case -7:
+                            $p[7] .= "País de Nascimento";
+                            break;
+                    }
+                }
             }
 
             $retorno["data"][] = $p;
