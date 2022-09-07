@@ -52,6 +52,8 @@
                         <th>Nome do Evento</th>
                         <th>Cidade</th>
                         <th>Local do Evento</th>
+                        <th>Datas</th>
+                        <th>Inscrições</th>
                         <th>Recebendo Inscrições?</th>
                         <th>Opções</th>
                     </tr>
@@ -68,6 +70,30 @@
                                 <td>{{$evento->name}}<br/>({{$evento->grupo_evento->name}})</td>
                                 <td>{{$evento->cidade->name}}/{{trim($evento->cidade->estado->abbr)}} - {{$evento->cidade->estado->pais->codigo_iso}}</td>
                                 <td>{{$evento->local}}</td>
+                                <td data-order="{{$evento->data_inicio}}">
+                                    @if($evento->getDataInicio() == $evento->getDataFim())
+                                        {{$evento->getDataInicio()}}
+                                    @else
+                                        {{$evento->getDataInicio()}}<br/>{{$evento->getDataFim()}}
+                                    @endif
+                                </td>
+                                <td data-order="{{$evento->quantosInscritos()}}">
+                                    Total de Inscritos: {{$evento->quantosInscritos()}}@if($evento->maximo_inscricoes_evento)/{{$evento->maximo_inscricoes_evento}}@endif<br/>
+                                    @if(
+                                        \Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
+                                        \Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4,5]) ||
+                                        \Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])
+                                    )
+                                        Confirmados: {{$evento->quantosInscritosConfirmados()}}<br/>
+                                        Presentes: {{$evento->quantosInscritosPresentes()}}
+                                        <hr/>
+                                        @if($evento->is_lichess_integration)
+                                            <strong>Torneio Lichess.org</strong><br/>
+                                            Inscritos: <strong>{{$evento->quantosInscritosConfirmadosLichess()}}</strong><br/>
+                                            Não Inscritos: <strong>{{$evento->quantosInscritosFaltamLichess()}}</strong>
+                                        @endif
+                                    @endif
+                                </td>
                                 <td>@if(!$evento->inscricoes_encerradas()) Sim @else <strong>Não</strong> @endif</td>
                                 <td>
                                     <a class="btn btn-default" href="{{url("/evento/dashboard/".$evento->id)}}" role="button">Dashboard</a>
