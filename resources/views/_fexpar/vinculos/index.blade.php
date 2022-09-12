@@ -50,6 +50,8 @@
 
             <ul class="nav nav-pills">
                 <li role="presentation"><a href="{{url("/especiais/fexpar/vinculos")}}" target="_blank">Página Pública</a></li>
+                <li role="presentation"><a href="{{url("/fexpar/vinculos/execute/pre_vinculate")}}">! Executar Processo de Pré-Vinculação</a></li>
+                <li role="presentation"><a href="{{url("/fexpar/vinculos/execute/vinculate")}}">! Executar Processo de Vinculação</a></li>
             </ul>
             <hr/>
 

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
 use Auth;
+use Artisan;
 
 use App\Enxadrista;
 use App\Vinculo;
@@ -160,6 +161,32 @@ class GerenciadorVinculosFederativosController extends Controller
         return abort(403);
     }
 
+    public function execute_pre_vinculate(){
+        $user = Auth::user();
+        if (
+            $user->hasPermissionGlobalbyPerfil([10])
+        ) {
+            if(env("ENTITY_DOMAIN",NULL) == "fexpar.com.br"){
+                echo Artisan::call('fexpar:vinculos --pre-vinculate');
+                return redirect("/fexpar/vinculos");
+            }
+        }
+        return abort(403);
+    }
+
+    public function execute_vinculate(){
+        $user = Auth::user();
+        if (
+            $user->hasPermissionGlobalbyPerfil([10])
+        ) {
+            if(env("ENTITY_DOMAIN",NULL) == "fexpar.com.br"){
+                echo Artisan::call('fexpar:vinculos --vinculate');
+                return redirect("/fexpar/vinculos");
+            }
+        }
+        return abort(403);
+    }
+
     /*
      *
      *
@@ -268,9 +295,9 @@ class GerenciadorVinculosFederativosController extends Controller
 
             $p[2] = $enxadrista->getBorn();
 
-            $p[3] = ($enxadrista->fide_id) ? $enxadrista->fide_id : "";
+            $p[3] = ($enxadrista->cbx_id) ? $enxadrista->cbx_id : "";
 
-            $p[4] = ($enxadrista->cbx_id) ? $enxadrista->cbx_id : "";
+            $p[4] = ($enxadrista->fide_id) ? $enxadrista->fide_id : "";
 
             $p[5] = "#" . $enxadrista->cidade->id . " - " . $enxadrista->cidade->name;
 

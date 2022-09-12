@@ -461,6 +461,10 @@ Route::group(["prefix" => "fexpar"], function () {
         Route::get('/api/searchList', 'FEXPAR\GerenciadorVinculosFederativosController@searchEnxadristasList')->name('fexpar.vinculos.api.list');
         Route::get('/{uuid}/edit', 'FEXPAR\GerenciadorVinculosFederativosController@edit')->name('fexpar.vinculos.edit');
         Route::post('/{uuid}/edit', 'FEXPAR\GerenciadorVinculosFederativosController@edit_post')->name('fexpar.vinculos.edit.post');
+        Route::group(["prefix" => "execute"], function () {
+            Route::get('/pre_vinculate', 'FEXPAR\GerenciadorVinculosFederativosController@execute_pre_vinculate')->name('fexpar.vinculos.api.execute.pre_vinculate');
+            Route::get('/vinculate', 'FEXPAR\GerenciadorVinculosFederativosController@execute_vinculate')->name('fexpar.vinculos.api.execute.vinculate');
+        });
     });
 });
 
