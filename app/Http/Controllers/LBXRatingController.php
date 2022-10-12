@@ -21,7 +21,6 @@ class LBXRatingController extends Controller
                 ])
                 ->limit(10)
                 ->get();
-            echo count($enxadristas);
             foreach ($enxadristas as $enxadrista) {
                 $this->getRating($enxadrista);
             }

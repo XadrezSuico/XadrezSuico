@@ -47,8 +47,8 @@
                             <td>{{$vinculo->enxadrista->fide_id}}</td>
                             <td>{{$vinculo->enxadrista->name}}</td>
                             <td>{{$vinculo->enxadrista->getBorn()}}</td>
-                            <td>{{$vinculo->enxadrista->cidade->name}}</td>
-                            <td>{{$vinculo->enxadrista->clube->name}}</td>
+                            <td>{{$vinculo->cidade->name}}</td>
+                            <td>{{$vinculo->clube->name}}</td>
                             <td>{{$vinculo->getVinculatedAt()}}</td>
                             <td>
                                 <a class="btn btn-default" href="{{url("/especiais/fexpar/vinculos/".$vinculo->uuid)}}" role="button">Visualizar</a>

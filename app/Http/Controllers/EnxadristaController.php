@@ -111,7 +111,7 @@ class EnxadristaController extends Controller
                     $request->input("tipo_documento_".$tipo_documento_pais->tipo_documento->id) != NULL
                 ){
 
-                    $temEnxadrista = Enxadrista::whereHas("documentos",function($q1) use($request, $tipo_documento_pais){
+                    $temEnxadrista_count = Enxadrista::whereHas("documentos",function($q1) use($request, $tipo_documento_pais){
                         if($tipo_documento_pais->tipo_documento->id == 1){
                             $q1->where([
                                 ["tipo_documentos_id","=",$tipo_documento_pais->tipo_documento->id],
@@ -123,8 +123,8 @@ class EnxadristaController extends Controller
                                 ["numero","=",$request->input("tipo_documento_".$tipo_documento_pais->tipo_documento->id)],
                             ]);
                         }
-                    })->get();
-                    if(count($temEnxadrista) > 0){
+                    })->count();
+                    if($temEnxadrista_count > 0){
                         $messageBag = new MessageBag;
                         $messageBag->add("type","danger");
                         $messageBag->add("alerta","Já há um cadastro de Enxadrista com o Documento informado.");
@@ -153,11 +153,11 @@ class EnxadristaController extends Controller
             return redirect()->back()->withErrors($messageBag);
         }
 
-        $temEnxadrista = Enxadrista::where([
+        $temEnxadrista_count = Enxadrista::where([
             ["name", "=", $nome_corrigido],
             ["born", "=", $enx->born],
-        ])->get();
-        if (count($temEnxadrista) > 0) {
+        ])->count();
+        if ($temEnxadrista_count > 0) {
             $messageBag = new MessageBag;
             $messageBag->add("type","danger");
             $messageBag->add("alerta","O enxadrista informado já possui cadastro.");
@@ -293,7 +293,7 @@ class EnxadristaController extends Controller
                     $request->input("tipo_documento_".$tipo_documento_pais->tipo_documento->id) != NULL
                 ){
 
-                    $temEnxadrista = Enxadrista::where([
+                    $temEnxadrista_count = Enxadrista::where([
                         ["id","!=",$enxadrista->id]
                     ])
                     ->whereHas("documentos",function($q1) use($request, $tipo_documento_pais){
@@ -308,9 +308,9 @@ class EnxadristaController extends Controller
                                 ["numero","=",$request->input("tipo_documento_".$tipo_documento_pais->tipo_documento->id)],
                             ]);
                         }
-                    })->get();
+                    })->count();
 
-                    if(count($temEnxadrista) > 0){
+                    if($temEnxadrista_count > 0){
                         $messageBag = new MessageBag;
                         $messageBag->add("type","danger");
                         $messageBag->add("alerta","Já há um cadastro de Enxadrista com o Documento informado.");
@@ -587,7 +587,7 @@ class EnxadristaController extends Controller
             default:
                 $enxadristas->orderBy("id", mb_strtoupper($requisicao["order"][0]["dir"]));
         }
-        $total = count($enxadristas->get());
+        $total = $enxadristas->count();
         $enxadristas->limit($requisicao["length"]);
         $enxadristas->skip($requisicao["start"]);
 

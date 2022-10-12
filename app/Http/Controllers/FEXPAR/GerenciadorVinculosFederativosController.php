@@ -153,6 +153,19 @@ class GerenciadorVinculosFederativosController extends Controller
 
                     $vinculo->events_played = $request->input("events_played");
                     $vinculo->obs = $request->input("obs");
+
+                    if(!$vinculo->is_confirmed_system && !$vinculo->is_confirmed_manually){
+                        $ip = IPHelper::getIp();
+
+                        $vinculo->is_confirmed_manually = true;
+                        $vinculo->vinculated_at = date("Y-m-d H:i:s");
+
+                        activity('confirm_manual_vinculo')
+                            ->causedBy(Auth::user())
+                            ->performedOn($vinculo)
+                            ->withProperties(['ip' => $ip])
+                            ->log('O usuário em questão efetuou a confirmação do vínculo de forma manual.');
+                    }
                     $vinculo->save();
                 }
             }
@@ -283,7 +296,7 @@ class GerenciadorVinculosFederativosController extends Controller
             default:
                 $enxadristas->orderBy("id", mb_strtoupper($requisicao["order"][0]["dir"]));
         }
-        $total = count($enxadristas->get());
+        $total = $enxadristas->count();
         $enxadristas->limit($requisicao["length"]);
         $enxadristas->skip($requisicao["start"]);
 

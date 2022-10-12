@@ -38,7 +38,7 @@
                             <th>{{$criterio->criterio->code}}</th>
                         @endforeach
                     </tr>
-                    @if(count($eventos) > 0)
+                    @if(count((array)$eventos) > 0)
                         <tr>
                             @php($i=1)
                             @foreach($eventos as $evento)
@@ -92,7 +92,7 @@
                     @endforeach
                 </div>
                 <div class="col-md-6">
-                    @if(count($eventos) > 0)
+                    @if(count((array)$eventos) > 0)
                         <h4>Legenda dos Eventos:</h4><br/>
                         @php($i=1)
                         @foreach($eventos as $evento)

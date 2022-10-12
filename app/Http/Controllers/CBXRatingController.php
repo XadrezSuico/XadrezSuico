@@ -20,7 +20,6 @@ class CBXRatingController extends Controller
             ])
             ->limit(5)
             ->get();
-        echo count($enxadristas);
         foreach ($enxadristas as $enxadrista) {
             $this->getRating($enxadrista);
         }
@@ -118,7 +117,7 @@ class CBXRatingController extends Controller
         }
         if($show_text) echo "<hr/>";
     }
-    
+
     private static function getName($html){
         $explode = explode('<div id="dados-jogador-row1">',$html);
         if(count($explode) > 1){
