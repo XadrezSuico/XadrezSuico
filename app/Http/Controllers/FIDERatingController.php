@@ -20,7 +20,6 @@ class FIDERatingController extends Controller
             ])
             ->limit(5)
             ->get();
-        echo count($enxadristas);
         foreach ($enxadristas as $enxadrista) {
             $this->getRating($enxadrista);
         }

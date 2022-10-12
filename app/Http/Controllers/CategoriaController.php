@@ -32,7 +32,18 @@ class CategoriaController extends Controller
         $categoria = Categoria::find($categoria_id);
         echo '<br/><br/> Categoria: ' . $categoria->name;
         $inscritos = array();
-        $inscricoes = Inscricao::where([
+        $inscricoes_count = Inscricao::where([
+            ["categoria_id", "=", $categoria->id],
+        ])
+            ->whereHas("torneio", function ($q1) use ($evento) {
+                $q1->where([
+                    ["evento_id", "=", $evento->id],
+                ]);
+            })
+            ->orderBy("pontos", "DESC")
+            ->count();
+
+            $inscricoes = Inscricao::where([
             ["categoria_id", "=", $categoria->id],
         ])
             ->whereHas("torneio", function ($q1) use ($evento) {
@@ -42,7 +53,7 @@ class CategoriaController extends Controller
             })
             ->orderBy("pontos", "DESC")
             ->get();
-        echo count($inscricoes);
+        echo $inscricoes_count;
         foreach ($inscricoes as $inscricao) {
             if ($inscricao->pontos != null && $inscricao->confirmado) {
                 $inscritos[] = $inscricao;
@@ -93,7 +104,7 @@ class CategoriaController extends Controller
 
 
 
-            echo "[" . count($criterios) . "]";
+            echo "[" . count((array) $criterios) . "]";
             foreach ($criterios as $criterio) {
                 $desempate = $criterio->criterio->sort_desempate($inscrito_a, $inscrito_b);
                 if ($desempate != 0) {
@@ -146,19 +157,34 @@ class CategoriaController extends Controller
         $retornos[] = "<hr/>";
         foreach ($grupo_evento->eventos()->where([["classificavel", "=", true]])->get() as $evento) {
             $retornos[] = date("d/m/Y H:i:s") . " - Evento: " . $evento->name;
+
+            $inscricoes_count = Inscricao::where([
+                ["categoria_id", "=", $categoria->id],
+                ["pontos_geral", "!=", null],
+                ["pontos_geral", ">", 0],
+            ])
+            ->whereHas("torneio", function ($q1) use ($evento) {
+                $q1->where([
+                    ["evento_id", "=", $evento->id],
+                ]);
+            })
+            ->orderBy("pontos", "DESC")
+            ->count();
+
             $inscricoes = Inscricao::where([
                 ["categoria_id", "=", $categoria->id],
                 ["pontos_geral", "!=", null],
                 ["pontos_geral", ">", 0],
             ])
-                ->whereHas("torneio", function ($q1) use ($evento) {
-                    $q1->where([
-                        ["evento_id", "=", $evento->id],
-                    ]);
-                })
-                ->orderBy("pontos", "DESC")
-                ->get();
-            $retornos[] = date("d/m/Y H:i:s") . " - Total de inscrições encontradas: " . count($inscricoes);
+            ->whereHas("torneio", function ($q1) use ($evento) {
+                $q1->where([
+                    ["evento_id", "=", $evento->id],
+                ]);
+            })
+            ->orderBy("pontos", "DESC")
+            ->get();
+
+            $retornos[] = date("d/m/Y H:i:s") . " - Total de inscrições encontradas: " . $inscricoes_count;
             foreach ($inscricoes as $inscricao) {
                 $retornos[] = date("d/m/Y H:i:s") . " - Inscrição #: " . $inscricao->id . " - Enxadrista: " . $inscricao->enxadrista->name;
                 $pontos_geral = PontuacaoEnxadrista::where([

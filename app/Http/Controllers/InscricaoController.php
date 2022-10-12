@@ -941,7 +941,7 @@ class InscricaoController extends Controller
                     $request->input("tipo_documento_".$tipo_documento_pais->tipo_documento->id) != NULL
                 ){
 
-                    $temEnxadrista = Enxadrista::whereHas("documentos",function($q1) use($request, $tipo_documento_pais){
+                    $temEnxadrista_count = Enxadrista::whereHas("documentos",function($q1) use($request, $tipo_documento_pais){
                         if($tipo_documento_pais->tipo_documento->id == 1){
                             $q1->where([
                                 ["tipo_documentos_id","=",$tipo_documento_pais->tipo_documento->id],
@@ -953,8 +953,22 @@ class InscricaoController extends Controller
                                 ["numero","=",$request->input("tipo_documento_".$tipo_documento_pais->tipo_documento->id)],
                             ]);
                         }
-                    })->first();
-                    if(count($temEnxadrista) > 0){
+                    })->count();
+                    if($temEnxadrista_count > 0){
+                        $temEnxadrista = Enxadrista::whereHas("documentos",function($q1) use($request, $tipo_documento_pais){
+                            if($tipo_documento_pais->tipo_documento->id == 1){
+                                $q1->where([
+                                    ["tipo_documentos_id","=",$tipo_documento_pais->tipo_documento->id],
+                                    ["numero","=",Util::numeros($request->input("tipo_documento_".$tipo_documento_pais->tipo_documento->id))],
+                                ]);
+                            }else{
+                                $q1->where([
+                                    ["tipo_documentos_id","=",$tipo_documento_pais->tipo_documento->id],
+                                    ["numero","=",$request->input("tipo_documento_".$tipo_documento_pais->tipo_documento->id)],
+                                ]);
+                            }
+                        })->first();
+
                         $array = [
                             "ok"=>0,
                             "error"=>1,
@@ -1392,8 +1406,17 @@ class InscricaoController extends Controller
         if(
             !$enxadrista->name || !$enxadrista->born
         ){
-            $temEnxadrista = Enxadrista::where([["name", "=", $nome_corrigido], ["born", "=", $enxadrista->born],["id","!=",$enxadrista->id]])->first();
-            if (count($temEnxadrista) > 0) {
+            $temEnxadrista_count = Enxadrista::where([
+                ["name", "=", $nome_corrigido],
+                ["born", "=", $enxadrista->born],
+                ["id","!=",$enxadrista->id]
+            ])->count();
+            if ($temEnxadrista_count > 0) {
+                $temEnxadrista = Enxadrista::where([
+                    ["name", "=", $nome_corrigido],
+                    ["born", "=", $enxadrista->born],
+                    ["id","!=",$enxadrista->id]
+                ])->first();
 
                 if ($temEnxadrista->estaInscrito($evento->id)) {
                         return response()->json([

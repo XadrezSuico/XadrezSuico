@@ -155,7 +155,7 @@ class CidadeController extends Controller
             default:
                 $cidades->orderBy("id", mb_strtoupper($requisicao["order"][0]["dir"]));
         }
-        $total = count($cidades->get());
+        $total = $cidades->count();
         $cidades->limit($requisicao["length"]);
         $cidades->skip($requisicao["start"]);
 

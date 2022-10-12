@@ -916,10 +916,13 @@ class InscricaoGerenciarController extends Controller
         if (!$torneio) {
             return response()->json(["ok" => 0, "error" => 1, "message" => "Ocorreu um erro inesperado de pesquisa de Torneio. Por favor, tente novamente mais tarde."]);
         }
-        $temInscricao = $evento->torneios()->whereHas("inscricoes", function ($q) use ($request) {
+        $temInscricao_count = $evento->torneios()->whereHas("inscricoes", function ($q) use ($request) {
             $q->where([["enxadrista_id", "=", $request->input("enxadrista_id")]]);
-        })->first();
-        if (count($temInscricao) > 0) {
+        })->count();
+        if ($temInscricao_count > 0) {
+            $temInscricao = $evento->torneios()->whereHas("inscricoes", function ($q) use ($request) {
+                $q->where([["enxadrista_id", "=", $request->input("enxadrista_id")]]);
+            })->first();
             $inscricao = Inscricao::where([["enxadrista_id", "=", $request->input("enxadrista_id")], ["torneio_id", "=", $temInscricao->id]])->first();
             return response()->json(["ok" => 0, "error" => 1, "message" => "Você já possui inscrição para este evento!<br/> Categoria: " . $inscricao->categoria->name . "<br/> Caso queira efetuar alguma alteração, favor enviar via email para circuitoxadrezcascavel@gmail.com."]);
         }
@@ -1056,8 +1059,9 @@ class InscricaoGerenciarController extends Controller
             return response()->json(["ok" => 0, "error" => 1, "message" => "A data de nascimento é inválida.", "registred" => 0]);
         }
 
-        $temEnxadrista = Enxadrista::where([["name", "=", $nome_corrigido], ["born", "=", $enxadrista->born]])->first();
-        if (count($temEnxadrista) > 0) {
+        $temEnxadrista_count = Enxadrista::where([["name", "=", $nome_corrigido], ["born", "=", $enxadrista->born]])->count();
+        if ($temEnxadrista_count > 0) {
+            $temEnxadrista = Enxadrista::where([["name", "=", $nome_corrigido], ["born", "=", $enxadrista->born]])->first();
             if ($temEnxadrista->clube) {
                 return response()->json(["ok" => 0, "error" => 1, "message" => "Você já possui cadastro! Você será direcionado(a) à próxima etapa da inscrição!", "registred" => 1, "enxadrista_id" => $temEnxadrista->id, "enxadrista_name" => $temEnxadrista->name . " | " . $temEnxadrista->getBorn(), "cidade" => ["id" => $temEnxadrista->cidade->id, "name" => $temEnxadrista->cidade->name], "clube" => ["id" => $temEnxadrista->clube->id, "name" => $temEnxadrista->clube->name]]);
             } else {
@@ -1143,8 +1147,9 @@ class InscricaoGerenciarController extends Controller
         }
         $cidade = new Cidade;
 
-        $temCidade = Cidade::where([["name", "=", mb_strtoupper($request->input("name"))]])->first();
-        if (count($temCidade) > 0) {
+        $temCidade_count = Cidade::where([["name", "=", mb_strtoupper($request->input("name"))]])->count();
+        if ($temCidade_count > 0) {
+            $temCidade = Cidade::where([["name", "=", mb_strtoupper($request->input("name"))]])->first();
             return response()->json(["ok" => 0, "error" => 1, "message" => "Esta cidade já está cadastrada! Selecionamos ela para você.", "registred" => 1, "cidade" => ["id" => $temCidade->id, "name" => $temCidade->name]]);
         }
 
@@ -1181,8 +1186,15 @@ class InscricaoGerenciarController extends Controller
         }
         $clube = new Clube;
 
-        $temClube = Clube::where([["name", "=", mb_strtoupper($request->input("name"))], ["cidade_id", "=", $request->input("cidade_id")]])->first();
-        if (count($temClube) > 0) {
+        $temClube_count = Clube::where([
+            ["name", "=", mb_strtoupper($request->input("name"))],
+            ["cidade_id", "=", $request->input("cidade_id")]
+        ])->count();
+        if ($temClube_count > 0) {
+            $temClube = Clube::where([
+                ["name", "=", mb_strtoupper($request->input("name"))],
+                ["cidade_id", "=", $request->input("cidade_id")]
+            ])->first();
             return response()->json(["ok" => 0, "error" => 1, "message" => "Este clube já está cadastrado! Selecionamos ele para você.", "registred" => 1, "clube" => ["id" => $temClube->id, "name" => $temClube->name]]);
         }
 
