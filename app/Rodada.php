@@ -4,6 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use Spatie\Activitylog\Traits\LogsActivity;
+use Illuminate\Support\Str;
 
 
 class Rodada extends Model
@@ -15,6 +16,39 @@ class Rodada extends Model
     protected static $logFillable = true;
 
     protected static $logAttributes = ['*'];
+
+    public static function boot()
+    {
+        parent::boot();
+
+        self::creating(function($model){
+            if($model->uuid == NULL){
+                $model->uuid = Str::uuid();
+            }
+        });
+
+        // self::created(function($model){
+        //     // ... code here
+        // });
+
+        self::updating(function($model){
+            if($model->uuid == NULL){
+                $model->uuid = Str::uuid();
+            }
+        });
+
+        // self::updated(function($model){
+        //     // ... code here
+        // });
+
+        // self::deleting(function($model){
+        //     // ... code here
+        // });
+
+        // self::deleted(function($model){
+        //     // ... code here
+        // });
+    }
 
     public function torneio()
     {
@@ -36,5 +70,40 @@ class Rodada extends Model
             return true;
         }
         return false;
+    }
+
+
+    public function export($type){
+        switch($type){
+            case "xadrezsuico":
+                return $this->exportXadrezSuico();
+        }
+
+        return null;
+    }
+
+    public function exportXadrezSuico(){
+        $obj = array();
+
+        if($this->uuid == NULL){
+            $this->generateUuid();
+        }
+
+        $obj["uuid"] = $this->uuid;
+        $obj["number"] = $this->numero;
+
+        $obj["pairings"] = array();
+        foreach($this->emparceiramentos->all() as $emparceiramento){
+            $obj["pairings"][] = $emparceiramento->export("xadrezsuico");
+        }
+
+        return $obj;
+    }
+
+    public function generateUuid(){
+        if($this->uuid == NULL){
+            $this->uuid = Str::uuid();
+            $this->save();
+        }
     }
 }

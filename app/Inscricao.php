@@ -196,4 +196,75 @@ class Inscricao extends Model
         if($inscricoes_count > 0) return true;
         return false;
     }
+
+    public function getCategoriaTorneioUuid(){
+        $categoria_torneio = $this->torneio->categorias()->where([["categoria_id","=",$this->categoria->id]])->first();
+        return $categoria_torneio->uuid;
+    }
+
+    public function export($type){
+        switch($type){
+            case "xadrezsuico":
+                return $this->exportXadrezSuico();
+        }
+
+        return null;
+    }
+
+    public function exportXadrezSuico(){
+        $obj = array();
+
+        if($this->uuid == NULL){
+            $this->generateUuid();
+        }
+
+        $obj["uuid"] = $this->uuid;
+        $obj["name"] = $this->enxadrista->name;
+        $obj["city"] = $this->cidade->export("xadrezsuico");
+        $obj["club"] = ($this->clube) ? $this->clube->export("xadrezsuico") : ["uuid"=>"","name"=>""];
+        $obj["category_uuid"] = $this->getCategoriaTorneioUuid();
+        $obj["borndate"] = $this->enxadrista->getBorn();
+
+        $obj["int_id"] = null;
+        $obj["int_rating"] = null;
+
+        $obj["xz_id"] = $this->enxadrista->id;
+        if($this->torneio->evento->tipo_rating){
+            $obj["xz_rating"] = $this->enxadrista->ratingParaEvento($this->torneio->evento->id,true);
+        }else{
+            $obj["xz_rating"] = null;
+        }
+
+        $obj["nat_id"] = null;
+        $obj["nat_rating"] = null;
+
+        if($this->torneio->evento->usa_cbx && !$this->torneio->evento->usa_lbx){
+            $obj["nat_id"] = $this->enxadrista->cbx_id;
+            $obj["nat_rating"] = $this->enxadrista->showRating(1, $this->torneio->evento->tipo_modalidade);
+        }
+
+        if(!$this->torneio->evento->usa_cbx && $this->torneio->evento->usa_lbx){
+            $obj["nat_id"] = $this->enxadrista->lbx_id;
+            $obj["nat_rating"] = $this->enxadrista->showRating(2, $this->torneio->evento->tipo_modalidade);
+        }
+
+        if(!$this->torneio->evento->usa_fide){
+            $obj["fide_id"] = $this->enxadrista->fide_id;
+            $obj["fide_rating"] = $this->enxadrista->showRating(0, $this->torneio->evento->tipo_modalidade);
+        }else{
+            $obj["fide_id"] = null;
+            $obj["fide_rating"] = null;
+        }
+
+        $obj["rounds_out"] = [];
+
+        return $obj;
+    }
+
+    public function generateUuid(){
+        if($this->uuid == NULL){
+            $this->uuid = Str::uuid();
+            $this->save();
+        }
+    }
 }

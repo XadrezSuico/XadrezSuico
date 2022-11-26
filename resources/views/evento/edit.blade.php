@@ -122,6 +122,12 @@
                                 Edição de Inscrição
                             </a>
 							<hr/>
+                            <h4>XadrezSuíço Emparceirador:</h4>
+							<a href="{{url("/evento/".$evento->id."/exports/xadrezsuicoemparceirador")}}" class="btn btn-app">
+								<i class="fa fa-download"></i>
+								Baixar Arquivo do XadrezSuíço Emparceirador (Todas as inscrições)
+							</a>
+                            <hr/>
                             <h4>Divulgação de Emparceiramentos:</h4>
 							<a href="{{url("/evento/acompanhar/".$evento->id)}}" class="btn btn-app">
 								<i class="fa fa-eye"></i>

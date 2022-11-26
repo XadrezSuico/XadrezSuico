@@ -145,6 +145,9 @@ Route::group(["prefix"=>"evento"],function(){
     Route::group(["prefix"=>"{id}/relatorios"],function(){
         Route::get('/premiados', 'EventoGerenciarController@relatorio_premiados')->name('evento.relatorios.premiados');
     });
+    Route::group(["prefix"=>"{id}/exports"],function(){
+        Route::get('/xadrezsuicoemparceirador', 'Exports\XadrezSuicoEmparceiradorController@export')->name('evento.exports.xadrezsuicoemparceirador');
+    });
 
 
 
