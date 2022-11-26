@@ -43,7 +43,7 @@
                 <strong>Pontuação Atual:</strong> @if($pontuacao_enxadrista) {{$pontuacao_enxadrista->pontos}} @else - @endif<br/>
                 <strong>Quantidade de Etapas Consideradas para a Pontuação:</strong> @if($pontuacao_enxadrista) {{$pontuacao_enxadrista->inscricoes_calculadas}} @else - @endif<br/>
                 @if($grupo_evento->limite_calculo_geral) <strong>Limite de Etapas Consideradas para a Pontuação neste Grupo de Evento:</strong> {{$grupo_evento->limite_calculo_geral}} @endif
-        
+
                 <table class="table-responsive table-condensed table-striped tabela" style="width: 100%">
                     <thead>
                         <tr>
@@ -63,7 +63,7 @@
                                 <td>{{$inscricao->torneio->name}}</td>
                                 <td>{{$inscricao->categoria->name}}</td>
                                 <td>{{$inscricao->posicao}}</td>
-                                <td>@if($inscricao->pontos_geral) {{$inscricao->pontos_geral}} @else - @endif</td>
+                                <td>@if($inscricao->pontos_geral && $inscricao->confirmado && !$inscricao->is_desclassificado && !$inscricao->desconsiderar_pontuacao_geral) {{$inscricao->pontos_geral}} @else - @endif</td>
                             </tr>
                         @endforeach
                     </tbody>
@@ -77,7 +77,7 @@
 <script type="text/javascript">
     $(document).ready(function(){
         $(".tabela").DataTable({
-            responsive: true, 
+            responsive: true,
             "ordering": false,
         });
     });
