@@ -206,12 +206,14 @@ class Inscricao extends Model
         switch($type){
             case "xadrezsuico":
                 return $this->exportXadrezSuico();
+            case "xadrezsuico-data":
+                return $this->exportXadrezSuico(true);
         }
 
         return null;
     }
 
-    public function exportXadrezSuico(){
+    public function exportXadrezSuico($send_data = false){
         $obj = array();
 
         if($this->uuid == NULL){
@@ -248,7 +250,7 @@ class Inscricao extends Model
             $obj["nat_rating"] = $this->enxadrista->showRating(2, $this->torneio->evento->tipo_modalidade);
         }
 
-        if(!$this->torneio->evento->usa_fide){
+        if($this->torneio->evento->usa_fide){
             $obj["fide_id"] = $this->enxadrista->fide_id;
             $obj["fide_rating"] = $this->enxadrista->showRating(0, $this->torneio->evento->tipo_modalidade);
         }else{

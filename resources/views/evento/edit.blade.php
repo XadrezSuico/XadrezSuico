@@ -125,7 +125,11 @@
                             <h4>XadrezSuíço Emparceirador:</h4>
 							<a href="{{url("/evento/".$evento->id."/exports/xadrezsuicoemparceirador")}}" class="btn btn-app">
 								<i class="fa fa-download"></i>
-								Baixar Arquivo do XadrezSuíço Emparceirador (Todas as inscrições)
+								Baixar Arquivo do XadrezSuíço Emparceirador (Todas as inscrições - Sem dados)
+							</a>
+							<a href="{{url("/evento/".$evento->id."/exports/xadrezsuicoemparceirador/data")}}" class="btn btn-app">
+								<i class="fa fa-download"></i>
+								Baixar Arquivo do XadrezSuíço Emparceirador (Inscrições Confirmadas - Com dados)
 							</a>
                             <hr/>
                             <h4>Divulgação de Emparceiramentos:</h4>

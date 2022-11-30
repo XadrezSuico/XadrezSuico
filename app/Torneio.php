@@ -222,12 +222,14 @@ class Torneio extends Model
         switch($type){
             case "xadrezsuico":
                 return $this->exportXadrezSuico();
+            case "xadrezsuico-data":
+                return $this->exportXadrezSuico(true);
         }
 
         return null;
     }
 
-    public function exportXadrezSuico(){
+    public function exportXadrezSuico($send_data){
         $obj = array();
 
         if($this->uuid == NULL){
@@ -244,7 +246,7 @@ class Torneio extends Model
                 $obj["tournament_type"] =  "SCHURING";
                 break;
         }
-        $obj["rounds_number"] = 0;
+        $obj["rounds_number"] = ($send_data) ? (($this->rodadas()->count() > 0) ? $this->rodadas()->count() : 0) : 0;
         $obj["table_start_number"] = 1;
 
         $obj["ordering_sequence"] = array();
@@ -256,14 +258,22 @@ class Torneio extends Model
         }
 
 
-        $obj["rounds"] = array();
-        foreach($this->rodadas->all() as $rodada){
-            $obj["rounds"][] = $rodada->export("xadrezsuico");
+        if($send_data){
+            $obj["rounds"] = array();
+            foreach($this->rodadas->all() as $rodada){
+                $obj["rounds"][] = $rodada->export("xadrezsuico");
+            }
         }
 
         $obj["players"] = array();
         foreach($this->inscricoes->all() as $inscricao){
-            $obj["players"][] = $inscricao->export("xadrezsuico");
+            if($send_data){
+                if($inscricao->confirmado){
+                    $obj["players"][] = $inscricao->export("xadrezsuico");
+                }
+            }else{
+                $obj["players"][] = $inscricao->export("xadrezsuico");
+            }
         }
 
         return $obj;

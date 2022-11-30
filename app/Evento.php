@@ -522,12 +522,14 @@ class Evento extends Model
         switch($type){
             case "xadrezsuico":
                 return $this->exportXadrezSuico();
+            case "xadrezsuico-data":
+                return $this->exportXadrezSuico(true);
         }
 
         return null;
     }
 
-    public function exportXadrezSuico(){
+    public function exportXadrezSuico($send_data = false){
         $obj = array();
 
         if($this->uuid == NULL){
@@ -552,7 +554,7 @@ class Evento extends Model
 
         $obj["tournaments"] = array();
         foreach($this->torneios->all() as $torneio){
-            $obj["tournaments"][] = $torneio->export("xadrezsuico");
+            $obj["tournaments"][] = ($send_data) ? $torneio->export("xadrezsuico-data") : $torneio->export("xadrezsuico");
         }
 
         return $obj;

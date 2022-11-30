@@ -147,6 +147,7 @@ Route::group(["prefix"=>"evento"],function(){
     });
     Route::group(["prefix"=>"{id}/exports"],function(){
         Route::get('/xadrezsuicoemparceirador', 'Exports\XadrezSuicoEmparceiradorController@export')->name('evento.exports.xadrezsuicoemparceirador');
+        Route::get('/xadrezsuicoemparceirador/data', 'Exports\XadrezSuicoEmparceiradorController@export_data')->name('evento.exports.xadrezsuicoemparceirador.data');
     });
 
 

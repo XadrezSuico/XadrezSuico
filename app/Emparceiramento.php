@@ -140,7 +140,7 @@ class Emparceiramento extends Model
         $obj["player_a_uuid"] = $this->inscricao_A->uuid;
         $obj["player_a_result"] = (float) $this->resultado_a;
         $obj["player_a_wo"] = $this->is_wo_a;
-        $obj["player_b_uuid"] = $this->inscricao_B->uuid;
+        $obj["player_b_uuid"] = ($this->inscricao_b) ? $this->inscricao_B->uuid : null;
         $obj["player_b_result"] = (float) $this->resultado_b;
         $obj["player_b_wo"] = $this->is_wo_b;
         $obj["have_result"] = ($this->resultado_a || $this->resultado_b || $this->resultado) ? true : false;

@@ -968,7 +968,7 @@ class Torneio_ImportacaoController extends Controller
 
                 $retornos[] = date("d/m/Y H:i:s") . " - Iniciando o Processamento de Emparceiramento da Mesa ".$line[($fields["Mesa"])]." .";
                 if(isset($line[($fields["ID-B"])]) && isset($line[($fields["ID-N"])])){
-                    if($line[($fields["ID-B"])] > 0 && $line[($fields["ID-N"])] > 0){
+                    if($line[($fields["ID-B"])] > 0){
                         $emparceiramento = new Emparceiramento;
                         $emparceiramento->rodadas_id = $rodada->id;
                         $emparceiramento->numero = $line[($fields["Mesa"])];
@@ -982,12 +982,14 @@ class Torneio_ImportacaoController extends Controller
                         }else{
                             $all_enxadristas_found = false;
                         }
-                        // Busca do Enxadrista B
-                        $enxadrista_b_count = Enxadrista::where([["id","=",$line[($fields["ID-N"])]]])->count();
-                        if($enxadrista_b_count > 0){
-                            $enxadrista_b = Enxadrista::find($line[($fields["ID-N"])]);
-                        }else{
-                            $all_enxadristas_found = false;
+                        if($line[($fields["ID-N"])] > 0){
+                            // Busca do Enxadrista B
+                            $enxadrista_b_count = Enxadrista::where([["id","=",$line[($fields["ID-N"])]]])->count();
+                            if($enxadrista_b_count > 0){
+                                $enxadrista_b = Enxadrista::find($line[($fields["ID-N"])]);
+                            }else{
+                                $all_enxadristas_found = false;
+                            }
                         }
 
                         if($all_enxadristas_found){
@@ -999,17 +1001,23 @@ class Torneio_ImportacaoController extends Controller
                             } else {
                                 $all_enxadristas_are_inscritos = false;
                             }
-                            if ($enxadrista_b->estaInscrito($torneio->evento->id)) {
-                                $inscricao_b = $enxadrista_b->getInscricao($torneio->evento->id);
-                            } else {
-                                $all_enxadristas_are_inscritos = false;
+
+                            if($line[($fields["ID-N"])] > 0){
+                                if ($enxadrista_b->estaInscrito($torneio->evento->id)) {
+                                    $inscricao_b = $enxadrista_b->getInscricao($torneio->evento->id);
+                                } else {
+                                    $all_enxadristas_are_inscritos = false;
+                                }
                             }
 
 
                             if($all_enxadristas_are_inscritos){
 
                                 $emparceiramento->inscricao_a = $inscricao_a->id;
-                                $emparceiramento->inscricao_b = $inscricao_b->id;
+
+                                if($line[($fields["ID-N"])] > 0){
+                                    $emparceiramento->inscricao_b = $inscricao_b->id;
+                                }
 
                                 if($torneio->evento->tipo_rating){
                                     /*
@@ -1029,13 +1037,21 @@ class Torneio_ImportacaoController extends Controller
                                 }
 
                                 $emparceiramento->numero_a = $line[($fields["NoB"])];
-                                $emparceiramento->numero_b = $line[($fields["NoN"])];
+
+                                if($line[($fields["ID-N"])] > 0){
+                                    $emparceiramento->numero_b = $line[($fields["NoN"])];
+                                }
 
                                 $explode_res_a = explode(",",$line[($fields["ResB"])]);
-                                $explode_res_b = explode(",",$line[($fields["ResM"])]);
+                                if($line[($fields["ID-N"])] > 0){
+                                    $explode_res_b = explode(",",$line[($fields["ResM"])]);
+                                }
 
                                 $emparceiramento->resultado_a = (count($explode_res_a) > 1) ? $explode_res_a[0].".".$explode_res_a[1] : $explode_res_a[0];
-                                $emparceiramento->resultado_b = (count($explode_res_b) > 1) ? $explode_res_b[0].".".$explode_res_b[1] : $explode_res_b[0];
+
+                                if($line[($fields["ID-N"])] > 0){
+                                    $emparceiramento->resultado_b = (count($explode_res_b) > 1) ? $explode_res_b[0].".".$explode_res_b[1] : $explode_res_b[0];
+                                }
 
                                 if(isset($line[($fields["WO"])])){
                                     if($line[($fields["WO"])] != ""){
