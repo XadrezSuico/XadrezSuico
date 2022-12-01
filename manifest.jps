@@ -1,11 +1,11 @@
 version: '1.4.2'
 appVersion: latest
 type: install
-id: laravel
-name: Laravel
+id: xadrezsuico
+name: XadrezSuíço
 baseUrl: https://raw.githubusercontent.com/jelastic-jps/laravel/master
 logo: /images/logo-transparent.png
-homepage: http://www.laravel.com/
+homepage: http://xadrezsuico.github.io/
 
 categories:
 - apps/dev-and-admin-tools
@@ -35,26 +35,13 @@ actions:
       mv composer.phar /usr/bin/composer
       chmod +x /usr/bin/composer
       cd ${globals.laravelroot}
-      git clone https://github.com/laravel/laravel.git
-      cd ${globals.laravelroot}/laravel
+      rm -rf *
+      git clone https://github.com/xadrezsuico/xadrezsuico.git ./
       composer install
-      chown -R apache.apache ${globals.laravelroot}/laravel
-      chmod -R 755 ${globals.laravelroot}/laravel
+      chown -R apache.apache ${globals.laravelroot}
+      chmod -R 755 ${globals.laravelroot}
       cp .env.example .env
       php artisan key:generate
     user: root
 
-  laravelexecutable-install:
-    cmd[cp]:
-      composer global require "laravel/installer";
-      echo 'export PATH="~/webroot/ROOT/laravel/vendor/bin/:~/.config/composer/vendor/bin/:$PATH"' >> /var/www/.bashrc;
-
-  newdb-project-script:
-    cmd[cp]:
-      cd ${globals.laravelroot};	
-      wget ${baseUrl}/scripts/newdb-project.sh -O newdb-project.sh;
-      chmod +x newdb-project.sh;
-
-startPage: /laravel/public
-
-success: /texts/success.md
+startPage: /public
