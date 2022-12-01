@@ -229,7 +229,7 @@ class Torneio extends Model
         return null;
     }
 
-    public function exportXadrezSuico($send_data){
+    public function exportXadrezSuico($send_data = false){
         $obj = array();
 
         if($this->uuid == NULL){
@@ -258,8 +258,8 @@ class Torneio extends Model
         }
 
 
+        $obj["rounds"] = array();
         if($send_data){
-            $obj["rounds"] = array();
             foreach($this->rodadas->all() as $rodada){
                 $obj["rounds"][] = $rodada->export("xadrezsuico");
             }
