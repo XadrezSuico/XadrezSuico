@@ -4,6 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use Spatie\Activitylog\Traits\LogsActivity;
+use Illuminate\Support\Str;
 
 use DateTime;
 
@@ -20,6 +21,40 @@ class Torneio extends Model
     public $timestamps = true;
     protected $primaryKey = 'id';
     protected $table = 'torneio';
+
+
+    public static function boot()
+    {
+        parent::boot();
+
+        self::creating(function($model){
+            if($model->uuid == NULL){
+                $model->uuid = Str::uuid();
+            }
+        });
+
+        // self::created(function($model){
+        //     // ... code here
+        // });
+
+        self::updating(function($model){
+            if($model->uuid == NULL){
+                $model->uuid = Str::uuid();
+            }
+        });
+
+        // self::updated(function($model){
+        //     // ... code here
+        // });
+
+        // self::deleting(function($model){
+        //     // ... code here
+        // });
+
+        // self::deleted(function($model){
+        //     // ... code here
+        // });
+    }
 
     public function template()
     {
@@ -179,6 +214,75 @@ class Torneio extends Model
             return true;
         } else {
             return false;
+        }
+    }
+
+
+    public function export($type){
+        switch($type){
+            case "xadrezsuico":
+                return $this->exportXadrezSuico();
+            case "xadrezsuico-data":
+                return $this->exportXadrezSuico(true);
+        }
+
+        return null;
+    }
+
+    public function exportXadrezSuico($send_data = false){
+        $obj = array();
+
+        if($this->uuid == NULL){
+            $this->generateUuid();
+        }
+
+        $obj["uuid"] = $this->uuid;
+        $obj["name"] = $this->name;
+        switch($this->tipo_torneio->id){
+            case 1:
+                $obj["tournament_type"] =  "SWISS";
+                break;
+            case 2:
+                $obj["tournament_type"] =  "SCHURING";
+                break;
+        }
+        $obj["rounds_number"] = ($send_data) ? (($this->rodadas()->count() > 0) ? $this->rodadas()->count() : 0) : 0;
+        $obj["table_start_number"] = 1;
+
+        $obj["ordering_sequence"] = array();
+        $obj["tiebreaks"] = array();
+
+        $obj["categories"] = array();
+        foreach($this->categorias->all() as $categoria_torneio){
+            $obj["categories"][] = $categoria_torneio->export("xadrezsuico");
+        }
+
+
+        $obj["rounds"] = array();
+        if($send_data){
+            foreach($this->rodadas->all() as $rodada){
+                $obj["rounds"][] = $rodada->export("xadrezsuico");
+            }
+        }
+
+        $obj["players"] = array();
+        foreach($this->inscricoes->all() as $inscricao){
+            if($send_data){
+                if($inscricao->confirmado){
+                    $obj["players"][] = $inscricao->export("xadrezsuico");
+                }
+            }else{
+                $obj["players"][] = $inscricao->export("xadrezsuico");
+            }
+        }
+
+        return $obj;
+    }
+
+    public function generateUuid(){
+        if($this->uuid == NULL){
+            $this->uuid = Str::uuid();
+            $this->save();
         }
     }
 }

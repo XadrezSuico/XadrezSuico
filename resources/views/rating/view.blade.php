@@ -65,7 +65,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($rating->movimentacoes()->orderBy("torneio_id","ASC")->get() as $movimentacao)
+                    @foreach($rating->getMovimentacoes() as $movimentacao)
                         <tr>
                             <td>{{$movimentacao->id}}</td>
                             <td>@if(!$movimentacao->is_inicial) {{$movimentacao->torneio->evento->grupo_evento->name}} @else - @endif</td>
@@ -98,20 +98,9 @@
             resize    : true,
             data      : [
                 @php($ratingGrafico = 0)
-                @php($primeiraMovimentacaoRating = $rating->movimentacoes()->where([["is_inicial","=",0]])->orderBy("torneio_id","ASC")->first())
-                @foreach($rating->movimentacoes()->orderBy("torneio_id","ASC")->get() as $movimentacao)
-                    @if($movimentacao->is_inicial)
-                        @php($ratingGrafico = $movimentacao->valor)
-                        @if($primeiraMovimentacaoRating)
-                            { y: '{{(date("Y-m-d",strtotime($primeiraMovimentacaoRating->torneio->evento->data_fim)-(60*60*24)))}}', rating: {{$ratingGrafico}} },
-                        @else
-                            { y: '{{$movimentacao->created_at}}', rating: {{$ratingGrafico}} },
-                        @endif
-                    @else
-                        @php($ratingGrafico += $movimentacao->valor)
-                        { y: '{{$movimentacao->torneio->evento->data_fim}}', rating: {{$ratingGrafico}} },
-                    @endif
-
+                @foreach($rating->getMovimentacoes() as $movimentacao)
+                    @php($ratingGrafico += $movimentacao->valor)
+                    { y: '{{($movimentacao->is_inicial) ? date("Y",strtotime($movimentacao->created_at))."-01-01" : $movimentacao->torneio->evento->data_fim}}', rating: {{$ratingGrafico}} },
                 @endforeach
             ],
             xkey      : 'y',

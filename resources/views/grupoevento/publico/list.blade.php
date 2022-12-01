@@ -38,14 +38,6 @@
                             <th>{{$criterio->criterio->code}}</th>
                         @endforeach
                     </tr>
-                    @if(count((array)$eventos) > 0)
-                        <tr>
-                            @php($i=1)
-                            @foreach($eventos as $evento)
-                                <th>E{{$i++}}</th>
-                            @endforeach
-                        </tr>
-                    @endif
                 </thead>
                 <tbody>
                     @foreach($pontuacoes as $pontuacao)
@@ -92,13 +84,6 @@
                     @endforeach
                 </div>
                 <div class="col-md-6">
-                    @if(count((array)$eventos) > 0)
-                        <h4>Legenda dos Eventos:</h4><br/>
-                        @php($i=1)
-                        @foreach($eventos as $evento)
-                            <strong>E{{$i++}}</strong>: {{$evento->name}}<br/>
-                        @endforeach
-                    @endif
                 </div>
             </div>
         </div>
@@ -127,6 +112,9 @@
             ],
             paging: false
         });
+        // $("#tabela").DataTable({
+        //     responsive: true,
+        // });
     });
 </script>
 @endsection

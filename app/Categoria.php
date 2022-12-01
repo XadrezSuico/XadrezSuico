@@ -4,6 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use Spatie\Activitylog\Traits\LogsActivity;
+use Illuminate\Support\Str;
 
 class Categoria extends Model
 {
@@ -18,6 +19,40 @@ class Categoria extends Model
     public $timestamps = true;
     protected $primaryKey = 'id';
     protected $table = 'categoria';
+
+
+    public static function boot()
+    {
+        parent::boot();
+
+        self::creating(function($model){
+            if($model->uuid == NULL){
+                $model->uuid = Str::uuid();
+            }
+        });
+
+        // self::created(function($model){
+        //     // ... code here
+        // });
+
+        self::updating(function($model){
+            if($model->uuid == NULL){
+                $model->uuid = Str::uuid();
+            }
+        });
+
+        // self::updated(function($model){
+        //     // ... code here
+        // });
+
+        // self::deleting(function($model){
+        //     // ... code here
+        // });
+
+        // self::deleted(function($model){
+        //     // ... code here
+        // });
+    }
 
     // AQUELA Categoria CLASSIFICA PARA ESTA Categoria
     public function classificadora()
@@ -97,6 +132,13 @@ class Categoria extends Model
             return true;
         } else {
             return false;
+        }
+    }
+
+    public function generateUuid(){
+        if($this->uuid == NULL){
+            $this->uuid = Str::uuid();
+            $this->save();
         }
     }
 }

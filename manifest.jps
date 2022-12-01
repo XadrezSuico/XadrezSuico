@@ -1,0 +1,60 @@
+version: '1.4.2'
+appVersion: latest
+type: install
+id: laravel
+name: Laravel
+baseUrl: https://raw.githubusercontent.com/jelastic-jps/laravel/master
+logo: /images/logo-transparent.png
+homepage: http://www.laravel.com/
+
+categories:
+- apps/dev-and-admin-tools
+
+description:
+  text: /texts/description.md
+  short: Open-source PHP web framework for rapid development
+
+globals:
+  laravelroot: /var/www/webroot/ROOT
+
+nodes:
+- cloudlets: 16
+  nodeType: apache
+
+onInstall:
+  - laravelconfig
+  - laravelexecutable-install
+  - newdb-project-script
+  - restartNodes:
+    - nodeGroup: [cp]
+
+actions:
+  laravelconfig:
+    cmd[cp]: |-
+      curl -sS https://getcomposer.org/installer | php
+      mv composer.phar /usr/bin/composer
+      chmod +x /usr/bin/composer
+      cd ${globals.laravelroot}
+      git clone https://github.com/laravel/laravel.git
+      cd ${globals.laravelroot}/laravel
+      composer install
+      chown -R apache.apache ${globals.laravelroot}/laravel
+      chmod -R 755 ${globals.laravelroot}/laravel
+      cp .env.example .env
+      php artisan key:generate
+    user: root
+
+  laravelexecutable-install:
+    cmd[cp]:
+      composer global require "laravel/installer";
+      echo 'export PATH="~/webroot/ROOT/laravel/vendor/bin/:~/.config/composer/vendor/bin/:$PATH"' >> /var/www/.bashrc;
+
+  newdb-project-script:
+    cmd[cp]:
+      cd ${globals.laravelroot};	
+      wget ${baseUrl}/scripts/newdb-project.sh -O newdb-project.sh;
+      chmod +x newdb-project.sh;
+
+startPage: /laravel/public
+
+success: /texts/success.md

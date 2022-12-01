@@ -43,16 +43,16 @@ class CategoriaController extends Controller
             ->orderBy("pontos", "DESC")
             ->count();
 
-            $inscricoes = Inscricao::where([
+        $inscricoes = Inscricao::where([
             ["categoria_id", "=", $categoria->id],
         ])
-            ->whereHas("torneio", function ($q1) use ($evento) {
-                $q1->where([
-                    ["evento_id", "=", $evento->id],
-                ]);
-            })
-            ->orderBy("pontos", "DESC")
-            ->get();
+        ->whereHas("torneio", function ($q1) use ($evento) {
+            $q1->where([
+                ["evento_id", "=", $evento->id],
+            ]);
+        })
+        ->orderBy("pontos", "DESC")
+        ->get();
         echo $inscricoes_count;
         foreach ($inscricoes as $inscricao) {
             if ($inscricao->pontos != null && $inscricao->confirmado) {
@@ -144,6 +144,8 @@ class CategoriaController extends Controller
         $retornos = array();
         $retornos[] = date("d/m/Y H:i:s") . " - Função de Soma de Pontos";
         $retornos[] = date("d/m/Y H:i:s") . " - Zerando pontuações existentes";
+        Log::debug("Função de Soma de Pontos");
+        Log::debug("Zerando pontuações existentes");
         foreach (PontuacaoEnxadrista::where([
             ["grupo_evento_id", "=", $grupo_evento->id],
             ["categoria_id", "=", $categoria->id],
@@ -155,20 +157,22 @@ class CategoriaController extends Controller
         }
         $retornos[] = date("d/m/Y H:i:s") . " - Listando Eventos do Grupo de Evento";
         $retornos[] = "<hr/>";
-        foreach ($grupo_evento->eventos()->where([["classificavel", "=", true]])->get() as $evento) {
-            $retornos[] = date("d/m/Y H:i:s") . " - Evento: " . $evento->name;
+        Log::debug("Listando Eventos do Grupo de Evento");
+        $eventos_id = $grupo_evento->eventos()->where([["classificavel", "=", true]])->pluck("id");
+        // foreach ($grupo_evento->eventos()->where([["classificavel", "=", true]])->get() as $evento) {
+            $retornos[] = date("d/m/Y H:i:s") . " - Eventos: " . json_encode($eventos_id);
 
             $inscricoes_count = Inscricao::where([
                 ["categoria_id", "=", $categoria->id],
                 ["pontos_geral", "!=", null],
                 ["pontos_geral", ">", 0],
             ])
-            ->whereHas("torneio", function ($q1) use ($evento) {
-                $q1->where([
-                    ["evento_id", "=", $evento->id],
-                ]);
+            ->whereHas("torneio", function ($q1) use ($eventos_id) {
+                // $q1->where([
+                //     ["evento_id", "=", $evento->id],
+                // ]);
+                $q1->whereIn("evento_id",$eventos_id);
             })
-            ->orderBy("pontos", "DESC")
             ->count();
 
             $inscricoes = Inscricao::where([
@@ -176,17 +180,21 @@ class CategoriaController extends Controller
                 ["pontos_geral", "!=", null],
                 ["pontos_geral", ">", 0],
             ])
-            ->whereHas("torneio", function ($q1) use ($evento) {
-                $q1->where([
-                    ["evento_id", "=", $evento->id],
-                ]);
+            ->orderBy("enxadrista_id", "DESC")
+            ->orderBy("pontos_geral", "DESC")
+            ->whereHas("torneio", function ($q1) use ($eventos_id) {
+                // $q1->where([
+                //     ["evento_id", "=", $evento->id],
+                // ]);
+                $q1->whereIn("evento_id",$eventos_id);
             })
-            ->orderBy("pontos", "DESC")
             ->get();
 
             $retornos[] = date("d/m/Y H:i:s") . " - Total de inscrições encontradas: " . $inscricoes_count;
+            Log::debug("Total de inscrições encontradas: " . $inscricoes_count);
             foreach ($inscricoes as $inscricao) {
                 $retornos[] = date("d/m/Y H:i:s") . " - Inscrição #: " . $inscricao->id . " - Enxadrista: " . $inscricao->enxadrista->name;
+                Log::debug("Inscrição #: " . $inscricao->id . " - Enxadrista: " . $inscricao->enxadrista->name);
                 $pontos_geral = PontuacaoEnxadrista::where([
                     ["enxadrista_id", "=", $inscricao->enxadrista->id],
                     ["grupo_evento_id", "=", $inscricao->torneio->evento->grupo_evento->id],
@@ -198,12 +206,16 @@ class CategoriaController extends Controller
                     $pontos_geral->grupo_evento_id = $inscricao->torneio->evento->grupo_evento->id;
                     $pontos_geral->categoria_id = $inscricao->categoria->id;
                     $pontos_geral->pontos = 0;
+                    $pontos_geral->inscricoes_calculadas = 0;
                 }
 
                 if ($grupo_evento->limite_calculo_geral) {
                     $retornos[] = date("d/m/Y H:i:s") . " - Limite do Grupo de Evento: " . $grupo_evento->limite_calculo_geral;
                     $retornos[] = date("d/m/Y H:i:s") . " - Quantidade de inscrições calculadas já deste enxadrista: " . $pontos_geral->inscricoes_calculadas;
                     $retornos[] = date("d/m/Y H:i:s") . " - Pontos desta inscrição: " . $inscricao->pontos_geral;
+                    Log::debug("Limite do Grupo de Evento: " . $grupo_evento->limite_calculo_geral);
+                    Log::debug("Quantidade de inscrições calculadas já deste enxadrista: " . $pontos_geral->inscricoes_calculadas);
+                    Log::debug("Pontos desta inscrição: " . $inscricao->pontos_geral);
                     if ($grupo_evento->limite_calculo_geral > $pontos_geral->inscricoes_calculadas) {
                         $pontos_geral->pontos += $inscricao->pontos_geral;
                         $pontos_geral->inscricoes_calculadas++;
@@ -215,8 +227,9 @@ class CategoriaController extends Controller
                 $pontos_geral->save();
                 $retornos[] = "<hr/>";
             }
-        }
+        // }
         $retornos[] = date("d/m/Y H:i:s") . " - Finalizada a Função de Soma de Pontos";
+        Log::debug("Finalizada a Função de Soma de Pontos");
         return $retornos;
     }
 

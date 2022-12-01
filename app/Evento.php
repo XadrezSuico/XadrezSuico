@@ -7,6 +7,7 @@ use App\TipoRatingRegras;
 use DateTime;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\Activitylog\Traits\LogsActivity;
+use Illuminate\Support\Str;
 
 class Evento extends Model
 {
@@ -21,6 +22,40 @@ class Evento extends Model
     public $timestamps = true;
     protected $primaryKey = 'id';
     protected $table = 'evento';
+
+
+    public static function boot()
+    {
+        parent::boot();
+
+        self::creating(function($model){
+            if($model->uuid == NULL){
+                $model->uuid = Str::uuid();
+            }
+        });
+
+        // self::created(function($model){
+        //     // ... code here
+        // });
+
+        self::updating(function($model){
+            if($model->uuid == NULL){
+                $model->uuid = Str::uuid();
+            }
+        });
+
+        // self::updated(function($model){
+        //     // ... code here
+        // });
+
+        // self::deleting(function($model){
+        //     // ... code here
+        // });
+
+        // self::deleted(function($model){
+        //     // ... code here
+        // });
+    }
 
     // AQUELE Evento CLASSIFICA PARA ESTE Evento
     public function classificador()
@@ -478,5 +513,57 @@ class Evento extends Model
             }
         }
         return false;
+    }
+
+
+
+
+    public function export($type){
+        switch($type){
+            case "xadrezsuico":
+                return $this->exportXadrezSuico();
+            case "xadrezsuico-data":
+                return $this->exportXadrezSuico(true);
+        }
+
+        return null;
+    }
+
+    public function exportXadrezSuico($send_data = false){
+        $obj = array();
+
+        if($this->uuid == NULL){
+            $this->generateUuid();
+        }
+
+        $obj["uuid"] = $this->uuid;
+        $obj["name"] = $this->name;
+        $obj["date_start"] = $this->getDataInicio();
+        $obj["date_finish"] = $this->getDataFim();
+        $obj["place"] = $this->local;
+        switch($this->tipo_modalidade){
+            case 0:
+                $obj["time_control"] = "STD";
+                break;
+            case 1:
+                $obj["time_control"] = "RPD";
+                break;
+            case 2:
+                $obj["time_control"] = "BTZ";
+        }
+
+        $obj["tournaments"] = array();
+        foreach($this->torneios->all() as $torneio){
+            $obj["tournaments"][] = ($send_data) ? $torneio->export("xadrezsuico-data") : $torneio->export("xadrezsuico");
+        }
+
+        return $obj;
+    }
+
+    public function generateUuid(){
+        if($this->uuid == NULL){
+            $this->uuid = Str::uuid();
+            $this->save();
+        }
     }
 }

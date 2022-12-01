@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
 use Spatie\Activitylog\Traits\LogsActivity;
 
 class Rating extends Model
@@ -44,5 +45,28 @@ class Rating extends Model
         activity("rating__calculate_update")
             ->performedOn($this)
             ->log("Rating atualizado.");
+    }
+
+    public function getMovimentacoes(){
+        $movimentacoes = array();
+
+        $primeira_movimentacao = $this->movimentacoes()->where([["is_inicial","=",true]])->first();
+        if($primeira_movimentacao){
+            $movimentacoes[] = $primeira_movimentacao;
+        }
+
+        $movimentacoes_rating = $this->movimentacoes()->with(['torneio' => function ($q1) {
+                                        $q1->with(["evento" => function($q2){
+                                            $q2->orderBy('data_fim', 'ASC');
+                                        }]);
+                                    }])
+                                    ->where([["is_inicial","=",0]])
+                                    ->get();
+
+        foreach($movimentacoes_rating as $movimentacao_rating){
+            $movimentacoes[] = $movimentacao_rating;
+        }
+
+        return $movimentacoes;
     }
 }
