@@ -3,7 +3,7 @@ appVersion: latest
 type: install
 id: xadrezsuico
 name: XadrezSuíço
-baseUrl: https://raw.githubusercontent.com/jelastic-jps/laravel/master
+baseUrl: https://raw.githubusercontent.com/xadrezsuico/xadrezsuico/develop
 logo: /images/logo-transparent.png
 homepage: http://xadrezsuico.github.io/
 
@@ -11,15 +11,26 @@ categories:
 - apps/dev-and-admin-tools
 
 description:
-  text: /texts/description.md
-  short: Open-source PHP web framework for rapid development
+  text: /jelastic-description.md
+  short: Sistema de gerenciamento de circuitos de Xadrez
 
 globals:
   laravelroot: /var/www/webroot/ROOT
 
 nodes:
-- cloudlets: 16
-  nodeType: apache
+- nodeType: apache
+  tag: 2.4.46-php-7.4.10
+  fixedCloudlets: 4
+  cloudlets: 16
+  diskLimit: 50G
+  displayName: Apache+PHP+XadrezSuíço
+- nodeType: postgresql
+  tag: 12.4
+  fixedCloudlets: 3
+  cloudlets: 12
+  diskLimit: 50G
+  displayName: PostgreSQL
+
 
 onInstall:
   - laravelconfig
