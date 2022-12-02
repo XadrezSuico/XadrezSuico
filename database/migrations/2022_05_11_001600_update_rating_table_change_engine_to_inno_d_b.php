@@ -16,7 +16,7 @@ class UpdateRatingTableChangeEngineToInnoDB extends Migration
      */
     public function up()
     {
-        DB::statement("ALTER TABLE ratings ENGINE = InnoDB");
+        if(env("DB_CONNECTION","mysql") == "mysql") DB::statement("ALTER TABLE ratings ENGINE = InnoDB");
     }
 
     /**
