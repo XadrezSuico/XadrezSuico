@@ -25,11 +25,11 @@ class Cidade extends Model
     {
         parent::boot();
 
-        self::creating(function($model){
-            if($model->uuid == NULL){
-                $model->uuid = Str::uuid();
-            }
-        });
+        // self::creating(function($model){
+        //     if($model->uuid == NULL){
+        //         $model->uuid = Str::uuid();
+        //     }
+        // });
 
         // self::created(function($model){
         //     // ... code here
