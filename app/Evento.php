@@ -203,6 +203,11 @@ class Evento extends Model
         }
         $datetime = DateTime::createFromFormat('Y-m-d H:i:s', $this->data_limite_inscricoes_abertas);
         $datetime_data_fim = DateTime::createFromFormat('Y-m-d H:i:s', $this->data_fim." 23:59:59");
+        if($datetime_data_fim){
+            if ($datetime_data_fim->getTimestamp() <= time()) {
+                return true;
+            }
+        }
         if ($datetime) {
             if($only_date){
                 if ($api) {
@@ -220,19 +225,13 @@ class Evento extends Model
             }
 
             if ($api) {
-                if ($datetime->getTimestamp() >= time() && !$this->estaLotado()) {
-                    return false;
-                }
-                if ($datetime_data_fim->getTimestamp() >= time() && !$this->estaLotado()) {
+                if ($datetime->getTimestamp() + (60 * 5) >= time() && !$this->estaLotado()) {
                     return false;
                 } else {
                     return true;
                 }
             }
             if ($datetime->getTimestamp() >= time() && !$this->estaLotado()) {
-                return false;
-            }
-            if ($datetime_data_fim->getTimestamp() >= time() && !$this->estaLotado()) {
                 return false;
             } else {
                 return true;
