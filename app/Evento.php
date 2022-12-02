@@ -463,6 +463,13 @@ class Evento extends Model
         }
         return $count;
     }
+    public static function getAllReceivingRegister(){
+        $events = array();
+        foreach(Evento::all() as $evento){
+            if(!$evento->inscricoes_encerradas()) $events[] = $evento;
+        }
+        return $events;
+    }
 
 
 
