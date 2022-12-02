@@ -183,6 +183,9 @@
                             </div>
                     </div>
                 </div>
+                <footer>
+                    {{date("d/m/Y H:i:s")}}
+                </footer>
 
             </section>
             <!-- /.content -->

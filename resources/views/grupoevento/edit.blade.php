@@ -215,7 +215,7 @@
                                                         \Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])
                                                     )
                                                         <td>
-                                                            @if($evento->estaRecebendoConfirmacaoPublica())
+                                                            @if(!$evento->inscricoes_encerradas())
                                                                 <strong>Recebendo</strong> Inscrições
                                                             @else
                                                                 Inscrições Encerradas e/ou Bloqueadas
