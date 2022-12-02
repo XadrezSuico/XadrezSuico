@@ -457,7 +457,7 @@ class Evento extends Model
 
 
     public static function countAllReceivingRegister(){
-        return count($this->getAllReceivingRegister());
+        return count(Evento::getAllReceivingRegister());
     }
     public static function getAllReceivingRegister(){
         $events = array();
