@@ -457,11 +457,7 @@ class Evento extends Model
 
 
     public static function countAllReceivingRegister(){
-        $count = 0;
-        foreach(Evento::all() as $evento){
-            if(!$evento->inscricoes_encerradas()) $count++;
-        }
-        return $count;
+        return count($this->getAllReceivingRegister());
     }
     public static function getAllReceivingRegister(){
         $events = array();
