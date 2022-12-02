@@ -121,7 +121,7 @@
             </div>
         </div>
         <div class="box-body">
-            <table id="tabela" class="table-responsive table-condensed table-striped" style="width: 100%">
+            <table id="tabela_recebendo_inscricoes" class="table-responsive table-condensed table-striped" style="width: 100%">
                 <thead>
                     <tr>
                         <th>#</th>
@@ -193,6 +193,9 @@
 <script type="text/javascript">
     $(document).ready(function(){
         $("#tabela").DataTable({
+            responsive: true,
+        });
+        $("#tabela_recebendo_inscricoes").DataTable({
             responsive: true,
         });
     });
