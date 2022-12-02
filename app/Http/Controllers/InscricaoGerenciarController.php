@@ -307,7 +307,7 @@ class InscricaoGerenciarController extends Controller
         $headers = [
             'Content-type' => 'text/plain',
             'Content-Disposition' => sprintf('attachment; filename="%s"', $fileName),
-            'Content-Length' => sizeof($texto),
+            'Content-Length' => strlen($texto),
         ];
 
         // make a response, with the content, a 200 response code and the headers
@@ -342,7 +342,7 @@ class InscricaoGerenciarController extends Controller
         $headers = [
             'Content-type' => 'text/plain',
             'Content-Disposition' => sprintf('attachment; filename="%s"', $fileName),
-            'Content-Length' => sizeof($texto),
+            'Content-Length' => strlen($texto),
         ];
 
         // make a response, with the content, a 200 response code and the headers
