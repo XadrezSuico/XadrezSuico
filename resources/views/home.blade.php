@@ -134,7 +134,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach(\App\Evento::where([["data_fim",">=", date("Y-m-d",time() - (60*60*24))]])->get() as $evento)
+                    @foreach(\App\Evento::getAllReceivingRegister() as $evento)
                         @if(
                             \Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
                             \Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[3,4]) ||
