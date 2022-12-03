@@ -313,4 +313,70 @@ class RatingController extends Controller
             }
         }
     }
+
+    public static function checkDoubleRatings(){
+        foreach(Rating::whereNotNull("tipo_ratings_id")->get() as $rating){
+            if(Rating::where([["id","=",$rating->id]])->count() > 0){
+                if(Rating::where([
+                        ["tipo_ratings_id","=",$rating->tipo_ratings_id],
+                        ["enxadrista_id","=",$rating->enxadrista_id]
+                    ])->count() > 0){
+
+                    $ratings = Rating::where([
+                        ["tipo_ratings_id","=",$rating->tipo_ratings_id],
+                        ["enxadrista_id","=",$rating->enxadrista_id]
+                    ])->get();
+
+                    $correct_rating = null;
+                    $rating_double = false;
+                    foreach($ratings as $rtg){
+                        if($rtg->movimentacoes()->count() > 1){
+                            if(!$correct_rating && !$rating_double){
+                                $correct_rating = $rtg;
+                            }else{
+                                $correct_rating = null;
+                                $rating_double = true;
+                            }
+                        }
+                    }
+
+                    if(!$correct_rating && !$rating_double){
+                        activity("rating__check_double_ratings")
+                            ->performedOn($rating)
+                            ->log("Cron checkDoubleRatings: Removendo ratings duplicados");
+                        foreach($ratings as $rtg){
+                            if($rtg->id != $rating->id){
+                                foreach($rtg->movimentacoes->all() as $movimentacao){
+                                    $movimentacao->delete();
+                                }
+                                $rtg->delete();
+                            }
+                        }
+                    }else{
+                        if($correct_rating){
+                            activity("rating__check_double_ratings")
+                                ->performedOn($correct_rating)
+                                ->log("Cron checkDoubleRatings: Removendo ratings duplicados");
+                            foreach($ratings as $rtg){
+                                if($rtg->id != $correct_rating->id){
+                                    foreach($rtg->movimentacoes->all() as $movimentacao){
+                                        $movimentacao->delete();
+                                    }
+                                    $rtg->delete();
+                                }
+                            }
+                        }
+                    }
+                }else{
+                    activity("rating__check_double_ratings")
+                        ->performedOn($rating)
+                        ->log("Cron checkDoubleRatings: Rating inexistente, provavelmente já removido.");
+                }
+            }else{
+                activity("rating__check_double_ratings")
+                    ->performedOn($rating)
+                    ->log("Cron checkDoubleRatings: Rating único - não necessário remover duplicidade.");
+            }
+        }
+    }
 }
