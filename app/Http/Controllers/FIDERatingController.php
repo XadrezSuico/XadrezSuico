@@ -127,63 +127,78 @@ class FIDERatingController extends Controller
 
         if($show_text) echo "Enxadrista #" . $enxadrista->id . " - " . $enxadrista->name . "(".$enxadrista->fide_id.")";
 
-        $client = new Client;
-        $response = $client->get("https://fide-ratings-scraper.herokuapp.com/player/" . $enxadrista->fide_id . "/elo");
-        if($show_text) echo "<br/>";
-        $html = (string) $response->getBody();
+        if(!env("FIDE_RATING_SERVER",false)){
+            if($save_rating) $enxadrista->deleteRating($codigo_organizacao, 0);
+            if($save_rating) $enxadrista->deleteRating($codigo_organizacao, 1);
+            if($save_rating) $enxadrista->deleteRating($codigo_organizacao, 2);
 
-        $json = json_decode($html);
-        if(!isset($json->reason)){
-            $enxadrista->encontrado_fide = true;
-            if(!$return_enxadrista) $enxadrista->save();
-            if(isset($json->standard_elo)){
-                if(is_numeric($json->standard_elo)){
-                    if($show_text) echo "STD:" . $json->standard_elo;
-                    if($save_rating) $enxadrista->setRating($codigo_organizacao, 0, intval($json->standard_elo));
+
+            if($save_rating) $enxadrista->fide_last_update = date("Y-m-d H:i:s");
+
+            if($return_enxadrista){
+                return $enxadrista;
+            }else{
+                $enxadrista->save();
+            }
+        }else{
+            $client = new Client;
+            $response = $client->get(env("FIDE_RATING_SERVER",false)."/player/" . $enxadrista->fide_id . "/elo");
+            if($show_text) echo "<br/>";
+            $html = (string) $response->getBody();
+
+            $json = json_decode($html);
+            if(!isset($json->reason)){
+                $enxadrista->encontrado_fide = true;
+                if(!$return_enxadrista) $enxadrista->save();
+                if(isset($json->standard_elo)){
+                    if(is_numeric($json->standard_elo)){
+                        if($show_text) echo "STD:" . $json->standard_elo;
+                        if($save_rating) $enxadrista->setRating($codigo_organizacao, 0, intval($json->standard_elo));
+                    }else{
+                        if($show_text) echo "STD: String (".$json->standard_elo.")";
+                        if($save_rating) $enxadrista->deleteRating($codigo_organizacao, 0);
+                    }
                 }else{
-                    if($show_text) echo "STD: String (".$json->standard_elo.")";
+                    if($show_text) echo "STD: Not Found";
                     if($save_rating) $enxadrista->deleteRating($codigo_organizacao, 0);
                 }
-            }else{
-                if($show_text) echo "STD: Not Found";
-                if($save_rating) $enxadrista->deleteRating($codigo_organizacao, 0);
-            }
-            if($show_text) echo "<br/>";
-            if(isset($json->rapid_elo)){
-                if(is_numeric($json->rapid_elo)){
-                    if($show_text) echo "RPD:" . $json->rapid_elo;
-                    if($save_rating) $enxadrista->setRating($codigo_organizacao, 1, intval($json->rapid_elo));
+                if($show_text) echo "<br/>";
+                if(isset($json->rapid_elo)){
+                    if(is_numeric($json->rapid_elo)){
+                        if($show_text) echo "RPD:" . $json->rapid_elo;
+                        if($save_rating) $enxadrista->setRating($codigo_organizacao, 1, intval($json->rapid_elo));
+                    }else{
+                        if($show_text) echo "RPD: String (".$json->rapid_elo.")";
+                        if($save_rating) $enxadrista->deleteRating($codigo_organizacao, 1);
+                    }
                 }else{
-                    if($show_text) echo "RPD: String (".$json->rapid_elo.")";
+                    if($show_text) echo "RPD: Not Found";
                     if($save_rating) $enxadrista->deleteRating($codigo_organizacao, 1);
                 }
-            }else{
-                if($show_text) echo "RPD: Not Found";
-                if($save_rating) $enxadrista->deleteRating($codigo_organizacao, 1);
-            }
-            if($show_text) echo "<br/>";
-            if(isset($json->blitz_elo)){
-                if(is_numeric($json->blitz_elo)){
-                    if($show_text) echo "BTZ:" . $json->blitz_elo;
-                    if($save_rating) $enxadrista->setRating($codigo_organizacao, 2, intval($json->blitz_elo));
+                if($show_text) echo "<br/>";
+                if(isset($json->blitz_elo)){
+                    if(is_numeric($json->blitz_elo)){
+                        if($show_text) echo "BTZ:" . $json->blitz_elo;
+                        if($save_rating) $enxadrista->setRating($codigo_organizacao, 2, intval($json->blitz_elo));
+                    }else{
+                        if($show_text) echo "BTZ: String (".$json->blitz_elo.")";
+                        if($save_rating) $enxadrista->deleteRating($codigo_organizacao, 2);
+                    }
                 }else{
-                    if($show_text) echo "BTZ: String (".$json->blitz_elo.")";
+                    if($show_text) echo "BTZ: Not Found";
                     if($save_rating) $enxadrista->deleteRating($codigo_organizacao, 2);
                 }
             }else{
-                if($show_text) echo "BTZ: Not Found";
-                if($save_rating) $enxadrista->deleteRating($codigo_organizacao, 2);
+                $enxadrista->encontrado_fide = false;
+                if(!$return_enxadrista) $enxadrista->save();
             }
-        }else{
-            $enxadrista->encontrado_fide = false;
-            if(!$return_enxadrista) $enxadrista->save();
-        }
 
-        if($save_rating) $enxadrista->fide_last_update = date("Y-m-d H:i:s");
-        if($return_enxadrista){
-            return $enxadrista;
-        }else{
-            $enxadrista->save();
+            if($save_rating) $enxadrista->fide_last_update = date("Y-m-d H:i:s");
+            if($return_enxadrista){
+                return $enxadrista;
+            }else{
+                $enxadrista->save();
+            }
         }
         if($show_text) echo "<hr/>";
     }
