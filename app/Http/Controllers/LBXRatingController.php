@@ -40,9 +40,10 @@ class LBXRatingController extends Controller
             // echo $html;
 
             $json = json_decode($html);
+            $json_array = json_decode($html,true);
 
             if($json){
-                if(count($json) > 0){
+                if(count($json_array) > 0){
                     $enxadrista->encontrado_lbx = true;
 
                     $enxadrista->lbx_name = $json->sobrenome.", ".$json->nome;
