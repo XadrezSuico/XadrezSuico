@@ -26,6 +26,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(Dispatcher $events)
     {
+        if(env("IS_HTTPS",false)) {
+            \URL::forceScheme('https');
+        }
 		$events->listen(BuildingMenu::class, function (BuildingMenu $event) {
             $event->menu->add("ACESSO PÚBLICO");
             if(env("SHOW_RATING",false)){
