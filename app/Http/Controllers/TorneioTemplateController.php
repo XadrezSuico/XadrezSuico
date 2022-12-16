@@ -49,7 +49,7 @@ class TorneioTemplateController extends Controller
         }
 
         $torneio_template = TorneioTemplate::find($id);
-        return view('grupoevento.torneiotemplate.edit', compact("grupo_evento", "torneio_template", "categorias"));
+        return view('grupoevento.torneiotemplate.edit', compact("grupo_evento", "torneio_template"));
     }
     public function edit_post($grupo_evento_id, $id, Request $request)
     {
