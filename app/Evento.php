@@ -525,6 +525,16 @@ class Evento extends Model
     }
 
 
+    public function getTimeControl(){
+        switch($this->tipo_modalidade){
+            case 0:
+                return "Convencional";
+            case 1:
+                return "Rápido";
+            case 2:
+                return "Relâmpago";
+        }
+    }
 
 
     public function export($type){

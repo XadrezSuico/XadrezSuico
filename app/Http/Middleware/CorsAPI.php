@@ -4,7 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 
-class Cors
+class CorsAPI
 {
     /**
      * Handle an incoming request.
@@ -16,7 +16,6 @@ class Cors
     public function handle($request, Closure $next)
     {
         return $next($request)
-            ->header('Access-Control-Allow-Origin', '*.fexpar.com.br')
-            ->header('Access-Control-Allow-Origin', 'localhost');
+            ->header('Access-Control-Allow-Origin', '*');
     }
 }
