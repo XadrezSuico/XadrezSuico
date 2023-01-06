@@ -19,16 +19,21 @@ class EventController extends Controller
             $retorno["ok"] = 1;
             $retorno["error"] = 0;
             $retorno["event"] = array();
+            $retorno["event"]["uuid"] = $evento->uuid;
             $retorno["event"]["info"] = array();
             $retorno["event"]["tabs"] = array();
 
             $retorno["event"]["info"]["title"] = $evento->name;
             $retorno["event"]["info"]["date"] = ($evento->getDataInicio() == $evento->getDataFim()) ? $evento->getDataInicio() : $evento->getDataInicio()." - ".$evento->getDataFim();
-            $retorno["event"]["info"]["banner"] = null;
+            $retorno["event"]["info"]["banner"] = url("/api/v1/event/banner/".$evento->uuid);
             $retorno["event"]["info"]["short_description"] = "descrição curta do evento";
             $retorno["event"]["info"]["long_description"] = "descrição longa do evento";
             $retorno["event"]["info"]["city"] = $evento->cidade->getName();
             $retorno["event"]["info"]["time_control"] = $evento->getTimeControl();
+
+            if($evento->pagina){
+                $retorno["event"]["info"]["long_description"] = $evento->pagina->texto;
+            }
 
             $retorno["event"]["info"]["timeline"] = array();
             if($evento->data_limite_inscricoes_abertas){

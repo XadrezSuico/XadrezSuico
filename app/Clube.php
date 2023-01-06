@@ -90,6 +90,10 @@ class Clube extends Model
         }
     }
 
+    public function getFullName()
+    {
+        return $this->getPlace()." - ".$this->getName() ." (ID: ".$this->id.")";
+    }
     public function getName()
     {
         return mb_strtoupper($this->name);
@@ -145,5 +149,22 @@ class Clube extends Model
             $this->uuid = Str::uuid();
             $this->save();
         }
+    }
+    public function toAPIObject($include_parent = false){
+        if($include_parent){
+            return [
+                "id" => $this->id,
+                "name" => $this->getFullName(),
+
+                "city" => $this->cidade->toAPIObject($include_parent),
+                "city_id" => $this->cidade->id,
+            ];
+        }
+        return [
+            "id" => $this->id,
+            "name" => $this->getFullName(),
+
+            "city_id" => $this->cidade->id,
+        ];
     }
 }

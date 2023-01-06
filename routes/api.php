@@ -21,5 +21,28 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::group(["prefix"=>"v1"],function(){
     Route::group(["prefix"=>"event"],function(){
         Route::get('/get/{uuid}', 'API\Event\EventController@get')->name('api.v1.event.get');
+        Route::get('/banner/{uuid}', 'API\Event\BannerController@get')->name('api.v1.event.banner');
+        Route::group(["prefix"=>"{uuid}/players"],function(){
+            Route::get('/search', 'API\Event\PlayerController@search')->name('api.v1.event.players.search');
+            Route::get('/get/{id}', 'API\Event\PlayerController@get')->name('api.v1.event.players.get');
+        });
+        Route::group(["prefix"=>"{uuid}/clubs"],function(){
+            Route::get('/search', 'API\Event\ClubController@search')->name('api.v1.event.clubs.search');
+            Route::get('/get/{id}', 'API\Event\ClubController@get')->name('api.v1.event.clubs.get');
+        });
+        Route::group(["prefix"=>"cities"],function(){
+            Route::group(["prefix"=>"country"],function(){
+                Route::get('/list', 'API\Event\City\CountryController@list')->name('api.v1.event.cities.country.list');
+                Route::get('/get/{id}', 'API\Event\City\CountryController@get')->name('api.v1.event.cities.country.get');
+            });
+            Route::group(["prefix"=>"state"],function(){
+                Route::get('/list/{country_id}', 'API\Event\City\StateController@list')->name('api.v1.event.cities.state.list');
+                Route::get('/get/{id}', 'API\Event\City\StateController@get')->name('api.v1.event.cities.state.get');
+            });
+            Route::group(["prefix"=>"city"],function(){
+                Route::get('/list/{state_id}', 'API\Event\City\CityController@list')->name('api.v1.event.cities.city.list');
+                Route::get('/get/{id}', 'API\Event\City\CityController@get')->name('api.v1.event.cities.city.get');
+            });
+        });
     });
 });

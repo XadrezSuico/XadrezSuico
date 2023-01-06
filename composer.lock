@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2b1f15ba35cd7023b9025de84ce4ad8a",
+    "content-hash": "f80a4e1dd527f40fa51ad2eab64b9a04",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -1530,6 +1530,66 @@
                 "source": "https://github.com/jeroennoten/Laravel-AdminLTE/tree/laravel6-adminlte2"
             },
             "time": "2019-10-03T19:49:31+00:00"
+        },
+        {
+            "name": "kakposoe/laravel-placeholder-image",
+            "version": "v1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/kakposoe/laravel-placeholder-image.git",
+                "reference": "e6ea8584601fecb6f079d264ae92516141aab7bc"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/kakposoe/laravel-placeholder-image/zipball/e6ea8584601fecb6f079d264ae92516141aab7bc",
+                "reference": "e6ea8584601fecb6f079d264ae92516141aab7bc",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/support": "5.8.*|^6.0",
+                "php": ">=7.0"
+            },
+            "require-dev": {
+                "orchestra/testbench": "~3.8.0",
+                "phpunit/phpunit": "^7.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Kakposoe\\LaravelPlaceholderImage\\ServiceProvider"
+                    ],
+                    "aliases": {
+                        "PlaceholderImage": "Kakposoe\\LaravelPlaceholderImage\\Facades\\LaravelPlaceholderImage"
+                    }
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Kakposoe\\LaravelPlaceholderImage\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Kelvin Akposoe",
+                    "email": "kakposoe@gmail.com"
+                }
+            ],
+            "description": "A laravel placeholder image",
+            "keywords": [
+                "image",
+                "laravel",
+                "placeholder"
+            ],
+            "support": {
+                "issues": "https://github.com/kakposoe/laravel-placeholder-image/issues",
+                "source": "https://github.com/kakposoe/laravel-placeholder-image/tree/master"
+            },
+            "time": "2019-12-02T16:19:28+00:00"
         },
         {
             "name": "laravel/framework",

@@ -16,4 +16,12 @@ class Pais extends Model
     {
         return $this->hasMany("App\TipoDocumentoPais", "pais_id", "id");
     }
+
+    public function toAPIObject(){
+        return [
+            "id" => $this->id,
+            "name" => $this->nome,
+            "slug" => $this->codigo_iso
+        ];
+    }
 }
