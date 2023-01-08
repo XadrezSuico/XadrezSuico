@@ -21,12 +21,13 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::group(["prefix"=>"v1"],function(){
     Route::group(["prefix"=>"event"],function(){
         Route::get('/get/{uuid}', 'API\Event\EventController@get')->name('api.v1.event.get');
+        Route::post('/register/{uuid}', 'API\Event\RegisterController@register')->name('api.v1.event.register');
         Route::get('/banner/{uuid}', 'API\Event\BannerController@get')->name('api.v1.event.banner');
         Route::group(["prefix"=>"{uuid}/players"],function(){
             Route::get('/search', 'API\Event\PlayerController@search')->name('api.v1.event.players.search');
             Route::get('/get/{id}', 'API\Event\PlayerController@get')->name('api.v1.event.players.get');
         });
-        Route::group(["prefix"=>"{uuid}/clubs"],function(){
+        Route::group(["prefix"=>"clubs"],function(){
             Route::get('/search', 'API\Event\ClubController@search')->name('api.v1.event.clubs.search');
             Route::get('/get/{id}', 'API\Event\ClubController@get')->name('api.v1.event.clubs.get');
         });

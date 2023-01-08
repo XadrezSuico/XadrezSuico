@@ -118,6 +118,7 @@ class PlayerController extends Controller
             $player["club_name"] = ($enxadrista->clube) ? $enxadrista->clube->getFullName() : "Sem Clube";
 
             $player["city"] = $enxadrista->cidade->toAPIObject(true);
+            if($enxadrista->clube) $player["club"] = $enxadrista->clube->toAPIObject(true);
 
 
 
