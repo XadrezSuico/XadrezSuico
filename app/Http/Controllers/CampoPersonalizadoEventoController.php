@@ -25,7 +25,7 @@ class CampoPersonalizadoEventoController extends Controller
         ) {
             return redirect("/evento/dashboard/" . $evento->id);
         }
-        
+
 
         $campo = new CampoPersonalizado;
         $campo->name = $request->input("name");
@@ -58,10 +58,10 @@ class CampoPersonalizadoEventoController extends Controller
         ) {
             return redirect("/evento/dashboard/" . $evento->id);
         }
-        
+
         $campo = CampoPersonalizado::find($id);
         $user = Auth::user();
-        return view('evento.campo.dashboard', compact("campo", "sexos", "evento", "user"));
+        return view('evento.campo.dashboard', compact("campo", "evento", "user"));
     }
     public function edit_post($evento_id, $id, Request $request)
     {
@@ -74,7 +74,7 @@ class CampoPersonalizadoEventoController extends Controller
         ) {
             return redirect("/evento/dashboard/" . $evento->id);
         }
-        
+
 
         $campo = CampoPersonalizado::find($id);
         $campo->name = $request->input("name");
@@ -122,7 +122,7 @@ class CampoPersonalizadoEventoController extends Controller
         ) {
             return redirect("/evento/dashboard/" . $evento->id);
         }
-        
+
         $campo = CampoPersonalizado::find($id);
 
         if ($campo->isDeletavel()) {
@@ -142,7 +142,7 @@ class CampoPersonalizadoEventoController extends Controller
         ) {
             return redirect("/evento/dashboard/" . $evento->id);
         }
-        
+
         $campo = CampoPersonalizado::find($id);
 
         $opcao = new Opcao;
@@ -164,7 +164,7 @@ class CampoPersonalizadoEventoController extends Controller
         ) {
             return redirect("/evento/dashboard/" . $evento->id);
         }
-        
+
         $campo = CampoPersonalizado::find($id);
 
         $opcao = Opcao::find($opcaos_id);
