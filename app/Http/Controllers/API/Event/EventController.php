@@ -26,8 +26,8 @@ class EventController extends Controller
             $retorno["event"]["info"]["title"] = $evento->name;
             $retorno["event"]["info"]["date"] = ($evento->getDataInicio() == $evento->getDataFim()) ? $evento->getDataInicio() : $evento->getDataInicio()." - ".$evento->getDataFim();
             $retorno["event"]["info"]["banner"] = url("/api/v1/event/banner/".$evento->uuid);
-            $retorno["event"]["info"]["short_description"] = "descrição curta do evento";
-            $retorno["event"]["info"]["long_description"] = "descrição longa do evento";
+            $retorno["event"]["info"]["short_description"] = "";
+            $retorno["event"]["info"]["long_description"] = "";
             $retorno["event"]["info"]["city"] = $evento->cidade->getName();
             $retorno["event"]["info"]["time_control"] = $evento->getTimeControl();
 

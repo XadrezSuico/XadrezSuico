@@ -4,13 +4,26 @@ namespace App\Http\Controllers\API\Event;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Http\Controllers\EmailController;
+
+use App\Enum\EmailType;
 
 use App\Evento;
+use App\Inscricao;
+use App\Enxadrista;
+use App\Categoria;
+use App\CampoPersonalizadoOpcaoInscricao;
+
+use App\Rating;
+use App\MovimentacaoRating;
+
+use Log;
 
 class RegisterController extends Controller
 {
     public function register($uuid,Request $request)
     {
+        Log::debug(json_encode($request->all()));
         if($uuid){
             if(Evento::where([["uuid","=",$uuid]])->count() == 0){
                 return response()->json(["ok"=>0,"error"=>1,"message"=>"Evento não encontrado.","httpcode"=>404],404);
@@ -52,21 +65,18 @@ class RegisterController extends Controller
             } elseif (
                 !$request->has("player_id") ||
                 !$request->has("category_id") ||
-                !$request->has("city_id") ||
-                !$request->has("event_id")
+                !$request->has("city_id")
             ) {
                 return response()->json(["ok" => 0, "error" => 1, "message" => "Um dos campos obrigatórios não está preenchido. Por favor, verifique e envie novamente!<br/><br/><strong>Observação</strong>: TODOS os Campos com <strong>*</strong> SÃO OBRIGATÓRIOS!", "result" => false]);
             } elseif (
                 $request->input("player_id") == null || $request->input("player_id") == "" ||
                 $request->input("category_id") == null || $request->input("category_id") == "" ||
-                $request->input("city_id") == null || $request->input("city_id") == "" ||
-                $request->input("event_id") == null || $request->input("event_id") == ""
+                $request->input("city_id") == null || $request->input("city_id") == ""
             ) {
                 return response()->json(["ok" => 0, "error" => 1, "message" => "Um dos campos obrigatórios não está preenchido. Por favor, verifique e envie novamente!<br/><br/><strong>Observação</strong>: TODOS os Campos com <strong>*</strong> SÃO OBRIGATÓRIOS!", "result" => false]);
             }
 
             $inscricao = new Inscricao;
-            $torneio = null;
 
             if ($evento->inscricoes_encerradas(true)) {
                 // if($user){
@@ -100,39 +110,38 @@ class RegisterController extends Controller
             //         return response()->json(["ok" => 0, "error" => 1, "message" => "Um dos campos obrigatórios não está preenchido. Por favor, verifique e envie novamente!<br/>Erro: Campo Personalizado 2.<br/><br/><strong>Observação</strong>: TODOS os Campos com <strong>*</strong> SÃO OBRIGATÓRIOS!", "registred" => 0]);
             //     }
             // }
-
-            foreach ($evento->torneios->all() as $Torneio) {
-                foreach ($Torneio->categorias->all() as $categoria) {
-                    if ($categoria->categoria_id == $request->input("categoria_id")) {
-                        $torneio = $Torneio;
-                    }
-                }
-            }
-            if (!$torneio) {
+            if ($evento->torneios()->whereHas("categorias",function($q1) use ($request){
+                $q1->where([["categoria_id","=",$request->input("category_id")]]);
+            })->count() == 0) {
                 return response()->json(["ok" => 0, "error" => 1, "message" => "Ocorreu um erro inesperado de pesquisa de Torneio. Por favor, tente novamente mais tarde."]);
             }
-            $temInscricao_count = $evento->torneios()->whereHas("inscricoes", function ($q) use ($request) {
-                $q->where([["enxadrista_id", "=", $request->input("enxadrista_id")]]);
-            })->count();
-            $temInscricao = $evento->torneios()->whereHas("inscricoes", function ($q) use ($request) {
-                $q->where([["enxadrista_id", "=", $request->input("enxadrista_id")]]);
+
+            $torneio = $evento->torneios()->whereHas("categorias",function($q1) use ($request){
+                $q1->where([["categoria_id","=",$request->input("category_id")]]);
             })->first();
-            if ($temInscricao_count > 0) {
-                $inscricao = Inscricao::where([["enxadrista_id", "=", $request->input("enxadrista_id")], ["torneio_id", "=", $temInscricao->id]])->first();
+
+            if ($evento->torneios()->whereHas("inscricoes", function ($q) use ($request) {
+                    $q->where([["enxadrista_id", "=", $request->input("player_id")]]);
+                })->count() > 0) {
+                $temInscricao = $evento->torneios()->whereHas("inscricoes", function ($q) use ($request) {
+                    $q->where([["enxadrista_id", "=", $request->input("player_id")]]);
+                })->first();
+
+                $inscricao = Inscricao::where([["enxadrista_id", "=", $request->input("player_id")], ["torneio_id", "=", $temInscricao->id]])->first();
                 return response()->json(["ok" => 0, "error" => 1, "message" => "Você já possui inscrição para este evento!<br/> Categoria: " . $inscricao->categoria->name . "<br/> Caso queira efetuar alguma alteração, favor enviar via email para " . env("EMAIL_ALTERACAO", "circuitoxadrezcascavel@gmail.com") . "."]);
             }
 
-            $enxadrista = Enxadrista::find($request->input("enxadrista_id"));
-            $categoria = Categoria::find($request->input("categoria_id"));
+            $enxadrista = Enxadrista::find($request->input("player_id"));
+            $categoria = Categoria::find($request->input("category_id"));
             if ($categoria) {
                 if ($categoria->idade_minima) {
                     if (!($categoria->idade_minima <= $enxadrista->howOldForEvento($evento->getYear()))) {
-                        return response()->json(["ok" => 0, "error" => 1, "message" => "Você não está apto a participar da categoria que você enviou! Motivo: Não possui idade mínima."]);
+                        return response()->json(["ok" => 0, "error" => 1, "message" => "O(a) enxadrista não está apto(a) a inscrever nesta categoria! Motivo: Não possui idade mínima."]);
                     }
                 }
                 if ($categoria->idade_maxima) {
                     if (!($categoria->idade_maxima >= $enxadrista->howOldForEvento($evento->getYear()))) {
-                        return response()->json(["ok" => 0, "error" => 1, "message" => "Você não está apto a participar da categoria que você enviou! Motivo: Idade ultrapassa a máxima."]);
+                        return response()->json(["ok" => 0, "error" => 1, "message" => "O(a) enxadrista não está apto(a) a inscrever nesta categoria! Motivo: Idade ultrapassa a máxima."]);
                     }
                 }
             }
@@ -140,32 +149,32 @@ class RegisterController extends Controller
             $inscricao->torneio_id = $torneio->id;
             $inscricao->enxadrista_id = $enxadrista->id;
             $inscricao->categoria_id = $categoria->id;
-            $inscricao->cidade_id = $request->input("cidade_id");
-            if ($request->has("clube_id")) {
-                if ($request->input("clube_id") > 0) {
-                    $inscricao->clube_id = $request->input("clube_id");
+            $inscricao->cidade_id = $request->input("city_id");
+            if ($request->has("club_id")) {
+                if ($request->input("club_id") > 0) {
+                    $inscricao->clube_id = $request->input("club_id");
                 }
             }
             $inscricao->regulamento_aceito = true;
             $inscricao->xadrezsuico_aceito = true;
             $inscricao->is_aceito_imagem = 1;
 
-            if($user){
-                if (
-                    $user->hasPermissionGlobal() ||
-                    $user->hasPermissionEventByPerfil($evento->id, [4, 5]) ||
-                    $user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [6,7])
-                ) {
-                    if($request->has("inscricao_confirmada")){
-                        $inscricao->confirmado = true;
-                    }
-                    if($request->has("atualizar_cadastro")){
-                        $enxadrista->clube_id = $inscricao->clube_id;
-                        $enxadrista->cidade_id = $inscricao->cidade_id;
-                        $enxadrista->save();
-                    }
-                }
-            }
+            // if($user){
+            //     if (
+            //         $user->hasPermissionGlobal() ||
+            //         $user->hasPermissionEventByPerfil($evento->id, [4, 5]) ||
+            //         $user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [6,7])
+            //     ) {
+            //         if($request->has("inscricao_confirmada")){
+            //             $inscricao->confirmado = true;
+            //         }
+            //         if($request->has("atualizar_cadastro")){
+            //             $enxadrista->clube_id = $inscricao->clube_id;
+            //             $enxadrista->cidade_id = $inscricao->cidade_id;
+            //             $enxadrista->save();
+            //         }
+            //     }
+            // }
             $inscricao->save();
 
             foreach ($evento->campos() as $campo) {
