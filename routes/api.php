@@ -26,6 +26,7 @@ Route::group(["prefix"=>"v1"],function(){
         Route::group(["prefix"=>"{uuid}/players"],function(){
             Route::get('/search', 'API\Event\PlayerController@search')->name('api.v1.event.players.search');
             Route::get('/get/{id}', 'API\Event\PlayerController@get')->name('api.v1.event.players.get');
+            Route::post('/complete/{id}', 'API\Event\PlayerController@complete')->name('api.v1.event.players.complete');
         });
         Route::group(["prefix"=>"clubs"],function(){
             Route::get('/search', 'API\Event\ClubController@search')->name('api.v1.event.clubs.search');
@@ -44,6 +45,12 @@ Route::group(["prefix"=>"v1"],function(){
                 Route::get('/list/{state_id}', 'API\Event\City\CityController@list')->name('api.v1.event.cities.city.list');
                 Route::get('/get/{id}', 'API\Event\City\CityController@get')->name('api.v1.event.cities.city.get');
             });
+        });
+        Route::group(["prefix"=>"sexes"],function(){
+            Route::get('/list', 'API\Event\SexController@list')->name('api.v1.event.sex.list');
+        });
+        Route::group(["prefix"=>"document_types"],function(){
+            Route::get('/list/{country_id}', 'API\Event\DocumentTypeController@list')->name('api.v1.event.document.list');
         });
     });
 });

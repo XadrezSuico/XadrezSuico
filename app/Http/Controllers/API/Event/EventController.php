@@ -22,6 +22,8 @@ class EventController extends Controller
             $retorno["event"]["uuid"] = $evento->uuid;
             $retorno["event"]["info"] = array();
             $retorno["event"]["tabs"] = array();
+            $retorno["event"]["tabs"][] = "home";
+            $retorno["event"]["tabs"][] = "register";
 
             $retorno["event"]["info"]["title"] = $evento->name;
             $retorno["event"]["info"]["date"] = ($evento->getDataInicio() == $evento->getDataFim()) ? $evento->getDataInicio() : $evento->getDataInicio()." - ".$evento->getDataFim();
@@ -42,6 +44,14 @@ class EventController extends Controller
                     "text" => "Fim das Inscrições Online",
                     "is_expected" => false
                 ];
+            }
+
+            if($evento->inscricoes_encerradas(true)){
+                $retorno["event"]["info"]["is_registering"] = false;
+                $retorno["event"]["info"]["registering_status"] = "Inscrições encerradas.";
+            }else{
+                $retorno["event"]["info"]["is_registering"] = true;
+                $retorno["event"]["info"]["registering_status"] = "Recebendo inscrições.";
             }
 
 
