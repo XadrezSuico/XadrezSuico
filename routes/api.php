@@ -19,6 +19,10 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 
 Route::group(["prefix"=>"v1"],function(){
+    Route::group(["prefix"=>"xadrezsuicopag"],function(){
+        Route::post('/callback/{uuid}', 'External\XadrezSuicoPagController@notification')->name('api.v1.xadrezsuicopag.callback');
+    });
+
     Route::group(["prefix"=>"event"],function(){
         Route::get('/get/{uuid}', 'API\Event\EventController@get')->name('api.v1.event.get');
         Route::post('/register/{uuid}', 'API\Event\RegisterController@register')->name('api.v1.event.register');

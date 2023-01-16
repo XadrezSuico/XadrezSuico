@@ -254,12 +254,22 @@ class RegisterController extends Controller
                     $enxadrista
                 );
             }
+            $response_adicional_fields = array();
+            $response_adicional_fields["response"] = false;
+            if(Inscricao::find($inscricao->id)->payment_info){
+                if($evento->isPaid()){
+                    if($inscricao->getPaymentInfo("link")){
+                        $response_adicional_fields["link"] = $inscricao->getPaymentInfo("link");
+                        $response_adicional_fields["response"] = true;
+                    }
+                }
+            }
 
             if ($inscricao->id > 0) {
                 if($inscricao->torneio->evento->is_lichess_integration){
-                return response()->json(["ok" => 1, "error" => 0, "is_lichess_integration" => 1, "lichess_process_link" => $inscricao->getLichessProcessLink()]);
+                return response()->json(array_merge($response_adicional_fields,["ok" => 1, "error" => 0, "is_lichess_integration" => 1, "lichess_process_link" => $inscricao->getLichessProcessLink()]));
                 }
-                return response()->json(["ok" => 1, "error" => 0, "is_lichess_integration" => 0]);
+                return response()->json(array_merge($response_adicional_fields,["ok" => 1, "error" => 0, "is_lichess_integration" => 0]));
             } else {
                 return response()->json(["ok" => 0, "error" => 1, "message" => "Um erro inesperado aconteceu. Por favor, tente novamente mais tarde."]);
             }

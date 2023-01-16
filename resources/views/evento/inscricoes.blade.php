@@ -59,6 +59,10 @@
                             <th>Rating</th>
                             <th>Possui rating?</th>
                         @endif
+                        @if($evento->isPaid())
+                            <th>Pago?</th>
+                        @endif
+                        <th>Confirmado?</th>
                         <th>Inscrição Inicial</th>
                         <th>Posição</th>
 				    	@foreach($evento->campos() as $campo)
@@ -84,13 +88,29 @@
                                 {{$inscricao->enxadrista->getNomePrivado()}}
                             </td>
                             <td>{{$inscricao->enxadrista->getNascimentoPrivado()}}</td>
-                            <td>{{$inscricao->categoria->name}}</td>
+                            <td>{{$inscricao->categoria->id}} - {{$inscricao->categoria->name}}</td>
                             <td>{{$inscricao->getCidade()}}</td>
                             <td>@if($inscricao->clube) {{$inscricao->clube->name}} @else - @endif</td>
                             @if($evento->tipo_rating)
                                 <td>{{$inscricao->enxadrista->ratingParaEvento($evento->id,true)}}</td>
                                 <td>@if($inscricao->enxadrista->hasRatingParaEvento($evento->id)) Sim @endif</td>
                             @endif
+                            @if($evento->isPaid())
+                                <td>
+                                    @if($inscricao->categoria->isPaid($evento->id))
+                                        @if($inscricao->paid)
+                                            Pago
+                                        @else
+                                            <strong>Pagamento Pendente</strong>
+                                        @endif
+                                    @else
+                                        Categoria Gratuita.
+                                    @endif
+                                </td>
+                            @endif
+                            <td>
+                                @if($inscricao->confirmado) Sim @else Não @endif
+                            </th>
                             <td>@if($inscricao->from) {{$inscricao->from->id}} @else - @endif</td>
                             <td>@if($inscricao->from) @if($inscricao->from->posicao) {{$inscricao->from->posicao}} @else - @endif @else - @endif</td>
                             @foreach($evento->campos() as $campo)

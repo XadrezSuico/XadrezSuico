@@ -141,4 +141,11 @@ class Categoria extends Model
             $this->save();
         }
     }
+
+    public function isPaid($event_id){
+        if($this->eventos()->where([["evento_id","=",$event_id]])->whereNotNull("xadrezsuicopag_uuid")->count() > 0){
+            return true;
+        }
+        return false;
+    }
 }

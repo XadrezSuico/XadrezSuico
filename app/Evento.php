@@ -189,6 +189,19 @@ class Evento extends Model
 
     }
 
+    public function isPaid(){
+        if(
+            env("XADREZSUICOPAG_URI",null) &&
+            env("XADREZSUICOPAG_SYSTEM_ID",null) &&
+            env("XADREZSUICOPAG_SYSTEM_TOKEN",null) &&
+            $this->xadrezsuicopag_uuid != ""
+        ){
+            return true;
+        }
+
+        return false;
+    }
+
     public function getCriterios(){
         if($this->criterios()->count() == 0){
             return $this->grupo_evento->criterios->all();

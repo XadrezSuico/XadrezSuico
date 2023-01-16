@@ -29,9 +29,23 @@ class XadrezSuicoPagController extends Controller
                 $name = "category";
                 self::$controllers[$name] = new XadrezSuicoPagCategoryController;
                 break;
+            case "registration":
+            case "registrations":
+                $name = "registration";
+                self::$controllers[$name] = new XadrezSuicoPagRegistrationController;
+                break;
+            case "notification":
+                $name = "notification";
+                self::$controllers[$name] = new XadrezSuicoPagNotificationController;
+                break;
         }
 
 
         return self::$controllers[$name];
     }
+
+    public function notification($inscricao_uuid, Request $request){
+        return $this->factory("notification")->notification($inscricao_uuid, $request);
+    }
+
 }

@@ -5,6 +5,8 @@ namespace App\Http\Controllers\API\Event;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
+use App\Http\Controllers\External\XadrezSuicoPagController;
+
 use App\Evento;
 use App\Enxadrista;
 
@@ -124,8 +126,32 @@ class PlayerController extends Controller
 
             $categories = array();
             if(count($fields) == 0){
+                $xadrezsuicopag_controller = XadrezSuicoPagController::getInstance();
                 foreach($this->categoriesPlayer($evento,$enxadrista) as $categoria){
-                    $categories[] = array("id"=>$categoria->categoria->id,"name"=>$categoria->categoria->name,"price"=>0);
+                    if($evento->isPaid()){
+                        if($categoria->xadrezsuicopag_uuid != ""){
+                            $xadrezsuicopag_category_request = $xadrezsuicopag_controller
+                                                                            ->factory("categories")
+                                                                            ->get(
+                                                                                $evento->xadrezsuicopag_uuid,
+                                                                                $categoria->xadrezsuicopag_uuid
+                                                                            );
+
+                            if($xadrezsuicopag_category_request->ok){
+                                if($xadrezsuicopag_category_request->category->actual_price){
+                                    $categories[] = array(
+                                        "id"=>$categoria->categoria->id,
+                                        "name"=>$categoria->categoria->name,
+                                        "price"=>$xadrezsuicopag_category_request->category->actual_price->price
+                                    );
+                                }
+                            }
+                        }else{
+                            $categories[] = array("id"=>$categoria->categoria->id,"name"=>$categoria->categoria->name,"price"=>0);
+                        }
+                    }else{
+                        $categories[] = array("id"=>$categoria->categoria->id,"name"=>$categoria->categoria->name,"price"=>0);
+                    }
                 }
             }
 
