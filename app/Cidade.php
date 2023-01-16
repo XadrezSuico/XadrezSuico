@@ -149,4 +149,23 @@ class Cidade extends Model
             $this->save();
         }
     }
+
+
+    public function toAPIObject($include_parent = false){
+        if($include_parent){
+            return [
+                "id" => $this->id,
+                "name" => $this->name,
+
+                "state" => $this->estado->toAPIObject($include_parent),
+                "state_id" => $this->estado->id,
+            ];
+        }
+        return [
+            "id" => $this->id,
+            "name" => $this->name,
+
+            "state_id" => $this->estado->id,
+        ];
+    }
 }

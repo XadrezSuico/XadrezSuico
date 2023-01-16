@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Process\RatingController;
 
+use App\Http\Controllers\External\XadrezSuicoPagController;
+
 use App\Categoria;
 use App\CategoriaEvento;
 use App\Cidade;
@@ -77,7 +79,29 @@ class EventoGerenciarController extends Controller
             $tab = null;
         }
         $this->importEmailTemplates($evento->id);
-        return view('evento.edit', compact("evento", "categorias", "criterios_desempate", "tipos_torneio", "softwares", "tipos_rating", "cidades", "tab"));
+
+        $xadrezsuicopag_controller = null;
+        if(
+            env("XADREZSUICOPAG_URI",null) &&
+            env("XADREZSUICOPAG_SYSTEM_ID",null) &&
+            env("XADREZSUICOPAG_SYSTEM_TOKEN",null) &&
+            $user->hasPermissionGlobalbyPerfil([1,10,11,12])
+        ){
+            $xadrezsuicopag_controller = XadrezSuicoPagController::getInstance();
+        }
+
+        return view('evento.edit', compact(
+                                            "evento",
+                                            "categorias",
+                                            "criterios_desempate",
+                                            "tipos_torneio",
+                                            "softwares",
+                                            "tipos_rating",
+                                            "cidades",
+                                            "tab",
+                                            "xadrezsuicopag_controller"
+                                    )
+        );
     }
 
     public function edit_post($id, Request $request)
@@ -296,6 +320,25 @@ class EventoGerenciarController extends Controller
             $evento->confirmacao_publica_final = NULL;
         }
 
+        if(
+            env("XADREZSUICOPAG_URI",null) &&
+            env("XADREZSUICOPAG_SYSTEM_ID",null) &&
+            env("XADREZSUICOPAG_SYSTEM_TOKEN",null) &&
+            $user->hasPermissionGlobalbyPerfil([1,10,11])
+        ){
+            if($request->has("xadrezsuicopag_uuid")){
+                if($request->input("xadrezsuicopag_uuid") != ""){
+                    $evento->xadrezsuicopag_uuid = $request->input("xadrezsuicopag_uuid");
+                }else{
+                    $evento->xadrezsuicopag_uuid = null;
+                }
+            }else{
+                $evento->xadrezsuicopag_uuid = null;
+            }
+        }else{
+            $evento->xadrezsuicopag_uuid = null;
+        }
+
 
         $evento->save();
 
@@ -402,8 +445,95 @@ class EventoGerenciarController extends Controller
         $categoria_evento = new CategoriaEvento;
         $categoria_evento->evento_id = $id;
         $categoria_evento->categoria_id = $request->input("categoria_id");
+
+        if(
+            env("XADREZSUICOPAG_URI",null) &&
+            env("XADREZSUICOPAG_SYSTEM_ID",null) &&
+            env("XADREZSUICOPAG_SYSTEM_TOKEN",null) &&
+            $user->hasPermissionGlobalbyPerfil([1,10,11]) &&
+            $evento->xadrezsuicopag_uuid != ""
+        ){
+            if($request->has("xadrezsuicopag_uuid")){
+                if($request->input("xadrezsuicopag_uuid") != ""){
+                    $xadrezsuicopag_controller = XadrezSuicoPagController::getInstance();
+
+                    $xadrezsuicopag_category_request = $xadrezsuicopag_controller::factory("category")->get($evento->xadrezsuicopag_uuid,$request->input("xadrezsuicopag_uuid"));
+
+                    if($xadrezsuicopag_category_request->ok){
+                        $categoria_evento->xadrezsuicopag_uuid = $request->input("xadrezsuicopag_uuid");
+                    }
+                }else{
+                    $categoria_evento->xadrezsuicopag_uuid = null;
+                }
+            }else{
+                $categoria_evento->xadrezsuicopag_uuid = null;
+            }
+        }else{
+            $categoria_evento->xadrezsuicopag_uuid = null;
+        }
+
         $categoria_evento->save();
         return redirect("/evento/dashboard/" . $id . "?tab=categorias_relacionadas");
+    }
+
+    public function categoria_edit($evento_id, $id)
+    {
+        $evento = Evento::find($evento_id);
+        $user = Auth::user();
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionEventByPerfil($evento->id, [4]) &&
+            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
+        ) {
+            return redirect("/evento/dashboard/" . $evento->id);
+        }
+        $categoria = CategoriaEvento::find($id);
+
+        $xadrezsuicopag_controller = XadrezSuicoPagController::getInstance();
+        return view('evento.categoria_evento.edit', compact("categoria", "xadrezsuicopag_controller", "evento"));
+    }
+    public function categoria_edit_post($evento_id, $id, Request $request)
+    {
+        $user = Auth::user();
+        $evento = Evento::find($evento_id);
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionEventByPerfil($evento->id, [4]) &&
+            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
+        ) {
+            return redirect("/evento/dashboard/" . $evento->id);
+        }
+
+        $categoria_evento = CategoriaEvento::find($id);
+
+        if(
+            env("XADREZSUICOPAG_URI",null) &&
+            env("XADREZSUICOPAG_SYSTEM_ID",null) &&
+            env("XADREZSUICOPAG_SYSTEM_TOKEN",null) &&
+            $user->hasPermissionGlobalbyPerfil([1,10,11]) &&
+            $evento->xadrezsuicopag_uuid != ""
+        ){
+            if($request->has("xadrezsuicopag_uuid")){
+                if($request->input("xadrezsuicopag_uuid") != ""){
+                    $xadrezsuicopag_controller = XadrezSuicoPagController::getInstance();
+
+                    $xadrezsuicopag_category_request = $xadrezsuicopag_controller::factory("category")->get($evento->xadrezsuicopag_uuid,$request->input("xadrezsuicopag_uuid"));
+
+                    if($xadrezsuicopag_category_request->ok){
+                        $categoria_evento->xadrezsuicopag_uuid = $request->input("xadrezsuicopag_uuid");
+                    }
+                }else{
+                    $categoria_evento->xadrezsuicopag_uuid = null;
+                }
+            }else{
+                $categoria_evento->xadrezsuicopag_uuid = null;
+            }
+        }else{
+            $categoria_evento->xadrezsuicopag_uuid = null;
+        }
+
+        $categoria_evento->save();
+        return redirect("/evento/dashboard/" . $evento_id . "?tab=categorias_relacionadas");
     }
     public function categoria_remove($id, $categoria_evento_id)
     {

@@ -476,6 +476,19 @@
 									<input name="confirmacao_publica_final" id="confirmacao_publica_final" class="form-control" type="text" value="{{$evento->getConfirmacoesDataFim()}}" @if(!\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() && !\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4]) && !\Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])) disabled="disabled" @endif />
                                     <small><strong>IMPORTANTE!</strong> Os campos de Data e Hora Inicial e Data e Hora Final devem estar preenchidos para que a confirmação pública fique disponível.</small>
 								</div>
+
+                                @if(
+                                    env("XADREZSUICOPAG_URI",null) &&
+                                    env("XADREZSUICOPAG_SYSTEM_ID",null) &&
+                                    env("XADREZSUICOPAG_SYSTEM_TOKEN",null) &&
+						            \Illuminate\Support\Facades\Auth::user()->hasPermissionGlobalbyPerfil([1,10,11])
+                                )
+                                    <div class="form-group">
+                                        <label for="xadrezsuicopag_uuid">XadrezSuíçoPAG: UUID do Evento na Plataforma</label>
+                                        <input name="xadrezsuicopag_uuid" id="xadrezsuicopag_uuid" class="form-control" type="text" value="{{$evento->xadrezsuicopag_uuid}}" />
+                                        <small><strong>IMPORTANTE!</strong> Lembre-se de colocar o UUID do Evento na Plataforma caso deseje ativar o pagamento para este evento.</small>
+                                    </div>
+                                @endif
 							</div>
 							<!-- /.box-body -->
 
@@ -794,6 +807,34 @@
 											<option value="{{$categoria->id}}">{{$categoria->id}} - {{$categoria->name}}</option>
 										@endforeach
 									</select>
+
+
+                                    @if(
+                                        env("XADREZSUICOPAG_URI",null) &&
+                                        env("XADREZSUICOPAG_SYSTEM_ID",null) &&
+                                        env("XADREZSUICOPAG_SYSTEM_TOKEN",null) &&
+                                        \Illuminate\Support\Facades\Auth::user()->hasPermissionGlobalbyPerfil([1,10,11]) &&
+                                        $evento->xadrezsuicopag_uuid != ""
+                                    )
+                                        @if(
+                                            $xadrezsuicopag_controller
+                                        )
+                                            @php($xadrezsuicopag_category_request = $xadrezsuicopag_controller->factory("categories")->list($evento->xadrezsuicopag_uuid))
+
+                                            @if(
+                                                $xadrezsuicopag_category_request->ok == 1
+                                            )
+                                                <label for="category_xadrezsuicopag_uuid">XadrezSuíçoPAG: Categoria</label>
+                                                <select name="xadrezsuicopag_uuid" id="category_xadrezsuicopag_uuid" class="form-control width-100">
+                                                    <option value="">--- Sem Categoria no XadrezSuíçoPAG ---</option>
+                                                    @foreach($xadrezsuicopag_category_request->categories as $xadrezsuicopag_category)
+                                                        <option value="{{$xadrezsuicopag_category->uuid}}">{{$xadrezsuicopag_category->uuid}} - {{$xadrezsuicopag_category->name}}</option>
+                                                    @endforeach
+                                                </select>
+                                                <small><strong>IMPORTANTE!</strong> Apenas selecione uma categoria do XadrezSuíçoPAG caso esta necessite pagamento.</small>
+                                            @endif
+                                        @endif
+                                    @endif
 								</div>
 							</div>
 							<!-- /.box-body -->
@@ -817,6 +858,15 @@
 											<th>#</th>
 											<th>Nome</th>
 											<th>Vínculo Principal</th>
+                                            @if(
+                                                env("XADREZSUICOPAG_URI",null) &&
+                                                env("XADREZSUICOPAG_SYSTEM_ID",null) &&
+                                                env("XADREZSUICOPAG_SYSTEM_TOKEN",null) &&
+                                                \Illuminate\Support\Facades\Auth::user()->hasPermissionGlobalbyPerfil([1,10,11]) &&
+                                                $evento->xadrezsuicopag_uuid != ""
+                                            )
+                                                <th>Vínculo XadrezSuíçoPAG</th>
+                                            @endif
 											<th width="20%">Opções</th>
 										</tr>
 									</thead>
@@ -836,7 +886,30 @@
 														@endif
 													@endif
 												</td>
+
+                                                @if(
+                                                    env("XADREZSUICOPAG_URI",null) &&
+                                                    env("XADREZSUICOPAG_SYSTEM_ID",null) &&
+                                                    env("XADREZSUICOPAG_SYSTEM_TOKEN",null) &&
+                                                    \Illuminate\Support\Facades\Auth::user()->hasPermissionGlobalbyPerfil([1,10,11]) &&
+                                                    $evento->xadrezsuicopag_uuid != ""
+                                                )
+                                                    <td>
+                                                        @if($categoria->xadrezsuicopag_uuid)
+                                                            @php($xadrezsuicopag_category_request = $xadrezsuicopag_controller->factory("category")->get($evento->xadrezsuicopag_uuid,$categoria->xadrezsuicopag_uuid))
+                                                            @if($xadrezsuicopag_category_request->ok == 1)
+                                                                {{$xadrezsuicopag_category_request->category->uuid}} -
+                                                                {{$xadrezsuicopag_category_request->category->name}}
+                                                            @else
+                                                                Há um registro cadastrado, mas não existe uma categoria com este registro cadastrada no XadrezSuíçoPAG.
+                                                            @endif
+                                                        @else
+                                                            -- Não há --
+                                                        @endif
+                                                    </td>
+                                                @endif
 												<td>
+													<a class="btn btn-success" href="{{url("/evento/".$evento->id."/categoria/edit/".$categoria->id)}}" role="button"><i class="fa fa-edit"></i></a>
 													@if(
 														\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
 														\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4]) ||
@@ -1183,6 +1256,7 @@
 		$("#tipo_modalidade").select2();
 		$("#exportacao_sm_modelo").select2();
 		$("#categoria_id").select2();
+		$("#category_xadrezsuicopag_uuid").select2();
 		$("#criterio_desempate_id").select2();
 		$("#criterio_desempate_geral_id").select2();
 		$("#tipo_torneio_id").select2();

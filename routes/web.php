@@ -243,6 +243,8 @@ Route::group(["prefix"=>"evento"],function(){
     Route::group(["prefix"=>"{id}/categoria"],function(){
         Route::post('/add', 'EventoGerenciarController@categoria_add')->name('evento.categoria.add');
         Route::get('/remove/{categoria_evento_id}', 'EventoGerenciarController@categoria_remove')->name('evento.categoria.remove');
+        Route::get('/edit/{categoria_evento_id}', 'EventoGerenciarController@categoria_edit')->name('evento.categoria.edit');
+        Route::post('/edit/{categoria_evento_id}', 'EventoGerenciarController@categoria_edit_post')->name('evento.categoria.edit/post');
     });
 
     Route::group(["prefix"=>"{evento_id}/categorias"],function(){

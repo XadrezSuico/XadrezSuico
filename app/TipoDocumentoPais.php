@@ -14,4 +14,14 @@ class TipoDocumentoPais extends Model
     {
         return $this->belongsTo("App\TipoDocumento", "tipo_documentos_id", "id");
     }
+
+    public function toAPIObject(){
+        return [
+            "id" => $this->tipo_documento->id,
+            "name" => $this->tipo_documento->nome,
+            "pattern" => $this->tipo_documento->padrao,
+            "validation" => $this->tipo_documento->validacao,
+            "is_required" => $this->e_requerido
+        ];
+    }
 }

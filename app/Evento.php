@@ -189,6 +189,19 @@ class Evento extends Model
 
     }
 
+    public function isPaid(){
+        if(
+            env("XADREZSUICOPAG_URI",null) &&
+            env("XADREZSUICOPAG_SYSTEM_ID",null) &&
+            env("XADREZSUICOPAG_SYSTEM_TOKEN",null) &&
+            $this->xadrezsuicopag_uuid != ""
+        ){
+            return true;
+        }
+
+        return false;
+    }
+
     public function getCriterios(){
         if($this->criterios()->count() == 0){
             return $this->grupo_evento->criterios->all();
@@ -525,6 +538,16 @@ class Evento extends Model
     }
 
 
+    public function getTimeControl(){
+        switch($this->tipo_modalidade){
+            case 0:
+                return "Convencional";
+            case 1:
+                return "Rápido";
+            case 2:
+                return "Relâmpago";
+        }
+    }
 
 
     public function export($type){

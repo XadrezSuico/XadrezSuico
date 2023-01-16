@@ -2,6 +2,8 @@
 
 namespace App;
 
+use App\Http\Controllers\External\XadrezSuicoPagController;
+
 use DateTime;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\Activitylog\Traits\LogsActivity;
@@ -38,9 +40,17 @@ class Inscricao extends Model
             }
         });
 
-        // self::created(function($model){
-        //     // ... code here
-        // });
+        self::created(function($model){
+            if(
+                $model->torneio->evento->isPaid()
+            ){
+                if($model->categoria->isPaid($model->torneio->evento->id)){
+                    $xadrezsuicopag_controller = XadrezSuicoPagController::getInstance();
+
+                    $xadrezsuicopag_controller->factory("registration")->register($model);
+                }
+            }
+        });
 
         self::updating(function($model){
             Log::debug("self::updating");
@@ -268,5 +278,18 @@ class Inscricao extends Model
             $this->uuid = Str::uuid();
             $this->save();
         }
+    }
+
+
+    public function getPaymentInfo($key){
+        if($this->payment_info){
+            $payment_info = json_decode($this->payment_info,true);
+
+            if(isset($payment_info[$key])){
+                return $payment_info[$key];
+            }
+        }
+
+        return false;
     }
 }

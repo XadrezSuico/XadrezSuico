@@ -33,4 +33,12 @@ class Sexo extends Model
             return false;
         }
     }
+
+    public function toAPIObject(){
+        return [
+            "id" => $this->id,
+            "name" => $this->name,
+            "slug" => $this->abbr,
+        ];
+    }
 }

@@ -15,4 +15,26 @@ class Estado extends Model
     {
         return $this->hasMany("App\Cidade", "estados_id", "id");
     }
+
+
+    public function toAPIObject($include_parent = false){
+        if($include_parent){
+            return [
+                "id" => $this->id,
+                "name" => $this->nome,
+                "slug" => trim($this->abbr),
+
+                "country" => $this->pais->toAPIObject(),
+
+                "country_id" => $this->pais->id,
+            ];
+        }
+        return [
+            "id" => $this->id,
+            "name" => $this->nome,
+            "slug" => trim($this->abbr),
+
+            "country_id" => $this->pais->id,
+        ];
+    }
 }
