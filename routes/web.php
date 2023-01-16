@@ -492,3 +492,6 @@ Route::group(["prefix" => "especiais"], function () {
     });
 });
 
+Route::get('/event/{any}', function(){
+    return view("angular");
+})->name('evento.exports.xadrezsuicoemparceirador')->where('any', '.*');
