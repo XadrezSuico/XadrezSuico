@@ -77,6 +77,11 @@
                                     @if(env("ENTITY_DOMAIN",null) == "fexpar.com.br")
 									    <option value="10">10 - FEXPAR - Gestor de Vínculos Federativos</option>
                                     @endif
+                                    @if(env("XADREZSUICOPAG_URI",null) && env("XADREZSUICOPAG_SYSTEM_ID",null) && env("XADREZSUICOPAG_SYSTEM_TOKEN",null))
+									    <option value="11">11 - XadrezSuíçoPAG - Administrador</option>
+									    <option value="12">12 - XadrezSuíçoPAG - Gerente</option>
+									    <option value="13">13 - XadrezSuíçoPAG - Operador</option>
+                                    @endif
 								@endif
 							</select>
 						</div>
