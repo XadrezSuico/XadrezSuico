@@ -10,16 +10,24 @@ class XadrezSuicoPagCategoryController extends Controller
     public function list($event_uuid){
 
         if(env("APP_ENV","local") != "production") {
-            $client = new \GuzzleHttp\Client(["verify"=>false,'http_errors' => false]);
+            $client = new \GuzzleHttp\Client([
+                "verify"=>false,
+                'http_errors' => false,
+                'headers' => [
+                    "system_id" => env("XADREZSUICOPAG_SYSTEM_ID"),
+                    "system_token" => env("XADREZSUICOPAG_SYSTEM_TOKEN")
+                ]
+            ]);
         }else{
-            $client = new \GuzzleHttp\Client(['http_errors' => false]);
+            $client = new \GuzzleHttp\Client([
+                'http_errors' => false,
+                'headers' => [
+                    "system_id" => env("XADREZSUICOPAG_SYSTEM_ID"),
+                    "system_token" => env("XADREZSUICOPAG_SYSTEM_TOKEN")
+                ]
+            ]);
         }
-        $response = $client->request('get', env("XADREZSUICOPAG_URI")."/api/v1/system/categories/list/".$event_uuid, [
-            'headers' => [
-                "system_id" => env("XADREZSUICOPAG_SYSTEM_ID"),
-                "system_token" => env("XADREZSUICOPAG_SYSTEM_TOKEN")
-            ]
-        ]);
+        $response = $client->request('get', env("XADREZSUICOPAG_URI")."/api/v1/system/categories/list/".$event_uuid);
 
         if($response->getStatusCode() < 300){
             $json = json_decode($response->getBody());
@@ -35,9 +43,22 @@ class XadrezSuicoPagCategoryController extends Controller
     public function get($event_uuid,$category_uuid){
 
         if(env("APP_ENV","local") != "production") {
-            $client = new \GuzzleHttp\Client(["verify"=>false,'http_errors' => false]);
+            $client = new \GuzzleHttp\Client([
+                "verify"=>false,
+                'http_errors' => false,
+                'headers' => [
+                    "system_id" => env("XADREZSUICOPAG_SYSTEM_ID"),
+                    "system_token" => env("XADREZSUICOPAG_SYSTEM_TOKEN")
+                ]
+            ]);
         }else{
-            $client = new \GuzzleHttp\Client(['http_errors' => false]);
+            $client = new \GuzzleHttp\Client([
+                'http_errors' => false,
+                'headers' => [
+                    "system_id" => env("XADREZSUICOPAG_SYSTEM_ID"),
+                    "system_token" => env("XADREZSUICOPAG_SYSTEM_TOKEN")
+                ]
+            ]);
         }
         $response = $client->request('get', env("XADREZSUICOPAG_URI")."/api/v1/system/categories/get/".$event_uuid."/".$category_uuid, [
             'headers' => [
