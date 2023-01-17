@@ -21,7 +21,8 @@ class BannerController extends Controller
 
             if($evento->pagina){
                 if($evento->pagina->imagem){
-                    $img = Image::make(base64_decode($evento->pagina->imagem));
+                    // $img = Image::make(base64_decode($evento->pagina->imagem));
+                    $img = Image::make("data:image/png;base64,".$evento->pagina->imagem);
                     $img->resize(1230,300);
                     return $img->response();
                 }
