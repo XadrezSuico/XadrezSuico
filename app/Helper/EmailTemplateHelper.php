@@ -123,6 +123,7 @@ class EmailTemplateHelper
     private function fillInscricaoFields($text, $inscricao){
         // Inscrição
         $text = str_replace("{inscricao.id}",$inscricao->id,$text);
+        $text = str_replace("{inscricao.uuid}",$inscricao->uuid,$text);
         $text = str_replace("{inscricao.lichess}",$inscricao->getLichessProcessLink(),$text);
 
         if($inscricao->torneio->evento->permite_edicao_inscricao){

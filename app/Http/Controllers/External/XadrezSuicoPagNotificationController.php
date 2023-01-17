@@ -5,6 +5,10 @@ namespace App\Http\Controllers\External;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
+use App\Http\Controllers\EmailController;
+
+use App\Enum\EmailType;
+
 use App\Inscricao;
 
 class XadrezSuicoPagNotificationController extends Controller
@@ -59,6 +63,16 @@ class XadrezSuicoPagNotificationController extends Controller
         if($registration_request->ok == 1){
             if($registration_request->registration->status == "paid"){
                 $inscricao = Inscricao::where([["uuid","=",$uuid]])->whereJsonContains("payment_info->uuid",$registration_uuid)->first();
+
+                if(!$inscricao->paid){
+                    EmailController::schedule(
+                        $inscricao->enxadrista->email,
+                        $inscricao,
+                        EmailType::PagamentoConfirmado,
+                        $inscricao->enxadrista
+                    );
+                }
+
                 $inscricao->paid = true;
                 $inscricao->save();
             }
