@@ -10,9 +10,9 @@ class XadrezSuicoPagCategoryController extends Controller
     public function list($event_uuid){
 
         if(env("APP_ENV","local") != "production") {
-            $client = new \GuzzleHttp\Client(["verify"=>false]);
+            $client = new \GuzzleHttp\Client(["verify"=>false,'http_errors' => false]);
         }else{
-            $client = new \GuzzleHttp\Client();
+            $client = new \GuzzleHttp\Client(['http_errors' => false]);
         }
         $response = $client->request('get', env("XADREZSUICOPAG_URI")."/api/v1/system/categories/list/".$event_uuid, [
             'headers' => [

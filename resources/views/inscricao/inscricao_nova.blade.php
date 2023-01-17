@@ -215,7 +215,7 @@
                 </a><br/>
             @endif
 			@if($evento->pagina)
-				@if($evento->pagina->imagem) <div style="width: 100%; text-align: center;"><img src="data:image/png;base64, {!!$evento->pagina->imagem!!}" width="100%" style="max-width: 800px"/></div> <br/> @endif
+				@if($evento->pagina->imagem) <div style="width: 100%; text-align: center;"><img src="data:image/png;base64,{!!$evento->pagina->imagem!!}" width="100%" style="max-width: 800px"/></div> <br/> @endif
 				@if($evento->pagina->texto) {!!$evento->pagina->texto!!} <br/> @endif
 				@if($evento->pagina->imagem || $evento->pagina->texto) <hr/> @endif
 			@endif
