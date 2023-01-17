@@ -5,26 +5,29 @@ namespace App\Http\Controllers\External;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
+use Log;
+
 class XadrezSuicoPagCategoryController extends Controller
 {
     public function list($event_uuid){
+
+        $headers = [
+            "system_id" => env("XADREZSUICOPAG_SYSTEM_ID"),
+            "system_token" => env("XADREZSUICOPAG_SYSTEM_TOKEN")
+        ];
+
+        Log::debug("headers: ".json_encode($headers));
 
         if(env("APP_ENV","local") != "production") {
             $client = new \GuzzleHttp\Client([
                 "verify"=>false,
                 'http_errors' => false,
-                'headers' => [
-                    "system_id" => env("XADREZSUICOPAG_SYSTEM_ID"),
-                    "system_token" => env("XADREZSUICOPAG_SYSTEM_TOKEN")
-                ]
+                'headers' => $headers
             ]);
         }else{
             $client = new \GuzzleHttp\Client([
                 'http_errors' => false,
-                'headers' => [
-                    "system_id" => env("XADREZSUICOPAG_SYSTEM_ID"),
-                    "system_token" => env("XADREZSUICOPAG_SYSTEM_TOKEN")
-                ]
+                'headers' => $headers
             ]);
         }
         $response = $client->request('get', env("XADREZSUICOPAG_URI")."/api/v1/system/categories/list/".$event_uuid);
