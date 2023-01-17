@@ -31,9 +31,9 @@ class XadrezSuicoPagRegistrationController extends Controller
                 $body["notification_uri"] = env("APP_URL")."/api/v1/xadrezsuicopag/callback/".$inscricao->uuid;
 
                 if(env("APP_ENV","local") != "production") {
-                    $client = new \GuzzleHttp\Client(["verify"=>false]);
+                    $client = new \GuzzleHttp\Client(["verify"=>false,'http_errors' => false]);
                 }else{
-                    $client = new \GuzzleHttp\Client();
+                    $client = new \GuzzleHttp\Client(['http_errors' => false]);
                 }
                 $response = $client->request('post', env("XADREZSUICOPAG_URI")."/api/v1/system/registration/new", [
                     'headers' => [
@@ -70,9 +70,9 @@ class XadrezSuicoPagRegistrationController extends Controller
     public function get($registration_uuid){
 
         if(env("APP_ENV","local") != "production") {
-            $client = new \GuzzleHttp\Client(["verify"=>false]);
+            $client = new \GuzzleHttp\Client(["verify"=>false,'http_errors' => false]);
         }else{
-            $client = new \GuzzleHttp\Client();
+            $client = new \GuzzleHttp\Client(['http_errors' => false]);
         }
         $response = $client->request('get', env("XADREZSUICOPAG_URI")."/api/v1/system/registration/get/".$registration_uuid, [
             'headers' => [
@@ -89,6 +89,7 @@ class XadrezSuicoPagRegistrationController extends Controller
                 return ["ok"=>0,"error"=>1,"message"=>"Motivo Externo (XadrezSuíçoPAG): ".$json->message];
             }
         }
+        $json = json_decode($response->getBody());
         return ["ok"=>0,"error"=>1,"message"=>"Motivo: Código HTTP XadrezSuíçoPAG Incorreto: ".$json->message];
     }
 }

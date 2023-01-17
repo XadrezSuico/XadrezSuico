@@ -35,9 +35,9 @@ class XadrezSuicoPagCategoryController extends Controller
     public function get($event_uuid,$category_uuid){
 
         if(env("APP_ENV","local") != "production") {
-            $client = new \GuzzleHttp\Client(["verify"=>false]);
+            $client = new \GuzzleHttp\Client(["verify"=>false,'http_errors' => false]);
         }else{
-            $client = new \GuzzleHttp\Client();
+            $client = new \GuzzleHttp\Client(['http_errors' => false]);
         }
         $response = $client->request('get', env("XADREZSUICOPAG_URI")."/api/v1/system/categories/get/".$event_uuid."/".$category_uuid, [
             'headers' => [
@@ -54,6 +54,7 @@ class XadrezSuicoPagCategoryController extends Controller
                 return ["ok"=>0,"error"=>1,"message"=>"Motivo Externo (XadrezSuíçoPAG): ".$json->message];
             }
         }
+        $json = json_decode($response->getBody());
         return ["ok"=>0,"error"=>1,"message"=>"Motivo: Código HTTP XadrezSuíçoPAG Incorreto: ".$json->message];
     }
 }
