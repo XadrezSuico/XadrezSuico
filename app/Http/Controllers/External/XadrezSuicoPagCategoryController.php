@@ -29,6 +29,7 @@ class XadrezSuicoPagCategoryController extends Controller
                 return ["ok"=>0,"error"=>1,"message"=>"Motivo Externo (XadrezSuíçoPAG): ".$json->message];
             }
         }
+        $json = json_decode($response->getBody());
         return ["ok"=>0,"error"=>1,"message"=>"Motivo: Código HTTP XadrezSuíçoPAG Incorreto: ".$json->message];
     }
     public function get($event_uuid,$category_uuid){
