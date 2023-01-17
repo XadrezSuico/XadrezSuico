@@ -37,8 +37,8 @@ class XadrezSuicoPagRegistrationController extends Controller
                 }
                 $response = $client->request('post', env("XADREZSUICOPAG_URI")."/api/v1/system/registration/new", [
                     'headers' => [
-                        "system_id" => env("XADREZSUICOPAG_SYSTEM_ID"),
-                        "system_token" => env("XADREZSUICOPAG_SYSTEM_TOKEN")
+                        "System-Id" => env("XADREZSUICOPAG_SYSTEM_ID"),
+                        "System-Token" => env("XADREZSUICOPAG_SYSTEM_TOKEN")
                     ],
                     'json' => $body
                 ]);
@@ -76,8 +76,8 @@ class XadrezSuicoPagRegistrationController extends Controller
         }
         $response = $client->request('get', env("XADREZSUICOPAG_URI")."/api/v1/system/registration/get/".$registration_uuid, [
             'headers' => [
-                "system_id" => env("XADREZSUICOPAG_SYSTEM_ID"),
-                "system_token" => env("XADREZSUICOPAG_SYSTEM_TOKEN")
+                "System-Id" => env("XADREZSUICOPAG_SYSTEM_ID"),
+                "System-Token" => env("XADREZSUICOPAG_SYSTEM_TOKEN")
             ]
         ]);
 

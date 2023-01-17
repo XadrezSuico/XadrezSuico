@@ -10,14 +10,14 @@ use App\Inscricao;
 class XadrezSuicoPagNotificationController extends Controller
 {
     public function notification($uuid, Request $request){
-        if(!$request->header("system_id")){
+        if(!$request->header("System-Id")){
             activity("xadrezsuicopag_notification")
             ->withProperties(['request' => $request->all()])
             ->log("Erro: Motivo Externo (XadrezSuicoPAG): Dados da notificação não encontrados (system_id).");
 
             return response()->json(["ok"=>0, "error"=>1, "message"=>"Motivo Externo (XadrezSuicoPAG): Dados da notificação não encontrados.","httpcode"=>400],400);
         }else{
-            $system_id = $request->header("system_id");
+            $system_id = $request->header("System-Id");
         }
 
         if(!$request->registration_uuid){
@@ -33,9 +33,9 @@ class XadrezSuicoPagNotificationController extends Controller
         if(env("XADREZSUICOPAG_SYSTEM_ID",NULL) != $system_id){
             activity("xadrezsuicopag_notification")
             ->withProperties([
-                                'request' => $request->all(),
-                                "XADREZSUICOPAG_SYSTEM_ID" => env("XADREZSUICOPAG_SYSTEM_ID",NULL),
-                                "system_id" => $system_id
+                'request' => $request->all(),
+                "XADREZSUICOPAG_SYSTEM_ID" => env("XADREZSUICOPAG_SYSTEM_ID",NULL),
+                "System-Id" => $system_id
             ])
             ->log("Erro: O system_id informado não é válido.");
 
