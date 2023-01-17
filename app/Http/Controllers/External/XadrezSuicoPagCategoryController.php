@@ -22,12 +22,16 @@ class XadrezSuicoPagCategoryController extends Controller
             $client = new \GuzzleHttp\Client([
                 "verify"=>false,
                 'http_errors' => false,
-                'headers' => $headers
+                'headers' => $headers,
+
+                'debug' => true,
             ]);
         }else{
             $client = new \GuzzleHttp\Client([
                 'http_errors' => false,
-                'headers' => $headers
+                'headers' => $headers,
+
+                'debug' => true,
             ]);
         }
 
@@ -35,9 +39,7 @@ class XadrezSuicoPagCategoryController extends Controller
             print_r($request);
         });
 
-        $response = $client->request('get', env("XADREZSUICOPAG_URI")."/api/v1/system/categories/list/".$event_uuid,[
-            'handler' => $tapMiddleware($handler)
-        ]);
+        $response = $client->request('get', env("XADREZSUICOPAG_URI")."/api/v1/system/categories/list/".$event_uuid);
 
         if($response->getStatusCode() < 300){
             $json = json_decode($response->getBody());
