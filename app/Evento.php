@@ -189,6 +189,34 @@ class Evento extends Model
 
     }
 
+    public function getUrlName(){
+        /* Remove pontos e underlines */
+        $arrFindPointsUnderlines = array(".", "_");
+        $arrSubstituir = '';
+        $strTitulo = str_replace( $arrFindPointsUnderlines, $arrSubstituir, $this->name );
+
+
+        /* Caracteres minúsculos */
+        $strTitulo = strtolower($strTitulo);
+
+
+        /* Remove os acentos */
+        $acentos = array("á", "Á", "ã", "Ã", "â", "Â", "à", "À", "é", "É", "ê", "Ê", "è", "È", "í", "Í", "ó", "Ó", "õ", "Õ", "ò", "Ò", "ô", "Ô", "ú", "Ú", "ù", "Ù", "û", "Û", "ç", "Ç", "º", "ª");
+        $letras = array("a", "A", "a", "A", "a", "A", "a", "A", "e", "E", "e", "E", "e", "E", "i", "I", "o", "O", "o", "O", "o", "O", "o", "O", "u", "U", "u", "U", "u", "U", "c", "C", "o", "a");
+
+        $strTitulo = str_replace( $acentos, $letras, $strTitulo );
+        $strTitulo = preg_replace( "/[^a-zA-Z0-9._$, ]/", "", $strTitulo );
+        $strTitulo = iconv( "UTF-8", "UTF-8//TRANSLIT", $strTitulo );
+
+
+        /* Remove espaços em branco */
+        $strTitulo = str_replace( " ", "-", $strTitulo );
+        $strTitulo = str_replace( "--", "-", $strTitulo );
+
+
+        return $strTitulo;
+    }
+
     public function isPaid(){
         if(
             env("XADREZSUICOPAG_URI",null) &&
@@ -204,7 +232,7 @@ class Evento extends Model
 
     public function getEventPublicLink(){
         if($this->layout_version == 2){
-            return url("/event/".$this->uuid."/".urlencode($this->name));
+            return url("/event/".$this->uuid."/".$this->getUrlName());
         }
         return url("/inscricao/".$this->id);
     }
