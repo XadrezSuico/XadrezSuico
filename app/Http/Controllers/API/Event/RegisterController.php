@@ -216,37 +216,6 @@ class RegisterController extends Controller
             }
 
             if ($enxadrista->email) {
-                // EMAIL PARA O ENXADRISTA SOLICITANTE
-                // if($evento->is_lichess_integration){
-                //     $text = "Olá " . $enxadrista->name . "!<br/>";
-                //     $text .= "Parabéns! você iniciou a inscrição no Evento '" . $evento->name . "'.<br/>";
-                //     $text .= $evento->orientacao_pos_inscricao . "<hr/>";
-                //     $text .= "Informações:<br/>";
-                //     $text .= "ID da Inscrição: " . $inscricao->id . "<br/>";
-                //     $text .= "ID do Cadastro de Enxadrista: " . $inscricao->enxadrista->id . "<br/>";
-                //     $text .= "Cidade: " . $inscricao->cidade->name . "<br/>";
-                //     $text .= "Clube: " . (($inscricao->clube) ? $inscricao->clube->name : "Sem Clube") . "<br/>";
-                //     $text .= "Categoria: " . $inscricao->categoria->name . "<hr/>";
-                // }else{
-                //     $text = "Olá " . $enxadrista->name . "!<br/>";
-                //     $text .= "Você está recebendo este email para confirmar a inscrição no Evento '" . $evento->name . "'.<br/>";
-                //     $text .= "Informações:<br/>";
-                //     $text .= "ID da Inscrição: " . $inscricao->id . "<br/>";
-                //     $text .= "ID do Cadastro de Enxadrista: " . $inscricao->enxadrista->id . "<br/>";
-                //     $text .= "Cidade: " . $inscricao->cidade->name . "<br/>";
-                //     $text .= "Clube: " . (($inscricao->clube) ? $inscricao->clube->name : "Sem Clube") . "<br/>";
-                //     $text .= "Categoria: " . $inscricao->categoria->name . "<hr/>";
-                //     if($evento->orientacao_pos_inscricao != NULL){
-                //         $text .= "<strong>Orientações Pós-Inscrição:</strong><br/>";
-                //         $text .= $evento->orientacao_pos_inscricao . "<hr/>";
-                //     }
-                // }
-                // EmailController::scheduleEmail(
-                //     $enxadrista->email,
-                //     $evento->name . " - Inscrição Recebida - Enxadrista: " . $enxadrista->name,
-                //     $text,
-                //     $enxadrista
-                // );
                 EmailController::schedule(
                     $enxadrista->email,
                     $inscricao,
@@ -275,5 +244,98 @@ class RegisterController extends Controller
             }
         }
         return response()->json(["ok"=>0,"error"=>1,"message"=>"Evento não encontrado","httpcode"=>404],404);
+    }
+
+    public function list($uuid){
+        if($uuid){
+            if(Evento::where([["uuid","=",$uuid]])->count() == 0){
+                return response()->json(["ok"=>0,"error"=>1,"message"=>"Evento não encontrado.","httpcode"=>404],404);
+            }
+            $evento = Evento::where([["uuid","=",$uuid]])->first();
+
+            if(!$evento->e_permite_visualizar_lista_inscritos_publica){
+                return response()->json(["ok"=>0,"error"=>1,"message"=>"O evento não permite exibir a lista de inscritos.","httpcode"=>401],401);
+            }
+
+            $list = array();
+            foreach($evento->getInscricoes() as $inscricao){
+                $item = array();
+
+                $item["uuid"] = $inscricao->uuid;
+                $item["player"] = [
+                    "id" => $inscricao->enxadrista->id,
+                    "name" => $inscricao->enxadrista->getNomePublico(),
+                    "birthday" => $inscricao->enxadrista->getNascimentoPublico(),
+                    "city_name" => $inscricao->enxadrista->cidade->getName()
+                ];
+                $item["category"] = [
+                    "id" => $inscricao->categoria->id,
+                    "name" => $inscricao->categoria->name,
+                ];
+                $item["city_name"] = $inscricao->cidade->getName();
+                $item["city"] = $inscricao->cidade->toAPIObject(true);
+                $item["club"] = null;
+                $item["club_name"] = null;
+
+                if($inscricao->clube){
+                    $item["club_name"] = $inscricao->clube->getFullName();
+                    $item["club"] = $inscricao->clube->toAPIObject(true);
+                }
+
+                if($evento->is_lichess_integration){
+                    $item["lichess_info"] = [
+                        "username" => ($inscricao->lichess_username) ? $inscricao->lichess_username : null,
+                        "is_subscribed" => $inscricao->is_lichess_found,
+                        "rating" => ($inscricao->lichess_rating) ? $inscricao->lichess_rating : 0,
+                        "start_no" => ($inscricao->start_position) ? $inscricao->start_position : 0,
+                    ];
+                }elseif($evento->is_lichess){
+                    $item["lichess_info"] = [
+                        "username" => ($inscricao->lichess_username) ? $inscricao->lichess_username : null
+                    ];
+                }
+                if($evento->is_chess_com){
+                    $item["chess_com_info"] = [
+                        "username" => ($inscricao->chess_com_username) ? $inscricao->chess_com_username : null,
+                    ];
+                }
+                if($evento->tipo_rating){
+                    $item["rating"] = $inscricao->enxadrista->ratingParaEvento($evento->id,true);
+                }
+                if($evento->usa_fide){
+                    $item["fide_info"] = [
+                        "id" => $inscricao->enxadrista->fide_id,
+                        "rating" => $inscricao->enxadrista->showRating(0, $evento->tipo_modalidade),
+                    ];
+                }
+                if($evento->usa_cbx){
+                    $item["cbx_info"] = [
+                        "id" => $inscricao->enxadrista->cbx_id,
+                        "rating" => $inscricao->enxadrista->showRating(1, $evento->tipo_modalidade),
+                    ];
+                }
+                if($evento->usa_lbx){
+                    $item["lbx_info"] = [
+                        "id" => $inscricao->enxadrista->lbx_id,
+                        "rating" => $inscricao->enxadrista->showRating(2, $evento->tipo_modalidade),
+                    ];
+                }
+
+                if($evento->isPaid()){
+                    $item["payment_info"] = [
+                        "is_paid" => $inscricao->paid
+                    ];
+                    if(!$inscricao->paid){
+                        if($inscricao->getPaymentInfo("link")){
+                            $item["payment_info"]["link"] = $inscricao->getPaymentInfo("link");
+                        }
+                    }
+                }
+
+                $list[] = $item;
+            }
+            return response()->json(["ok"=>1,"error"=>0,"registrations"=>$list]);
+        }
+        return response()->json(["ok"=>0,"error"=>1,"message"=>"Evento não encontrado.","httpcode"=>404],404);
     }
 }

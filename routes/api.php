@@ -26,6 +26,7 @@ Route::group(["prefix"=>"v1"],function(){
     Route::group(["prefix"=>"event"],function(){
         Route::get('/get/{uuid}', 'API\Event\EventController@get')->name('api.v1.event.get');
         Route::post('/register/{uuid}', 'API\Event\RegisterController@register')->name('api.v1.event.register');
+        Route::get('/register/list/{uuid}', 'API\Event\RegisterController@list')->name('api.v1.event.list');
         Route::get('/banner/{uuid}', 'API\Event\BannerController@get')->name('api.v1.event.banner');
         Route::group(["prefix"=>"{uuid}/players"],function(){
             Route::get('/search', 'API\Event\PlayerController@search')->name('api.v1.event.players.search');
