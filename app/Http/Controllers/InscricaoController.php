@@ -52,7 +52,7 @@ class InscricaoController extends Controller
                 ) {
                     if($evento->layout_version != 1){
                         if($evento->is_allowed_to_layout_redirect){
-                            return redirect($evento->getEventLink());
+                            return redirect($evento->getEventPublicLink());
                         }
                         abort(404);
                     }
@@ -60,7 +60,7 @@ class InscricaoController extends Controller
             }else{
                 if($evento->layout_version != 1){
                     if($evento->is_allowed_to_layout_redirect){
-                        return redirect($evento->getEventLink());
+                        return redirect($evento->getEventPublicLink());
                     }
                     abort(404);
                 }
