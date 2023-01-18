@@ -202,6 +202,13 @@ class Evento extends Model
         return false;
     }
 
+    public function getEventPublicLink(){
+        if($this->layout_version == 2){
+            return url("/event/".$this->uuid."/".urlencode($this->name));
+        }
+        return url("/inscricao/".$this->id);
+    }
+
     public function getCriterios(){
         if($this->criterios()->count() == 0){
             return $this->grupo_evento->criterios->all();

@@ -129,6 +129,7 @@ class EventoGerenciarController extends Controller
         $evento->cidade_id = $request->input("cidade_id");
         $evento->tipo_modalidade = $request->input("tipo_modalidade");
         $evento->exportacao_sm_modelo = $request->input("exportacao_sm_modelo");
+        $evento->layout_version = $request->input("layout_version");
         if ($request->has("link")) {
             $evento->link = $request->input("link");
         } else {

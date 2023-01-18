@@ -45,6 +45,25 @@ class InscricaoController extends Controller
                 ) {
                     $permite_confirmacao = true;
                 }
+                if (
+                    !$user->hasPermissionGlobal() &&
+                    !$user->hasPermissionEventByPerfil($evento->id, [3, 4, 5]) &&
+                    !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [6,7])
+                ) {
+                    if($evento->layout_version != 1){
+                        if($evento->is_allowed_to_layout_redirect){
+                            return redirect($evento->getEventLink());
+                        }
+                        abort(404);
+                    }
+                }
+            }else{
+                if($evento->layout_version != 1){
+                    if($evento->is_allowed_to_layout_redirect){
+                        return redirect($evento->getEventLink());
+                    }
+                    abort(404);
+                }
             }
 
 

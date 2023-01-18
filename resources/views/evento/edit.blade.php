@@ -56,33 +56,43 @@
 								\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4,5]) ||
 								\Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])
 							)
-
-								@if($evento->e_inscricao_apenas_com_link)
-									<div class="alert alert-warning alert-dismissible" role="alert">
-										<strong>Aviso!</strong><br/>
-										A inscrição para este evento será efetuada apenas pelo link compartilhado (que é possível acessar logo abaixo).
-									</div>
-									<a href="{{url("/inscricao/".$evento->id."?token=".$evento->token)}}" class="btn btn-bg-green btn-app">
-										<i class="fa fa-plus"></i>
-										Nova ou Confirmar Inscrição
-									</a>
-								@else
-									<a href="{{url("/inscricao/".$evento->id)}}" class="btn btn-bg-green btn-app">
-										<i class="fa fa-plus"></i>
-										Nova ou Confirmar Inscrição
-									</a>
-								@endif
-							@endif
-							@if($evento->e_inscricao_apenas_com_link)
-								<a href="{{url("/inscricao/".$evento->id."?token=".$evento->token)}}" class="btn btn-success btn-app">
-									<i class="fa fa-link"></i>
-									Link para Divulgação
-								</a>
-							@else
-								<a href="{{url("/inscricao/".$evento->id)}}" class="btn btn-success btn-app">
-									<i class="fa fa-link"></i>
-									Link para Divulgação
-								</a>
+                                @if($evento->layout_version == 2)
+                                    <a href="{{url("/inscricao/".$evento->id)}}" class="btn btn-bg-green btn-app">
+                                        <i class="fa fa-plus"></i>
+                                        Nova ou Confirmar Inscrição (Privada)
+                                    </a>
+                                    <a href="{{$evento->getEventPublicLink()}}" class="btn btn-success btn-app">
+                                        <i class="fa fa-link"></i>
+                                        Link para Divulgação
+                                    </a>
+                                @else
+                                    @if($evento->e_inscricao_apenas_com_link)
+                                        <div class="alert alert-warning alert-dismissible" role="alert">
+                                            <strong>Aviso!</strong><br/>
+                                            A inscrição para este evento será efetuada apenas pelo link compartilhado (que é possível acessar logo abaixo).
+                                        </div>
+                                        <a href="{{url("/inscricao/".$evento->id."?token=".$evento->token)}}" class="btn btn-bg-green btn-app">
+                                            <i class="fa fa-plus"></i>
+                                            Nova ou Confirmar Inscrição
+                                        </a>
+                                    @else
+                                        <a href="{{url("/inscricao/".$evento->id)}}" class="btn btn-bg-green btn-app">
+                                            <i class="fa fa-plus"></i>
+                                            Nova ou Confirmar Inscrição
+                                        </a>
+                                    @endif
+                                    @if($evento->e_inscricao_apenas_com_link)
+                                        <a href="{{url("/inscricao/".$evento->id."?token=".$evento->token)}}" class="btn btn-success btn-app">
+                                            <i class="fa fa-link"></i>
+                                            Link para Divulgação
+                                        </a>
+                                    @else
+                                        <a href="{{url("/inscricao/".$evento->id)}}" class="btn btn-success btn-app">
+                                            <i class="fa fa-link"></i>
+                                            Link para Divulgação
+                                        </a>
+                                    @endif
+                                @endif
 							@endif
                             <br/>
                             @if($evento->e_permite_confirmacao_publica)
@@ -319,6 +329,14 @@
 										<option value="0">Convencional</option>
 										<option value="1">Rápido</option>
 										<option value="2">Relâmpago</option>
+									</select>
+								</div>
+								<div class="form-group">
+									<label for="layout_version">Tipo de Layout de Página *</label>
+									<select name="layout_version" id="layout_version" class="form-control width-100" @if(!\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() && !\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4]) && !\Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])) disabled="disabled" @endif>
+										<option value="">--- Você pode selecionar um tipo de layout de página ---</option>
+										<option value="1">Versão 1 - Padrão</option>
+										<option value="2">Versão 2 - Página de Evento</option>
 									</select>
 								</div>
 								<div class="form-group">
@@ -1254,6 +1272,7 @@
     	CKEDITOR.replace('orientacao_pos_inscricao');
 		$("#torneio_template_id").select2();
 		$("#tipo_modalidade").select2();
+		$("#layout_version").select2();
 		$("#exportacao_sm_modelo").select2();
 		$("#categoria_id").select2();
 		$("#category_xadrezsuicopag_uuid").select2();
@@ -1266,6 +1285,7 @@
 		$("#cidade_id").val([{{$evento->cidade_id}}]).change();
 		$("#tipo_modalidade").val([{{$evento->tipo_modalidade}}]).change();
 		$("#exportacao_sm_modelo").val([{{$evento->exportacao_sm_modelo}}]).change();
+		$("#layout_version").val([{{$evento->layout_version}}]).change();
 		@if($evento->tipo_rating)
 			$("#tipo_ratings_id").val([{{$evento->tipo_rating->tipo_ratings_id}}]).change();
 		@endif
