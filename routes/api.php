@@ -58,4 +58,9 @@ Route::group(["prefix"=>"v1"],function(){
             Route::get('/list/{country_id}', 'API\Event\DocumentTypeController@list')->name('api.v1.event.document.list');
         });
     });
+
+
+    Route::group(["prefix"=>"page"],function(){
+        Route::get('/get/{uuid}', 'API\Page\PageController@get')->name('api.v1.page.get');
+    });
 });
