@@ -63,4 +63,8 @@ Route::group(["prefix"=>"v1"],function(){
     Route::group(["prefix"=>"page"],function(){
         Route::get('/get/{uuid}', 'API\Page\PageController@get')->name('api.v1.page.get');
     });
+
+    Route::group(["prefix"=>"player"],function(){
+        Route::get('/list', 'API\Player\PlayerController@list')->name('api.v1.player.search');
+    });
 });

@@ -45,7 +45,7 @@ class PlayerController extends Controller
                 $item["fide_id"] = ($enxadrista->fide_id) ? intval($enxadrista->fide_id) : null;
                 $item["cbx_id"] = ($enxadrista->cbx_id) ? intval($enxadrista->cbx_id) : null;
                 $item["lbx_id"] = ($enxadrista->cbx_id) ? intval($enxadrista->lbx_id) : null;
-                $item["chesscom_username"] = $enxadrista->chesscom_username;
+                $item["chesscom_username"] = $enxadrista->chess_com_username;
                 $item["lichess_username"] = $enxadrista->lichess_username;
                 $item["city_name"] = $enxadrista->cidade->getName();
                 $item["club_name"] = ($enxadrista->clube) ? $enxadrista->clube->getFullName() : "Sem Clube";
@@ -114,7 +114,7 @@ class PlayerController extends Controller
             $player["fide_id"] = ($enxadrista->fide_id) ? intval($enxadrista->fide_id) : null;
             $player["cbx_id"] = ($enxadrista->cbx_id) ? intval($enxadrista->cbx_id) : null;
             $player["lbx_id"] = ($enxadrista->cbx_id) ? intval($enxadrista->lbx_id) : null;
-            $player["chesscom_username"] = $enxadrista->chesscom_username;
+            $player["chesscom_username"] = $enxadrista->chess_com_username;
             $player["lichess_username"] = $enxadrista->lichess_username;
             $player["city_name"] = $enxadrista->cidade->getName();
             $player["club_name"] = ($enxadrista->clube) ? $enxadrista->clube->getFullName() : "Sem Clube";
