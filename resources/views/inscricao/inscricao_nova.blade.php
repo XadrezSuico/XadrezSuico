@@ -452,7 +452,7 @@
 							@endif
 						@endif
 					@endif
-					<div class="row">
+					<div class="row mb-2">
 						<div class="col-md-4">
 							<div class="form-group">
 								<label for="cbx_id" id="cbx_id_label">ID CBX <span id="cbx_required" style="display:none">*</span></label>
@@ -480,6 +480,8 @@
 								Caso possua alguma dúvida sobre como encontrar, confira o vídeo tutorial <a href="https://youtu.be/d0a0CS8WROY" target="_blank">clicando aqui</a>.
 							</div>
 						</div>
+                    </div>
+					<div class="row mb-2">
 						<div class="col-md-4">
 							<div class="form-group">
 								<label for="lichess_username" id="lichess_username_label">Nome de Usuário - Lichess.org <span id="lichess_required" style="display:none">*</span></label>
@@ -504,7 +506,7 @@
 				</div>
 				<div id="enxadrista_5" style="display:none">
 					<h4>Passo 5/5 - Vínculo do Enxadrista</h4>
-					<div class="form-group">
+					<div class="form-group mb-2">
 						<label for="pais_id" class="field-required">País do Vínculo *</label>
 						<select id="pais_id" name="pais_id" class="form-control this_is_select2 cadastro_enxadrista_select">
 							<option value="">--- Selecione um País ---</option>
@@ -513,21 +515,21 @@
 							@endforeach
 						</select>
 					</div>
-					<div class="form-group">
+					<div class="form-group mb-2">
 						<label for="estados_id" class="field-required">Estado do Vínculo *</label>
 						<select id="estados_id" name="estados_id" class="form-control this_is_select2 cadastro_enxadrista_select">
 							<option value="">--- Selecione um país antes ---</option>
 						</select>
                     	<button id="estadoNaoCadastradoEnxadrista" onclick="chamaCadastroEstado(0)" class="btn btn-success">O meu estado não está cadastrado</button>
 					</div>
-					<div class="form-group">
+					<div class="form-group mb-2">
 						<label for="cidade_id" class="field-required">Cidade do Vínculo *</label>
 						<select id="cidade_id" name="cidade_id" class="form-control this_is_select2 cadastro_enxadrista_select">
 							<option value="">--- Selecione um estado antes ---</option>
 						</select>
                     	<button id="cidadeNaoCadastradaEnxadrista" onclick="chamaCadastroCidade(0)" class="btn btn-success">A minha cidade não está cadastrada</button>
 					</div>
-					<div class="form-group">
+					<div class="form-group mb-2">
 						<label for="clube_id">Clube/Instituição/Escola</label>
 						<select id="clube_id" name="clube_id" class="form-control this_is_select2 cadastro_enxadrista_select">
 							<option value="">--- Você pode selecionar um clube/instituição/escola ---</option>

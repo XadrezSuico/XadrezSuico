@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\API\Event\City;
+namespace App\Http\Controllers\API\Location;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -21,7 +21,7 @@ class CityController extends Controller
     }
 
     public function get($state_id){
-        if(Estado::where([["id","=",$state_id]])->count() > 0){
+        if(Cidade::where([["id","=",$state_id]])->count() > 0){
             $city = Cidade::find($state_id);
 
             return response()->json(["ok"=>1,"error"=>0,"city"=>$city->toAPIObject(true)]);
