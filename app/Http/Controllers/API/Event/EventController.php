@@ -38,12 +38,11 @@ class EventController extends Controller
                 $retorno["event"]["info"]["long_description"] = $evento->pagina->texto;
             }
 
-            $retorno["event"]["info"]["timeline"] = array();
-            if($evento->data_limite_inscricoes_abertas){
+            foreach($evento->getTimelineItems() as $item){
                 $retorno["event"]["info"]["timeline"][] = [
-                    "datetime" => $evento->getDataFimInscricoesOnline(),
-                    "text" => "Fim das Inscrições Online",
-                    "is_expected" => false
+                    "datetime" => $item["datetime"],
+                    "text" => $item["text"],
+                    "is_expected" => $item["is_expected"]
                 ];
             }
 

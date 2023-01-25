@@ -134,6 +134,11 @@ class Evento extends Model
         return $this->hasMany("App\EmailTemplate", "evento_id", "id");
     }
 
+    public function timeline_items()
+    {
+        return $this->hasMany("App\EventTimelineItem", "event_id", "id");
+    }
+
     public function campos()
     {
         // if($this->hasMany("App\CampoPersonalizadoEvento","evento_id","id")->count() > 0){
@@ -154,6 +159,31 @@ class Evento extends Model
         return CampoPersonalizado::where([["grupo_evento_id", "=", $this->grupo_evento->id], ["is_required", "=", true]])
             ->orWhere([["evento_id", "=", $this->id], ["is_required", "=", true]])
             ->get();
+    }
+
+    public function getTimelineItems(){
+        $items = [];
+
+        if($this->data_limite_inscricoes_abertas){
+            $items[] = [
+                "datetime" => $this->getDataFimInscricoesOnline(),
+                "text" => "Fim das Inscrições Online",
+                "is_expected" => false
+            ];
+        }
+
+        foreach($this->timeline_items()->orderBy("order","ASC")->get() as $timeline_item){
+            $item = [];
+
+            $item["datetime"] = $timeline_item->getDateTime();
+            $item["text"] = $timeline_item->title;
+            $item["is_expected"] = $timeline_item->is_expected;
+
+
+            $items[] = $item;
+        }
+
+        return $items;
     }
 
     public function getDataInicio()
