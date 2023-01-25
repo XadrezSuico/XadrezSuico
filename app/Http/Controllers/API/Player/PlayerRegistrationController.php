@@ -12,7 +12,7 @@ use App\Http\Controllers\LBXRatingController;
 
 use App\Enum\EmailType;
 
-use App\Util\Util;
+use App\Http\Util\Util;
 
 use App\Enxadrista;
 use App\Documento;
@@ -26,6 +26,11 @@ class PlayerRegistrationController extends Controller
 
         if (
             !$request->has("accepts.policy")
+        ) {
+            return response()->json(["ok" => 0, "error" => 1, "message" => "Você deve aceitar o termo de uso e política de privacidade da plataforma XadrezSuíço!"]);
+        }
+        if (
+            $request->input("accepts.policy") == 0
         ) {
             return response()->json(["ok" => 0, "error" => 1, "message" => "Você deve aceitar o termo de uso e política de privacidade da plataforma XadrezSuíço!"]);
         }
@@ -75,12 +80,13 @@ class PlayerRegistrationController extends Controller
             }
         }
 
+        // print_r($request->all());
 
         $documentos = array();
 
-        foreach(TipoDocumentoPais::where([["pais_id","=",$request->input("pais_nascimento_id")]])->get() as $tipo_documento_pais){
+        foreach(TipoDocumentoPais::where([["pais_id","=",$request->input("born_country_id")]])->get() as $tipo_documento_pais){
             if($tipo_documento_pais->e_requerido){
-                if(isset($request->documents[$tipo_documento_pais->tipo_documento->id])){
+                if($request->has("documents.".$tipo_documento_pais->tipo_documento->id)){
                     return response()->json(["ok"=>0,"error"=>1,"message"=>"Há um documento que é requerido que não foi informado.", "registred" => 0, "ask" => 0]);
                 }
                 if(
@@ -90,13 +96,13 @@ class PlayerRegistrationController extends Controller
                     return response()->json(["ok"=>0,"error"=>1,"message"=>"Há um documento que é requerido que não foi informado.", "registred" => 0, "ask" => 0]);
                 }
             }
-            if(isset($request->documents[$tipo_documento_pais->tipo_documento->id])){
+            if($request->has("documents.".$tipo_documento_pais->tipo_documento->id)){
                 if(
                     $request->documents[$tipo_documento_pais->tipo_documento->id] != "" &&
                     $request->documents[$tipo_documento_pais->tipo_documento->id] != NULL
                 ){
 
-                    $temEnxadrista_count = Enxadrista::whereHas("documentos",function($q1) use($request, $tipo_documento_pais){
+                    $enxadrista_count = Enxadrista::whereHas("documentos",function($q1) use($request, $tipo_documento_pais){
                         if($tipo_documento_pais->tipo_documento->id == 1){
                             $q1->where([
                                 ["tipo_documentos_id","=",$tipo_documento_pais->tipo_documento->id],
@@ -109,8 +115,8 @@ class PlayerRegistrationController extends Controller
                             ]);
                         }
                     })->count();
-                    if($temEnxadrista_count > 0){
-                        $temEnxadrista = Enxadrista::whereHas("documentos",function($q1) use($request, $tipo_documento_pais){
+                    if($enxadrista_count > 0){
+                        $enxadrista = Enxadrista::whereHas("documentos",function($q1) use($request, $tipo_documento_pais){
                             if($tipo_documento_pais->tipo_documento->id == 1){
                                 $q1->where([
                                     ["tipo_documentos_id","=",$tipo_documento_pais->tipo_documento->id],
@@ -128,13 +134,12 @@ class PlayerRegistrationController extends Controller
                             "ok"=>0,
                             "error"=>1,
                             "message" => "Já há um cadastro de Enxadrista com o Documento informado. Deseja utilizar ele?",
-                            "registred" => 0,
-                            "ask" => 1,
+                            "result" => true,
                             "player" => [
-                                "id" => $temEnxadrista->id,
-                                "name" => $temEnxadrista->name,
-                                "birthday" => $temEnxadrista->getBorn(),
-                                "city" => $temEnxadrista->cidade->name,
+                                "id" => $enxadrista->id,
+                                "name" => $enxadrista->name,
+                                "birthday" => $enxadrista->getBorn(),
+                                "city" => $enxadrista->cidade->name,
                             ]
                         ];
                         return response()->json($array);
@@ -212,7 +217,7 @@ class PlayerRegistrationController extends Controller
         $enxadrista->sexos_id = $request->input("sex_id");
         $enxadrista->email = $request->input("email");
         $enxadrista->pais_id = $request->input("born_country_id");
-        $enxadrista->pais_celular_id = $request->input("cellphone_country_Id");
+        $enxadrista->pais_celular_id = $request->input("cellphone_country_id");
         $enxadrista->celular = $request->input("cellphone");
         $enxadrista->cidade_id = $request->input("city_id");
         if ($request->has("club_id")) {
@@ -298,13 +303,20 @@ class PlayerRegistrationController extends Controller
         }
 
         if ($enxadrista->id > 0) {
-            if ($enxadrista->clube) {
-                return response()->json(["ok" => 1, "error" => 0, "enxadrista_id" => $enxadrista->id, "ask" => 0]);
-            } else {
-                return response()->json(["ok" => 1, "error" => 0, "enxadrista_id" => $enxadrista->id, "ask" => 0]);
-            }
+            $array = [
+                "ok"=>1,
+                "error"=>0,
+                "result" => true,
+                "player" => [
+                    "id" => $enxadrista->id,
+                    "name" => $enxadrista->name,
+                    "birthday" => $enxadrista->getBorn(),
+                    "city_name" => $enxadrista->cidade->getName(),
+                ]
+            ];
+            return response()->json($array);
         } else {
-            return response()->json(["ok" => 0, "error" => 1, "message" => "Um erro inesperado aconteceu. Por favor, tente novamente mais tarde.", "registred" => 0, "ask" => 0]);
+            return response()->json(["ok" => 0, "error" => 1, "message" => "Um erro inesperado aconteceu. Por favor, tente novamente mais tarde.", "result" => false]);
         }
     }
 
@@ -393,5 +405,84 @@ class PlayerRegistrationController extends Controller
             }
         }
         return response()->json(["ok"=>0,"error"=>1]);
+    }
+
+
+    public function checkExists(Request $request){
+        if($request->has("name") && $request->has("birthday")){
+            $enxadrista = new Enxadrista;
+            if (!$enxadrista->setBorn($request->input("birthday"))) {
+                return response()->json(["ok" => 0, "error" => 1, "message" => "A data de nascimento é inválida.", "registred" => 0, "ask" => 0]);
+            }
+            if($enxadrista->howOld() > 130 || $enxadrista->howOld() <= 0){
+                return response()->json(["ok" => 0, "error" => 1, "message" => "A data de nascimento parece inválida. Por favor, verifique e tente novamente.", "registred" => 0, "ask" => 0]);
+            }
+
+            if(Enxadrista::where([["name","=",$request->name],["born","=",$enxadrista->born]])->count() > 0){
+                $enxadrista = Enxadrista::where([["name","=",$request->name],["born","=",$enxadrista->born]])->first();
+                return response()->json([
+                    "ok" => 1,
+                    "error" => 0,
+                    "message" => "Você já possui cadastro!",
+                    "result" => true,
+                    "player" => [
+                        "id" => $enxadrista->id,
+                        "name" => $enxadrista->name,
+                        "birthday" => $enxadrista->getBorn(),
+                        "city_name" => $enxadrista->cidade->getName(),
+                    ]
+                ]);
+            }else{
+                return response()->json(["ok"=>1,"error"=>0,"result"=>false]);
+            }
+        }else if($request->has("documents")){
+            foreach($request->documents as $key => $document){
+                $enxadrista_count = Enxadrista::whereHas("documentos",function($q1) use($key, $document){
+                    if($key == 1){
+                        $q1->where([
+                            ["tipo_documentos_id","=",$key],
+                            ["numero","=",Util::numeros($document)],
+                        ]);
+                    }else{
+                        $q1->where([
+                            ["tipo_documentos_id","=",$key],
+                            ["numero","=",$document],
+                        ]);
+                    }
+                })
+                ->count();
+                if($enxadrista_count > 0){
+                    $enxadrista = Enxadrista::whereHas("documentos",function($q1) use($key, $document){
+                        if($key == 1){
+                            $q1->where([
+                                ["tipo_documentos_id","=",$key],
+                                ["numero","=",Util::numeros($document)],
+                            ]);
+                        }else{
+                            $q1->where([
+                                ["tipo_documentos_id","=",$key],
+                                ["numero","=",$document],
+                            ]);
+                        }
+                    })
+                    ->first();
+
+                    $array = [
+                        "ok"=>1,
+                        "error"=>0,
+                        "message" => "Já há um cadastro de Enxadrista com o Documento informado.",
+                        "result" => true,
+                        "player" => [
+                            "id" => $enxadrista->id,
+                            "name" => $enxadrista->name,
+                            "birthday" => $enxadrista->getNascimentoPublico(),
+                            "city_name" => $enxadrista->cidade->getName(),
+                        ]
+                    ];
+                    return response()->json($array);
+                }
+            }
+        }
+        return response()->json(["ok"=>1,"error"=>0,"result"=>false]);
     }
 }

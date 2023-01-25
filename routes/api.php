@@ -42,6 +42,10 @@ Route::group(["prefix"=>"v1"],function(){
 
     Route::group(["prefix"=>"player"],function(){
         Route::get('/list', 'API\Player\PlayerController@list')->name('api.v1.player.search');
+        Route::group(["prefix"=>"registration"],function(){
+            Route::post('/check', 'API\Player\PlayerRegistrationController@checkExists')->name('api.v1.player.registration.check');
+            Route::post('/register', 'API\Player\PlayerRegistrationController@register')->name('api.v1.player.registration.register');
+        });
     });
 
 
@@ -75,4 +79,5 @@ Route::group(["prefix"=>"v1"],function(){
         Route::get('/search', 'API\ClubController@search')->name('api.v1.clubs.search');
         Route::get('/get/{id}', 'API\ClubController@get')->name('api.v1.clubs.get');
     });
+    Route::get('/defaults', 'API\DefaultController@default')->name('api.v1.defaults.defaults');
 });

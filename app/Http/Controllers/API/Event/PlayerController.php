@@ -118,6 +118,7 @@ class PlayerController extends Controller
             $player["lichess_username"] = $enxadrista->lichess_username;
             $player["city_name"] = $enxadrista->cidade->getName();
             $player["club_name"] = ($enxadrista->clube) ? $enxadrista->clube->getFullName() : "Sem Clube";
+            $player["born_country_id"] = ($enxadrista->pais_id) ? $enxadrista->pais_id : null;
 
             $player["city"] = $enxadrista->cidade->toAPIObject(true);
             if($enxadrista->clube) $player["club"] = $enxadrista->clube->toAPIObject(true);
@@ -447,19 +448,20 @@ class PlayerController extends Controller
         if($enxadrista->howOldForEvento($evento->getYear()) >= 130) $fields[] = "born";
 
         if($evento->calcula_cbx){
-            if(!$enxadrista->cbx_id || $enxadrista->cbx_id == 0) $fields[] = "calculate_cbx";
+            // if(!$enxadrista->cbx_id || $enxadrista->cbx_id == 0) $fields[] = "calculate_cbx";
             if(!$enxadrista->cbx_id || $enxadrista->cbx_id == 0) $fields[] = "cbx_id";
         }
         if($evento->calcula_fide){
             if(!$enxadrista->pais_id){
-                $fields[] = "calculate_fide";
+                // $fields[] = "calculate_fide";
                 $fields[] = "fide_id";
             }elseif($enxadrista->pais_id == 33){
-                if(!$enxadrista->cbx_id || $enxadrista->cbx_id == 0) $fields[] = "calculate_fide";
+                // if(!$enxadrista->cbx_id || $enxadrista->cbx_id == 0) $fields[] = "calculate_fide";
                 if(!$enxadrista->cbx_id || $enxadrista->cbx_id == 0) $fields[] = "cbx_id";
             }elseif($enxadrista->pais_id != 33){
-                if(!$enxadrista->cbx_id || $enxadrista->cbx_id == 0) $fields[] = "calculate_fide";
-                if(!$enxadrista->cbx_id || $enxadrista->cbx_id == 0) $fields[] = "fide_id";
+                // if(!$enxadrista->cbx_id || $enxadrista->cbx_id == 0) $fields[] = "calculate_fide";
+                if(!$enxadrista->fide_id || $enxadrista->fide_id == 0) $fields[] = "fide_id";
+                if(!$enxadrista->cbx_id || $enxadrista->cbx_id == 0) $fields[] = "cbx_id";
             }
         }
 
