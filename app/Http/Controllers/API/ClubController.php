@@ -53,4 +53,36 @@ class ClubController extends Controller
 
         return response()->json(["ok"=>1, "error"=>0, "club" => $club->toAPIObject(true)]);
     }
+
+
+    public function new(Request $request)
+    {
+        if (
+            !$request->has("name") || !$request->has("city_id")
+        ) {
+            return response()->json(["ok" => 0, "error" => 1, "message" => "Os campos obrigatórios não estão preenchidos. Por favor, verifique e envie novamente!", "registred" => 0]);
+        } elseif (
+            $request->input("name") == null || $request->input("name") == "" ||
+            $request->input("city_id") == null || $request->input("city_id") == ""
+        ) {
+            return response()->json(["ok" => 0, "error" => 1, "message" => "Os campos obrigatórios não estão preenchidos. Por favor, verifique e envie novamente!", "registred" => 0]);
+        }
+        $clube = new Clube;
+
+        $temClube_count = Clube::where([["name", "=", mb_strtoupper($request->input("name"))], ["cidade_id", "=", $request->input("city_id")]])->count();
+        if ($temClube_count > 0) {
+            $clube = Clube::where([["name", "=", mb_strtoupper($request->input("name"))], ["cidade_id", "=", $request->input("city_id")]])->first();
+
+            return response()->json(["ok" => 0, "error" => 1, "message" => "Este clube já está cadastrado!",  "club"=>["id" => $clube->id, "name" => $clube->name, "city_name" => $clube->cidade->getName()]]);
+        }
+
+        $clube->name = mb_strtoupper($request->input("name"));
+        $clube->cidade_id = mb_strtoupper($request->input("city_id"));
+        $clube->save();
+        if ($clube->id > 0) {
+            return response()->json(["ok" => 1, "error" => 0, "club"=>["id" => $clube->id, "name" => $clube->name, "city_name" => $clube->cidade->getName()]]);
+        } else {
+            return response()->json(["ok" => 0, "error" => 1, "message" => "Um erro inesperado aconteceu. Por favor, tente novamente mais tarde.", "registred" => 0]);
+        }
+    }
 }
