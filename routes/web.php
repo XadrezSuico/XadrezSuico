@@ -501,6 +501,12 @@ Route::get('/page/{any}', function(){
 Route::get('/players/{any}', function(){
     return view("angular");
 })->name('page.angular')->where('any', '.*');
+Route::get('/players', function(){
+    return view("angular");
+})->name('page.angular')->where('any', '.*');
 Route::get('/registration/{any}', function(){
+    return view("angular");
+})->name('page.angular')->where('any', '.*');
+Route::get('/registration', function(){
     return view("angular");
 })->name('page.angular')->where('any', '.*');
