@@ -61,10 +61,12 @@ Route::group(["prefix"=>"v1"],function(){
         Route::group(["prefix"=>"state"],function(){
             Route::get('/list/{country_id}', 'API\Location\StateController@list')->name('api.v1.location.state.list');
             Route::get('/get/{id}', 'API\Location\StateController@get')->name('api.v1.location.state.get');
+            Route::post('/new', 'API\Location\StateController@new')->name('api.v1.location.state.new');
         });
         Route::group(["prefix"=>"city"],function(){
             Route::get('/list/{state_id}', 'API\Location\CityController@list')->name('api.v1.location.city.list');
             Route::get('/get/{id}', 'API\Location\CityController@get')->name('api.v1.location.city.get');
+            Route::post('/new', 'API\Location\CityController@new')->name('api.v1.location.city.new');
         });
     });
 
