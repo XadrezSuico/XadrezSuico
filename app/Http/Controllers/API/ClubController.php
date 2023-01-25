@@ -73,14 +73,14 @@ class ClubController extends Controller
         if ($temClube_count > 0) {
             $clube = Clube::where([["name", "=", mb_strtoupper($request->input("name"))], ["cidade_id", "=", $request->input("city_id")]])->first();
 
-            return response()->json(["ok" => 0, "error" => 1, "message" => "Este clube já está cadastrado!",  "club"=>["id" => $clube->id, "name" => $clube->name, "city_name" => $clube->cidade->getName()]]);
+            return response()->json(["ok" => 0, "error" => 1, "message" => "Este clube já está cadastrado!",  "club"=>$clube->toAPIObject()]);
         }
 
         $clube->name = mb_strtoupper($request->input("name"));
         $clube->cidade_id = mb_strtoupper($request->input("city_id"));
         $clube->save();
         if ($clube->id > 0) {
-            return response()->json(["ok" => 1, "error" => 0, "club"=>["id" => $clube->id, "name" => $clube->name, "city_name" => $clube->cidade->getName()]]);
+            return response()->json(["ok" => 1, "error" => 0, "club"=>$clube->toAPIObject()]);
         } else {
             return response()->json(["ok" => 0, "error" => 1, "message" => "Um erro inesperado aconteceu. Por favor, tente novamente mais tarde.", "registred" => 0]);
         }
