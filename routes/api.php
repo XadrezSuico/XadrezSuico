@@ -33,34 +33,51 @@ Route::group(["prefix"=>"v1"],function(){
             Route::get('/get/{id}', 'API\Event\PlayerController@get')->name('api.v1.event.players.get');
             Route::post('/complete/{id}', 'API\Event\PlayerController@complete')->name('api.v1.event.players.complete');
         });
-        Route::group(["prefix"=>"clubs"],function(){
-            Route::get('/search', 'API\Event\ClubController@search')->name('api.v1.event.clubs.search');
-            Route::get('/get/{id}', 'API\Event\ClubController@get')->name('api.v1.event.clubs.get');
-        });
-        Route::group(["prefix"=>"cities"],function(){
-            Route::group(["prefix"=>"country"],function(){
-                Route::get('/list', 'API\Event\City\CountryController@list')->name('api.v1.event.cities.country.list');
-                Route::get('/get/{id}', 'API\Event\City\CountryController@get')->name('api.v1.event.cities.country.get');
-            });
-            Route::group(["prefix"=>"state"],function(){
-                Route::get('/list/{country_id}', 'API\Event\City\StateController@list')->name('api.v1.event.cities.state.list');
-                Route::get('/get/{id}', 'API\Event\City\StateController@get')->name('api.v1.event.cities.state.get');
-            });
-            Route::group(["prefix"=>"city"],function(){
-                Route::get('/list/{state_id}', 'API\Event\City\CityController@list')->name('api.v1.event.cities.city.list');
-                Route::get('/get/{id}', 'API\Event\City\CityController@get')->name('api.v1.event.cities.city.get');
-            });
-        });
-        Route::group(["prefix"=>"sexes"],function(){
-            Route::get('/list', 'API\Event\SexController@list')->name('api.v1.event.sex.list');
-        });
-        Route::group(["prefix"=>"document_types"],function(){
-            Route::get('/list/{country_id}', 'API\Event\DocumentTypeController@list')->name('api.v1.event.document.list');
-        });
     });
 
 
     Route::group(["prefix"=>"page"],function(){
         Route::get('/get/{uuid}', 'API\Page\PageController@get')->name('api.v1.page.get');
     });
+
+    Route::group(["prefix"=>"player"],function(){
+        Route::get('/list', 'API\Player\PlayerController@list')->name('api.v1.player.search');
+        Route::group(["prefix"=>"registration"],function(){
+            Route::post('/check', 'API\Player\PlayerRegistrationController@checkExists')->name('api.v1.player.registration.check');
+            Route::post('/register', 'API\Player\PlayerRegistrationController@register')->name('api.v1.player.registration.register');
+        });
+    });
+
+
+    Route::group(["prefix"=>"sexes"],function(){
+        Route::get('/list', 'API\Sex\SexController@list')->name('api.v1.sex.sex.list');
+    });
+
+    Route::group(["prefix"=>"location"],function(){
+        Route::group(["prefix"=>"country"],function(){
+            Route::get('/list', 'API\Location\CountryController@list')->name('api.v1.location.country.list');
+            Route::get('/get/{id}', 'API\Location\CountryController@get')->name('api.v1.location.country.get');
+        });
+        Route::group(["prefix"=>"state"],function(){
+            Route::get('/list/{country_id}', 'API\Location\StateController@list')->name('api.v1.location.state.list');
+            Route::get('/get/{id}', 'API\Location\StateController@get')->name('api.v1.location.state.get');
+        });
+        Route::group(["prefix"=>"city"],function(){
+            Route::get('/list/{state_id}', 'API\Location\CityController@list')->name('api.v1.location.city.list');
+            Route::get('/get/{id}', 'API\Location\CityController@get')->name('api.v1.location.city.get');
+        });
+    });
+
+
+    Route::group(["prefix"=>"document"],function(){
+        Route::group(["prefix"=>"document_types"],function(){
+            Route::get('/list/{country_id}', 'API\Document\DocumentTypeController@list')->name('api.v1.document.document_type.list');
+        });
+    });
+
+    Route::group(["prefix"=>"club"],function(){
+        Route::get('/search', 'API\ClubController@search')->name('api.v1.clubs.search');
+        Route::get('/get/{id}', 'API\ClubController@get')->name('api.v1.clubs.get');
+    });
+    Route::get('/defaults', 'API\DefaultController@default')->name('api.v1.defaults.defaults');
 });

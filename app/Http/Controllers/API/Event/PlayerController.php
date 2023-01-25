@@ -45,7 +45,7 @@ class PlayerController extends Controller
                 $item["fide_id"] = ($enxadrista->fide_id) ? intval($enxadrista->fide_id) : null;
                 $item["cbx_id"] = ($enxadrista->cbx_id) ? intval($enxadrista->cbx_id) : null;
                 $item["lbx_id"] = ($enxadrista->cbx_id) ? intval($enxadrista->lbx_id) : null;
-                $item["chesscom_username"] = $enxadrista->chesscom_username;
+                $item["chesscom_username"] = $enxadrista->chess_com_username;
                 $item["lichess_username"] = $enxadrista->lichess_username;
                 $item["city_name"] = $enxadrista->cidade->getName();
                 $item["club_name"] = ($enxadrista->clube) ? $enxadrista->clube->getFullName() : "Sem Clube";
@@ -114,10 +114,11 @@ class PlayerController extends Controller
             $player["fide_id"] = ($enxadrista->fide_id) ? intval($enxadrista->fide_id) : null;
             $player["cbx_id"] = ($enxadrista->cbx_id) ? intval($enxadrista->cbx_id) : null;
             $player["lbx_id"] = ($enxadrista->cbx_id) ? intval($enxadrista->lbx_id) : null;
-            $player["chesscom_username"] = $enxadrista->chesscom_username;
+            $player["chesscom_username"] = $enxadrista->chess_com_username;
             $player["lichess_username"] = $enxadrista->lichess_username;
             $player["city_name"] = $enxadrista->cidade->getName();
             $player["club_name"] = ($enxadrista->clube) ? $enxadrista->clube->getFullName() : "Sem Clube";
+            $player["born_country_id"] = ($enxadrista->pais_id) ? $enxadrista->pais_id : null;
 
             $player["city"] = $enxadrista->cidade->toAPIObject(true);
             if($enxadrista->clube) $player["club"] = $enxadrista->clube->toAPIObject(true);
@@ -447,19 +448,20 @@ class PlayerController extends Controller
         if($enxadrista->howOldForEvento($evento->getYear()) >= 130) $fields[] = "born";
 
         if($evento->calcula_cbx){
-            if(!$enxadrista->cbx_id || $enxadrista->cbx_id == 0) $fields[] = "calculate_cbx";
+            // if(!$enxadrista->cbx_id || $enxadrista->cbx_id == 0) $fields[] = "calculate_cbx";
             if(!$enxadrista->cbx_id || $enxadrista->cbx_id == 0) $fields[] = "cbx_id";
         }
         if($evento->calcula_fide){
             if(!$enxadrista->pais_id){
-                $fields[] = "calculate_fide";
+                // $fields[] = "calculate_fide";
                 $fields[] = "fide_id";
             }elseif($enxadrista->pais_id == 33){
-                if(!$enxadrista->cbx_id || $enxadrista->cbx_id == 0) $fields[] = "calculate_fide";
+                // if(!$enxadrista->cbx_id || $enxadrista->cbx_id == 0) $fields[] = "calculate_fide";
                 if(!$enxadrista->cbx_id || $enxadrista->cbx_id == 0) $fields[] = "cbx_id";
             }elseif($enxadrista->pais_id != 33){
-                if(!$enxadrista->cbx_id || $enxadrista->cbx_id == 0) $fields[] = "calculate_fide";
-                if(!$enxadrista->cbx_id || $enxadrista->cbx_id == 0) $fields[] = "fide_id";
+                // if(!$enxadrista->cbx_id || $enxadrista->cbx_id == 0) $fields[] = "calculate_fide";
+                if(!$enxadrista->fide_id || $enxadrista->fide_id == 0) $fields[] = "fide_id";
+                if(!$enxadrista->cbx_id || $enxadrista->cbx_id == 0) $fields[] = "cbx_id";
             }
         }
 

@@ -494,4 +494,13 @@ Route::group(["prefix" => "especiais"], function () {
 
 Route::get('/event/{any}', function(){
     return view("angular");
-})->name('evento.exports.xadrezsuicoemparceirador')->where('any', '.*');
+})->name('event.angular')->where('any', '.*');
+Route::get('/page/{any}', function(){
+    return view("angular");
+})->name('page.angular')->where('any', '.*');
+Route::get('/players/{any}', function(){
+    return view("angular");
+})->name('page.angular')->where('any', '.*');
+Route::get('/registration/{any}', function(){
+    return view("angular");
+})->name('page.angular')->where('any', '.*');

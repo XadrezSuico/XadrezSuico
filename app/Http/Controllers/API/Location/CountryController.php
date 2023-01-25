@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\API\Event\City;
+namespace App\Http\Controllers\API\Location;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
