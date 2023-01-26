@@ -87,6 +87,6 @@
 	loading_default_animation = 'circle';
 </script>
 @yield('adminlte_js')
-
+@if(env("GTAG",false)) {!!env("GTAG","")!!} @endif
 </body>
 </html>
