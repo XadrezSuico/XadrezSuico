@@ -131,6 +131,9 @@ class Inscricao extends Model
 
     public function hasOpcao($campo_personalizados_id)
     {
+        // echo $this->id;
+        // echo "\n";
+        // print_r($this->opcoes->all());
         if($this->opcoes()->where([["campo_personalizados_id", "=", $campo_personalizados_id]])->count() > 0){
             return true;
         }
@@ -139,8 +142,7 @@ class Inscricao extends Model
 
     public function getOpcao($campo_personalizados_id)
     {
-        $opcao = $this->opcoes()->where([["campo_personalizados_id", "=", $campo_personalizados_id]])->first();
-        return $opcao;
+        return $this->opcoes()->where([["campo_personalizados_id", "=", $campo_personalizados_id]])->first();
     }
 
     public function getLichessProcessLink(){

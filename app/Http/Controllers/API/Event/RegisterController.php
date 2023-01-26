@@ -332,6 +332,15 @@ class RegisterController extends Controller
                     }
                 }
 
+                $item["custom_fields"] = array();
+                foreach($evento->getPublicCustomFields() as $custom_field){
+                    if($inscricao->hasOpcao($custom_field->id)){
+                        $item["custom_fields"][] = $inscricao->getOpcao($custom_field->id)->toAPIObject();
+                    }else{
+                        $item["custom_fields"][] = array_merge(["value"=>"-"],$custom_field->toAPIObject());
+                    }
+                }
+
                 $list[] = $item;
             }
             return response()->json(["ok"=>1,"error"=>0,"registrations"=>$list]);

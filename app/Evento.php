@@ -9,6 +9,8 @@ use Illuminate\Database\Eloquent\Model;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Illuminate\Support\Str;
 
+use DB;
+
 class Evento extends Model
 {
     use LogsActivity;
@@ -422,14 +424,16 @@ class Evento extends Model
     public function getInscricoes()
     {
         $evento = $this;
-        $inscricoes = Inscricao::whereHas("torneio", function ($q1) use ($evento) {
+
+        $inscricoes_id = Inscricao::whereHas("torneio", function ($q1) use ($evento) {
             $q1->where([["evento_id", "=", $evento->id]]);
         })
-            ->join('enxadrista', 'enxadrista.id', '=', 'inscricao.enxadrista_id')
-            ->orderBy("categoria_id", "ASC")
-            ->orderBy("enxadrista.name", "ASC")
-            ->get();
-        return $inscricoes;
+        ->join('enxadrista', 'enxadrista.id', '=', 'inscricao.enxadrista_id')
+        ->orderBy("categoria_id", "ASC")
+        ->orderBy("enxadrista.name", "ASC")
+        ->pluck("inscricao.id");
+
+        return Inscricao::whereIn("id",$inscricoes_id)->orderByRaw(DB::raw("FIELD(id, ".implode(",",$inscricoes_id->toArray()).")"))->get();
     }
 
     public function gerarToken()
@@ -662,5 +666,16 @@ class Evento extends Model
             $this->uuid = Str::uuid();
             $this->save();
         }
+    }
+
+    public function getPublicCustomFields(){
+        $evento = $this;
+        return CampoPersonalizado::
+            where(function($q1) use ($evento){
+                $q1->where([["grupo_evento_id", "=", $evento->grupo_evento->id]])
+                   ->orWhere([["evento_id", "=", $evento->id]]);
+            })
+            ->where([["is_public","=",true]])
+            ->get();
     }
 }

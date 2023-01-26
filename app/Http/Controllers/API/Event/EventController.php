@@ -93,6 +93,11 @@ class EventController extends Controller
                 $retorno["event"]["info"]["is_use_lbx"] = true;
             }
 
+            $retorno["event"]["info"]["custom_fields"] = array();
+            foreach($evento->getPublicCustomFields() as $custom_field){
+                $retorno["event"]["info"]["custom_fields"][] = $custom_field->toAPIObject();
+            }
+
 
             return response()->json($retorno);
         }

@@ -14,7 +14,7 @@ class CampoPersonalizado extends Model
     protected static $logFillable = true;
 
     protected static $logAttributes = ['*'];
-    
+
     public function evento()
     {
         return $this->belongsTo("App\CampoPersonalizado", "evento_id", "id");
@@ -54,5 +54,12 @@ class CampoPersonalizado extends Model
         } else {
             return false;
         }
+    }
+
+    public function toAPIObject(){
+        return [
+            "id" => $this->id,
+            "public_name" => $this->public_name,
+        ];
     }
 }

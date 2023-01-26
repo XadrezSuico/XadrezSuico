@@ -14,7 +14,7 @@ class CampoPersonalizadoOpcaoInscricao extends Model
     protected static $logFillable = true;
 
     protected static $logAttributes = ['*'];
-    
+
     public function campo()
     {
         return $this->belongsTo("App\CampoPersonalizado", "campo_personalizados_id", "id");
@@ -26,5 +26,13 @@ class CampoPersonalizadoOpcaoInscricao extends Model
     public function inscricao()
     {
         return $this->belongsTo("App\Inscricao", "inscricao_id", "id");
+    }
+
+    public function toAPIObject(){
+        return [
+            "id" => $this->id,
+            "public_name" => $this->public_name,
+            "value" => $this->opcao->response,
+        ];
     }
 }

@@ -23,7 +23,7 @@
 	<div class="row">
   <section class="col-lg-6 connectedSortable">
 
-	
+
 		<div class="box box-primary" id="inscricao">
 			<div class="box-header">
 				<h3 class="box-title">Editar Campo Personalizado</h3>
@@ -34,6 +34,10 @@
 					<div class="form-group">
 						<label for="name">Nome *</label>
 						<input name="name" id="name" class="form-control" type="text" value="{{$campo->name}}" />
+					</div>
+					<div class="form-group">
+						<label for="public_name">Nome Público *</label>
+						<input name="public_name" id="public_name" class="form-control" type="text" value="{{$campo->public_name}}" />
 					</div>
 					<div class="form-group">
 						<label for="question">Questão *</label>
@@ -58,6 +62,9 @@
 					</div>
 					<div class="form-group">
 						<label><input type="checkbox" id="is_active" name="is_active" @if($campo->is_active) checked="checked" @endif> Campo Ativo</label>
+					</div>
+					<div class="form-group">
+						<label><input type="checkbox" id="is_public" name="is_public" @if($campo->is_public) checked="checked" @endif> Campo Público</label>
 					</div>
 				</div>
 				<!-- /.box-body -->

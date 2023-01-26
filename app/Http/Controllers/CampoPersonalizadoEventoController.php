@@ -35,6 +35,11 @@ class CampoPersonalizadoEventoController extends Controller
                 $campo->type = $request->input("type");
             }
         }
+        if ($request->has("public_name")) {
+            if ($request->input("public_name") != "") {
+                $campo->public_name = $request->input("public_name");
+            }
+        }
 
         if ($request->has("validator")) {
             if ($request->input("validator") != "") {
@@ -106,6 +111,11 @@ class CampoPersonalizadoEventoController extends Controller
             $campo->is_required = true;
         } else {
             $campo->is_required = false;
+        }
+        if ($request->has("is_public")) {
+            $campo->is_public = true;
+        } else {
+            $campo->is_public = false;
         }
         $campo->save();
 
