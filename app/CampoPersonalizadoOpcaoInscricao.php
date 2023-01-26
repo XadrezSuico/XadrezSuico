@@ -30,8 +30,8 @@ class CampoPersonalizadoOpcaoInscricao extends Model
 
     public function toAPIObject(){
         return [
-            "id" => $this->id,
-            "public_name" => $this->public_name,
+            "id" => $this->campo->id,
+            "public_name" => $this->campo->public_name,
             "value" => $this->opcao->response,
         ];
     }
