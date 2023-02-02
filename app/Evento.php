@@ -433,6 +433,8 @@ class Evento extends Model
         ->orderBy("enxadrista.name", "ASC")
         ->pluck("inscricao.id");
 
+        if(count($inscricoes_id->toArray()) == 0) return [];
+
         return Inscricao::whereIn("id",$inscricoes_id)->orderByRaw(DB::raw("FIELD(id, ".implode(",",$inscricoes_id->toArray()).")"))->get();
     }
 
