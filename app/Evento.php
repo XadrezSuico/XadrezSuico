@@ -680,4 +680,15 @@ class Evento extends Model
             ->where([["is_public","=",true]])
             ->get();
     }
+
+    public function getAPILimits(){
+        return [
+            "total" => $this->quantosInscritos(),
+            "limit" => $this->maximo_inscricoes_evento
+        ];
+    }
+
+    public function hasLimits(){
+        return ($this->maximo_inscricoes_evento);
+    }
 }

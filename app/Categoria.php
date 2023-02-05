@@ -148,4 +148,12 @@ class Categoria extends Model
         }
         return false;
     }
+
+
+    public function toAPIObject($include_parent = false){
+        return [
+            "id" => $this->id,
+            "name" => $this->name,
+        ];
+    }
 }

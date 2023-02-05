@@ -22,9 +22,10 @@ class EventController extends Controller
             $retorno["event"]["uuid"] = $evento->uuid;
             $retorno["event"]["info"] = array();
             $retorno["event"]["tabs"] = array();
+
             $retorno["event"]["tabs"][] = "home";
             $retorno["event"]["tabs"][] = "register";
-            $retorno["event"]["tabs"][] = "players";
+            if($evento->e_permite_visualizar_lista_inscritos_publica) $retorno["event"]["tabs"][] = "players";
 
             $retorno["event"]["info"]["title"] = $evento->name;
             $retorno["event"]["info"]["date"] = ($evento->getDataInicio() == $evento->getDataFim()) ? $evento->getDataInicio() : $evento->getDataInicio()." - ".$evento->getDataFim();
@@ -32,10 +33,25 @@ class EventController extends Controller
             $retorno["event"]["info"]["short_description"] = "";
             $retorno["event"]["info"]["long_description"] = "";
             $retorno["event"]["info"]["city"] = $evento->cidade->getName();
+            $retorno["event"]["info"]["place"] = $evento->local;
+            $retorno["event"]["info"]["link"] = ($evento->link) ? $evento->link : null;
             $retorno["event"]["info"]["time_control"] = $evento->getTimeControl();
 
+            $retorno["event"]["info"]["limits"] = $evento->getAPILimits();
+
+            $retorno["event"]["info"]["long_description"] = "";
+            if($evento->local){
+                $retorno["event"]["info"]["long_description"] .= "<strong>Local:</strong> ".$evento->local."<br/>";
+            }
+            if($evento->link){
+                $retorno["event"]["info"]["long_description"] .= "<strong>Maiores Informações:</strong> <a href='".$evento->link."'>".$evento->link."</a><br/>";
+            }
             if($evento->pagina){
-                $retorno["event"]["info"]["long_description"] = $evento->pagina->texto;
+                $retorno["event"]["info"]["long_description"] .= $evento->pagina->texto;
+            }
+            if($evento->hasLimits()){
+                $retorno["event"]["info"]["long_description"] .= "<strong>Total de Inscritos:</strong> ".$retorno["event"]["info"]["limits"]["total"]."<br/>";
+                $retorno["event"]["info"]["long_description"] .= "<strong>Limite Máximo de Inscritos:</strong> ".$retorno["event"]["info"]["limits"]["limit"]."<br/>";
             }
 
             foreach($evento->getTimelineItems() as $item){
@@ -96,6 +112,10 @@ class EventController extends Controller
             $retorno["event"]["info"]["custom_fields"] = array();
             foreach($evento->getPublicCustomFields() as $custom_field){
                 $retorno["event"]["info"]["custom_fields"][] = $custom_field->toAPIObject();
+            }
+            $retorno["event"]["categories"] = array();
+            foreach($evento->categorias->all() as $category){
+                $retorno["event"]["categories"][] = $category->categoria->toAPIObject();
             }
 
 
