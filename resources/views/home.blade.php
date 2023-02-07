@@ -92,6 +92,12 @@
                                             Inscritos: <strong>{{$evento->quantosInscritosConfirmadosLichess()}}</strong><br/>
                                             Não Inscritos: <strong>{{$evento->quantosInscritosFaltamLichess()}}</strong>
                                         @endif
+                                        @if($evento->xadrezsuicopag_uuid)
+                                            <strong>Pagamento:</strong><br/>
+                                            Pagos: <strong>{{$evento->howManyPaid()}}</strong><br/>
+                                            Pagamento Pendente: <strong>{{$evento->howManyNotPaid()}}</strong><br/>
+                                            Gratuidades (Categorias Gratuitas): <strong>{{$evento->howManyFree()}}</strong>
+                                        @endif
                                     @endif
                                 </td>
                                 <td>@if(!$evento->inscricoes_encerradas()) Sim @else <strong>Não</strong> @endif</td>

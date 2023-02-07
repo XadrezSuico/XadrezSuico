@@ -691,4 +691,30 @@ class Evento extends Model
     public function hasLimits(){
         return ($this->maximo_inscricoes_evento);
     }
+
+    public function howManyPaid(){
+        $total = 0;
+        foreach ($this->torneios->all() as $torneio) {
+            $total += $torneio->inscricoes()->where([["paid", "=", true]])->count();
+        }
+        return $total;
+    }
+    public function howManyFree(){
+        $total = 0;
+
+        $categorias_id = $this->categorias()->whereNull("xadrezsuicopag_uuid")->pluck("categoria_id")->toArray();
+
+        foreach ($this->torneios->all() as $torneio) {
+            $total += $torneio->inscricoes()->whereIn("categoria_id",$categorias_id)->count();
+        }
+        return $total;
+    }
+    public function howManyNotPaid(){
+        $total = 0;
+        $categorias_id = $this->categorias()->whereNotNull("xadrezsuicopag_uuid")->pluck("categoria_id")->toArray();
+        foreach ($this->torneios->all() as $torneio) {
+            $total += $torneio->inscricoes()->where([["paid", "=", false]])->whereIn("categoria_id",$categorias_id)->count();
+        }
+        return $total;
+    }
 }
