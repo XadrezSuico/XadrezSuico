@@ -216,12 +216,21 @@ class RegisterController extends Controller
             }
 
             if ($enxadrista->email) {
-                EmailController::schedule(
-                    $enxadrista->email,
-                    $inscricao,
-                    EmailType::ConfirmacaoInscricao,
-                    $enxadrista
-                );
+                if($evento->isPaid() && $inscricao->getPaymentInfo("link")){
+                    EmailController::schedule(
+                        $enxadrista->email,
+                        $inscricao,
+                        EmailType::InscricaoRecebidaPagamentoPendente,
+                        $enxadrista
+                    );
+                }else{
+                    EmailController::schedule(
+                        $enxadrista->email,
+                        $inscricao,
+                        EmailType::ConfirmacaoInscricao,
+                        $enxadrista
+                    );
+                }
             }
             $response_adicional_fields = array();
             $response_adicional_fields["response"] = false;
