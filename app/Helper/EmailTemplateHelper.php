@@ -30,6 +30,9 @@ class EmailTemplateHelper
             case EmailType::PagamentoConfirmado:
                 return $this->generatePagamentoConfirmado($object);
                 break;
+            case EmailType::InscricaoRecebidaPagamentoPendente:
+                return $this->generateInscricaoRecebidaPagamentoPendente($object);
+                break;
         }
     }
 
@@ -139,6 +142,24 @@ class EmailTemplateHelper
     }
 
 
+    private function generateInscricaoRecebidaPagamentoPendente($inscricao){
+        $email_template = NULL;
+        // Busca Template de E-mail no Evento
+        if($inscricao->torneio->evento->email_templates()->where([["email_type","=",EmailType::InscricaoRecebidaPagamentoPendente]])->count() > 0){
+            $email_template = $inscricao->torneio->evento->email_templates()->where([["email_type","=",EmailType::InscricaoRecebidaPagamentoPendente]])->first();
+        }else
+            // Busca Template de E-mail no Grupo de Evento
+            if($inscricao->torneio->evento->grupo_evento->email_templates()->where([["email_type","=",EmailType::InscricaoRecebidaPagamentoPendente]])->count() > 0){
+                $email_template = $inscricao->torneio->grupo_evento->email_templates()->where([["email_type","=",EmailType::InscricaoRecebidaPagamentoPendente]])->first();
+            }else{
+                // Busca Template de E-mail Geral
+                $email_template = EmailTemplate::where([["email_type","=",EmailType::InscricaoRecebidaPagamentoPendente]])->whereNull("evento_id")->whereNull("grupo_evento_id")->first();
+            }
+        $email_template->subject = $this->fillInscricaoFields($email_template->subject,$inscricao);
+        $email_template->message = $this->fillInscricaoFields($email_template->message,$inscricao);
+
+        return $email_template;
+    }
 
 
 
@@ -150,6 +171,12 @@ class EmailTemplateHelper
 
         if($inscricao->torneio->evento->permite_edicao_inscricao){
             $text = str_replace("{inscricao.link_edicao}",url("/inscricao/".$inscricao->uuid."/editar"),$text);
+        }
+
+        // Pagamento
+        if($inscricao->payment_info){
+            $text = str_replace("{inscricao.payment.uuid}",$inscricao->getPaymentInfo("uuid"),$text);
+            $text = str_replace("{inscricao.payment.link}",$inscricao->getPaymentInfo("link"),$text);
         }
 
         // Categoria

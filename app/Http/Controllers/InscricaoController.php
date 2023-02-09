@@ -805,44 +805,23 @@ class InscricaoController extends Controller
             }
         }
 
+
         if ($enxadrista->email) {
-            // EMAIL PARA O ENXADRISTA SOLICITANTE
-            // if($evento->is_lichess_integration){
-            //     $text = "Olá " . $enxadrista->name . "!<br/>";
-            //     $text .= "Parabéns! você iniciou a inscrição no Evento '" . $evento->name . "'.<br/>";
-            //     $text .= $evento->orientacao_pos_inscricao . "<hr/>";
-            //     $text .= "Informações:<br/>";
-            //     $text .= "ID da Inscrição: " . $inscricao->id . "<br/>";
-            //     $text .= "ID do Cadastro de Enxadrista: " . $inscricao->enxadrista->id . "<br/>";
-            //     $text .= "Cidade: " . $inscricao->cidade->name . "<br/>";
-            //     $text .= "Clube: " . (($inscricao->clube) ? $inscricao->clube->name : "Sem Clube") . "<br/>";
-            //     $text .= "Categoria: " . $inscricao->categoria->name . "<hr/>";
-            // }else{
-            //     $text = "Olá " . $enxadrista->name . "!<br/>";
-            //     $text .= "Você está recebendo este email para confirmar a inscrição no Evento '" . $evento->name . "'.<br/>";
-            //     $text .= "Informações:<br/>";
-            //     $text .= "ID da Inscrição: " . $inscricao->id . "<br/>";
-            //     $text .= "ID do Cadastro de Enxadrista: " . $inscricao->enxadrista->id . "<br/>";
-            //     $text .= "Cidade: " . $inscricao->cidade->name . "<br/>";
-            //     $text .= "Clube: " . (($inscricao->clube) ? $inscricao->clube->name : "Sem Clube") . "<br/>";
-            //     $text .= "Categoria: " . $inscricao->categoria->name . "<hr/>";
-            //     if($evento->orientacao_pos_inscricao != NULL){
-            //         $text .= "<strong>Orientações Pós-Inscrição:</strong><br/>";
-            //         $text .= $evento->orientacao_pos_inscricao . "<hr/>";
-            //     }
-            // }
-            // EmailController::scheduleEmail(
-            //     $enxadrista->email,
-            //     $evento->name . " - Inscrição Recebida - Enxadrista: " . $enxadrista->name,
-            //     $text,
-            //     $enxadrista
-            // );
-            EmailController::schedule(
-                $enxadrista->email,
-                $inscricao,
-                EmailType::ConfirmacaoInscricao,
-                $enxadrista
-            );
+            if($evento->isPaid() && $inscricao->getPaymentInfo("link")){
+                EmailController::schedule(
+                    $enxadrista->email,
+                    $inscricao,
+                    EmailType::InscricaoRecebidaPagamentoPendente,
+                    $enxadrista
+                );
+            }else{
+                EmailController::schedule(
+                    $enxadrista->email,
+                    $inscricao,
+                    EmailType::ConfirmacaoInscricao,
+                    $enxadrista
+                );
+            }
         }
 
         if ($inscricao->id > 0) {
