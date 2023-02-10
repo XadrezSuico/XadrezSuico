@@ -18,6 +18,8 @@ use App\Enxadrista;
 use App\Documento;
 use App\TipoDocumentoPais;
 
+use Log;
+
 class PlayerRegistrationController extends Controller
 {
     public function register(Request $request)
