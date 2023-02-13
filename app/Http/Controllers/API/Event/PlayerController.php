@@ -186,6 +186,8 @@ class PlayerController extends Controller
                 return response()->json(["ok"=>0,"error"=>1,"message"=>"Não há campos para atualização deste enxadrista.","httpcode"=>404],404);
             }
 
+            Log::debug("Fields: ".json_encode($need_update_fields));
+
             foreach($need_update_fields as $need_update_field){
                 switch($need_update_field){
                     case "name":
