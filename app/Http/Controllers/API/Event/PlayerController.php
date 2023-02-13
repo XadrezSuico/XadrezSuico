@@ -101,9 +101,7 @@ class PlayerController extends Controller
             if($count == 0){
                 return response()->json(["ok"=>0,"error"=>1,"message"=>"Enxadrista não encontrado.","httpcode"=>404],404);
             }
-            $enxadrista = Enxadrista::where([
-                ["id", "=", $id],
-            ])->first();
+            $enxadrista = Enxadrista::find($id);
 
             if($enxadrista->estaInscrito($evento->id)){
                 return response()->json(["ok"=>0,"error"=>1,"message"=>"O enxadrista já está inscrito neste evento.","httpcode"=>400],400);
