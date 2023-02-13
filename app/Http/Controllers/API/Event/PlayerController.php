@@ -183,7 +183,7 @@ class PlayerController extends Controller
             if($count == 0){
                 return response()->json(["ok"=>0,"error"=>1,"message"=>"Enxadrista não encontrado.","httpcode"=>404],404);
             }
-            $enxadrista = Enxadrista::find($id)->first();
+            $enxadrista = Enxadrista::find($id);
 
             $need_update_fields = $this->getNeedUpdateFields($evento,$enxadrista);
             if(count($need_update_fields) == 0){
