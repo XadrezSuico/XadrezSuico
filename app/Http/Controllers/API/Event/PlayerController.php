@@ -179,9 +179,7 @@ class PlayerController extends Controller
             if($count == 0){
                 return response()->json(["ok"=>0,"error"=>1,"message"=>"Enxadrista não encontrado.","httpcode"=>404],404);
             }
-            $enxadrista = Enxadrista::where([
-                ["id", "=", $id],
-            ])->first();
+            $enxadrista = Enxadrista::find($id)->first();
 
             $need_update_fields = $this->getNeedUpdateFields($evento,$enxadrista);
             if(count($need_update_fields) == 0){
@@ -326,7 +324,7 @@ class PlayerController extends Controller
                         $has_document = false;
                         if($request->documents){
                             $documents_to_save = array();
-                            foreach(Pais::where([["pais_id","=",$enxadrista->pais_id]])->first()->tipo_documentos->all() as $tipo_documento_pais){
+                            foreach(Pais::where([["id","=",$enxadrista->pais_id]])->first()->tipo_documentos->all() as $tipo_documento_pais){
                                 if($tipo_documento_pais->e_requerido){
                                     if(!$request->documents[$tipo_documento_pais->tipo_documento->id]){
                                         return response()->json(["ok"=>0,"error"=>1,"message"=>"O documento '".$tipo_documento_pais->tipo_documento->nome."' é obrigatório para a atualização."]);
