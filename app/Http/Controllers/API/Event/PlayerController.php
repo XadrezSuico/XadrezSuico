@@ -129,6 +129,8 @@ class PlayerController extends Controller
 
             $fields = $this->getNeedUpdateFields($evento,$enxadrista);
 
+            Log::debug("Fields: ".json_encode($fields));
+
             $categories = array();
             if(count($fields) == 0){
                 $xadrezsuicopag_controller = XadrezSuicoPagController::getInstance();
