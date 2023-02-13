@@ -12,6 +12,8 @@ use App\Enxadrista;
 use App\Pais;
 use App\Documento;
 
+use Log;
+
 class PlayerController extends Controller
 {
     public function search($uuid,Request $request){
