@@ -9,6 +9,8 @@ use App\Http\Controllers\External\XadrezSuicoPagController;
 
 use App\Evento;
 use App\Enxadrista;
+use App\Pais;
+use App\Documento;
 
 class PlayerController extends Controller
 {
