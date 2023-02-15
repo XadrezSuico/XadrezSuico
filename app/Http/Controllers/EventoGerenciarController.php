@@ -324,17 +324,18 @@ class EventoGerenciarController extends Controller
         if(
             env("XADREZSUICOPAG_URI",null) &&
             env("XADREZSUICOPAG_SYSTEM_ID",null) &&
-            env("XADREZSUICOPAG_SYSTEM_TOKEN",null) &&
-            $user->hasPermissionGlobalbyPerfil([1,10,11])
+            env("XADREZSUICOPAG_SYSTEM_TOKEN",null)
         ){
-            if($request->has("xadrezsuicopag_uuid")){
-                if($request->input("xadrezsuicopag_uuid") != ""){
-                    $evento->xadrezsuicopag_uuid = $request->input("xadrezsuicopag_uuid");
+            if($user->hasPermissionGlobalbyPerfil([1,10,11])){
+                if($request->has("xadrezsuicopag_uuid")){
+                    if($request->input("xadrezsuicopag_uuid") != ""){
+                        $evento->xadrezsuicopag_uuid = $request->input("xadrezsuicopag_uuid");
+                    }else{
+                        $evento->xadrezsuicopag_uuid = null;
+                    }
                 }else{
                     $evento->xadrezsuicopag_uuid = null;
                 }
-            }else{
-                $evento->xadrezsuicopag_uuid = null;
             }
         }else{
             $evento->xadrezsuicopag_uuid = null;
