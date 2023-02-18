@@ -1041,6 +1041,12 @@
                                                         Confirmados: {{$torneio->getCountInscritosConfirmados()}}<br/>
                                                         Presentes: {{$torneio->quantosInscritosPresentes()}}
                                                         <hr/>
+                                                        @if($evento->xadrezsuicopag_uuid)
+                                                            <strong>Pagamento:</strong><br/>
+                                                            Pagos: <strong>{{$torneio->howManyPaid()}}</strong><br/>
+                                                            Pagamento Pendente: <strong>{{$torneio->howManyNotPaid()}}</strong><br/>
+                                                            Gratuidades (Categorias Gratuitas): <strong>{{$torneio->howManyFree()}}</strong>
+                                                        @endif
                                                         @if($evento->is_lichess_integration)
                                                             <strong>Torneio Lichess.org</strong><br/>
                                                             Inscritos: <strong>{{$torneio->getCountLichessConfirmadosnoTorneio()}}</strong><br/>

@@ -285,4 +285,18 @@ class Torneio extends Model
             $this->save();
         }
     }
+
+    public function howManyPaid(){
+        return $this->inscricoes()->where([["paid", "=", true]])->count();
+    }
+    public function howManyFree(){
+        $categorias_id = $this->evento->categorias()->whereNull("xadrezsuicopag_uuid")->pluck("categoria_id")->toArray();
+
+        return $this->inscricoes()->whereIn("categoria_id",$categorias_id)->count();;
+    }
+    public function howManyNotPaid(){
+        $categorias_id = $this->evento->categorias()->whereNotNull("xadrezsuicopag_uuid")->pluck("categoria_id")->toArray();
+
+        return $this->inscricoes()->where([["paid", "=", false]])->whereIn("categoria_id",$categorias_id)->count();
+    }
 }
