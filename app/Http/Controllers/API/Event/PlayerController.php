@@ -424,6 +424,7 @@ class PlayerController extends Controller
                     }
                 });
             });
+            $q1->where([["is_private","=",false]]);
             // if(!$is_user_with_permission){
             //     $q1->where([["is_private","=",false]]);
             // }
