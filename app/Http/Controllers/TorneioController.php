@@ -21,6 +21,7 @@ use App\Software;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\MessageBag;
 
 use App\Enum\EmailType;
 
@@ -256,6 +257,77 @@ class TorneioController extends Controller
         $torneio->save();
 
         return redirect("/evento/" . $evento->id . "/torneios/edit/" . $torneio->id);
+    }
+
+
+    public function categoria_transfer($id, $torneio_id, $categoria_id)
+    {
+        $evento = Evento::find($id);
+        $user = Auth::user();
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionEventByPerfil($evento->id, [4]) &&
+            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
+        ) {
+            return redirect("/evento/dashboard/" . $evento->id);
+        }
+
+        $torneio = Torneio::find($torneio_id);
+        $categoria = $torneio->categorias()->where([["id","=",$categoria_id]])->first();
+        return view('evento.torneio.categoria.transfer', compact("torneio", "categoria", "evento"));
+    }
+    public function categoria_transfer_post($id, $torneio_id, $categoria_id, Request $request)
+    {
+        if (!$request->has("tournament_id")) {
+            return redirect()->back();
+        } elseif ($request->input("tournament_id") == "") {
+            return redirect()->back();
+        }
+
+        $evento = Evento::find($id);
+        $user = Auth::user();
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionEventByPerfil($id, [4]) &&
+            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
+        ) {
+            return redirect("/evento/dashboard/" . $id);
+        }
+
+        $torneio = Torneio::find($torneio_id);
+        $categoria = $torneio->categorias()->where([["id","=",$categoria_id]])->first();
+
+        $outro_torneio = Torneio::find($request->input("tournament_id"));
+
+        if ($torneio && $outro_torneio && $categoria) {
+            if ($torneio->evento->id == $outro_torneio->evento->id) {
+                foreach ($torneio->inscricoes()->where([["categoria_id","=",$categoria->categoria->id]])->get() as $inscricao) {
+                    $inscricao->torneio_id = $outro_torneio->id;
+                    $inscricao->save();
+                }
+
+                $torneio->torneio_template_id = null;
+                $torneio->save();
+
+                $outro_torneio->torneio_template_id = null;
+                $outro_torneio->save();
+
+                $categoria->torneio_id = $outro_torneio->id;
+                $categoria->save();
+
+                $messageBag = new MessageBag;
+                $messageBag->add("type","success");
+                $messageBag->add("alerta","A categoria foi transferida com sucesso do Torneio #".$torneio->id." (".$torneio->name.") para o Torneio #".$outro_torneio->id." (".$outro_torneio->name.").");
+
+                return redirect("/evento/" . $evento->id . "/torneios/edit/".$torneio->id)->withErrors($messageBag);
+            }
+        }
+
+        $messageBag = new MessageBag;
+        $messageBag->add("type","danger");
+        $messageBag->add("alerta","Houve um erro na transferência da categoria. Por favor, verifique e tente novamente.");
+
+        return redirect()->back()->withErrors($messageBag);
     }
 
 

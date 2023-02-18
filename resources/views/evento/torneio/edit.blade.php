@@ -116,6 +116,7 @@
 									<td>{{$categoria->categoria->id}}</td>
 									<td>{{$categoria->categoria->name}}</td>
 									<td>
+										<a class="btn btn-warning" href="{{url("/evento/".$torneio->evento->id."/torneios/".$torneio->id."/categoria/transfer/".$categoria->id)}}" role="button">Transferir Categoria</a>
 										<a class="btn btn-danger" href="{{url("/evento/".$torneio->evento->id."/torneios/".$torneio->id."/categoria/remove/".$categoria->id)}}" role="button">Remover Relação</a>
 									</td>
 								</tr>

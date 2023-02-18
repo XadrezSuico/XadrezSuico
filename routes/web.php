@@ -197,6 +197,10 @@ Route::group(["prefix"=>"evento"],function(){
         Route::group(["prefix"=>"{torneio_id}/categoria"],function(){
             Route::post('/add', 'TorneioController@categoria_add')->name('evento.torneios.categoria.add');
             Route::get('/remove/{categoria_torneio_id}', 'TorneioController@categoria_remove')->name('evento.torneios.categoria.remove');
+            Route::group(["prefix"=>"transfer/{categoria_id}"],function(){
+                Route::get('/', 'TorneioController@categoria_transfer')->name('evento.torneios.categoria.transfer');
+                Route::post('/', 'TorneioController@categoria_transfer_post')->name('evento.torneios.categoria.transfer.post');
+            });
         });
 
         Route::group(["prefix"=>"{torneio_id}/inscricoes"],function(){
