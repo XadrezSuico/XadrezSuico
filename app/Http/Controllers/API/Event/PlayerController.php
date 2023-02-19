@@ -330,30 +330,35 @@ class PlayerController extends Controller
                             $documents_to_save = array();
                             foreach(Pais::where([["id","=",$enxadrista->pais_id]])->first()->tipo_documentos->all() as $tipo_documento_pais){
                                 if($tipo_documento_pais->e_requerido){
+                                    if(!isset($request->documents[$tipo_documento_pais->tipo_documento->id])){
+                                        return response()->json(["ok"=>0,"error"=>1,"message"=>"O documento '".$tipo_documento_pais->tipo_documento->nome."' é obrigatório para a atualização."]);
+                                    }
                                     if(!$request->documents[$tipo_documento_pais->tipo_documento->id]){
                                         return response()->json(["ok"=>0,"error"=>1,"message"=>"O documento '".$tipo_documento_pais->tipo_documento->nome."' é obrigatório para a atualização."]);
                                     }
                                 }
-                                if($request->documents[$tipo_documento_pais->tipo_documento->id]){
-                                    if($enxadrista->documentos()->where([
-                                        ["tipo_documentos_id","=",$tipo_documento_pais->tipo_documento->id],
-                                        ["numero","=",$request->documents[$tipo_documento_pais->tipo_documento->id]],
-                                        ["enxadrista_id","!=",$enxadrista->id]
-                                    ])->count()){
-                                        return response()->json(["ok"=>0,"error"=>1,"message"=>"O documento '".$tipo_documento_pais->tipo_documento->nome."' informado já está vinculado a outro(a) enxadrista."]);
-                                    }
+                                if(isset($request->documents[$tipo_documento_pais->tipo_documento->id])){
+                                    if($request->documents[$tipo_documento_pais->tipo_documento->id]){
+                                        if($enxadrista->documentos()->where([
+                                            ["tipo_documentos_id","=",$tipo_documento_pais->tipo_documento->id],
+                                            ["numero","=",$request->documents[$tipo_documento_pais->tipo_documento->id]],
+                                            ["enxadrista_id","!=",$enxadrista->id]
+                                        ])->count()){
+                                            return response()->json(["ok"=>0,"error"=>1,"message"=>"O documento '".$tipo_documento_pais->tipo_documento->nome."' informado já está vinculado a outro(a) enxadrista."]);
+                                        }
 
-                                    if($enxadrista->documentos()->where([["tipo_documentos_id","=",$tipo_documento_pais->tipo_documento->id]])->count() > 0){
-                                        $documento = $enxadrista->documentos()->where([["tipo_documentos_id","=",$tipo_documento_pais->tipo_documento->id]])->first();
-                                    }else{
-                                        $documento = new Documento;
-                                        $documento->tipo_documentos_id = $tipo_documento_pais->tipo_documento->id;
-                                        $documento->enxadrista_id = $enxadrista->id;
-                                    }
-                                    $documento->numero = $request->documents[$tipo_documento_pais->tipo_documento->id];
-                                    $documents_to_save[] = $documento;
+                                        if($enxadrista->documentos()->where([["tipo_documentos_id","=",$tipo_documento_pais->tipo_documento->id]])->count() > 0){
+                                            $documento = $enxadrista->documentos()->where([["tipo_documentos_id","=",$tipo_documento_pais->tipo_documento->id]])->first();
+                                        }else{
+                                            $documento = new Documento;
+                                            $documento->tipo_documentos_id = $tipo_documento_pais->tipo_documento->id;
+                                            $documento->enxadrista_id = $enxadrista->id;
+                                        }
+                                        $documento->numero = $request->documents[$tipo_documento_pais->tipo_documento->id];
+                                        $documents_to_save[] = $documento;
 
-                                    $has_document = true;
+                                        $has_document = true;
+                                    }
                                 }
                             }
                         }
