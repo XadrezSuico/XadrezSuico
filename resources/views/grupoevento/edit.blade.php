@@ -70,6 +70,17 @@
 									<label for="regulamento_link">Link do Regulamento</label>
 									<input name="regulamento_link" id="regulamento_link" class="form-control" type="text" value="{{$grupo_evento->regulamento_link}}" @if(!$user->hasPermissionGlobal() && !$user->hasPermissionGroupEventByPerfil($grupo_evento->id,[7])) disabled="disabled" @endif />
 								</div>
+                                @if(
+                                    env("XADREZSUICOPAG_URI",null) &&
+                                    env("XADREZSUICOPAG_SYSTEM_ID",null) &&
+                                    env("XADREZSUICOPAG_SYSTEM_TOKEN",null) &&
+						            \Illuminate\Support\Facades\Auth::user()->hasPermissionGlobalbyPerfil([1,10,11])
+                                )
+                                    <div class="form-group">
+                                        <label for="xadrezsuicopag_uuid">XadrezSuíçoPag: UUID do Grupo de Evento</label>
+                                        <input name="xadrezsuicopag_uuid" id="xadrezsuicopag_uuid" class="form-control" type="text" value="{{$grupo_evento->xadrezsuicopag_uuid}}" @if(!$user->hasPermissionGlobal() && !$user->hasPermissionGroupEventByPerfil($grupo_evento->id,[7])) disabled="disabled" @endif />
+                                    </div>
+                                @endif
 								<div class="form-group">
 									<label for="tipo_ratings_id">Tipo de Rating</label>
 									<select name="tipo_ratings_id" id="tipo_ratings_id" class="form-control width-100" @if(!$user->hasPermissionGlobal() && !$user->hasPermissionGroupEventByPerfil($grupo_evento->id,[7])) disabled="disabled" @endif>

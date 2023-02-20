@@ -5,11 +5,11 @@ namespace App;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Activitylog\Traits\LogsActivity;
+use Laravel\Passport\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use Notifiable;
-    use LogsActivity;
+    use Notifiable, HasApiTokens, LogsActivity;
 
     protected static $logFillable = true;
 
@@ -189,6 +189,64 @@ class User extends Authenticatable
         if ($perfil) {
             return $perfil;
         }
+        return false;
+    }
+
+    public function toAPIObject(){
+        return [
+            "id" => $this->id,
+            "name" => $this->name,
+            "email" => $this->email
+        ];
+    }
+
+    public function getProfiles($to_api = false){
+        $profiles = [];
+
+        foreach($this->perfis->all() as $user_profile){
+            if($to_api){
+                $profiles[] = $user_profile->toAPIObject();
+            }else{
+                $profiles[] = $user_profile;
+            }
+        }
+
+        return $profiles;
+    }
+
+    public function checkProfile($profiles_id = [], $event_id = null, $event_group_id = null, $not_able_to_admin = false){
+        if($profiles_id){
+            if(!$not_able_to_admin){
+                if($this->perfis()->where([["perfils_id","=",1]])->count() > 0){
+                    return true;
+                }
+                if($profiles_id > 1){
+                    if($this->perfis()->where([["perfils_id","=",2]])->count() > 0){
+                        return true;
+                    }
+                }
+            }
+            if($this->perfis()->whereIn("perfils_id",$profiles_id)->count() > 0){
+                $profile = $this->perfis()->whereIn("perfils_id",$profiles_id)->first();
+
+                if($profile->is_for_event){
+                    if($event_id){
+                        if($profile->evento_id == $event_id){
+                            return true;
+                        }
+                    }
+                }elseif($profile->is_for_event_group){
+                    if($event_group_id){
+                        if($profile->grupo_evento_id == $event_group_id){
+                            return true;
+                        }
+                    }
+                }else{
+                    return true;
+                }
+            }
+        }
+
         return false;
     }
 }

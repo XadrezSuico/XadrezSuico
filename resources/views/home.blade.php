@@ -45,7 +45,7 @@
             <h3 class="box-title">Próximos Eventos</h3>
         </div>
         <div class="box-body">
-            <table id="tabela" class="table-responsive table-condensed table-striped" style="width: 100%">
+            <table id="tabela" class="table table-condensed table-striped" style="width: 100%">
                 <thead>
                     <tr>
                         <th>#</th>

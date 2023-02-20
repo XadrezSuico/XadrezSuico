@@ -190,4 +190,15 @@ class GrupoEvento extends Model
             ->get();
         return $inscricoes;
     }
+
+
+
+    public function toAPIObject(){
+        return [
+            "id" => $this->id,
+            "uuid" => $this->uuid,
+            "name" => $this->name,
+            "xadrezsuicopag_uuid" => $this->xadrezsuicopag_uuid,
+        ];
+    }
 }

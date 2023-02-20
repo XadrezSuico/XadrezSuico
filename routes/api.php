@@ -13,12 +13,18 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
+Route::middleware('auth:api')->get('/user/get', function (Request $request) {
     return $request->user();
 });
 
-
 Route::group(["prefix"=>"v1"],function(){
+    Route::group(["prefix"=>"user"],function(){
+        Route::get('/get', 'API\UserController@get')->name('api.v1.user.get');
+        Route::group(["prefix"=>"profiles"],function(){
+            Route::get('/list', 'API\UserProfileController@list')->name('api.v1.user.profile.list');
+            Route::post('/check', 'API\UserProfileController@check')->name('api.v1.user.profile.check');
+        });
+    });
     Route::group(["prefix"=>"xadrezsuicopag"],function(){
         Route::post('/callback/{uuid}', 'External\XadrezSuicoPagController@notification')->name('api.v1.xadrezsuicopag.callback');
     });

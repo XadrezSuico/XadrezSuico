@@ -125,6 +125,27 @@ class GrupoEventoController extends Controller
         }
 
 
+        if(
+            env("XADREZSUICOPAG_URI",null) &&
+            env("XADREZSUICOPAG_SYSTEM_ID",null) &&
+            env("XADREZSUICOPAG_SYSTEM_TOKEN",null)
+        ){
+            if($user->hasPermissionGlobalbyPerfil([1,10,11])){
+                if($request->has("xadrezsuicopag_uuid")){
+                    if($request->input("xadrezsuicopag_uuid") != ""){
+                        $grupo_evento->xadrezsuicopag_uuid = $request->input("xadrezsuicopag_uuid");
+                    }else{
+                        $grupo_evento->xadrezsuicopag_uuid = null;
+                    }
+                }else{
+                    $grupo_evento->xadrezsuicopag_uuid = null;
+                }
+            }
+        }else{
+            $grupo_evento->xadrezsuicopag_uuid = null;
+        }
+
+
         if ($request->has("grupo_evento_classificador_id")) {
             if ($request->input("grupo_evento_classificador_id") != "") {
                 $grupo_evento->grupo_evento_classificador_id = $request->input("grupo_evento_classificador_id");
