@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\MessageBag;
+
 use App\CampoPersonalizadoOpcaoInscricao;
 use App\Categoria;
 use App\Cidade;
@@ -337,6 +339,73 @@ class InscricaoGerenciarController extends Controller
 
         // file name that will be used in the download
         $fileName = "Exp_xadrezsuico_ev_" . $id . "_tor_" . $torneio_id . "_tds_insc___" . date("Ymd-His") . "___.TXT";
+
+        // use headers in order to generate the download
+        $headers = [
+            'Content-type' => 'text/plain',
+            'Content-Disposition' => sprintf('attachment; filename="%s"', $fileName),
+            'Content-Length' => strlen($texto),
+        ];
+
+        // make a response, with the content, a 200 response code and the headers
+        return response(utf8_decode($texto))->withHeaders([
+            'Content-Type' => 'text/plain; charset=utf-8',
+            'Cache-Control' => 'no-store, no-cache',
+            'Content-Disposition' => 'attachment; filename="' . $fileName . '"',
+        ]);
+    }
+    public function list_to_manager_paid($id, $torneio_id)
+    {
+        $user = Auth::user();
+        $evento = Evento::find($id);
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionEventByPerfil($evento->id, [4]) &&
+            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
+        ) {
+            return redirect("/evento/dashboard/".$evento->id);
+        }
+
+        if(
+            !(
+                env("XADREZSUICOPAG_URI",null) &&
+                env("XADREZSUICOPAG_SYSTEM_ID",null) &&
+                env("XADREZSUICOPAG_SYSTEM_TOKEN",null)
+            )
+        ){
+            $messageBag = new MessageBag;
+            $messageBag->add("type","danger");
+            $messageBag->add("alerta","O sistema não possui integração com o sistema XadrezSuíçoPag.");
+
+            return redirect("/evento/dashboard/".$evento->id."?tab=torneio")->withErrors($messageBag);
+        }elseif(!$evento->isPaid()){
+            $messageBag = new MessageBag;
+            $messageBag->add("type","danger");
+            $messageBag->add("alerta","O presente evento não possui integração com o sistema XadrezSuíçoPag.");
+
+            return redirect("/evento/dashboard/".$evento->id."?tab=torneio")->withErrors($messageBag);
+        }
+
+        $torneio = Torneio::find($torneio_id);
+
+        $categoria_ids = $evento->categorias()->whereNull("xadrezsuicopag_uuid")->pluck("categoria_id")->toArray();
+        $inscricao_ids = $torneio->inscricoes()
+                            ->where([["paid", "=", true]])
+                            ->orWhere(function($q1) use ($categoria_ids){
+                                $q1->whereHas("categoria",function($q2) use ($categoria_ids){
+                                    $q2->whereIn("id",$categoria_ids);
+                                });
+                            })->pluck("id")
+                            ->toArray();
+
+        $inscricoes = $torneio->inscricoes()
+            ->whereIn("id", $inscricao_ids)
+            ->get();
+
+        $texto = $this->generateTxt($inscricoes, $evento, $torneio);
+
+        // file name that will be used in the download
+        $fileName = "Exp_xadrezsuico_ev_" . $id . "_tor_" . $torneio_id . "_insc_pags___" . date("Ymd-His") . "___.TXT";
 
         // use headers in order to generate the download
         $headers = [

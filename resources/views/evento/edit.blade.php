@@ -1088,8 +1088,20 @@
 
 														@if($torneio->tipo_torneio->id == 3) <a class="btn btn-block btn-lg btn-success" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/gerenciamento/torneio_3")}}" role="button">Gerenciamento do Torneio</a><br/> @endif
 
+                                                        <hr/>
                                                         <a class="btn btn-success" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/inscricoes/sm")}}" role="button" target="_blank">Baixar Inscrições Confirmadas</a><br/>
+                                                        @if(
+                                                            env("XADREZSUICOPAG_URI",null) &&
+                                                            env("XADREZSUICOPAG_SYSTEM_ID",null) &&
+                                                            env("XADREZSUICOPAG_SYSTEM_TOKEN",null)
+                                                        )
+                                                            @if($evento->isPaid())
+                                                                <a class="btn btn-warning" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/inscricoes/sm/paid")}}" role="button" target="_blank">Baixar Inscrições Pagas</a><br/>
+                                                            @endif
+                                                        @endif
 														<a class="btn btn-warning" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/inscricoes/sm/all")}}" role="button" target="_blank">Baixar Todas as Inscrições</a><br/>
+                                                        <hr/>
+
 													@endif
 													<a class="btn btn-success" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/inscricoes/relatorio/inscricoes")}}" role="button" target="_blank">Imprimir Inscrições</a><br/>
 													<a class="btn btn-success" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/inscricoes/relatorio/inscricoes/alfabetico")}}" role="button" target="_blank">Imprimir Inscrições (Alfabético)</a><br/>
