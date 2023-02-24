@@ -183,7 +183,7 @@
                                         \Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4,5]) ||
                                         \Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])
                                     )
-                                        <a class="btn btn-success" href="{{url("/inscricao/".$evento->id)}}" target="_blank" role="button">Nova Inscrição</a><br/>
+                                        <a class="btn btn-warning" href="{{url("/inscricao/".$evento->id)}}" target="_blank" role="button">Nova Inscrição (Interno)</a><br/>
                                     @endif
                                     <a class="btn btn-success" href="{{$evento->getEventPublicLink()}}" target="_blank" role="button">Link de Divulgação</a>
                                 </td>
