@@ -9,6 +9,8 @@ use Illuminate\Database\Eloquent\Model;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Illuminate\Support\Str;
 
+use App\Enum\ConfigType;
+
 use DB;
 
 class Evento extends Model
@@ -161,6 +163,11 @@ class Evento extends Model
         return CampoPersonalizado::where([["grupo_evento_id", "=", $this->grupo_evento->id], ["is_required", "=", true]])
             ->orWhere([["evento_id", "=", $this->id], ["is_required", "=", true]])
             ->get();
+    }
+
+
+    public function configs(){
+        return $this->hasMany("App\EventConfig","evento_id","id");
     }
 
     public function getTimelineItems(){
@@ -717,6 +724,71 @@ class Evento extends Model
         }
         return $total;
     }
+
+    public function getConfigs(){
+        return $this->configs->all();
+    }
+
+    public function hasConfig($key){
+        if($this->configs()->where([["key","=",$key]])->count() > 0){
+            return true;
+        }
+        return false;
+    }
+    public function getConfig($key){
+        if($this->hasConfig($key)){
+            return ["ok"=>1,"error"=>0,"config"=>$this->configs()->where([["key","=",$key]])->first()];
+        }
+        return ["ok"=>0,"error"=>1,"message"=>"Configuração não encontrada."];
+    }
+    public function removeConfig($key){
+        if($this->hasConfig($key)){
+            $event_config = $this->configs()->where([["key","=",$key]])->first();
+
+            $event_config->delete();
+
+            return ["ok"=>1,"error"=>0];
+        }
+        return ["ok"=>0,"error"=>1,"message"=>"Configuração não encontrada."];
+    }
+
+    public function setConfig($key,$type,$value){
+        if($this->hasConfig($key)){
+            $event_config = $this->configs()->where([["key","=",$key]])->first();
+
+            if($event_config->value_type != $type){
+                return ["ok"=>0,"error"=>1,"message"=>"O tipo do campo é diferente"];
+            }
+        }else{
+            $event_config = new EventConfig;
+            $event_config->evento_id = $this->id;
+            $event_config->key = $key;
+            $event_config->value_type = $type;
+        }
+
+        switch($type){
+            case ConfigType::Integer:
+                $event_config->integer = $value;
+                break;
+            case ConfigType::Float:
+                $event_config->float = $value;
+                break;
+            case ConfigType::Decimal:
+                $event_config->decimal = $value;
+                break;
+            case ConfigType::Boolean:
+                $event_config->boolean = $value;
+                break;
+            case ConfigType::String:
+                $event_config->string = $value;
+                break;
+        }
+
+        $event_config->save();
+
+        return ["ok"=>1,"error"=>0];
+    }
+
 
     public function toAPIObject(){
         return [
