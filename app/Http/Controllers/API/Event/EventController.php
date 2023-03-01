@@ -62,11 +62,11 @@ class EventController extends Controller
                 ];
             }
 
-            if($evento->inscricoes_encerradas(true)){
+            if($evento->inscricoes_encerradas()){
                 $retorno["event"]["info"]["is_registering"] = false;
                 if($evento->is_inscricoes_bloqueadas){
                     $retorno["event"]["info"]["registering_status"] = "O evento não permite inscrições no momento.";
-                }elseif($evento->inscricoes_encerradas(true,true)){
+                }elseif($evento->inscricoes_encerradas(false,true)){
                     $retorno["event"]["info"]["registering_status"] = "Prazo para Inscrição Encerrado.";
                 }elseif($evento->estaLotado()){
                     $retorno["event"]["info"]["registering_status"] = "O evento chegou ao limite de inscritos.";

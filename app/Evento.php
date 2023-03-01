@@ -295,6 +295,9 @@ class Evento extends Model
                 return true;
             }
         }
+        if(!$only_date && $this->estaLotado()){
+            return true;
+        }
         if ($datetime) {
             if($only_date){
                 if ($api) {
