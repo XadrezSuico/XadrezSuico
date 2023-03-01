@@ -24,7 +24,7 @@ class EventController extends Controller
             $retorno["event"]["tabs"] = array();
 
             $retorno["event"]["tabs"][] = "home";
-            $retorno["event"]["tabs"][] = "register";
+            if(!$evento->is_inscricoes_bloqueadas) $retorno["event"]["tabs"][] = "register";
             if($evento->e_permite_visualizar_lista_inscritos_publica) $retorno["event"]["tabs"][] = "players";
 
             $retorno["event"]["info"]["title"] = $evento->name;
@@ -64,7 +64,15 @@ class EventController extends Controller
 
             if($evento->inscricoes_encerradas(true)){
                 $retorno["event"]["info"]["is_registering"] = false;
-                $retorno["event"]["info"]["registering_status"] = "Inscrições encerradas.";
+                if($evento->is_inscricoes_bloqueadas){
+                    $retorno["event"]["info"]["registering_status"] = "O evento não permite inscrições no momento.";
+                }elseif($evento->inscricoes_encerradas(true,true)){
+                    $retorno["event"]["info"]["registering_status"] = "Prazo para Inscrição Encerrado.";
+                }elseif($evento->estaLotado()){
+                    $retorno["event"]["info"]["registering_status"] = "O evento chegou ao limite de inscritos.";
+                }else{
+                    $retorno["event"]["info"]["registering_status"] = "Inscrições encerradas.";
+                }
             }else{
                 $retorno["event"]["info"]["is_registering"] = true;
                 $retorno["event"]["info"]["registering_status"] = "Recebendo inscrições.";
