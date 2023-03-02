@@ -35,7 +35,11 @@ class XadrezSuicoPagCategoryController extends Controller
             print_r($request);
         });
 
-        $response = $client->request('get', env("XADREZSUICOPAG_URI")."/api/v1/system/categories/list/".$event_uuid);
+        $uri = env("XADREZSUICOPAG_URI")."/api/v1/system/categories/list/".$event_uuid;
+
+        Log::debug("XadrezSuicoPag_Uri_Request: ".$uri);
+
+        $response = $client->request('get', $uri);
 
         if($response->getStatusCode() < 300){
             $json = json_decode($response->getBody());
