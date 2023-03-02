@@ -35,7 +35,7 @@ class XadrezSuicoPagCategoryController extends Controller
             print_r($request);
         });
 
-        $uri = env("XADREZSUICOPAG_URI")."/api/v1/system/categories/list/".$event_uuid;
+        $uri = trim(env("XADREZSUICOPAG_URI")."/api/v1/system/categories/list/".$event_uuid);
 
         Log::debug("XadrezSuicoPag_Uri_Request: ".$uri);
 
