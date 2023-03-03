@@ -248,6 +248,12 @@
 				<h4>ID CBX: <span id="enxadrista_confirmar_id_cbx">Carregando...</span></h4>
 				<h4>ID FIDE: <span id="enxadrista_confirmar_id_fide">Carregando...</span></h4>
 				<h4>ID LBX: <span id="enxadrista_confirmar_id_lbx">Carregando...</span></h4>
+
+                @if($evento->isPaid())
+                    <hr/>
+                    <h4>Status do Pagamento: <span id="enxadrista_confirmar_pagamento_status">Carregando...</span></h4>
+                @endif
+
 				<hr/>
 				<input type="hidden" id="enxadrista_id" />
                 <div class="alert alert-warning" role="alert">
@@ -362,9 +368,31 @@
 					html = "";
 					for (i = 0; i < data.results.length; i++) {
                         if(data.results[i].status == 2){
-                            html = html.concat("<a class='btn btn-success btn-large permitida_inscricao' onclick='selectConfirmarEnxadrista(").concat(data.results[i].inscricao_id).concat(",false)' title='Confirmar Enxadrista'>").concat(data.results[i].name).concat(" (Inscrito)</a><br/>");
+                            @if($evento->isPaid())
+                                if(data.results[i].is_paid || data.results[i].is_free){
+                                    html = html.concat("<a class='btn btn-success btn-large permitida_inscricao' onclick='selectConfirmarEnxadrista(").concat(data.results[i].inscricao_id).concat(",false)' title='Confirmar Enxadrista'>").concat(data.results[i].name).concat(" (Inscrito)</a><br/>");
+                                }else{
+                                    @if(
+                                        !Auth::check()
+                                    )
+                                        html = html.concat("<a class='btn btn-warning btn-large' title='Enxadrista com Pagamento Pendente' disabled='disabled'>").concat(data.results[i].name).concat(" (PAGAMENTO PENDENTE - Para efetuar a confirmação, procure a organização.)</a><br/>");
+                                    @else
+                                        @if(
+                                            Auth::user()->hasPermissionGlobal() ||
+                                            Auth::user()->hasPermissionEventByPerfil($evento->id,[3,4]) ||
+                                            Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[6])
+                                        )
+                                            html = html.concat("<a class='btn btn-warning btn-large permitida_inscricao' onclick='selectConfirmarEnxadrista(").concat(data.results[i].inscricao_id).concat(",false)' title='Confirmar Enxadrista com Pagamento Pendente'>").concat(data.results[i].name).concat(" (PAGAMENTO PENDENTE)</a><br/>");
+                                        @else
+                                            html = html.concat("<a class='btn btn-warning btn-large' title='Enxadrista com Pagamento Pendente' disabled='disabled'>").concat(data.results[i].name).concat(" (PAGAMENTO PENDENTE - Para efetuar a confirmação, procure a organização.)</a><br/>");
+                                        @endif
+                                    @endif
+                                }
+                            @else
+                                html = html.concat("<a class='btn btn-success btn-large permitida_inscricao' onclick='selectConfirmarEnxadrista(").concat(data.results[i].inscricao_id).concat(",false)' title='Confirmar Enxadrista'>").concat(data.results[i].name).concat(" (Inscrito)</a><br/>");
+                            @endif
                         }else{
-                            html = html.concat("<a class='btn btn-danger btn-large permitida_inscricao' title='Enxadrista Confirmado' disabled='disabled'>").concat(data.results[i].name).concat(" (CONFIRMADO - Para desconfirmar, favor avisar a organização)</a><br/>");
+                            html = html.concat("<a class='btn btn-danger btn-large' title='Enxadrista Confirmado' disabled='disabled'>").concat(data.results[i].name).concat(" (CONFIRMADO - Para desconfirmar, favor avisar a organização)</a><br/>");
                         }
 						html = html.concat("Informações: ").concat(data.results[i].text).concat("<br/><br/>");
 					}
@@ -460,6 +488,19 @@
 				$("#enxadrista_confirmar_id_cbx").html(data.data.cbx_id);
 				$("#enxadrista_confirmar_id_fide").html(data.data.fide_id);
 				$("#enxadrista_confirmar_id_lbx").html(data.data.lbx_id);
+
+                @if($evento->isPaid())
+                    if(data.data.is_paid){
+				        $("#enxadrista_confirmar_pagamento_status").html("Confirmado.");
+                    }else{
+                        if(data.data.is_free){
+    				        $("#enxadrista_confirmar_pagamento_status").html("Gratuidade (Categoria Gratuita).");
+                        }else{
+    				        $("#enxadrista_confirmar_pagamento_status").html("<span style='color:red; font-weight:bold;'>PENDENTE</span>.");
+                        }
+                    }
+                @endif
+
 				$('#confirmacao_categoria_id').html("").trigger('change');
 				for (i = 0; i < data.data.categorias.length; i++) {
 					var newOptionCategoria = new Option(data.data.categorias[i].name, data.data.categorias[i].id, false, false);
@@ -520,6 +561,13 @@
 			}else{
 				$("#texto_pesquisa").removeAttr("disabled");
 				$(".permitida_inscricao").removeAttr("disabled","disabled");
+
+                $("#alertsMessage").html(data.message);
+                $("#alerts").modal();
+
+                setTimeout(function(){
+                    Loading.destroy();
+                },1000);
 			}
 
 		})

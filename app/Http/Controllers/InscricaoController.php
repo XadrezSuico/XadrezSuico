@@ -2063,6 +2063,8 @@ class InscricaoController extends Controller
         //     });
         // })->orderBy("name", "ASC")->limit(30)->get();
 
+        $categorias_free_id = $evento->categorias()->whereNull("xadrezsuicopag_uuid")->pluck("categoria_id")->toArray();
+
         $inscricoes = Inscricao::
         select('inscricao.*')
         ->join('enxadrista', 'enxadrista.id', '=', 'inscricao.enxadrista_id')
@@ -2106,6 +2108,8 @@ class InscricaoController extends Controller
 
             // Inscrito - Não Confirmado
             $item["status"] = 2;
+            $item["is_paid"] = ($inscricao->paid) ? true : false;
+            $item["is_free"] = in_array($inscricao->categoria->id, $categorias_free_id);
             $item["inscricao_id"] = $inscricao->id;
             if($inscricao->confirmado){
                 $item["status"] = 3;
@@ -2156,6 +2160,26 @@ class InscricaoController extends Controller
         $inscricao = Inscricao::find($inscricao_id);
         if ($inscricao) {
 
+            if($inscricao->torneio->evento->id != $evento->id){
+                return response()->json(["ok" => 0, "error" => 1, "message" => "Esta inscrição não pertence ao evento desta página de confirmação.", "registred" => 0]);
+            }
+
+            if($inscricao->torneio->evento->isPaid()){
+                $categorias_free_id = $evento->categorias()->whereNull("xadrezsuicopag_uuid")->pluck("categoria_id")->toArray();
+
+                if(!$inscricao->paid && !in_array($inscricao->categoria->id,$categorias_free_id)){
+                    if(!Auth::check()){
+                        return response()->json(["ok" => 0, "error" => 1, "message" => "A inscrição não pode ser confirmada pois não está com o pagamento confirmado. Procure a organização do evento para efetuar a confirmação.", "registred" => 0]);
+                    }elseif(
+                        !$user->hasPermissionGlobal() &&
+                        !$user->hasPermissionEventByPerfil($evento->id, [4,5]) &&
+                        !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
+                    ){
+                        return response()->json(["ok" => 0, "error" => 1, "message" => "A inscrição não pode ser confirmada pois não está com o pagamento confirmado. Procure a organização do evento para efetuar a confirmação.", "registred" => 0]);
+                    }
+                }
+            }
+
             $retorno = array();
             $retorno["id"] = $inscricao->enxadrista->id;
             $retorno["name"] = $inscricao->enxadrista->name;
@@ -2169,6 +2193,12 @@ class InscricaoController extends Controller
             $retorno["cidade"]["estado"] = array("id"=>$inscricao->cidade->estado->id,"name"=>$inscricao->cidade->estado->nome);
             $retorno["cidade"]["estado"]["pais"] = array("id"=>$inscricao->cidade->estado->pais->id,"name"=>$inscricao->cidade->estado->pais->nome);
             $retorno["clube"] = ($inscricao->clube) ? array("id"=>$inscricao->clube->id,"name"=>$inscricao->clube->name) : array("id" => 0);
+
+            $categorias_free_id = $evento->categorias()->whereNull("xadrezsuicopag_uuid")->pluck("categoria_id")->toArray();
+
+            $retorno["is_paid"] = ($inscricao->paid) ? true : false;
+            $retorno["is_free"] = in_array($inscricao->categoria->id,$categorias_free_id);
+
             $retorno["categoria"] = array("id"=>$inscricao->categoria->id,"name"=>$inscricao->categoria->name,"is_changeable"=>$inscricao->categoria->is_changeable);
             $retorno["categorias"] = array();
             $categorias = $this->categoriasEnxadrista($evento,$inscricao->enxadrista);
@@ -2229,10 +2259,32 @@ class InscricaoController extends Controller
             return response()->json(["ok" => 0, "error" => 1, "message" => "Você deve verificar a categoria e marcar o campo 'Categoria conferida'.", "registred" => 0]);
         }
 
+        if($inscricao->torneio->evento->id != $evento->id){
+            return response()->json(["ok" => 0, "error" => 1, "message" => "Esta inscrição não pertence ao evento desta página de confirmação.", "registred" => 0]);
+        }
+
         $inscricao = Inscricao::find($request->input("inscricao_id"));
+
         if (!$inscricao) {
             return response()->json(["ok" => 0, "error" => 1, "message" => "Não existe um inscrição com o código informado!"]);
         }
+
+        if($inscricao->torneio->evento->isPaid()){
+            $categorias_free_id = $evento->categorias()->whereNull("xadrezsuicopag_uuid")->pluck("categoria_id")->toArray();
+
+            if(!$inscricao->paid && !in_array($inscricao->categoria->id,$categorias_free_id)){
+                if(!Auth::check()){
+                    return response()->json(["ok" => 0, "error" => 1, "message" => "A inscrição não pode ser confirmada pois não está com o pagamento confirmado.", "registred" => 0]);
+                }elseif(
+                    !$user->hasPermissionGlobal() &&
+                    !$user->hasPermissionEventByPerfil($evento->id, [4,5]) &&
+                    !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
+                ){
+                    return response()->json(["ok" => 0, "error" => 1, "message" => "A inscrição não pode ser confirmada pois não está com o pagamento confirmado.", "registred" => 0]);
+                }
+            }
+        }
+
         if ($inscricao->confirmado) {
             return response()->json(["ok" => 0, "error" => 1, "message" => "A inscrição já está confirmada!"]);
         }
