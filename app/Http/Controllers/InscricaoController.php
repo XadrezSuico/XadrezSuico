@@ -2259,10 +2259,6 @@ class InscricaoController extends Controller
             return response()->json(["ok" => 0, "error" => 1, "message" => "Você deve verificar a categoria e marcar o campo 'Categoria conferida'.", "registred" => 0]);
         }
 
-        if($inscricao->torneio->evento->id != $evento->id){
-            return response()->json(["ok" => 0, "error" => 1, "message" => "Esta inscrição não pertence ao evento desta página de confirmação.", "registred" => 0]);
-        }
-
         $inscricao = Inscricao::find($request->input("inscricao_id"));
 
         if (!isset($inscricao)) {
@@ -2270,6 +2266,10 @@ class InscricaoController extends Controller
         }
         if (!$inscricao) {
             return response()->json(["ok" => 0, "error" => 1, "message" => "Não existe um inscrição com o código informado!"]);
+        }
+
+        if($inscricao->torneio->evento->id != $evento->id){
+            return response()->json(["ok" => 0, "error" => 1, "message" => "Esta inscrição não pertence ao evento desta página de confirmação.", "registred" => 0]);
         }
 
         if($inscricao->torneio->evento->isPaid()){
