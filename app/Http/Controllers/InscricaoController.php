@@ -2265,6 +2265,9 @@ class InscricaoController extends Controller
 
         $inscricao = Inscricao::find($request->input("inscricao_id"));
 
+        if (!isset($inscricao)) {
+            return response()->json(["ok" => 0, "error" => 1, "message" => "Não existe um inscrição com o código informado!"]);
+        }
         if (!$inscricao) {
             return response()->json(["ok" => 0, "error" => 1, "message" => "Não existe um inscrição com o código informado!"]);
         }
