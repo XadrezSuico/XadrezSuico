@@ -1,6 +1,6 @@
 @extends('adminlte::page')
 
-@section("title", "Visualizar Lista de Inscrições")
+@section("title", "Visualizar Lista de Inscrições do Evento #".$evento->id." - ".$evento->name." [".Str::uuid()."]")
 
 @section('content_header')
   <h1>Visualizar Lista de Inscrições</h1>
