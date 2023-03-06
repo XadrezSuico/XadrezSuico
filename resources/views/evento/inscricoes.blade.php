@@ -63,6 +63,7 @@
                             <th>Pago?</th>
                         @endif
                         <th>Confirmado?</th>
+                        <th>Presente?</th>
                         <th>Inscrição Inicial</th>
                         <th>Posição</th>
 				    	@foreach($evento->campos() as $campo)
@@ -110,6 +111,9 @@
                             @endif
                             <td>
                                 @if($inscricao->confirmado) Sim @else Não @endif
+                            </th>
+                            <td>
+                                @if($inscricao->isPresent()) Sim @else Não @endif
                             </th>
                             <td>@if($inscricao->from) {{$inscricao->from->id}} @else - @endif</td>
                             <td>@if($inscricao->from) @if($inscricao->from->posicao) {{$inscricao->from->posicao}} @else - @endif @else - @endif</td>

@@ -294,4 +294,14 @@ class Inscricao extends Model
 
         return false;
     }
+
+    public function isPresent(){
+        if(!$this->confirmado){
+            return false;
+        }
+        if($this->desconsiderar_pontuacao_geral){
+            return false;
+        }
+        return true;
+    }
 }
