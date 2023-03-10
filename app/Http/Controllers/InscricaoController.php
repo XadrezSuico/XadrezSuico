@@ -511,10 +511,6 @@ class InscricaoController extends Controller
                 ($evento->is_lichess && ($enxadrista->lichess_username == NULL || $enxadrista->lichess_username == ""))
                 ||
                 ($evento->is_chess_com && ($enxadrista->chess_com_username == NULL || $enxadrista->chess_com_username == ""))
-                ||
-                $enxadrista->last_cadastral_update == NULL
-                ||
-                $enxadrista->last_cadastral_update <= "01-01-".date("Y")." 00:00:00"
             ){
                 $what = array();
                 if($enxadrista->name == NULL) $what[] = "name";
@@ -543,9 +539,9 @@ class InscricaoController extends Controller
 
                 if(($evento->is_chess_com && ($enxadrista->chess_com_username == NULL || $enxadrista->chess_com_username == ""))) $what[] = "chess_com_id";
 
-                if($enxadrista->last_cadastral_update == NULL) $what[] = "last_cadastral_update_null";
+                // if($enxadrista->last_cadastral_update == NULL) $what[] = "last_cadastral_update_null";
 
-                if($enxadrista->last_cadastral_update <= "01-01-".date("Y")." 00:00:00") $what[] = "last_cadastral_update_when";
+                // if($enxadrista->last_cadastral_update <= "01-01-".date("Y")." 00:00:00") $what[] = "last_cadastral_update_when";
 
 
                 $fields = array();
