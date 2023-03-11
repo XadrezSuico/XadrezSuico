@@ -88,7 +88,17 @@ class RegisterController extends Controller
                 //         return response()->json(["ok" => 0, "error" => 1, "message" => env("MENSAGEM_FIM_INSCRICOES", "O prazo de inscrições antecipadas se esgotou ou então o limite de inscritos se completou. As inscrições poderão ser feitas no local do evento conforme regulamento.")]);
                 //     }
                 // }else{
-                    return response()->json(["ok" => 0, "error" => 1, "message" => env("MENSAGEM_FIM_INSCRICOES", "O prazo de inscrições antecipadas se esgotou ou então o limite de inscritos se completou. As inscrições poderão ser feitas no local do evento conforme regulamento.")]);
+
+                    if($evento->is_inscricoes_bloqueadas){
+                        $message = "Inscrições Encerradas - O evento não permite inscrições no momento.";
+                    }elseif($evento->inscricoes_encerradas(false,true)){
+                        $message = "Inscrições Encerradas - Prazo para Inscrição Encerrado.";
+                    }elseif($evento->estaLotado()){
+                        $message = "Inscrições Encerradas - O evento chegou ao limite de inscritos.";
+                    }else{
+                        $message = "Inscrições Encerradas.";
+                    }
+                    return response()->json(["ok" => 0, "error" => 1, "message" => $message]);
                 // }
             }
 
