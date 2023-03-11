@@ -27,6 +27,7 @@ use Illuminate\Support\MessageBag;
 use Maatwebsite\Excel\Facades\Excel;
 
 use App\Enum\EmailType;
+use App\Enum\ConfigType;
 
 class EventoGerenciarController extends Controller
 {
@@ -725,6 +726,33 @@ class EventoGerenciarController extends Controller
                 $evento->permite_edicao_inscricao = false;
             } else {
                 $evento->permite_edicao_inscricao = true;
+            }
+            $evento->save();
+            return redirect("/evento/dashboard/" . $evento->id);
+        }
+    }
+
+    public function toggleRegistrationPaidConfirmed($evento_id)
+    {
+        $user = Auth::user();
+        $evento = Evento::find($evento_id);
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionEventByPerfil($evento->id, [4]) &&
+            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
+        ) {
+            return redirect("/evento/dashboard/".$evento->id);
+        }
+        if ($evento) {
+            if(!$evento->hasConfig("flag__registration_paid_confirmed")){
+                $evento->setConfig("flag__registration_paid_confirmed",ConfigType::Boolean,true);
+            }else{
+                $config = $evento->getConfig("flag__registration_paid_confirmed");
+                if($config->config->boolean){
+                    $evento->setConfig("flag__registration_paid_confirmed",ConfigType::Boolean,false);
+                }else{
+                    $evento->setConfig("flag__registration_paid_confirmed",ConfigType::Boolean,true);
+                }
             }
             $evento->save();
             return redirect("/evento/dashboard/" . $evento->id);

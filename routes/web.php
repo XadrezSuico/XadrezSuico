@@ -136,6 +136,7 @@ Route::group(["prefix"=>"evento"],function(){
     Route::get('/{id}/togglemanual', 'EventoGerenciarController@toggleClassificacaoManual')->name('evento.toggleClassificacaoManual');
     Route::get('/{id}/togglerating', 'EventoGerenciarController@toggleRating')->name('evento.toggleRating');
     Route::get('/{id}/toggleedicaoinscricao', 'EventoGerenciarController@toggleEdicaoInscricao')->name('evento.toggleEdicaoInscricao');
+    Route::get('/{id}/toggleregistrationpaidconfirmed', 'EventoGerenciarController@toggleRegistrationPaidConfirmed')->name('evento.toggleRegistrationPaidConfirmed');
     Route::get('/classificacao/{id}/interno', 'EventoGerenciarController@classificacao')->name('evento.classificacao.interno');
     Route::get('/{id}/resultados/{categoria_id}/interno', 'EventoGerenciarController@resultados')->name('evento.resultados.interno');
 	Route::get('/{id}/inscricoes/list', 'EventoGerenciarController@visualizar_inscricoes')->name('evento.inscricoes.list');

@@ -74,6 +74,13 @@ class XadrezSuicoPagNotificationController extends Controller
                 }
 
                 $inscricao->paid = true;
+
+                if($inscricao->torneio->evento->hasConfig("flag__registration_paid_confirmed")){
+                    if($inscricao->torneio->evento->getConfig("flag__registration_paid_confirmed",true)){
+                        $inscricao->confirmado = true;
+                    }
+                }
+
                 $inscricao->save();
             }
         }

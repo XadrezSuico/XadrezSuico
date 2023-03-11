@@ -738,10 +738,28 @@ class Evento extends Model
         }
         return false;
     }
-    public function getConfig($key){
+    public function getConfig($key,$return_value = false){
         if($this->hasConfig($key)){
+            if($return_value){
+                $config = $this->configs()->where([["key","=",$key]])->first();
+                switch($config->value_type){
+                    case ConfigType::Integer:
+                        return $event_config->integer;
+                    case ConfigType::Float:
+                        return $event_config->float;
+                    case ConfigType::Decimal:
+                        return $event_config->decimal;
+                    case ConfigType::Boolean:
+                        return $event_config->boolean;
+                    case ConfigType::String:
+                        return $event_config->string;
+                }
+            }
+
             return ["ok"=>1,"error"=>0,"config"=>$this->configs()->where([["key","=",$key]])->first()];
         }
+        if($return_value) return null;
+
         return ["ok"=>0,"error"=>1,"message"=>"Configuração não encontrada."];
     }
     public function removeConfig($key){
