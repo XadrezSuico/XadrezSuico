@@ -131,6 +131,24 @@
                                 @endif
                                 Edição de Inscrição
                             </a>
+                            @if($evento->isPaid())
+                                <br/>
+                                <a href="{{url("/evento/".$evento->id."/toggleregistrationpaidconfirmed")}}" class="btn btn-warning btn-app">
+                                    @if($evento->hasConfig("flag__registration_paid_confirmed"))
+                                        @if($evento->getConfig("flag__registration_paid_confirmed",true))
+                                            <i class="fa fa-check"></i>
+                                            Não Confirmar (Status Atual: Confirmado)
+                                        @else
+                                            <i class="fa fa-times"></i>
+                                            Confirmar (Status Atual: Não Confirmar)
+                                        @endif
+                                    @else
+                                        <i class="fa fa-times"></i>
+                                        Confirmar (Status Atual: Não Confirmar)
+                                    @endif
+                                    Inscrição Paga Automaticamente
+                                </a>
+                            @endif
 							<hr/>
                             <h4>XadrezSuíço Emparceirador:</h4>
 							<a href="{{url("/evento/".$evento->id."/exports/xadrezsuicoemparceirador")}}" class="btn btn-app">

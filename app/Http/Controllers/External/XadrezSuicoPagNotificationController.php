@@ -64,16 +64,42 @@ class XadrezSuicoPagNotificationController extends Controller
             if($registration_request->registration->status == "paid"){
                 $inscricao = Inscricao::where([["uuid","=",$uuid]])->whereJsonContains("payment_info->uuid",$registration_uuid)->first();
 
-                if(!$inscricao->paid){
-                    EmailController::schedule(
-                        $inscricao->enxadrista->email,
-                        $inscricao,
-                        EmailType::PagamentoConfirmado,
-                        $inscricao->enxadrista
-                    );
+
+
+                if($inscricao->torneio->evento->hasConfig("flag__registration_paid_confirmed")){
+                    if($inscricao->torneio->evento->getConfig("flag__registration_paid_confirmed",true)){
+                        $inscricao->confirmado = true;
+                        if(!$inscricao->paid){
+                            EmailController::schedule(
+                                $inscricao->enxadrista->email,
+                                $inscricao,
+                                EmailType::PagamentoConfirmadoInscricaoConfirmada,
+                                $inscricao->enxadrista
+                            );
+                        }
+                    }else{
+                        if(!$inscricao->paid){
+                            EmailController::schedule(
+                                $inscricao->enxadrista->email,
+                                $inscricao,
+                                EmailType::PagamentoConfirmado,
+                                $inscricao->enxadrista
+                            );
+                        }
+                    }
+                }else{
+                    if(!$inscricao->paid){
+                        EmailController::schedule(
+                            $inscricao->enxadrista->email,
+                            $inscricao,
+                            EmailType::PagamentoConfirmado,
+                            $inscricao->enxadrista
+                        );
+                    }
                 }
 
                 $inscricao->paid = true;
+
                 $inscricao->save();
             }
         }
