@@ -29,6 +29,8 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Enum\EmailType;
 use App\Enum\ConfigType;
 
+use Log;
+
 class EventoGerenciarController extends Controller
 {
     public function __construct()
@@ -744,18 +746,55 @@ class EventoGerenciarController extends Controller
             return redirect("/evento/dashboard/".$evento->id);
         }
         if ($evento) {
+            $is_true = false;
             if(!$evento->hasConfig("flag__registration_paid_confirmed")){
+                Log::debug("config_not_exists = true");
                 $evento->setConfig("flag__registration_paid_confirmed",ConfigType::Boolean,true);
+                $is_true = true;
             }else{
                 $config = $evento->getConfig("flag__registration_paid_confirmed");
-                if($config->config->boolean){
-                    $evento->setConfig("flag__registration_paid_confirmed",ConfigType::Boolean,false);
+                if($config["config"]->boolean){
+                    Log::debug("!config = false");
+                    $result = $evento->setConfig("flag__registration_paid_confirmed",ConfigType::Boolean,false);
+                    Log::debug("result: ".json_encode($result));
                 }else{
-                    $evento->setConfig("flag__registration_paid_confirmed",ConfigType::Boolean,true);
+                    Log::debug("!config = true");
+                    $result = $evento->setConfig("flag__registration_paid_confirmed",ConfigType::Boolean,true);
+                    Log::debug("result: ".json_encode($result));
+                    $is_true = true;
                 }
             }
-            $evento->save();
+
+            if($is_true){
+                $this->confirmPaidRegistrations($evento);
+            }
+
             return redirect("/evento/dashboard/" . $evento->id);
+        }
+    }
+
+    public function confirmPaidRegistrations($evento){
+        if($evento->isPaid()){
+            if($evento->hasConfig("flag__registration_paid_confirmed")){
+                if($evento->getConfig("flag__registration_paid_confirmed",true)){
+                    foreach($evento->torneios->all() as $torneio){
+                        foreach($torneio->inscricoes()->where([
+                            ["paid","=",true],
+                            ["confirmado","=",false],
+                        ])->get() as $inscricao){
+                            $inscricao->confirmado = true;
+                            $inscricao->save();
+
+                            EmailController::schedule(
+                                $inscricao->enxadrista->email,
+                                $inscricao,
+                                EmailType::InscricaoConfirmadaComPagamentoAutomatico,
+                                $inscricao->enxadrista
+                            );
+                        }
+                    }
+                }
+            }
         }
     }
 

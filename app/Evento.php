@@ -741,8 +741,8 @@ class Evento extends Model
     public function getConfig($key,$return_value = false){
         if($this->hasConfig($key)){
             if($return_value){
-                $config = $this->configs()->where([["key","=",$key]])->first();
-                switch($config->value_type){
+                $event_config = $this->configs()->where([["key","=",$key]])->first();
+                switch($event_config->value_type){
                     case ConfigType::Integer:
                         return $event_config->integer;
                     case ConfigType::Float:
@@ -778,7 +778,7 @@ class Evento extends Model
             $event_config = $this->configs()->where([["key","=",$key]])->first();
 
             if($event_config->value_type != $type){
-                return ["ok"=>0,"error"=>1,"message"=>"O tipo do campo é diferente"];
+                return ["ok"=>0,"error"=>1,"message"=>"O tipo do campo é diferente - ".$event_config->value_type." != ".$type];
             }
         }else{
             $event_config = new EventConfig;
