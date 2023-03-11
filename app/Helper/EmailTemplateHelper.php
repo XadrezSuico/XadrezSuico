@@ -33,6 +33,12 @@ class EmailTemplateHelper
             case EmailType::InscricaoRecebidaPagamentoPendente:
                 return $this->generateInscricaoRecebidaPagamentoPendente($object);
                 break;
+            case EmailType::PagamentoConfirmadoInscricaoConfirmada:
+                return $this->generatePagamentoConfirmadoInscricaoConfirmada($object);
+                break;
+            case EmailType::InscricaoConfirmadaComPagamentoAutomatico:
+                return $this->generateInscricaoConfirmadaComPagamentoAutomatico($object);
+                break;
         }
     }
 
@@ -141,7 +147,6 @@ class EmailTemplateHelper
         return $email_template;
     }
 
-
     private function generateInscricaoRecebidaPagamentoPendente($inscricao){
         $email_template = NULL;
         // Busca Template de E-mail no Evento
@@ -154,6 +159,44 @@ class EmailTemplateHelper
             }else{
                 // Busca Template de E-mail Geral
                 $email_template = EmailTemplate::where([["email_type","=",EmailType::InscricaoRecebidaPagamentoPendente]])->whereNull("evento_id")->whereNull("grupo_evento_id")->first();
+            }
+        $email_template->subject = $this->fillInscricaoFields($email_template->subject,$inscricao);
+        $email_template->message = $this->fillInscricaoFields($email_template->message,$inscricao);
+
+        return $email_template;
+    }
+
+    private function generatePagamentoConfirmadoInscricaoConfirmada($inscricao){
+        $email_template = NULL;
+        // Busca Template de E-mail no Evento
+        if($inscricao->torneio->evento->email_templates()->where([["email_type","=",EmailType::PagamentoConfirmadoInscricaoConfirmada]])->count() > 0){
+            $email_template = $inscricao->torneio->evento->email_templates()->where([["email_type","=",EmailType::PagamentoConfirmadoInscricaoConfirmada]])->first();
+        }else
+            // Busca Template de E-mail no Grupo de Evento
+            if($inscricao->torneio->evento->grupo_evento->email_templates()->where([["email_type","=",EmailType::PagamentoConfirmadoInscricaoConfirmada]])->count() > 0){
+                $email_template = $inscricao->torneio->grupo_evento->email_templates()->where([["email_type","=",EmailType::PagamentoConfirmadoInscricaoConfirmada]])->first();
+            }else{
+                // Busca Template de E-mail Geral
+                $email_template = EmailTemplate::where([["email_type","=",EmailType::PagamentoConfirmadoInscricaoConfirmada]])->whereNull("evento_id")->whereNull("grupo_evento_id")->first();
+            }
+        $email_template->subject = $this->fillInscricaoFields($email_template->subject,$inscricao);
+        $email_template->message = $this->fillInscricaoFields($email_template->message,$inscricao);
+
+        return $email_template;
+    }
+
+    private function generateInscricaoConfirmadaComPagamentoAutomatico($inscricao){
+        $email_template = NULL;
+        // Busca Template de E-mail no Evento
+        if($inscricao->torneio->evento->email_templates()->where([["email_type","=",EmailType::InscricaoConfirmadaComPagamentoAutomatico]])->count() > 0){
+            $email_template = $inscricao->torneio->evento->email_templates()->where([["email_type","=",EmailType::InscricaoConfirmadaComPagamentoAutomatico]])->first();
+        }else
+            // Busca Template de E-mail no Grupo de Evento
+            if($inscricao->torneio->evento->grupo_evento->email_templates()->where([["email_type","=",EmailType::InscricaoConfirmadaComPagamentoAutomatico]])->count() > 0){
+                $email_template = $inscricao->torneio->grupo_evento->email_templates()->where([["email_type","=",EmailType::InscricaoConfirmadaComPagamentoAutomatico]])->first();
+            }else{
+                // Busca Template de E-mail Geral
+                $email_template = EmailTemplate::where([["email_type","=",EmailType::InscricaoConfirmadaComPagamentoAutomatico]])->whereNull("evento_id")->whereNull("grupo_evento_id")->first();
             }
         $email_template->subject = $this->fillInscricaoFields($email_template->subject,$inscricao);
         $email_template->message = $this->fillInscricaoFields($email_template->message,$inscricao);
