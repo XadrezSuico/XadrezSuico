@@ -57,6 +57,8 @@
                         <th>Data de Nascimento</th>
                         <th>Cidade</th>
                         <th>Clube</th>
+                        <th>Confirmado?</th>
+                        <th>Presente?</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -76,6 +78,8 @@
                             <td>{{$inscricao->enxadrista->getNascimentoPrivado()}}</td>
                             <td>{{$inscricao->getCidade()}}</td>
                             <td>@if($inscricao->clube) {{$inscricao->clube->name}} @else - @endif</td>
+                            <td>@if($inscricao->confirmado) Sim @else Não @endif</td>
+                            <td>@if($inscricao->isPresent()) Sim @else Não @endif</td>
                         </tr>
                     @endforeach
                 </tbody>
