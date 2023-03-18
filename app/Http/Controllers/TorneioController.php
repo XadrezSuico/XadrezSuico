@@ -100,16 +100,12 @@ class TorneioController extends Controller
             return redirect("/evento/dashboard/" . $evento->id);
         }
 
+        $categorias_id = $evento->categorias()->pluck("categoria_id")->toArray();
+
         $torneio = Torneio::find($torneio_id);
         $tipos_torneio = TipoTorneio::all();
         $softwares = Software::all();
-        $categorias = Categoria::where([
-            ["evento_id", "=", $evento->id],
-        ])
-            ->orWhere([
-                ["grupo_evento_id", "=", $evento->grupo_evento->id],
-            ])
-            ->get();
+        $categorias = Categoria::whereIn("id", $categorias_id)->get();
         return view('evento.torneio.edit', compact("torneio", "tipos_torneio", "categorias","softwares"));
     }
     public function edit_post($id, $torneio_id, Request $request)
