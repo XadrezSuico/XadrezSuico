@@ -309,10 +309,21 @@ class Inscricao extends Model
         if(!$this->torneio->evento->isPaid()){
             return true;
         }
-        $category_event = $this->torneio->evento->categorias()->where([["categoria_id","=",$this->categoria_id]])->first();
-        if(!$category_event->xadrezsuicopag_uuid){
+        if(!$this->categoria->isPaid($this->torneio->evento->id)){
             return true;
         }
         return false;
+    }
+
+    public function registerToPayment(){
+        if(
+            $this->torneio->evento->isPaid()
+        ){
+            if($this->categoria->isPaid($this->torneio->evento->id)){
+                $xadrezsuicopag_controller = XadrezSuicoPagController::getInstance();
+
+                $xadrezsuicopag_controller->factory("registration")->register($this);
+            }
+        }
     }
 }
