@@ -303,19 +303,19 @@ class RegisterController extends Controller
 
                 if($evento->is_lichess_integration){
                     $item["lichess_info"] = [
-                        "username" => ($inscricao->lichess_username) ? $inscricao->lichess_username : null,
+                        "username" => ($inscricao->enxadrista->lichess_username) ? $inscricao->enxadrista->lichess_username : null,
                         "is_subscribed" => $inscricao->is_lichess_found,
                         "rating" => ($inscricao->lichess_rating) ? $inscricao->lichess_rating : 0,
                         "start_no" => ($inscricao->start_position) ? $inscricao->start_position : 0,
                     ];
                 }elseif($evento->is_lichess){
                     $item["lichess_info"] = [
-                        "username" => ($inscricao->lichess_username) ? $inscricao->lichess_username : null
+                        "username" => ($inscricao->enxadrista->lichess_username) ? $inscricao->enxadrista->lichess_username : null
                     ];
                 }
                 if($evento->is_chess_com){
                     $item["chess_com_info"] = [
-                        "username" => ($inscricao->chess_com_username) ? $inscricao->chess_com_username : null,
+                        "username" => ($inscricao->enxadrista->chess_com_username) ? $inscricao->enxadrista->chess_com_username : null,
                     ];
                 }
                 if($evento->tipo_rating){
