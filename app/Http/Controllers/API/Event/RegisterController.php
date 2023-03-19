@@ -342,6 +342,7 @@ class RegisterController extends Controller
 
                 if($evento->isPaid()){
                     $item["payment_info"] = [
+                        "is_free" => $inscricao->isFree(),
                         "is_paid" => $inscricao->paid
                     ];
                     if(!$inscricao->paid){
@@ -349,6 +350,11 @@ class RegisterController extends Controller
                             $item["payment_info"]["link"] = $inscricao->getPaymentInfo("link");
                         }
                     }
+                }else{
+                    $item["payment_info"] = [
+                        "is_free" => true,
+                        "is_paid" => false
+                    ];
                 }
 
                 $item["custom_fields"] = array();

@@ -304,4 +304,15 @@ class Inscricao extends Model
         }
         return true;
     }
+
+    public function isFree(){
+        if(!$this->torneio->evento->isPaid()){
+            return true;
+        }
+        $category_event = $this->torneio->evento->categorias()->where([["categoria_id","=",$this->categoria_id]])->first();
+        if(!$category_event->xadrezsuicopag_uuid){
+            return true;
+        }
+        return false;
+    }
 }
