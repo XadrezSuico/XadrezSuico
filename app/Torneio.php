@@ -177,10 +177,7 @@ class Torneio extends Model
             return "Não houve atualização ainda.";
         }
 
-        $datetime = DateTime::createFromFormat('U', $this->hasConfig("chesscom_last_players_list_update",true));
-        if ($datetime) {
-            return $datetime->format("d/m/Y H:i:s");
-        }
+        return date("d/m/Y H:i:s",$this->hasConfig("chesscom_last_players_list_update",true));
     }
     public function findByTagCategoria($tag)
     {
