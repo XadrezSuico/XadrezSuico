@@ -31,7 +31,7 @@ class ChessComIntegrationController extends Controller
 
                         if(isset($json_round->groups)){
                             if(count($json_round->groups) > 0){
-                                $response_group = $client->get($json->rounds[0]);
+                                $response_group = $client->get($json->groups[0]);
                                 if($response_group->getStatusCode() == 200){
                                     $json_group = json_decode($response_group->getBody());
                                     $json_array["last_round"]["group"] = json_decode($response_group->getBody(),true);
