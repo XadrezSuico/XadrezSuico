@@ -53,6 +53,9 @@
                         <th>Cidade</th>
                         <th>Clube</th>
                         <th>Confirmado?</th>
+                        @if($torneio->software->isChessCom())
+                            <th>Foi reconhecida inscrição no Torneio?</th>
+                        @endif
                         @if($evento->classifica)
                             <th>Permite Classificar?</th>
                         @endif
@@ -88,6 +91,15 @@
                             <td>{{$inscricao->cidade->name}}</td>
                             <td>@if($inscricao->clube) {{$inscricao->clube->name}} @else Sem Clube @endif</td>
                             <td>@if($inscricao->confirmado) Sim @else Não @endif</td>
+                            @if($torneio->software->isChessCom())
+                                <td>
+                                    @if($inscricao->hasConfig("chesscom_registration_found"))
+                                        <strong>Sim</strong>
+                                    @else
+                                        Não
+                                    @endif
+                                </td>
+                            @endif
                             @if($evento->classifica)
                                 <td>@if(!$inscricao->desconsiderar_classificado) Sim @else Não @endif</td>
                             @endif
