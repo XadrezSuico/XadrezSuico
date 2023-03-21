@@ -177,7 +177,7 @@ class Torneio extends Model
             return "Não houve atualização ainda.";
         }
 
-        return date("d/m/Y H:i:s",$this->hasConfig("chesscom_last_players_list_update",true));
+        return date("d/m/Y H:i:s",$this->getConfig("chesscom_last_players_list_update",true));
     }
     public function findByTagCategoria($tag)
     {
