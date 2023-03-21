@@ -57,6 +57,12 @@
 						<label>Template de Torneio</label>
 						<input class="form-control" type="text" value="@if($torneio->template) {{$torneio->template->name}} @else Sem Template de Torneio @endif" disabled="disabled" />
 					</div>
+                    @if($torneio->software->isChessCom())
+                        <div class="form-group">
+                            <label for="chesscom_tournament_slug">Chess.com: Slug do Torneio (apenas depois que o torneio finaliza):</label>
+                            <input id="chesscom_tournament_slug" name="chesscom_tournament_slug" class="form-control" type="text" value="{{$torneio->getConfig("chesscom_tournament_slug",true)}}" />
+                        </div>
+                    @endif
 				</div>
 				<!-- /.box-body -->
 

@@ -9,6 +9,8 @@ use Illuminate\Database\Eloquent\Model;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Illuminate\Support\Str;
 
+use App\Enum\ConfigType;
+
 use Log;
 
 
@@ -50,6 +52,8 @@ class Inscricao extends Model
                     $xadrezsuicopag_controller->factory("registration")->register($model);
                 }
             }
+
+            $model->needToReplicateInfo();
         });
 
         self::updating(function($model){
@@ -59,6 +63,9 @@ class Inscricao extends Model
                 $model->uuid = Str::uuid();
                 Log::debug("uuid: ".$model->uuid);
             }
+
+
+            $model->needToReplicateInfo();
         });
 
         // self::updated(function($model){
@@ -122,6 +129,11 @@ class Inscricao extends Model
     public function criterios_desempate()
     {
         return $this->hasMany("App\InscricaoCriterioDesempate", "inscricao_id", "id");
+    }
+
+
+    public function configs(){
+        return $this->hasMany("App\RegistrationConfig","inscricao_id","id");
     }
 
     public function opcoes()
@@ -323,6 +335,103 @@ class Inscricao extends Model
                 $xadrezsuicopag_controller = XadrezSuicoPagController::getInstance();
 
                 $xadrezsuicopag_controller->factory("registration")->register($this);
+            }
+        }
+    }
+
+
+    public function getConfigs(){
+        return $this->configs->all();
+    }
+
+    public function hasConfig($key){
+        if($this->configs()->where([["key","=",$key]])->count() > 0){
+            return true;
+        }
+        return false;
+    }
+    public function getConfig($key,$return_value = false){
+        if($this->hasConfig($key)){
+            if($return_value){
+                $registration_config = $this->configs()->where([["key","=",$key]])->first();
+                switch($registration_config->value_type){
+                    case ConfigType::Integer:
+                        return $registration_config->integer;
+                    case ConfigType::Float:
+                        return $registration_config->float;
+                    case ConfigType::Decimal:
+                        return $registration_config->decimal;
+                    case ConfigType::Boolean:
+                        return $registration_config->boolean;
+                    case ConfigType::String:
+                        return $registration_config->string;
+                }
+            }
+
+            return ["ok"=>1,"error"=>0,"config"=>$this->configs()->where([["key","=",$key]])->first()];
+        }
+        if($return_value) return null;
+
+        return ["ok"=>0,"error"=>1,"message"=>"Configuração não encontrada."];
+    }
+    public function removeConfig($key){
+        if($this->hasConfig($key)){
+            $registration_config = $this->configs()->where([["key","=",$key]])->first();
+
+            $registration_config->delete();
+
+            return ["ok"=>1,"error"=>0];
+        }
+        return ["ok"=>0,"error"=>1,"message"=>"Configuração não encontrada."];
+    }
+
+    public function setConfig($key,$type,$value){
+        if($this->hasConfig($key)){
+            $registration_config = $this->configs()->where([["key","=",$key]])->first();
+
+            if($registration_config->value_type != $type){
+                return ["ok"=>0,"error"=>1,"message"=>"O tipo do campo é diferente - ".$registration_config->value_type." != ".$type];
+            }
+        }else{
+            $registration_config = new RegistrationConfig;
+            $registration_config->inscricao_id = $this->id;
+            $registration_config->key = $key;
+            $registration_config->value_type = $type;
+        }
+
+        switch($type){
+            case ConfigType::Integer:
+                $registration_config->integer = $value;
+                break;
+            case ConfigType::Float:
+                $registration_config->float = $value;
+                break;
+            case ConfigType::Decimal:
+                $registration_config->decimal = $value;
+                break;
+            case ConfigType::Boolean:
+                $registration_config->boolean = $value;
+                break;
+            case ConfigType::String:
+                $registration_config->string = $value;
+                break;
+        }
+
+        $registration_config->save();
+
+        return ["ok"=>1,"error"=>0];
+    }
+
+    public function needToReplicateInfo(){
+        if($this->torneio){
+            if($this->torneio->isChessCom()){
+                if(!$this->hasConfig("chesscom_username")){
+                    if($this->enxadrista){
+                        if($this->enxadrista->chess_com_username){
+                            $this->setConfig("chesscom_username",ConfigType::String,$this->enxadrista->chess_com_username);
+                        }
+                    }
+                }
             }
         }
     }
