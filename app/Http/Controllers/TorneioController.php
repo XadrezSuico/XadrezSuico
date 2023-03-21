@@ -797,6 +797,7 @@ class TorneioController extends Controller
                                     })->first();
 
                                     $inscricao->pontos = $chesscom_group_player->points;
+                                    $inscricao->confirmado = true;
                                     $inscricao->save();
                                 }else{
                                     $players_not_found_result[] = $chesscom_group_player->username;

@@ -74,7 +74,15 @@
                                 <td>@if($inscricao->is_lichess_team_found) Sim @else <strong><span style="color:red">Não</span></strong> @endif</td>
                                 <td>@if($inscricao->is_lichess_found) Sim @else <strong><span style="color:red">Não</span></strong> @endif</td>
                             @endif
-                            @if($evento->is_chess_com) <td>{{$inscricao->enxadrista->chess_com_username}}</td> @endif
+                            @if($evento->is_chess_com)
+                                <td>
+                                    @if($inscricao->hasConfig("chesscom_username"))
+                                        {{$inscricao->getConfig("chesscom_username",true)}}
+                                    @else
+                                        <strong>{{$inscricao->enxadrista->chess_com_username}}</strong>
+                                    @endif
+                                </td>
+                            @endif
                             @if($evento->usa_fide)
                                 <td>{{$inscricao->enxadrista->fide_id}}</td>
                                 <td>{{$inscricao->enxadrista->showRating(0,$evento->tipo_modalidade)}}</td>
