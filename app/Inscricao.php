@@ -424,7 +424,7 @@ class Inscricao extends Model
 
     public function needToReplicateInfo(){
         if($this->torneio){
-            if($this->torneio->isChessCom()){
+            if($this->torneio->software->isChessCom()){
                 if(!$this->hasConfig("chesscom_username")){
                     if($this->enxadrista){
                         if($this->enxadrista->chess_com_username){
