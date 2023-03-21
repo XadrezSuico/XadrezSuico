@@ -747,6 +747,7 @@ class TorneioController extends Controller
                 $retorno = $chesscom_integration_controller->getTournament($torneio->getConfig("chesscom_tournament_slug",true));
                 if($retorno["ok"] == 1){
                     $torneio->chesscom_setAllRegistrationsNotFound();
+                    Log::debug($retorno["data"]);
                     $chesscom_tournament_data = json_decode($retorno["data"]);
                     if($chesscom_tournament_data->status != "finished"){
                         return redirect()->back();
