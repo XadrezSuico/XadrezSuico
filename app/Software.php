@@ -18,4 +18,11 @@ class Software extends Model
     public $timestamps = true;
     protected $primaryKey = 'id';
     protected $table = 'softwares';
+
+    public function isChessCom(){
+        if($this->name == "Chess.com (Online)"){
+            return true;
+        }
+        return false;
+    }
 }

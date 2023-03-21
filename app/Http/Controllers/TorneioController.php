@@ -24,6 +24,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\MessageBag;
 
 use App\Enum\EmailType;
+use App\Enum\ConfigType;
 
 use App\Http\Controllers\LichessIntegrationController;
 use App\Http\Controllers\CriterioDesempateController;
@@ -126,6 +127,26 @@ class TorneioController extends Controller
         $torneio->softwares_id = $request->input("softwares_id");
 
         $torneio->save();
+
+        $torneio = Torneio::find($torneio_id);
+
+        if($torneio->software->isChessCom()){
+            if($request->has("chesscom_tournament_slug")){
+                if($request->input("chesscom_tournament_slug") != ""){
+                    $torneio->setConfig("chesscom_tournament_slug",ConfigType::String,$request->input("chesscom_tournament_slug"));
+
+                    foreach($torneio->inscricoes->all() as $inscricao){
+                        $inscricao->needToReplicateInfo();
+                    }
+                }else{
+                    $torneio->removeConfig("chesscom_tournament_slug");
+                }
+            }else{
+                $torneio->removeConfig("chesscom_tournament_slug");
+            }
+        }else{
+            $torneio->removeConfig("chesscom_tournament_slug");
+        }
         return redirect("/evento/" . $evento->id . "/torneios/edit/" . $torneio->id);
     }
     public function delete($id, $torneio_id)

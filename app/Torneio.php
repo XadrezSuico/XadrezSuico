@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Illuminate\Support\Str;
 
+use App\Enum\ConfigType;
+
 use DateTime;
 
 class Torneio extends Model
@@ -83,6 +85,11 @@ class Torneio extends Model
     public function rodadas()
     {
         return $this->hasMany("App\Rodada", "torneio_id", "id");
+    }
+
+
+    public function configs(){
+        return $this->hasMany("App\TournamentConfig","torneio_id","id");
     }
 
     public function getCountInscritos()
@@ -298,5 +305,88 @@ class Torneio extends Model
         $categorias_id = $this->evento->categorias()->whereNotNull("xadrezsuicopag_uuid")->pluck("categoria_id")->toArray();
 
         return $this->inscricoes()->where([["paid", "=", false]])->whereIn("categoria_id",$categorias_id)->count();
+    }
+
+
+    public function getConfigs(){
+        return $this->configs->all();
+    }
+
+    public function hasConfig($key){
+        if($this->configs()->where([["key","=",$key]])->count() > 0){
+            return true;
+        }
+        return false;
+    }
+    public function getConfig($key,$return_value = false){
+        if($this->hasConfig($key)){
+            if($return_value){
+                $tournament_config = $this->configs()->where([["key","=",$key]])->first();
+                switch($tournament_config->value_type){
+                    case ConfigType::Integer:
+                        return $tournament_config->integer;
+                    case ConfigType::Float:
+                        return $tournament_config->float;
+                    case ConfigType::Decimal:
+                        return $tournament_config->decimal;
+                    case ConfigType::Boolean:
+                        return $tournament_config->boolean;
+                    case ConfigType::String:
+                        return $tournament_config->string;
+                }
+            }
+
+            return ["ok"=>1,"error"=>0,"config"=>$this->configs()->where([["key","=",$key]])->first()];
+        }
+        if($return_value) return null;
+
+        return ["ok"=>0,"error"=>1,"message"=>"Configuração não encontrada."];
+    }
+    public function removeConfig($key){
+        if($this->hasConfig($key)){
+            $tournament_config = $this->configs()->where([["key","=",$key]])->first();
+
+            $tournament_config->delete();
+
+            return ["ok"=>1,"error"=>0];
+        }
+        return ["ok"=>0,"error"=>1,"message"=>"Configuração não encontrada."];
+    }
+
+    public function setConfig($key,$type,$value){
+        if($this->hasConfig($key)){
+            $tournament_config = $this->configs()->where([["key","=",$key]])->first();
+
+            if($tournament_config->value_type != $type){
+                return ["ok"=>0,"error"=>1,"message"=>"O tipo do campo é diferente - ".$tournament_config->value_type." != ".$type];
+            }
+        }else{
+            $tournament_config = new TournamentConfig;
+            $tournament_config->torneio_id = $this->id;
+            $tournament_config->key = $key;
+            $tournament_config->value_type = $type;
+        }
+
+        switch($type){
+            case ConfigType::Integer:
+                $tournament_config->integer = $value;
+                break;
+            case ConfigType::Float:
+                $tournament_config->float = $value;
+                break;
+            case ConfigType::Decimal:
+                $tournament_config->decimal = $value;
+                break;
+            case ConfigType::Boolean:
+                $tournament_config->boolean = $value;
+                break;
+            case ConfigType::String:
+                $tournament_config->string = $value;
+                break;
+        }
+
+        $tournament_config->save();
+
+        return ["ok"=>1,"error"=>0];
     }
 }
