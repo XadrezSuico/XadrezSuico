@@ -1133,6 +1133,19 @@
 														@if($torneio->evento->data_inicio <= date("Y-m-d")) <a class="btn btn-success" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/lichess/get_results")}}" role="button">Inserir Resultados do Torneio do Lichess.org</a><br/> @endif
 														<a class="btn btn-danger" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/lichess/remove_lichess_players_not_found")}}" role="button">REMOVER os Players do Lichess.org que NÃO foram encontrados</a><br/>
                                                     @endif
+                                                    @if($torneio->software->isChessCom())
+                                                        <hr/>
+                                                        <strong>Opções Chess.com</strong><br/>
+                                                        @if($torneio->hasConfig("chesscom_tournament_slug"))
+                                                            <a class="btn btn-success" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/chesscom/check_players_in")}}" role="button">Conferir Inscrições no Torneio do Chess.com</a><br/>
+                                                            Última Atualização: {{$torneio->getLastChessComPlayersUpdate()}}<br/>
+                                                            @if($torneio->evento->data_inicio <= date("Y-m-d"))
+                                                                <a class="btn btn-success" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/chesscom/get_results")}}" role="button">Importar Resultados do Torneio do Chess.com</a><br/>
+                                                            @endif
+                                                        @else
+                                                            <strong>Erro!</strong> O torneio ainda não possui a configuração do slug do torneio no Chess.com configurada. Edite este torneio e a configure para ser possível prosseguir.
+                                                        @endif
+													@endif
 												</td>
 											</tr>
 										@endforeach

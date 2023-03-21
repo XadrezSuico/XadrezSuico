@@ -172,6 +172,16 @@ class Torneio extends Model
         }
         return "Não houve atualização ainda.";
     }
+    public function getLastChessComPlayersUpdate(){
+        if(!$this->hasConfig("chesscom_last_players_list_update")){
+            return "Não houve atualização ainda.";
+        }
+
+        $datetime = DateTime::createFromFormat('U', $this->hasConfig("chesscom_last_players_list_update",true));
+        if ($datetime) {
+            return $datetime->format("d/m/Y H:i:s");
+        }
+    }
     public function findByTagCategoria($tag)
     {
         return Torneio::whereHas("categorias", function ($q0) use ($tag) {
@@ -388,5 +398,15 @@ class Torneio extends Model
         $tournament_config->save();
 
         return ["ok"=>1,"error"=>0];
+    }
+
+
+
+    public function chesscom_setAllRegistrationsNotFound(){
+        foreach($this->inscricoes->all() as $inscricao){
+            if($inscricao->hasConfig("chesscom_registration_found")){
+                $inscricao->removeConfig("chesscom_registration_found");
+            }
+        }
     }
 }
