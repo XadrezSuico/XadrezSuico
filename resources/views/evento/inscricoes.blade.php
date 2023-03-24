@@ -77,6 +77,7 @@
                         @if($evento->is_lichess_integration)
                             <th>Link de Acesso</th>
                         @endif
+                        <th>Opções</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -146,6 +147,9 @@
                                     @endif
                                 </td>
                             @endif
+                            <td>
+                                <a class="btn btn-default" href="{{url("/evento/".$evento->id."/torneios/".$inscricao->torneio->id."/inscricoes/edit/".$inscricao->id)}}" role="button">Editar</a>
+                            </td>
                         </tr>
                     @endforeach
                 </tbody>
