@@ -189,6 +189,11 @@ class EnxadristaController extends Controller
 
             if ($request->has("fide_id")) {
                 if ($request->input("fide_id")) {
+                    if($enxadrista->fide_id){
+                        if($enxadrista->fide_id != $request->input("fide_id")){
+                            $enxadrista->fide_last_update = null;
+                        }
+                    }
                     $enxadrista->fide_id = $request->input("fide_id");
                 }
             }
