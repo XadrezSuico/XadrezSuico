@@ -148,7 +148,7 @@
                                 </td>
                             @endif
                             <td>
-                                <a class="btn btn-default" href="{{url("/evento/".$evento->id."/torneios/".$inscricao->torneio->id."/inscricoes/edit/".$inscricao->id)}}" role="button">Editar</a>
+                                <a class="btn btn-default" href="{{url("/evento/".$evento->id."/torneios/".$inscricao->torneio->id."/inscricoes/edit/".$inscricao->id)}}" role="button" target="_blank">Editar</a>
                             </td>
                         </tr>
                     @endforeach
