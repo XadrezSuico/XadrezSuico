@@ -411,6 +411,11 @@
                                 <div class="form-group">
                                     <label @if($evento->usa_lbx) title="Rating FIDE não disponível para este evento. Motivo: Usa Rating LBX, e por isto não permite o uso de rating FIDE." @endif><input type="checkbox" id="fide_required" name="fide_required" @if($evento->fide_required) checked="checked" @endif @if((!\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() && !\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4]) && !\Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])) || $evento->usa_lbx) disabled="disabled" @endif> Não Calcula Rating FIDE mas Obriga ID FIDE?</label>
                                 </div>
+                                @if($evento->usa_fide || $evento->calcula_fide)
+                                    <div class="form-group">
+                                        <label><input type="checkbox" id="fide_sequence" name="fide_sequence" @if($evento->getConfig("fide_sequence",true)) checked="checked" @endif @if((!\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() && !\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4]) && !\Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])) || $evento->usa_lbx) disabled="disabled" @endif> Utiliza Sequência do Padrão da FIDE?</label>
+                                    </div>
+                                @endif
                                 @if(!$evento->tipo_rating)
                                     <div class="form-group">
                                         <label><input type="checkbox" id="usa_cbx" name="usa_cbx" @if($evento->usa_cbx) checked="checked" @endif @if(!\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() && !\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4]) && !\Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])) disabled="disabled" @endif > Utiliza Rating CBX?</label>
