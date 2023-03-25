@@ -276,7 +276,7 @@ class Inscricao extends Model
 
         if($this->torneio->evento->usa_fide){
             $obj["fide_id"] = $this->enxadrista->fide_id;
-            $obj["fide_rating"] = $this->enxadrista->showRating(0, $this->torneio->evento->tipo_modalidade);
+            $obj["fide_rating"] = $this->enxadrista->showRating(0, $this->torneio->evento->tipo_modalidade, $this->torneio->evento->getConfig("fide_sequence"));
         }else{
             $obj["fide_id"] = null;
             $obj["fide_rating"] = null;

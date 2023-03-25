@@ -24,10 +24,6 @@
             <td>{{ $enxadrista->getBornToSM() }}</td>
 
             @if($evento->usa_cbx && !$evento->tipo_rating)<td>{{ $enxadrista->showRating(1,$evento->tipo_modalidade) }}</td>@endif
-
-
-            @if($evento->usa_fide && !$evento->tipo_rating)<td>{{ $enxadrista->showRating(0,$evento->tipo_modalidade) }}</td>@endif
-            @if($evento->usa_lbx && !$evento->tipo_rating)<td>{{ $enxadrista->showRating(2,$evento->tipo_modalidade) }}</td>@endif
             @if($evento->tipo_rating)
                 <td>
                     @if($enxadrista->showRatingInterno($evento->tipo_rating->id))
@@ -37,6 +33,10 @@
                     @endif
                 </td>
             @endif
+
+            @if($evento->usa_fide)<td>{{ $enxadrista->showRating(0,$evento->tipo_modalidade, $evento->getConfig("fide_sequence")) }}</td>@endif
+            @if($evento->usa_lbx)<td>{{ $enxadrista->showRating(2,$evento->tipo_modalidade) }}</td>@endif
+
 
 
         </tr>
