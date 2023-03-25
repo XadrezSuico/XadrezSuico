@@ -324,7 +324,7 @@ class RegisterController extends Controller
                 if($evento->usa_fide){
                     $item["fide_info"] = [
                         "id" => $inscricao->enxadrista->fide_id,
-                        "rating" => $inscricao->enxadrista->showRating(0, $evento->tipo_modalidade),
+                        "rating" => $inscricao->enxadrista->showRating(0, $evento->tipo_modalidade, $evento->getConfig("fide_sequence")),
                     ];
                 }
                 if($evento->usa_cbx){

@@ -208,6 +208,11 @@ class EventoGerenciarController extends Controller
         } else {
             $evento->cbx_required = false;
         }
+        if ($request->has("fide_sequence")) {
+            $evento->setConfig("fide_sequence",ConfigType::Boolean,true);
+        } else {
+            $evento->setConfig("fide_sequence",ConfigType::Boolean,false);
+        }
 
 
         if ($request->has("usa_lbx")) {
