@@ -13,7 +13,7 @@ class CreateEnxadristaCriterioDesempateGeralsTable extends Migration
      */
     public function up()
     {
-        Schema::create('enxadrista_criterio_desempate_gerals', function (Blueprint $table) {
+        Schema::create('enxadristapate_gerals', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->bigIncrements('id');
             $table->decimal('valor', 9, 2)->nullable();

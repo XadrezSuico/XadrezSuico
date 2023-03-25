@@ -151,6 +151,10 @@ Route::group(["prefix"=>"evento"],function(){
         Route::get('/xadrezsuicoemparceirador', 'Exports\XadrezSuicoEmparceiradorController@export')->name('evento.exports.xadrezsuicoemparceirador');
         Route::get('/xadrezsuicoemparceirador/data', 'Exports\XadrezSuicoEmparceiradorController@export_data')->name('evento.exports.xadrezsuicoemparceirador.data');
     });
+    Route::group(["prefix"=>"premiacao_time"],function(){
+        Route::get('/classificar/{evento_id}', 'Event\TeamAwardController@classificar_page')->name('evento.premiacao_time.classificar');
+        Route::get('/classificar/{evento_id}/call/{time_awards_id}/{action}', 'Event\TeamAwardController@classificar_call')->name('evento.premiacao_time.classificar.call');
+    });
 
 
 
