@@ -169,6 +169,9 @@ class Evento extends Model
     public function configs(){
         return $this->hasMany("App\EventConfig","evento_id","id");
     }
+    public function event_team_awards(){
+        return $this->hasMany("App\EventTeamAward","events_id","id");
+    }
 
     public function getTimelineItems(){
         $items = [];
