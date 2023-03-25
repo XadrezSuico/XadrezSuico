@@ -141,7 +141,7 @@
                                 <td>{{$inscricao->enxadrista->ratingParaEvento($evento->id,true)}}</td>
                             @endif
                             @if($evento->usa_fide)
-                                <td>{{$inscricao->enxadrista->showRating(0, $evento->tipo_modalidade)}}</td>
+                                <td>{{$inscricao->enxadrista->showRating(0, $evento->tipo_modalidade, $evento->getConfig("fide_sequence"))}}</td>
                             @endif
                             @if($evento->usa_lbx)
                                 <td>{{$inscricao->enxadrista->showRating(2, $evento->tipo_modalidade)}}</td>

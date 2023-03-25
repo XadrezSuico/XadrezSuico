@@ -591,11 +591,26 @@ class Enxadrista extends Model
         $rating->save();
     }
 
-    public function showRating($entidade, $tipo_modalidade)
+    public function showRating($entidade, $tipo_modalidade, $fide_sequence = false)
     {
         $rating = $this->getRating($entidade, $tipo_modalidade);
         if ($rating) {
             return $rating->valor;
+        }
+
+        if($fide_sequence){
+            if($tipo_modalidade >= 1){
+                $rating_std = $this->getRating($entidade, 0);
+                if ($rating_std) {
+                    return $rating_std->valor;
+                }
+            }
+            if($tipo_modalidade == 2){
+                $rating_rpd = $this->getRating($entidade, 1);
+                if ($rating_rpd) {
+                    return $rating_rpd->valor;
+                }
+            }
         }
         return false;
     }

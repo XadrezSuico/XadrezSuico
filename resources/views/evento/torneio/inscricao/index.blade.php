@@ -85,7 +85,7 @@
                             @endif
                             @if($evento->usa_fide)
                                 <td>{{$inscricao->enxadrista->fide_id}}</td>
-                                <td>{{$inscricao->enxadrista->showRating(0,$evento->tipo_modalidade)}}</td>
+                                <td>{{$inscricao->enxadrista->showRating(0,$evento->tipo_modalidade, $evento->getConfig("fide_sequence"))}}</td>
                             @endif
                             @if($evento->usa_cbx)
                                 <td>{{$inscricao->enxadrista->cbx_id}}</td>

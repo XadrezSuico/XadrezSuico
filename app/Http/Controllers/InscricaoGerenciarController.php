@@ -486,13 +486,13 @@ class InscricaoGerenciarController extends Controller
 
             if ($evento->tipo_rating) {
                 if ($evento->usa_fide) {
-                    $texto .= $inscricao->enxadrista->showRating(0, $evento->tipo_modalidade) . ";";
+                    $texto .= $inscricao->enxadrista->showRating(0, $evento->tipo_modalidade, $evento->getConfig("fide_sequence")) . ";";
                     $texto .= $inscricao->enxadrista->fide_id . ";";
                 }
                 $texto .= $inscricao->enxadrista->ratingParaEvento($evento->id,true) . ";";
             } else {
                 if ($evento->usa_fide) {
-                    $texto .= $inscricao->enxadrista->showRating(0, $evento->tipo_modalidade) . ";";
+                    $texto .= $inscricao->enxadrista->showRating(0, $evento->tipo_modalidade, $evento->getConfig("fide_sequence")) . ";";
                     $texto .= $inscricao->enxadrista->fide_id . ";";
                 } elseif ($evento->usa_lbx) {
                     $texto .= $inscricao->enxadrista->showRating(2, $evento->tipo_modalidade) . ";";
@@ -562,13 +562,13 @@ class InscricaoGerenciarController extends Controller
 
             if ($evento->tipo_rating) {
                 if ($evento->usa_fide) {
-                    $texto .= $inscricao->enxadrista->showRating(0, $evento->tipo_modalidade) . ";";
+                    $texto .= $inscricao->enxadrista->showRating(0, $evento->tipo_modalidade, $evento->getConfig("fide_sequence")) . ";";
                     $texto .= $inscricao->enxadrista->fide_id . ";";
                 }
                 $texto .= $inscricao->enxadrista->ratingParaEvento($evento->id,true) . ";";
             } else {
                 if ($evento->usa_fide) {
-                    $texto .= $inscricao->enxadrista->showRating(0, $evento->tipo_modalidade) . ";";
+                    $texto .= $inscricao->enxadrista->showRating(0, $evento->tipo_modalidade, $evento->getConfig("fide_sequence")) . ";";
                     $texto .= $inscricao->enxadrista->fide_id . ";";
                 } elseif ($evento->usa_lbx) {
                     $texto .= $inscricao->enxadrista->showRating(2, $evento->tipo_modalidade) . ";";
@@ -638,13 +638,13 @@ class InscricaoGerenciarController extends Controller
 
             if ($evento->tipo_rating) {
                 if ($evento->usa_fide) {
-                    $texto .= $inscricao->enxadrista->showRating(0, $evento->tipo_modalidade) . ";";
+                    $texto .= $inscricao->enxadrista->showRating(0, $evento->tipo_modalidade, $evento->getConfig("fide_sequence")) . ";";
                     $texto .= $inscricao->enxadrista->fide_id . ";";
                 }
                 $texto .= $inscricao->enxadrista->ratingParaEvento($evento->id,true) . ";";
             } else {
                 if ($evento->usa_fide) {
-                    $texto .= $inscricao->enxadrista->showRating(0, $evento->tipo_modalidade) . ";";
+                    $texto .= $inscricao->enxadrista->showRating(0, $evento->tipo_modalidade, $evento->getConfig("fide_sequence")) . ";";
                     $texto .= $inscricao->enxadrista->fide_id . ";";
                 } elseif ($evento->usa_lbx) {
                     $texto .= $inscricao->enxadrista->showRating(2, $evento->tipo_modalidade) . ";";
@@ -829,7 +829,7 @@ class InscricaoGerenciarController extends Controller
                 }
             } else {
                 if ($evento->usa_fide) {
-                    $texto .= $inscricao->enxadrista->showRating(0, $evento->tipo_modalidade) . ";";
+                    $texto .= $inscricao->enxadrista->showRating(0, $evento->tipo_modalidade, $evento->getConfig("fide_sequence")) . ";";
                     $texto .= $inscricao->enxadrista->fide_id . ";";
                 } elseif ($evento->usa_lbx) {
                     $texto .= $inscricao->enxadrista->showRating(2, $evento->tipo_modalidade) . ";";
