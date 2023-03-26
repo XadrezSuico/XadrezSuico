@@ -98,7 +98,7 @@
                     </tbody>
                 </table>
                 <h3>Resumo da Categoria:</h3>
-                <p><strong>Total de Lugares considerados:</strong> {{$j}}</p>
+                <p><strong>Total de Posições consideradas:</strong> {{$j}}</p>
                 <p><strong>Total de Pontuação:</strong> {{$total}}</p>
                 @php($resume[] = ["total"=>$total,"places"=>$j])
             </div>
