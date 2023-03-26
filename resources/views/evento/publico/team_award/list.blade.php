@@ -42,8 +42,8 @@
                     @foreach($team_award->team_scores()->orderBy("place","ASC")->get() as $score)
                         <tr>
                             <td>{{$score->place}}</td>
-                            <td><a href="{{url("/evento/".$event->id."/team_awards/1/results/team/".$score->club->id)}}">#{{$score->club->id}}</a></td>
-                            <td><a href="{{url("/evento/".$event->id."/team_awards/1/results/team/".$score->club->id)}}">{{$score->club->name}}</a></td>
+                            <td><a href="{{url("/evento/".$event->id."/team_awards/".$team_award->id."/results/team/".$score->club->id)}}">#{{$score->club->id}}</a></td>
+                            <td><a href="{{url("/evento/".$event->id."/team_awards/".$team_award->id."/results/team/".$score->club->id)}}">{{$score->club->name}}</a></td>
                             <td>{{$score->club->cidade->name}}</td>
                             <td>{{$score->score}}</td>
                             @foreach($team_award->tiebreaks()->orderBy("priority","ASC")->get() as $tiebreak)
