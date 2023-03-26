@@ -293,6 +293,14 @@ Route::group(["prefix"=>"evento"],function(){
             Route::get('/removeAll', 'TorneioChaveSemifinalController@zerarInscricoes')->name('evento.gerenciamento.torneio_3.removeAll');
         });
     });
+    Route::group(["prefix"=>"{event_id}/team_awards"],function(){
+        Route::get('/standings', 'External\Event\TeamAwardController@standings')->name('external.event.team_award.standings');
+        Route::get('/{team_awards_id}/results/team/{clubs_id}', 'External\Event\TeamAwardController@see_team_score')->name('external.event.team_award.see_team_score');
+        Route::get('/{team_awards_id}/results', 'External\Event\TeamAwardController@list')->name('external.event.team_award.list');
+
+
+        Route::get('/classificacao/{id}', 'EventoController@classificacao')->name('evento.classificacao');
+    });
 });
 
 

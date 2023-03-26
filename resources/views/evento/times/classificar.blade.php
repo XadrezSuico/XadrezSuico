@@ -42,7 +42,7 @@
         Algum dos processos não deu certo... Verifique qual deles abaixo, ele estará com o seguinte ícone: <i class="fa fa-times"></i>
     </div>
     <ul class="nav nav-pills">
-        <li role="presentation"><a href="{{url("/evento/dashboard/".$evento->id)}}">Voltar ao Grupo de Evento</a></li>
+        <li role="presentation"><a href="{{url("/evento/dashboard/".$evento->id)}}">Voltar à Dashboard de Evento</a></li>
     </ul>
 
     <div class="box">
@@ -54,13 +54,13 @@
                             <h3>Premiação: {{$premiacao_time->name}} <i id="time_award_{{$premiacao_time->id}}_icon" style="display:none;" class="fa fa-spinner"></i></h3>
                             <ul>
                                 <li>
-                                    <h5>Somar Pontuações das Etapas <i id="time_award_{{$premiacao_time->id}}_1_icon" style="display:none;" class="fa fa-spinner"></i></h5>
+                                    <h5>Somar Pontuação dos Enxadristas Representantes <i id="time_award_{{$premiacao_time->id}}_1_icon" style="display:none;" class="fa fa-spinner"></i></h5>
                                 </li>
                                 <li>
                                     <h5>Geração de Critérios de Desempate <i id="time_award_{{$premiacao_time->id}}_2_icon" style="display:none;" class="fa fa-spinner"></i></h5>
                                 </li>
                                 <li>
-                                    <h5>Classificação da Categoria <i id="time_award_{{$premiacao_time->id}}_3_icon" style="display:none;" class="fa fa-spinner"></i></h5>
+                                    <h5>Classificação dos Times <i id="time_award_{{$premiacao_time->id}}_3_icon" style="display:none;" class="fa fa-spinner"></i></h5>
                                 </li>
                             </ul>
                         </li>

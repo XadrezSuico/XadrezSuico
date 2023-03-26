@@ -268,6 +268,18 @@
 									@endif
 									Resultados @if($evento->e_resultados_manuais) Automáticos  (Status Atual: Manuais) @else Manuais  (Status Atual: Automáticos) @endif
 								</a>
+                                @if($evento->event_team_awards()->count() > 0)
+
+                                    <a href="{{url("/evento/premiacao_time/classificar/".$evento->id)}}" class="btn btn-app">
+                                        <i class="fa fa-sort"></i>
+                                        Classificar Times no Evento
+                                    </a>
+
+                                    <a href="{{url("/evento/".$evento->id."/team_awards/standings")}}" class="btn btn-app">
+                                        <i class="fa fa-list"></i>
+                                        Listar Premiações de Times
+                                    </a>
+                                @endif
 							@endif<br/><br/>
 							@if(
 								\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
