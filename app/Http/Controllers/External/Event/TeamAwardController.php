@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
 use App\Evento;
+use App\Clube;
 
 class TeamAwardController extends Controller
 {
@@ -20,12 +21,15 @@ class TeamAwardController extends Controller
         $team_award = $event->event_team_awards()->where([["id","=",$team_awards_id]])->first();
         return view("evento.publico.team_award.list", compact("event", "team_award"));
     }
-    public function verPontuacaoEnxadrista($grupo_evento_id, $enxadrista_id)
+    public function see_team_score($events_id, $team_awards_id, $clubs_id)
     {
-        $grupo_evento = GrupoEvento::find($grupo_evento_id);
-        $enxadrista = Enxadrista::find($enxadrista_id);
-        if ($grupo_evento && $enxadrista) {
-            return view("grupoevento.publico.enxadrista", compact("grupo_evento", "enxadrista"));
+        $event = Evento::find($events_id);
+        $team_award = $event->event_team_awards()->where([["id","=",$team_awards_id]])->first();
+        $team_score = $team_award->team_scores()->where([["clubs_id","=",$clubs_id]])->first();
+        $team = Clube::find($clubs_id);
+
+        if ($event && $team_award && $team) {
+            return view("evento.publico.team_award.team", compact("event", "team_award", "team_score", "team"));
         }
         return redirect()->back();
     }
