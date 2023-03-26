@@ -51,9 +51,8 @@
                         <th>Cidade</th>
                         <th>Clube</th>
                         @if($torneio->tipo_torneio->usaPontuacao()) <th>Pontuação</th> @endif
-                        @php($j = 1)
                         @foreach($criterios as $criterio)
-                            <th>D-{{$j++}}</th>
+                            <th>D-{{$criterio->prioridade}}</th>
                         @endforeach
                     </tr>
                 </thead>
@@ -125,9 +124,8 @@
             </table>
             <hr/>
             <h4>Legenda dos Critérios de Desempate:</h4><br/>
-            @php($j=1)
             @foreach($criterios as $criterio)
-                <strong>D-{{$j++}} - {{$criterio->criterio->code}}:</strong> {{$criterio->criterio->name}}<br/>
+                <strong>D-{{$criterio->prioridade}} - {{$criterio->criterio->code}}:</strong> {{$criterio->criterio->name}}<br/>
             @endforeach
         </div>
     </div>
