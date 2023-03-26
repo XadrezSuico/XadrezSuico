@@ -63,7 +63,7 @@
                             ->orderBy("posicao","ASC")->get() as $inscricao)
                             <tr>
                                 <td>{{$inscricao->id}}</td>
-                                <td>{{$inscricao->torneio->evento->name}}</td>
+                                <td>{{$inscricao->enxadrista->name}}</td>
                                 <td>{{$inscricao->torneio->name}}</td>
                                 <td>{{$inscricao->categoria->name}}</td>
                                 <td>{{$inscricao->posicao}}</td>
