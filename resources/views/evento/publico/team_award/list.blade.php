@@ -48,7 +48,7 @@
                             <td>{{$score->score}}</td>
                             @foreach($team_award->tiebreaks()->orderBy("priority","ASC")->get() as $tiebreak)
                                 <td>
-                                    -
+                                    {{$score->getTiebreak($tiebreak->tiebreak->id,$tiebreak->sequence)}}
                                 </td>
                             @endforeach
                         </tr>
