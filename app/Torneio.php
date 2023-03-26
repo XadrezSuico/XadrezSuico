@@ -141,9 +141,17 @@ class Torneio extends Model
             ]);
         })->count();
     }
-    public function getCriterios()
+    public function getCriteriosLista()
     {
         if ($this->evento->criterios()->where([["tipo_torneio_id", "=", $this->tipo_torneio_id]])->count() > 0) {
+            return $this->evento->criterios()->where([["tipo_torneio_id", "=", $this->tipo_torneio_id]])->get();
+        }
+
+        return $this->evento->grupo_evento->criterios()->where([["tipo_torneio_id", "=", $this->tipo_torneio_id]])->where([["tipo_torneio_id", "=", $this->tipo_torneio_id]])->whereHas("criterio", function ($q1) {$q1->where([["is_manual", "=", false]]);})->orderBy("prioridade", "ASC")->get();
+    }
+    public function getCriterios()
+    {
+        if ($this->evento->criterios()->where([["tipo_torneio_id", "=", $this->tipo_torneio_id]])->whereHas("criterio", function ($q1) {$q1->where([["is_manual", "=", false]]);})->count() > 0) {
             return $this->evento->criterios()->where([["tipo_torneio_id", "=", $this->tipo_torneio_id]])->orderBy("prioridade", "ASC")->whereHas("criterio", function ($q1) {$q1->where([["is_manual", "=", false]]);})->get();
         }
 
