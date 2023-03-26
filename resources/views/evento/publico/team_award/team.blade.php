@@ -54,6 +54,8 @@
                         @php($total = 0)
                         @foreach($team->inscricoes()->where([
                                 ["categoria_id","=",$team_award_category->category->id],
+                                ["confirmado","=",true],
+                                ["desconsiderar_pontuacao_geral","=",false],
                             ])
                             ->whereHas("torneio",function($q1) use ($team_score) {
                                 $q1->where([["evento_id","=",$team_score->event_team_award->events_id]]);
