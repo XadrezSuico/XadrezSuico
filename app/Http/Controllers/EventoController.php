@@ -56,7 +56,7 @@ class EventoController extends Controller
                 ->orderBy("posicao", "ASC")
                 ->get();
         }
-        $criterios = $torneio->getCriteriosLista();
+        $criterios = $torneio->getCriterios();
         return view("evento.publico.list", compact("evento", "torneio", "categoria", "inscricoes", "criterios"));
     }
 }
