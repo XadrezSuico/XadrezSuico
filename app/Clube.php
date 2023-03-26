@@ -74,6 +74,11 @@ class Clube extends Model
         return $this->hasMany("App\Vinculo", "clube_id", "id");
     }
 
+    public function team_scores()
+    {
+        return $this->hasMany("App\EventTeamScore", "clubs_id", "id");
+    }
+
     public function isDeletavel()
     {
         if ($this->id != null) {

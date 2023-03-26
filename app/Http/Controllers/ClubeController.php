@@ -147,6 +147,11 @@ class ClubeController extends Controller
                 $vinculo->save();
             }
 
+            foreach($clube_a_ser_unido->team_scores->all() as $team_score){
+                $team_score->clubs_id = $clube_base->id;
+                $team_score->save();
+            }
+
             $clube_a_ser_unido->delete();
 
             return redirect("/clube");
