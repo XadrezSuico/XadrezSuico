@@ -104,9 +104,9 @@ class EventTeamScore extends Model
         return ["ok"=>1,"error"=>0];
     }
 
-    public function getTiebreak($tiebreaks_id,$sequence){
-        if($this->tiebreaks()->where([["tiebreaks_id","=",$tiebreaks_id],["sequence","=",$sequence]])->count() > 0){
-            return $this->tiebreaks()->where([["tiebreaks_id","=",$tiebreaks_id],["sequence","=",$sequence]])->first()->value;
+    public function getTiebreak($tiebreaks_id,$priority){
+        if($this->tiebreaks()->where([["tiebreaks_id","=",$tiebreaks_id],["priority","=",$priority]])->count() > 0){
+            return $this->tiebreaks()->where([["tiebreaks_id","=",$tiebreaks_id],["priority","=",$priority]])->first()->value;
         }
         return "-";
     }
