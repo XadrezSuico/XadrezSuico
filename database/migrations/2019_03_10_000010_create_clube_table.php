@@ -24,7 +24,7 @@ class CreateClubeTable extends Migration
             $table->engine = 'InnoDB';
             $table->increments('id');
             $table->unsignedInteger('rating_id')->nullable();
-            $table->string('name', 45);
+            $table->string('name', 200);
             $table->unsignedInteger('cidade_id');
 
             $table->index(["cidade_id"], 'fk_clube_cidade_idx');
