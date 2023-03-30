@@ -149,6 +149,9 @@ class Categoria extends Model
         return false;
     }
 
+    public function getHowManyStandingPlaces(){
+        return 3;
+    }
 
     public function toAPIObject($include_parent = false){
         return [

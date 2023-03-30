@@ -378,6 +378,7 @@ Route::group(["prefix"=>"grupoevento"],function(){
 	Route::get('/{id}/inscricoes/list', 'GrupoEventoController@visualizar_inscricoes')->name('grupoevento.inscricoes.list');
     Route::get('/{id}/resultados/enxadrista/{enxadrista_id}', 'GrupoEventoPublicoController@verPontuacaoEnxadrista')->name('grupoevento.publico.verPontuacaoEnxadrista');
     Route::get('/{id}/resultados/{categoria_id}', 'GrupoEventoPublicoController@resultados')->name('grupoevento.publico.resultados');
+    Route::get('/premiados/{id}', 'GrupoEventoController@visualizar_premiados')->name('grupoevento.visualizar.premiados');
     Route::group(["prefix"=>"{id}/categoria"],function(){
         Route::post('/add', 'GrupoEventoController@categoria_add')->name('grupoevento.categoria.add');
         Route::get('/remove/{categoria_grupo_evento_id}', 'GrupoEventoController@categoria_remove')->name('grupoevento.categoria.remove');

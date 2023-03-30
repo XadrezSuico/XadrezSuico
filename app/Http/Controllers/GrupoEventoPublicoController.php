@@ -23,8 +23,8 @@ class GrupoEventoPublicoController extends Controller
             ["grupo_evento_id", "=", $grupo_evento->id],
             ["categoria_id", "=", $categoria->id],
         ])
-            ->orderBy("posicao", "ASC")
-            ->get();
+        ->orderBy("posicao", "ASC")
+        ->get();
         $criterios = $grupo_evento->getCriteriosDesempateGerais();
         return view("grupoevento.publico.list", compact("grupo_evento", "eventos", "categoria", "pontuacoes", "criterios"));
     }

@@ -503,4 +503,18 @@ class GrupoEventoController extends Controller
 
         return view('grupoevento.inscricoes', compact("grupo_evento"));
     }
+
+
+    public function visualizar_premiados($id)
+    {
+        $user = Auth::user();
+        if (!$user->hasPermissionGlobal() && !$user->hasPermissionGroupEventByPerfil($id,[6,7]) && !$user->hasPermissionEventByPerfilByGroupEvent($id,[3,4,5])) {
+            return redirect("/grupoevento");
+        }
+        $grupo_evento = GrupoEvento::find($id);
+        if ($grupo_evento) {
+            return view("grupoevento.premiados", compact("grupo_evento"));
+        }
+        return redirect("/grupoevento/dashboard/" . $id);
+    }
 }

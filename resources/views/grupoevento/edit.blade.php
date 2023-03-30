@@ -26,6 +26,7 @@
   @if($user->hasPermissionGlobal() || $user->hasPermissionGroupEventByPerfil($grupo_evento->id,[7])) <li role="presentation"><a href="/grupoevento/classificar/{{$grupo_evento->id}}">Classificar Grupo de Evento</a></li> @endif
   <li role="presentation"><a href="/grupoevento/classificacao/{{$grupo_evento->id}}">Visualizar Classificação Pública</a></li>
   <li role="presentation"><a href="/grupoevento/{{$grupo_evento->id}}/inscricoes/list">Visualizar Inscrições Totais</a></li>
+  <li role="presentation"><a href="/grupoevento/premiados/{{$grupo_evento->id}}">Consultar Premiados (Consulta Atual)</a></li>
 </ul>
 <div class="row">
   <!-- Left col -->
