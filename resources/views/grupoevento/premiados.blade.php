@@ -1,6 +1,6 @@
 @extends('adminlte::page')
 
-@section("title", "Visualizar Premiados - Grupo de Evento: ".$grupo_evento->name." - Acesso em ".date("d/m/Y H:i:s"))
+@section("title", "Visualizar Premiados - Grupo de Evento: ".$grupo_evento->name." - Acesso em ".date("d-m-Y H:i:s"))
 
 @section('content_header')
   <h1>Grupo de Evento: {{$grupo_evento->name}} >> Visualizar Premiados</h1>
