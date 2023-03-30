@@ -62,7 +62,7 @@
                                 <td>{{$pontuacao_enxadrista->enxadrista->cidade->getName()}}</td>
                                 <td>@if($pontuacao_enxadrista->enxadrista->clube) {{$pontuacao_enxadrista->enxadrista->clube->name}} @else - @endif</td>
                                 <td>{{$pontuacao_enxadrista->enxadrista->email}}</td>
-                                <td>{{$pontuacao_enxadrista->enxadrista->celular}}</td>
+                                <td>({{$pontuacao_enxadrista->enxadrista->pais_celular->codigo_iso}}) {{$pontuacao_enxadrista->enxadrista->celular}}</td>
                             </tr>
                         @endforeach
                     @endforeach

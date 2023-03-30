@@ -43,6 +43,10 @@ class Enxadrista extends Model
     {
         return $this->belongsTo("App\Pais", "pais_id", "id");
     }
+    public function pais_celular()
+    {
+        return $this->belongsTo("App\Pais", "pais_celular_id", "id");
+    }
     public function documentos()
     {
         return $this->hasMany("App\Documento", "enxadrista_id", "id");
