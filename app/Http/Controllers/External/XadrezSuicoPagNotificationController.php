@@ -101,6 +101,17 @@ class XadrezSuicoPagNotificationController extends Controller
                 $inscricao->paid = true;
 
                 $inscricao->save();
+            }else{
+
+                if($registration_request->registration->status == "refunded"){
+                    $inscricao = Inscricao::where([["uuid","=",$uuid]])->whereJsonContains("payment_info->uuid",$registration_uuid)->first();
+
+
+                    $inscricao->paid = false;
+                    $inscricao->confirmado = false;
+
+                    $inscricao->save();
+                }
             }
         }
 
