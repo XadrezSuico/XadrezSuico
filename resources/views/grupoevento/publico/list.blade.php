@@ -35,7 +35,7 @@
                         <th>Clube</th>
                         <th>Pontuação</th>
                         @foreach($criterios as $criterio)
-                            <th>{{$criterio->criterio->code}}</th>
+                            <th>D-{{$criterio->prioridade}}</th>
                         @endforeach
                     </tr>
                 </thead>
@@ -78,9 +78,8 @@
             <div class="row">
                 <div class="col-md-6">
                     <h4>Legenda dos Critérios de Desempate:</h4><br/>
-                    @php($j=1)
                     @foreach($criterios as $criterio)
-                        <strong>{{$j++}} - {{$criterio->criterio->code}}:</strong> {{$criterio->criterio->name}}<br/>
+                        <strong>D-{{$criterio->prioridade}} - {{$criterio->criterio->code}}:</strong> {{$criterio->criterio->name}}<br/>
                     @endforeach
                 </div>
                 <div class="col-md-6">
