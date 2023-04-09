@@ -33,9 +33,15 @@ class CBXRatingController extends Controller
         if($show_text) echo "Enxadrista #" . $enxadrista->id . " - " . $enxadrista->name;
         // $html = file_get_contents("http://cbx.com.br/jogador/".$enxadrista->cbx_id);
 
-        $client = new Client;
+        $client = new Client([
+            'http_errors' => false,
+        ]);
         $response = $client->get("http://cbx.com.br/jogador/" . $enxadrista->cbx_id);
-        $html = (string) $response->getBody();
+        if($response->getStatusCode() != 200){
+            $html = "";
+        }else{
+            $html = (string) $response->getBody();
+        }
 
         $nome = CBXRatingController::getName($html);
         if($nome){

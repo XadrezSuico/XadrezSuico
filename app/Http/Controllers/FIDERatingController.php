@@ -141,10 +141,17 @@ class FIDERatingController extends Controller
                 $enxadrista->save();
             }
         }else{
-            $client = new Client;
+            $client = new Client([
+                'http_errors' => false,
+            ]);
             $response = $client->get(env("FIDE_RATING_SERVER",false)."/player/" . $enxadrista->fide_id . "/elo");
             if($show_text) echo "<br/>";
-            $html = (string) $response->getBody();
+
+            if($response->getStatusCode() != 200){
+                $html = "{}";
+            }else{
+                $html = (string) $response->getBody();
+            }
 
             $json = json_decode($html);
             if(!isset($json->reason)){
