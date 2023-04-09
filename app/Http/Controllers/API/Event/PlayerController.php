@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 
 use App\Http\Controllers\External\XadrezSuicoPagController;
 
+use App\Http\Controllers\CBXRatingController;
+
 use App\Evento;
 use App\Enxadrista;
 use App\Pais;
@@ -297,7 +299,17 @@ class PlayerController extends Controller
                         break;
                     case "cbx_id":
                         if($request->cbx_id){
-                            $enxadrista->cbx_id = $request->cbx_id;
+                            if($request->cbx_id != ""){
+                                $enxadrista->encontrado_cbx = false;
+                                $enxadrista->cbx_id = $request->cbx_id;
+
+                                $cbx_request_enxadrista = CBXRatingController::getRating($enxadrista, false, true, false);
+
+                                if(!$cbx_request_enxadrista->encontrado_cbx){
+                                    $enxadrista->cbx_id = null;
+                                    return response()->json(["ok"=>0,"error"=>1,"message"=>"O ID CBX informado não existe. Por favor, verifique esta informação e tente novamente. Lembrando que esta informação DEVE SER válida e deve corresponder ao cadastro deste enxadrista!"]);
+                                }
+                            }
                         }
                         break;
                     case "calculate_fide":
