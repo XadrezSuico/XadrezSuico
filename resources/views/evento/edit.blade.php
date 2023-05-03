@@ -209,11 +209,13 @@
 								\Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])
 							)
 								<hr/>
-								<h4>Lista de Rating:</h4>
-								<a href="{{url("/evento/".$evento->id)}}/enxadristas/sm" class="btn btn-app" target="_blank">
-									<i class="fa fa-download"></i>
-									Baixar para Uso neste Evento (Swiss-Manager)
-								</a>
+                                @if(false)
+                                    <h4>Lista de Rating:</h4>
+                                    <a href="{{url("/evento/".$evento->id)}}/enxadristas/sm" class="btn btn-app" target="_blank">
+                                        <i class="fa fa-download"></i>
+                                        Baixar para Uso neste Evento (Swiss-Manager)
+                                    </a>
+                                @endif
 
                                 @if($evento->tipo_rating)
                                     <hr/>
