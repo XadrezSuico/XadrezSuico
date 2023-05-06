@@ -150,6 +150,8 @@ Route::group(["prefix"=>"evento"],function(){
     Route::group(["prefix"=>"{id}/exports"],function(){
         Route::get('/xadrezsuicoemparceirador', 'Exports\XadrezSuicoEmparceiradorController@export')->name('evento.exports.xadrezsuicoemparceirador');
         Route::get('/xadrezsuicoemparceirador/data', 'Exports\XadrezSuicoEmparceiradorController@export_data')->name('evento.exports.xadrezsuicoemparceirador.data');
+        Route::get('/presporte/single', 'Event\ExportController@export_presporte_single')->name('evento.exports.presporte.single');
+        Route::get('/presporte/team', 'Event\ExportController@export_presporte_team')->name('evento.exports.presporte.team');
     });
     Route::group(["prefix"=>"premiacao_time"],function(){
         Route::get('/classificar/{evento_id}', 'Event\TeamAwardController@classificar_page')->name('evento.premiacao_time.classificar');
@@ -157,6 +159,14 @@ Route::group(["prefix"=>"evento"],function(){
     });
 
 
+
+    Route::group(["prefix"=>"{id}/imports"],function(){
+        Route::group(["prefix"=>"/ingadigital"],function(){
+            Route::get('/file', 'Event\ImportController@importIngaForm')->name('evento.import.sportapp.file');
+	        Route::post('/file', 'Event\ImportController@importInga')->name('evento.import.sportapp.file.post');
+
+        });
+    });
 
     // Novas Inscrições
     Route::group(["prefix"=>"inscricao"],function(){

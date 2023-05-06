@@ -32,7 +32,7 @@
                         <tr>
                             <td>{{$clube->id}}</td>
                             <td>{{$clube->name}}</td>
-                            <td>{{$clube->cidade->name}}</td>
+                            <td>@if($clube->cidade) {{$clube->cidade->name}} @else - @endif</td>
                             <td>
                                 <a class="btn btn-default" href="{{url("/clube/edit/".$clube->id)}}" role="button">Editar</a>
                                 @if($clube->isDeletavel()) <a class="btn btn-danger" href="{{url("/clube/delete/".$clube->id)}}" role="button">Apagar</a> @endif

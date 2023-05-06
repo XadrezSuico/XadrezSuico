@@ -1,7 +1,7 @@
 <?php
 namespace App\Util;
 
-class Util
+class Util extends \App\Http\Util\Util
 {
     public static function eGeracaoDeFamilia($nome){
         $nomes_geracao_familia = [

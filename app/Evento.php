@@ -433,6 +433,33 @@ class Evento extends Model
 
         return false;
     }
+    public function inscritosPorClube($clube_id)
+    {
+        $list = [];
+        foreach($this->torneios->all() as $torneio){
+            foreach($torneio->inscricoes->all() as $inscricao){
+                if($inscricao->clube->id == $clube_id){
+                    $list[($inscricao->categoria->id)][] = $inscricao;
+                }
+            }
+        }
+
+        return $list;
+    }
+
+    public function clubesInscritos(){
+        $list = [];
+
+        foreach($this->torneios->all() as $torneio){
+            foreach($torneio->inscricoes->all() as $inscricao){
+                if($inscricao->clube){
+                    $list[($inscricao->clube->id)] = $inscricao->clube;
+                }
+            }
+        }
+
+        return $list;
+    }
 
     public function getInscricoes()
     {

@@ -106,6 +106,13 @@ class Enxadrista extends Model
         return mb_strtoupper($str);
     }
 
+    public function hasDocument($document_types_id,$document){
+        if($document_types_id == 1){
+            $document = Util::numeros($document);
+        }
+        return $this->documentos()->where([["tipo_documentos_id","=",$document_types_id],["numero","=",$document]])->count() > 0;
+    }
+
     /*
      * Esta função serve para dividir o nome completo do enxadrista para os campos de Nome e Sobrenome que são usados
      * pela CBX, FIDE e LBX.
