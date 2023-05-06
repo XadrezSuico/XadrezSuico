@@ -249,7 +249,7 @@
 						<select id="clube_id" name="clube_id" class="form-control" @if(!$permitido_edicao) disabled="disabled" @endif>
 							<option value="">--- Você pode selecionar um clube ---</option>
 							@foreach($clubes as $clube)
-								<option value="{{$clube->id}}">{{$clube->cidade->name}} - {{$clube->name}}</option>
+								<option value="{{$clube->id}}">@if($clube->cidade) {{$clube->cidade->name}} - @endif{{$clube->name}}</option>
 							@endforeach
 						</select>
 					</div>
