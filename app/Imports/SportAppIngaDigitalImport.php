@@ -76,7 +76,10 @@ class SportAppIngaDigitalImport implements OnEachRow, WithHeadingRow
             $enxadrista = $this->getEnxadrista($name,$bornday,($is_cpf) ? $cpf_or_ext : null,(!$is_cpf) ? $cpf_or_ext : null,$rg);
             if($enxadrista){
                 if(!$enxadrista->sexo){
-                    $enxadrista->sexos_id = Sexo::where([["sex_from_import","=",$sex_name]])->first()->id;
+                    if(Sexo::where([["sex_from_import","=",$sex_name]])->count() > 0){
+                        $enxadrista->sexos_id = Sexo::where([["sex_from_import","=",$sex_name]])->first()->id;
+                        $enxadrista->save();
+                    }
                 }
                 if($this->hasCategory($sex_name,$age_category)){
                     $category = $this->getCategory($sex_name,$age_category);
