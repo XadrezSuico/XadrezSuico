@@ -745,7 +745,7 @@ class InscricaoGerenciarController extends Controller
             }
 
             $texto .= $inscricao->enxadrista->firstname . ";";
-            $texto .= $inscricao->enxadrista->lastname . " [".$inscricao->enxadrista->chess_com_username."];";
+            $texto .= $inscricao->enxadrista->lastname . ";";
             $texto .= $inscricao->enxadrista->id . "\r\n";
         }
         return $texto;
