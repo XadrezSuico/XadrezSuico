@@ -437,6 +437,9 @@ class InscricaoGerenciarController extends Controller
             case 4:
                 // Padrão XadrezSuíço NOME NO SOBRENOME + Chess.com
                 return $this->generateTxt_4($inscricoes, $evento, $torneio);
+            case 5:
+                // Padrão XadrezSuíço NOME NO SOBRENOME + Sem Cidade
+                return $this->generateTxt_5($inscricoes, $evento, $torneio);
             default:
                 // Padrão XadrezSuíço
                 return $this->generateTxt_0($inscricoes, $evento, $torneio);
@@ -664,6 +667,81 @@ class InscricaoGerenciarController extends Controller
             } else {
                 $texto .= $inscricao->cidade->ibge_id . ";";
                 $texto .= $inscricao->cidade->name . ";";
+            }
+
+            $texto .= $inscricao->enxadrista->firstname . ";";
+            $texto .= $inscricao->enxadrista->lastname . " [".$inscricao->enxadrista->chess_com_username."];";
+            $texto .= $inscricao->enxadrista->id . "\r\n";
+        }
+        return $texto;
+    }
+    private function generateTxt_5($inscricoes, $evento, $torneio){
+        $texto = "No;Nome Completo;ID;FED;";
+        if ($evento->tipo_rating) {
+            if ($evento->usa_fide) {
+                $texto .= "FIDE;";
+                $texto .= "id FIDE;";
+            }
+            $texto .= "Elonac;";
+        } else {
+            if ($evento->usa_fide) {
+                $texto .= "FIDE;";
+                $texto .= "id FIDE;";
+            } elseif ($evento->usa_lbx) {
+                $texto .= "FIDE;";
+                $texto .= "id FIDE;";
+            }
+            if ($evento->usa_cbx) {
+                $texto .= "Elonac;";
+            }
+        }
+        $texto .= "DNasc;Cat;Gr;NoClube;Nome Clube;Sobrenome;Nome;Fonte\r\n";
+
+        $i = 1;
+
+        $inscritos = array();
+        foreach ($inscricoes as $inscricao) {
+            $inscritos[] = $inscricao;
+        }
+        usort($inscritos, array("App\Http\Controllers\InscricaoGerenciarController", "cmp_obj"));
+
+        foreach ($inscritos as $inscricao) {
+            $texto .= $i++ . ";";
+            $texto .= $inscricao->enxadrista->name . " [".$inscricao->enxadrista->chess_com_username."];";
+            if($evento->calcula_cbx){
+                $texto .= $inscricao->enxadrista->cbx_id . ";";
+            }else{
+                $texto .= $inscricao->enxadrista->id . ";";
+            }
+            $texto .= $inscricao->enxadrista->pais_nascimento->codigo_iso.";";
+
+            if ($evento->tipo_rating) {
+                if ($evento->usa_fide) {
+                    $texto .= $inscricao->enxadrista->showRating(0, $evento->tipo_modalidade, $evento->getConfig("fide_sequence")) . ";";
+                    $texto .= $inscricao->enxadrista->fide_id . ";";
+                }
+                $texto .= $inscricao->enxadrista->ratingParaEvento($evento->id,true) . ";";
+            } else {
+                if ($evento->usa_fide) {
+                    $texto .= $inscricao->enxadrista->showRating(0, $evento->tipo_modalidade, $evento->getConfig("fide_sequence")) . ";";
+                    $texto .= $inscricao->enxadrista->fide_id . ";";
+                } elseif ($evento->usa_lbx) {
+                    $texto .= $inscricao->enxadrista->showRating(2, $evento->tipo_modalidade) . ";";
+                    $texto .= $inscricao->enxadrista->lbx_id . ";";
+                }
+                if ($evento->usa_cbx) {
+                    $texto .= $inscricao->enxadrista->showRating(1, $evento->tipo_modalidade) . ";";
+                }
+            }
+
+            $texto .= $inscricao->enxadrista->getBornToSM() . ";";
+            $texto .= $inscricao->categoria->cat_code . ";";
+            $texto .= $inscricao->categoria->code . ";";
+            $texto .= "0;";
+            if ($inscricao->clube) {
+                $texto .= $inscricao->clube->name . ";";
+            } else {
+                $texto .= ";";
             }
 
             $texto .= $inscricao->enxadrista->firstname . ";";
