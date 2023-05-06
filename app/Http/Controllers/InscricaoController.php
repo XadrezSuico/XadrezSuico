@@ -471,7 +471,11 @@ class InscricaoController extends Controller
         })->get();
         $results = array(array("id" => -1, "text" => "Sem Clube"));
         foreach ($clubes as $clube) {
-            $results[] = array("id" => $clube->id, "text" => $clube->cidade->estado->pais->nome . "-" . $clube->cidade->name . "/" . $clube->cidade->estado->nome . " | ".$clube->id." -  " . $clube->name);
+            $text = "";
+            if($clube->cidade){
+                $text .= $clube->cidade->estado->pais->nome . "-" . $clube->cidade->name . "/" . $clube->cidade->estado->nome . " | ";
+            }
+            $results[] = array("id" => $clube->id, "text" => $text.$clube->id." -  " . $clube->name);
         }
         return response()->json(["results" => $results, "pagination" => true]);
     }
@@ -1849,7 +1853,11 @@ class InscricaoController extends Controller
         $temClube = Clube::where([["name", "=", mb_strtoupper($request->input("name"))], ["cidade_id", "=", $request->input("cidade_id")]])->first();
         $temClube_count = Clube::where([["name", "=", mb_strtoupper($request->input("name"))], ["cidade_id", "=", $request->input("cidade_id")]])->count();
         if ($temClube_count > 0) {
-            return response()->json(["ok" => 0, "error" => 1, "message" => "Este clube já está cadastrado! Selecionamos ele para você.", "registred" => 1, "clube_id" => $temClube->id, "clube_nome" => $temClube->name, "cidade_nome" => $temClube->cidade->estado->pais->nome."-".$temClube->cidade->name."/".$temClube->cidade->estado->nome]);
+            $text = "";
+            if($temClube->cidade){
+
+            }
+            return response()->json(["ok" => 0, "error" => 1, "message" => "Este clube já está cadastrado! Selecionamos ele para você.", "registred" => 1, "clube_id" => $temClube->id, "clube_nome" => $temClube->name, "cidade_nome" => ($temClube->cidade) ? $temClube->cidade->estado->pais->nome."-".$temClube->cidade->name."/".$temClube->cidade->estado->nome : ""]);
         }
 
         $clube->name = mb_strtoupper($request->input("name"));

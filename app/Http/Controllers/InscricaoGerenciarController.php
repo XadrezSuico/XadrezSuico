@@ -1512,7 +1512,7 @@ class InscricaoGerenciarController extends Controller
         })->get();
         $results = array(array("id" => -1, "text" => "Sem Clube"));
         foreach ($clubes as $clube) {
-            $results[] = array("id" => $clube->id, "text" => $clube->cidade->name . " - " . $clube->name);
+            $results[] = array("id" => $clube->id, "text" => (($clube->cidade) ? $clube->cidade->name . " - " : "") . $clube->name);
         }
         return response()->json(["results" => $results, "pagination" => true]);
     }

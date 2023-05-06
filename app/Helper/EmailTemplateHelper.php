@@ -244,7 +244,7 @@ class EmailTemplateHelper
             $text = str_replace("{clube.name}",$inscricao->clube->name,$text);
             // Clube -> Cidade
             $text = str_replace("{clube.cidade.id}",$inscricao->clube->cidade->id,$text);
-            $text = str_replace("{clube.cidade.name}",$inscricao->clube->cidade->name,$text);
+            $text = str_replace("{clube.cidade.name}",($inscricao->clube->cidade) ? $inscricao->clube->cidade->name : "",$text);
             // Clube -> Cidade -> Estado
             $text = str_replace("{clube.cidade.estado.id}",$inscricao->clube->cidade->estado->id,$text);
             $text = str_replace("{clube.cidade.estado.name}",$inscricao->clube->cidade->estado->nome,$text);
@@ -356,7 +356,7 @@ class EmailTemplateHelper
             $text = str_replace("{enxadrista.clube.name}",$enxadrista->clube->name,$text);
             // Enxadrista -> Clube -> Cidade
             $text = str_replace("{enxadrista.clube.cidade.id}",$enxadrista->clube->cidade->id,$text);
-            $text = str_replace("{enxadrista.clube.cidade.name}",$enxadrista->clube->cidade->name,$text);
+            $text = str_replace("{enxadrista.clube.cidade.name}",($enxadrista->clube->cidade) ? $enxadrista->clube->cidade->name : '',$text);
             // Enxadrista -> Clube -> Cidade -> Estado
             $text = str_replace("{enxadrista.clube.cidade.estado.id}",$enxadrista->clube->cidade->estado->id,$text);
             $text = str_replace("{enxadrista.clube.cidade.estado.name}",$enxadrista->clube->cidade->estado->nome,$text);
