@@ -778,6 +778,50 @@ class EventoGerenciarController extends Controller
         }
     }
 
+
+    public function confirmAllRegistrations($evento_id)
+    {
+        $user = Auth::user();
+        $evento = Evento::find($evento_id);
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionEventByPerfil($evento->id, [4]) &&
+            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
+        ) {
+            return redirect("/evento/dashboard/".$evento->id);
+        }
+        if ($evento) {
+            foreach($evento->torneios->all() as $torneio){
+                foreach($torneio->inscricoes->all() as $inscricao){
+                    $inscricao->confirmado = true;
+                    $inscricao->save();
+                }
+            }
+            return redirect("/evento/dashboard/" . $evento->id);
+        }
+    }
+    public function unconfirmAllRegistrations($evento_id)
+    {
+        $user = Auth::user();
+        $evento = Evento::find($evento_id);
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionEventByPerfil($evento->id, [4]) &&
+            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
+        ) {
+            return redirect("/evento/dashboard/".$evento->id);
+        }
+        if ($evento) {
+            foreach($evento->torneios->all() as $torneio){
+                foreach($torneio->inscricoes->all() as $inscricao){
+                    $inscricao->confirmado = false;
+                    $inscricao->save();
+                }
+            }
+            return redirect("/evento/dashboard/" . $evento->id);
+        }
+    }
+
     public function confirmPaidRegistrations($evento){
         if($evento->isPaid()){
             if($evento->hasConfig("flag__registration_paid_confirmed")){
