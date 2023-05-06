@@ -713,7 +713,7 @@ class InscricaoGerenciarController extends Controller
             }else{
                 $texto .= $inscricao->enxadrista->id . ";";
             }
-            $texto .= $inscricao->enxadrista->pais_nascimento->codigo_iso.";";
+            $texto .= "BRA;";
 
             if ($evento->tipo_rating) {
                 if ($evento->usa_fide) {
