@@ -707,7 +707,7 @@ class InscricaoGerenciarController extends Controller
 
         foreach ($inscritos as $inscricao) {
             $texto .= $i++ . ";";
-            $texto .= $inscricao->enxadrista->name . " [".$inscricao->enxadrista->chess_com_username."];";
+            $texto .= $inscricao->enxadrista->name.";";
             if($evento->calcula_cbx){
                 $texto .= $inscricao->enxadrista->cbx_id . ";";
             }else{
