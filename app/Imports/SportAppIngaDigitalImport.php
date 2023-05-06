@@ -20,6 +20,7 @@ use App\Clube;
 use App\Categoria;
 use App\Inscricao;
 use App\Evento;
+use App\Sexo;
 
 use App\Http\Util\Util;
 
@@ -74,6 +75,9 @@ class SportAppIngaDigitalImport implements OnEachRow, WithHeadingRow
         if($this->hasEnxadrista($name,$bornday,($is_cpf) ? $cpf_or_ext : null,(!$is_cpf) ? $cpf_or_ext : null,$rg)){
             $enxadrista = $this->getEnxadrista($name,$bornday,($is_cpf) ? $cpf_or_ext : null,(!$is_cpf) ? $cpf_or_ext : null,$rg);
             if($enxadrista){
+                if(!$enxadrista->sexo){
+                    $enxadrista->sexos_id = Sexo::where([["sex_from_import","=",$sex_name]])->first()->id;
+                }
                 if($this->hasCategory($sex_name,$age_category)){
                     $category = $this->getCategory($sex_name,$age_category);
 
@@ -381,7 +385,7 @@ class SportAppIngaDigitalImport implements OnEachRow, WithHeadingRow
         return null;
     }
 
-    public function registerEnxadrista($name,$bornday,$cpf=null,$ext_document=null,$rg=null,$email = null,$phone = null,$clubs_id){
+    public function registerEnxadrista($name,$bornday,$cpf=null,$ext_document=null,$rg=null,$email = null,$phone = null,$clubs_id, $sex_name){
         Log::debug("registerEnxadrista");
         if(!$this->hasEnxadrista($name,$bornday,$cpf,$ext_document,$rg)){
             $enxadrista = new Enxadrista;
@@ -390,6 +394,9 @@ class SportAppIngaDigitalImport implements OnEachRow, WithHeadingRow
             $enxadrista->clube_id = $clubs_id;
             $enxadrista->name = $this->parseName($name);
             $enxadrista->born = $this->datetime->format("Y-m-d");
+
+            $enxadrista->sexos_id = Sexo::where([["sex_from_import","=",$sex_name]])->first()->id;
+
             if($email){
                 $enxadrista->email = $email;
             }
