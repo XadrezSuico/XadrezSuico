@@ -92,6 +92,7 @@ class Torneio_ImportacaoController extends Controller
                 case 3:
                 case 4:
                 case 5:
+                case 6:
                     return $this->setResults_tipo_exportacao_0($file, $evento_id, $torneio_id);
                     break;
                 case 1:

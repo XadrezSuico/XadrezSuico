@@ -422,6 +422,40 @@ class InscricaoGerenciarController extends Controller
         ]);
     }
 
+    public function list_to_manager_teams($id, $torneio_id)
+    {
+        $user = Auth::user();
+        $evento = Evento::find($id);
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionEventByPerfil($evento->id, [4]) &&
+            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
+        ) {
+            return redirect("/evento/dashboard/".$evento->id);
+        }
+
+        $torneio = Torneio::find($torneio_id);
+
+        $texto = $this->generateTxt_team_1($torneio->getClubsFromRegistrations(), $evento, $torneio);
+
+        // file name that will be used in the download
+        $fileName = "Exp_xadrezsuico_ev_" . $id . "_tor_" . $torneio_id . "_teams___" . date("Ymd-His") . "___.TXT";
+
+        // use headers in order to generate the download
+        $headers = [
+            'Content-type' => 'text/plain',
+            'Content-Disposition' => sprintf('attachment; filename="%s"', $fileName),
+            'Content-Length' => strlen($texto),
+        ];
+
+        // make a response, with the content, a 200 response code and the headers
+        return response(utf8_decode($texto))->withHeaders([
+            'Content-Type' => 'text/plain; charset=utf-8',
+            'Cache-Control' => 'no-store, no-cache',
+            'Content-Disposition' => 'attachment; filename="' . $fileName . '"',
+        ]);
+    }
+
     private function generateTxt($inscricoes, $evento, $torneio)
     {
         switch($evento->exportacao_sm_modelo){
@@ -440,6 +474,9 @@ class InscricaoGerenciarController extends Controller
             case 5:
                 // Padrão XadrezSuíço NOME NO SOBRENOME + Sem Cidade
                 return $this->generateTxt_5($inscricoes, $evento, $torneio);
+            case 6:
+                // Padrão XadrezSuíço NOME NO SOBRENOME + Sem Cidade em Torneio por Equipe
+                return $this->generateTxt_6($inscricoes, $evento, $torneio);
             default:
                 // Padrão XadrezSuíço
                 return $this->generateTxt_0($inscricoes, $evento, $torneio);
@@ -750,6 +787,94 @@ class InscricaoGerenciarController extends Controller
         }
         return $texto;
     }
+    private function generateTxt_6($inscricoes, $evento, $torneio){
+        $texto = "No;Nome Completo;ID;FED;";
+        if ($evento->tipo_rating) {
+            if ($evento->usa_fide) {
+                $texto .= "FIDE;";
+                $texto .= "id FIDE;";
+            }
+            $texto .= "Elonac;";
+        } else {
+            if ($evento->usa_fide) {
+                $texto .= "FIDE;";
+                $texto .= "id FIDE;";
+            } elseif ($evento->usa_lbx) {
+                $texto .= "FIDE;";
+                $texto .= "id FIDE;";
+            }
+            if ($evento->usa_cbx) {
+                $texto .= "Elonac;";
+            }
+        }
+        $texto .= "DNasc;Cat;Gr;NoClube;Nome Clube;Sobrenome;Nome;Fonte;Mesa;NoEq\r\n";
+
+        $i = 1;
+
+        $inscritos = array();
+        foreach ($inscricoes as $inscricao) {
+            $inscritos[] = $inscricao;
+        }
+        usort($inscritos, array("App\Http\Controllers\InscricaoGerenciarController", "cmp_obj"));
+
+        $clubs = [];
+        foreach($torneio->getClubsFromRegistrations() as $club){
+            $clubs[] = $club;
+        }
+        usort($clubs, array("App\Http\Controllers\InscricaoGerenciarController", "cmp_team_obj_alf"));
+
+        foreach ($inscritos as $inscricao) {
+            $texto .= $i++ . ";";
+            $texto .= $inscricao->enxadrista->name.";";
+            if($evento->calcula_cbx){
+                $texto .= $inscricao->enxadrista->cbx_id . ";";
+            }else{
+                $texto .= $inscricao->enxadrista->id . ";";
+            }
+            $texto .= "BRA;";
+
+            if ($evento->tipo_rating) {
+                if ($evento->usa_fide) {
+                    $texto .= $inscricao->enxadrista->showRating(0, $evento->tipo_modalidade, $evento->getConfig("fide_sequence")) . ";";
+                    $texto .= $inscricao->enxadrista->fide_id . ";";
+                }
+                $texto .= $inscricao->enxadrista->ratingParaEvento($evento->id,true) . ";";
+            } else {
+                if ($evento->usa_fide) {
+                    $texto .= $inscricao->enxadrista->showRating(0, $evento->tipo_modalidade, $evento->getConfig("fide_sequence")) . ";";
+                    $texto .= $inscricao->enxadrista->fide_id . ";";
+                } elseif ($evento->usa_lbx) {
+                    $texto .= $inscricao->enxadrista->showRating(2, $evento->tipo_modalidade) . ";";
+                    $texto .= $inscricao->enxadrista->lbx_id . ";";
+                }
+                if ($evento->usa_cbx) {
+                    $texto .= $inscricao->enxadrista->showRating(1, $evento->tipo_modalidade) . ";";
+                }
+            }
+
+            $texto .= $inscricao->enxadrista->getBornToSM() . ";";
+            $texto .= $inscricao->categoria->cat_code . ";";
+            $texto .= $inscricao->categoria->code . ";";
+            if ($inscricao->clube) {
+                $texto .= $inscricao->clube->id . ";";
+                $texto .= $inscricao->clube->name . ";";
+            } else {
+                $texto .= "0;;";
+            }
+
+            $texto .= $inscricao->enxadrista->firstname . ";";
+            $texto .= $inscricao->enxadrista->lastname . ";";
+            $texto .= $inscricao->enxadrista->id.";";
+            $texto .= "1;";
+            foreach($clubs as $key => $club){
+                if($inscricao->clube->id == $club->id){
+                    $texto .= $key+1;
+                }
+            }
+            $texto .= "\r\n";
+        }
+        return $texto;
+    }
 
     private function generateTxt_1($inscricoes, $evento, $torneio){
         $texto = "No;Nome Completo;ID;FED;FIDE;id FIDE;";
@@ -936,6 +1061,30 @@ class InscricaoGerenciarController extends Controller
         return $texto;
     }
 
+
+
+    private function generateTxt_team_1($clubes, $evento, $torneio){
+        $texto = "No;Nome;Nome curto;No Clube;Capitão;FED;Grupo;Info\r\n";
+
+        $i = 1;
+
+        $clubs = array();
+        foreach ($clubes as $club) {
+            $clubs[] = $club;
+        }
+        usort($clubs, array("App\Http\Controllers\InscricaoGerenciarController", "cmp_team_obj_alf"));
+
+        foreach ($clubs as $club) {
+            $texto .= $i++ . ";";
+            $texto .= $club->name.";";
+            $texto .= $club->name.";";
+            $texto .= $club->id.";";
+            $texto .= ";BRA;;";
+            $texto .= "\r\n";
+        }
+        return $texto;
+    }
+
     public static function cmp_obj($inscrito_a, $inscrito_b)
     {
         $evento = $inscrito_a->torneio->evento;
@@ -994,6 +1143,10 @@ class InscricaoGerenciarController extends Controller
         } else {
             return strnatcmp($inscrito_a->cidade->getName(), $inscrito_b->cidade->getName());
         }
+    }
+    public static function cmp_team_obj_alf($team_a, $team_b)
+    {
+        return strnatcmp(mb_strtoupper($team_a->name), mb_strtoupper($team_b->name));
     }
 
     public function report_list_subscriptions($id, $torneio_id)

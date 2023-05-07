@@ -414,4 +414,17 @@ class Torneio extends Model
             }
         }
     }
+
+
+    public function getClubsFromRegistrations(){
+        $list = [];
+
+        foreach($this->inscricoes->all() as $inscricao){
+            if($inscricao->clube){
+                $list[($inscricao->clube->id)] = $inscricao->clube;
+            }
+        }
+
+        return $list;
+    }
 }

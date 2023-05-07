@@ -380,6 +380,7 @@
 										<option value="3">Padrão XadrezSuíço (Nome no Sobrenome, e Sobrenome no Nome)</option>
 										<option value="4">Padrão XadrezSuíço Chess.com (Nome no Sobrenome, Sobrenome no Nome e no Nome também informa o Usuário do Chess.com)</option>
 										<option value="5">Padrão XadrezSuíço sem Cidade (Nome no Sobrenome, Sobrenome no Nome sem Cidade)</option>
+										<option value="6">Padrão XadrezSuíço sem Cidade (Nome no Sobrenome, Sobrenome no Nome sem Cidade) em Torneio por Equipe</option>
 									</select>
 								</div>
 								<div class="form-group">
@@ -1138,6 +1139,7 @@
                                                             @endif
                                                         @endif
 														<a class="btn btn-warning" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/inscricoes/sm/all")}}" role="button" target="_blank">Baixar Todas as Inscrições</a><br/>
+														@if($evento->exportacao_sm_modelo == 6) <a class="btn btn-warning" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/inscricoes/sm/teams")}}" role="button" target="_blank">Baixar Todas os Times</a><br/> @endif
                                                         <hr/>
 
 													@endif
