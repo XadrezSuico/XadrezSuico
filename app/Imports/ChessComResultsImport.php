@@ -121,7 +121,7 @@ class ChessComResultsImport  implements WithEvents, OnEachRow, WithHeadingRow
             foreach($this->tournament->getCriterios() as $criterio_desempate){
                 $criterio = new InscricaoCriterioDesempate;
                 $criterio->inscricao_id = $inscricao->id;
-                $criterio->criterio_desempate_id = $criterio_desempate->id;
+                $criterio->criterio_desempate_id = $criterio_desempate->criterio->id;
 
                 if(isset($criterio_desempate->code)){
                     $sheet_code = explode("chesscom-",$criterio_desempate->code)[1];
