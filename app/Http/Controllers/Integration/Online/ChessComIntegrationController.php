@@ -46,4 +46,17 @@ class ChessComIntegrationController extends Controller
         }
         return array("ok"=>0,"error"=>1,"message"=>"Torneio não encontrado.");
     }
+    public function getResults($slug){
+        if(env("APP_ENV","local") == "local"){
+            $client = new Client(['http_errors' => false, "verify"=>false]);
+        }else{
+            $client = new Client(['http_errors' => false]);
+        }
+        $response = $client->get("https://www.chess.com/tournament/live/".$slug."/download-results");
+        $html = (string) $response->getBody();
+        if($response->getStatusCode() == 200){
+            return array("ok"=>1,"error"=>0,"data"=>$html);
+        }
+        return array("ok"=>0,"error"=>1,"message"=>"Torneio não encontrado.");
+    }
 }

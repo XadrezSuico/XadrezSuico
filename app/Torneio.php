@@ -8,6 +8,10 @@ use Illuminate\Support\Str;
 
 use App\Enum\ConfigType;
 
+use App\Software;
+use App\TipoTorneio;
+use App\CriterioDesempate;
+
 use DateTime;
 
 class Torneio extends Model
@@ -143,35 +147,35 @@ class Torneio extends Model
     }
     public function getCriteriosLista()
     {
-        if ($this->evento->criterios()->where([["tipo_torneio_id", "=", $this->tipo_torneio_id]])->count() > 0) {
-            return $this->evento->criterios()->where([["tipo_torneio_id", "=", $this->tipo_torneio_id]])->get();
+        if ($this->evento->criterios()->where([["tipo_torneio_id", "=", $this->tipo_torneio_id],["softwares_id","=",$this->software->id]])->count() > 0) {
+            return $this->evento->criterios()->where([["tipo_torneio_id", "=", $this->tipo_torneio_id],["softwares_id","=",$this->software->id]])->get();
         }
 
-        return $this->evento->grupo_evento->criterios()->where([["tipo_torneio_id", "=", $this->tipo_torneio_id]])->where([["tipo_torneio_id", "=", $this->tipo_torneio_id]])->whereHas("criterio", function ($q1) {$q1->where([["is_manual", "=", false]]);})->orderBy("prioridade", "ASC")->get();
+        return $this->evento->grupo_evento->criterios()->where([["tipo_torneio_id", "=", $this->tipo_torneio_id],["softwares_id","=",$this->software->id]])->where([["tipo_torneio_id", "=", $this->tipo_torneio_id]])->whereHas("criterio", function ($q1) {$q1->where([["is_manual", "=", false]]);})->orderBy("prioridade", "ASC")->get();
     }
     public function getCriterios()
     {
-        if ($this->evento->criterios()->where([["tipo_torneio_id", "=", $this->tipo_torneio_id]])->count() > 0) {
-            return $this->evento->criterios()->where([["tipo_torneio_id", "=", $this->tipo_torneio_id]])->orderBy("prioridade", "ASC")->get();
+        if ($this->evento->criterios()->where([["tipo_torneio_id", "=", $this->tipo_torneio_id],["softwares_id","=",$this->software->id]])->count() > 0) {
+            return $this->evento->criterios()->where([["tipo_torneio_id", "=", $this->tipo_torneio_id],["softwares_id","=",$this->software->id]])->orderBy("prioridade", "ASC")->get();
         }
 
-        return $this->evento->grupo_evento->criterios()->where([["tipo_torneio_id", "=", $this->tipo_torneio_id]])->where([["tipo_torneio_id", "=", $this->tipo_torneio_id]])->whereHas("criterio", function ($q1) {$q1->where([["is_manual", "=", false]]);})->orderBy("prioridade", "ASC")->get();
+        return $this->evento->grupo_evento->criterios()->where([["tipo_torneio_id", "=", $this->tipo_torneio_id],["softwares_id","=",$this->software->id]])->where([["tipo_torneio_id", "=", $this->tipo_torneio_id]])->whereHas("criterio", function ($q1) {$q1->where([["is_manual", "=", false]]);})->orderBy("prioridade", "ASC")->get();
     }
     public function getCriteriosManuais()
     {
-        if ($this->evento->criterios()->where([["tipo_torneio_id", "=", $this->tipo_torneio_id]])->count() > 0) {
-            return $this->evento->criterios()->where([["tipo_torneio_id", "=", $this->tipo_torneio_id]])->orderBy("prioridade", "ASC")->whereHas("criterio", function ($q1) {$q1->where([["is_manual", "=", true]]);})->get();
+        if ($this->evento->criterios()->where([["tipo_torneio_id", "=", $this->tipo_torneio_id],["softwares_id","=",$this->software->id]])->count() > 0) {
+            return $this->evento->criterios()->where([["tipo_torneio_id", "=", $this->tipo_torneio_id],["softwares_id","=",$this->software->id]])->orderBy("prioridade", "ASC")->whereHas("criterio", function ($q1) {$q1->where([["is_manual", "=", true]]);})->get();
         }
 
-        return $this->evento->grupo_evento->criterios()->where([["tipo_torneio_id", "=", $this->tipo_torneio_id]])->where([["tipo_torneio_id", "=", $this->tipo_torneio_id]])->whereHas("criterio", function ($q1) {$q1->where([["is_manual", "=", true]]);})->orderBy("prioridade", "ASC")->get();
+        return $this->evento->grupo_evento->criterios()->where([["tipo_torneio_id", "=", $this->tipo_torneio_id],["softwares_id","=",$this->software->id]])->where([["tipo_torneio_id", "=", $this->tipo_torneio_id]])->whereHas("criterio", function ($q1) {$q1->where([["is_manual", "=", true]]);})->orderBy("prioridade", "ASC")->get();
     }
     public function getCriteriosTotal()
     {
-        if ($this->evento->criterios()->where([["tipo_torneio_id", "=", $this->tipo_torneio_id]])->count() > 0) {
-            return $this->evento->criterios()->where([["tipo_torneio_id", "=", $this->tipo_torneio_id]])->orderBy("prioridade", "ASC")->get();
+        if ($this->evento->criterios()->where([["tipo_torneio_id", "=", $this->tipo_torneio_id],["softwares_id","=",$this->software->id]])->count() > 0) {
+            return $this->evento->criterios()->where([["tipo_torneio_id", "=", $this->tipo_torneio_id],["softwares_id","=",$this->software->id]])->orderBy("prioridade", "ASC")->get();
         }
 
-        return $this->evento->grupo_evento->criterios()->where([["tipo_torneio_id", "=", $this->tipo_torneio_id]])->orderBy("prioridade", "ASC")->get();
+        return $this->evento->grupo_evento->criterios()->where([["tipo_torneio_id", "=", $this->tipo_torneio_id],["softwares_id","=",$this->software->id]])->orderBy("prioridade", "ASC")->get();
     }
     public function getLastLichessPlayersUpdate(){
         $datetime = DateTime::createFromFormat('Y-m-d H:i:s', $this->lichess_last_update);
@@ -426,5 +430,45 @@ class Torneio extends Model
         }
 
         return $list;
+    }
+
+
+    public function checkIfIsChessCom(){
+        if(Software::hasChessCom()){
+            if($this->software->isChessCom()){
+                $prioridade = 1;
+                if($this->tipo_torneio->isSwiss()){
+                    $tiebreaks = [
+                        "chesscom-buchholz-cut-1",
+                        "chesscom-buchholz",
+                        "chesscom-sonneborn-berger",
+                        "chesscom-direct-encounter",
+                        "chesscom-the-greater-number-of-wins-including-forfeits",
+                        "chesscom-number-of-wins-with-black-pieces",
+                        "chesscom-aroc-1",
+                    ];
+
+                    foreach($this->evento->criterios->all() as $criterio){
+                        if($criterio->tipo_torneio->isSwiss() && $criterio->software->isChessCom()){
+                            $criterio->delete();
+                        }
+                    }
+
+                    if(CriterioDesempate::whereIn("code",$tiebreaks)->count() >= 7){
+                        foreach($tiebreaks as $tiebreak){
+                            $criterio_desempate = CriterioDesempate::where([["is_chess_com","=",true],["code","=",trim($tiebreak)]])->first();
+
+                            $criterio_desempate_evento = new CriterioDesempateEvento;
+                            $criterio_desempate_evento->evento_id = $this->evento->id;
+                            $criterio_desempate_evento->tipo_torneio_id = $this->tipo_torneio->id;
+                            $criterio_desempate_evento->softwares_id = $this->software->id;
+                            $criterio_desempate_evento->prioridade = $prioridade++;
+                            $criterio_desempate_evento->criterio_desempate_id = $criterio_desempate->id;
+                            $criterio_desempate_evento->save();
+                        }
+                    }
+                }
+            }
+        }
     }
 }

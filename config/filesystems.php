@@ -69,6 +69,11 @@ return [
             'url' => env('AWS_URL'),
         ],
 
+
+        'imports_chess_com' => [
+            'driver' => 'local',
+            'root' => storage_path('imports/chesscom'),
+        ],
     ],
 
 ];

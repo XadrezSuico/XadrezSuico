@@ -29,6 +29,11 @@ class TipoTorneio extends Model
         return $this->hasMany("App\TorneioTemplate", "tipo_torneio_id", "id");
     }
 
+    public function isSwiss(){
+        if($this->name == "Suíço") return true;
+        return false;
+    }
+
     public function usaPontuacao(){
         if($this->id == 3) return false;
         return true;
