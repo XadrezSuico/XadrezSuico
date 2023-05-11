@@ -759,7 +759,7 @@ class TorneioController extends Controller
 
                     $csv = $retorno["data"];
 
-                    $filename = "chesscom_results_csv_".$torneio->id."_".date("u").".csv";
+                    $filename = "chesscom_results_csv_".$torneio->id."_".time().".csv";
 
                     Storage::disk("imports_chess_com")->put($filename,$csv);
 
