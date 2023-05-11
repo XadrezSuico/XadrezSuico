@@ -9,6 +9,7 @@ use App\CategoriaTorneio;
 use App\Cidade;
 use App\CriterioDesempate;
 use App\CriterioDesempateGrupoEvento;
+use App\CriterioDesempateEvento;
 use App\CriterioDesempateGrupoEventoGeral;
 use App\Evento;
 use App\GrupoEvento;
@@ -462,6 +463,19 @@ class GrupoEventoController extends Controller
             }
 
             TorneioController::generateRodadasDefault($torneio->id);
+        }
+
+
+
+        // IMPORTAÇÃO DOS CRITÉRIOS DE DESEMPATE
+        foreach ($grupo_evento->criterios->all() as $criterio_desempate_grupo_evento) {
+            $criterio_desempate_evento = new CriterioDesempateEvento;
+            $criterio_desempate_evento->evento_id = $evento->id;
+            $criterio_desempate_evento->softwares_id = $criterio_desempate_grupo_evento->softwares_id;
+            $criterio_desempate_evento->tipo_torneio_id = $criterio_desempate_grupo_evento->tipo_torneio_id;
+            $criterio_desempate_evento->prioridade = $criterio_desempate_grupo_evento->prioridade;
+            $criterio_desempate_evento->criterio_desempate_id = $criterio_desempate_grupo_evento->criterio_desempate_id;
+            $criterio_desempate_evento->save();
         }
 
         return redirect("/grupoevento/dashboard/" . $grupo_evento->id . "?tab=evento");
