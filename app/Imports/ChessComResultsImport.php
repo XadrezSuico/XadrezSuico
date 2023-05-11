@@ -132,7 +132,7 @@ class ChessComResultsImport  implements WithEvents, OnEachRow, WithHeadingRow
                         $criterio->valor = 0;
                     }
                 }else{
-                    $criterio->valor = 0;
+                    $criterio->valor = -1;
                 }
                 $criterio->save();
             }
