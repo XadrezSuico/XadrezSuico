@@ -127,7 +127,7 @@ class ChessComResultsImport  implements WithEvents, OnEachRow, WithHeadingRow
                     $sheet_code = explode("chesscom-",$criterio_desempate->criterio->code)[1];
 
                     if(isset($row[$sheet_code])){
-                        $criterio_desempate->valor = $row[$sheet_code];
+                        $criterio->valor = $row[$sheet_code];
                     }else{
                         $criterio->valor = 0;
                     }
