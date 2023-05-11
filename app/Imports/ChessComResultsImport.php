@@ -110,7 +110,7 @@ class ChessComResultsImport  implements WithEvents, OnEachRow, WithHeadingRow
                 ]);
             })->first();
 
-            $inscricao->pontos = $row["points"];
+            $inscricao->pontos = $row["score"];
             $inscricao->confirmado = true;
             $inscricao->save();
 
