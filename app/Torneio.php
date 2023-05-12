@@ -439,13 +439,13 @@ class Torneio extends Model
                 $prioridade = 1;
                 if($this->tipo_torneio->isSwiss()){
                     $tiebreaks = [
-                        "chesscom-buchholz-cut-1",
+                        "chesscom-buchholz_cut_1",
                         "chesscom-buchholz",
-                        "chesscom-sonneborn-berger",
-                        "chesscom-direct-encounter",
-                        "chesscom-the-greater-number-of-wins-including-forfeits",
-                        "chesscom-number-of-wins-with-black-pieces",
-                        "chesscom-aroc-1",
+                        "chesscom-sonneborn_berger",
+                        "chesscom-direct_encounter",
+                        "chesscom-the_greater_number_of_wins_including_forfeits",
+                        "chesscom-number_of_wins_with_black_pieces",
+                        "chesscom-aroc_1",
                     ];
 
                     foreach($this->evento->criterios->all() as $criterio){
