@@ -431,6 +431,12 @@ class Inscricao extends Model
                             $this->setConfig("chesscom_username",ConfigType::String,$this->enxadrista->chess_com_username);
                         }
                     }
+                }else{
+                    if($this->enxadrista){
+                        if($this->enxadrista->chess_com_username){
+                            $this->setConfig("chesscom_username",ConfigType::String,$this->enxadrista->chess_com_username);
+                        }
+                    }
                 }
             }
         }
