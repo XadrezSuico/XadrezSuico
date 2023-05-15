@@ -315,7 +315,7 @@ class RegisterController extends Controller
                 }
                 if($evento->is_chess_com){
                     $item["chess_com_info"] = [
-                        "username" => ($inscricao->hasConfig("chesscom_username")) ? $inscricao->getConfig("chesscom_username",true) : null,
+                        "username" => ($inscricao->hasConfig("chesscom_username")) ? $inscricao->getConfig("chesscom_username",true) : $insccricao->chess_com_username,
                     ];
                 }
                 if($evento->tipo_rating){
