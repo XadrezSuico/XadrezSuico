@@ -52,6 +52,8 @@ class SportAppIngaDigitalImport implements OnEachRow, WithHeadingRow
         $email = trim($row["email"]);
         $phone = trim($row["telefone"]);
 
+        $city_name = (isset($row["municipio_de_origem"])) ? $row["municipio_de_origem"] : null;
+
         $datetime = DateTime::createFromFormat('d/m/Y', $bornday);
 
         if ($datetime) {
@@ -61,15 +63,40 @@ class SportAppIngaDigitalImport implements OnEachRow, WithHeadingRow
             Log::debug("datetime error - ".$bornday);
         }
 
-        if(!$this->hasClub($club_name)){
-            $this->registerClub($club_name);
+        $city = null;
+        if($city_name){
+            $count_city = 0;
+
+            if(env("ESTADO_DEFAULT",false)){
+                $count_city = Cidade::where([["name","=",$city_name],["estados_id","=",env("ESTADO_DEFAULT")]])->count();
+            }else{
+                $count_city = Cidade::where([["name","=",$city_name]])->count();
+            }
+
+            if($count_city > 0){
+
+
+                if(env("ESTADO_DEFAULT",false)){
+                    $city = Cidade::where([["name","=",$city_name],["estados_id","=",env("ESTADO_DEFAULT")]])->first();
+                }else{
+                    $city = Cidade::where([["name","=",$city_name]])->first();
+                }
+            }
         }
-        $club = $this->getClub($club_name);
+
+        if(!$this->hasClub($club_name, $city)){
+            $this->registerClub($club_name, $city);
+        }
+        $club = $this->getClub($club_name, $city);
 
         $is_cpf = $this->isCPF($cpf_or_ext);
 
         if(!$this->hasEnxadrista($name,$bornday,($is_cpf) ? $cpf_or_ext : null,(!$is_cpf) ? $cpf_or_ext : null,$rg)){
-            $this->registerEnxadrista($name,$bornday,($is_cpf) ? $cpf_or_ext : null,(!$is_cpf) ? $cpf_or_ext : null,$rg, $email, $phone, $club->id);
+            if($city){
+                $this->registerEnxadrista($name,$bornday,($is_cpf) ? $cpf_or_ext : null,(!$is_cpf) ? $cpf_or_ext : null,$rg, $email, $phone, $city->id, $club->id);
+            }else{
+                $this->registerEnxadrista($name,$bornday,($is_cpf) ? $cpf_or_ext : null,(!$is_cpf) ? $cpf_or_ext : null,$rg, $email, $phone, null, $club->id);
+            }
         }
 
         if($this->hasEnxadrista($name,$bornday,($is_cpf) ? $cpf_or_ext : null,(!$is_cpf) ? $cpf_or_ext : null,$rg)){
@@ -94,6 +121,10 @@ class SportAppIngaDigitalImport implements OnEachRow, WithHeadingRow
                             $inscricao->cidade_id = $this->event->cidade->id;
                             $inscricao->clube_id = $club->id;
                             $inscricao->torneio_id = $tournament->id;
+
+                            if($city){
+                                $inscricao->cidade_id = $city->id;
+                            }
 
                             $inscricao->regulamento_aceito = true;
                             $inscricao->xadrezsuico_aceito = false;
@@ -388,7 +419,7 @@ class SportAppIngaDigitalImport implements OnEachRow, WithHeadingRow
         return null;
     }
 
-    public function registerEnxadrista($name,$bornday,$cpf=null,$ext_document=null,$rg=null,$email = null,$phone = null,$clubs_id, $sex_name){
+    public function registerEnxadrista($name,$bornday,$cpf=null,$ext_document=null,$rg=null,$email = null,$phone = null, $city_id = null, $clubs_id){
         Log::debug("registerEnxadrista");
         if(!$this->hasEnxadrista($name,$bornday,$cpf,$ext_document,$rg)){
             $enxadrista = new Enxadrista;
@@ -398,14 +429,15 @@ class SportAppIngaDigitalImport implements OnEachRow, WithHeadingRow
             $enxadrista->name = $this->parseName($name);
             $enxadrista->born = $this->datetime->format("Y-m-d");
 
-            $enxadrista->sexos_id = Sexo::where([["sex_from_import","=",$sex_name]])->first()->id;
-
             if($email){
                 $enxadrista->email = $email;
             }
             if($phone){
                 $enxadrista->pais_celular_id = 33;
                 $enxadrista->celular = $phone;
+            }
+            if($city_id){
+                $enxadrista->cidade_id = $city_id;
             }
             $enxadrista->save();
             if($cpf){
@@ -434,23 +466,34 @@ class SportAppIngaDigitalImport implements OnEachRow, WithHeadingRow
         return false;
     }
 
-    public function hasClub($name){
+    public function hasClub($name, $city = null){
+        if($city){
+            return Clube::where([["name","=",$name],["cidade_id","=",$city->id]])->count() > 0;
+        }
         return Clube::where([["name","=",$name]])->count() > 0;
     }
 
-    public function getClub($name){
-        if($this->hasClub($name)){
+    public function getClub($name, $city = null){
+        if($this->hasClub($name, $city)){
+            if($city){
+                return Clube::where([["name","=",$name],["cidade_id","=",$city->id]])->first();
+            }
             return Clube::where([["name","=",$name]])->first();
         }
         return null;
     }
 
-    public function registerClub($name){
+    public function registerClub($name, $city = null){
         if(!$this->hasClub($name)){
             $club = new Clube;
             $club->name = $name;
             $club->is_imported = true;
             $club->imported_from = "SportApp - *.xlsx";
+
+            if($city){
+                $club->cidade_id = $city->id;
+            }
+
             $club->save();
         }
         return false;

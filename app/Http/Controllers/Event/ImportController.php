@@ -52,6 +52,9 @@ class ImportController extends Controller
             if ($request->file('arquivo')->isValid()) {
                 foreach($evento->torneios->all() as $torneio){
                     foreach($torneio->inscricoes->all() as $inscricao){
+                        foreach($inscricao->configs->all() as $config){
+                            $config->delete();
+                        }
                         $inscricao->delete();
                     }
                 }
