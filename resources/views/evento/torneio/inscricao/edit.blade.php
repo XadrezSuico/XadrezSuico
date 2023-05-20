@@ -144,7 +144,7 @@
                     <h3>Configuração do Enxadrista no Time</h3>
                         <div class="form-group">
                             <label for="config__team_table">Tabuleiro *</label>
-                            <input type="text" name="config__team_table" id="config__team_table" class="form-control" value="{{ ($inscricao->hasConfig("team_order")) ? $inscricao->getConfig("team_table",true) : '' }}" @if(!$permitido_edicao) disabled="disabled" @endif />
+                            <input type="text" name="config__team_table" id="config__team_table" class="form-control" value="{{ ($inscricao->hasConfig("team_order")) ? $inscricao->getConfig("team_order",true) : '' }}" @if(!$permitido_edicao) disabled="disabled" @endif />
                         </div>
 
                 @endif
