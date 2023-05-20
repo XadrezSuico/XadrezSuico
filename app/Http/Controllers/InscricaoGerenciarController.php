@@ -598,7 +598,7 @@ class InscricaoGerenciarController extends Controller
             }else{
                 $texto .= $inscricao->enxadrista->id . ";";
             }
-            $texto .= $inscricao->enxadrista->pais_nascimento->codigo_iso.";";
+            $texto .= (($inscricao->enxadrista->pais_nascimento) ? $inscricao->enxadrista->pais_nascimento->codigo_iso : "").";";
 
             if ($evento->tipo_rating) {
                 if ($evento->usa_fide) {
