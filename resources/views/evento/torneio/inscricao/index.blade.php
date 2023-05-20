@@ -29,6 +29,10 @@
                 <thead>
                     <tr>
                         <th>#</th>
+                        @if($evento->hasConfig("is_team_tournament"))
+                            <th>Clube/Time</th>
+                            <th>Tabuleiro</th>
+                        @endif
                         <th>Nome</th>
                         @if($evento->tipo_rating) <th>Rating</th> @endif
                         @if($evento->is_lichess || $evento->is_lichess_integration) <th>Usuário Lichess.org</th> @endif
@@ -51,7 +55,9 @@
                         @endif
                         <th>Categoria</th>
                         <th>Cidade</th>
-                        <th>Clube</th>
+                        @if(!$evento->hasConfig("is_team_tournament"))
+                            <th>Clube</th>
+                        @endif
                         <th>Confirmado?</th>
                         @if($torneio->software->isChessCom())
                             <th>Foi reconhecida inscrição no Torneio?</th>
@@ -67,6 +73,10 @@
                     @foreach($inscricoes as $inscricao)
                         <tr>
                             <td>{{$inscricao->id}}</td>
+                            @if($evento->hasConfig("is_team_tournament"))
+                                <td>@if($inscricao->clube) {{$inscricao->clube->name}} @else Sem Clube @endif</td>
+                                <td>{{ ($inscricao->hasConfig("team_order")) ? $inscricao->getConfig("team_table",true) : '' }}</td>
+                            @endif
                             <td>#{{$inscricao->enxadrista->id}} - <a href="{{url("/enxadrista/edit/".$inscricao->enxadrista->id)}}" target="_blank">{{$inscricao->enxadrista->name}}</a></td>
                             @if($evento->tipo_rating) <td>{{$inscricao->enxadrista->ratingParaEvento($evento->id)}}</td> @endif
                             @if($evento->is_lichess || $evento->is_lichess_integration) <td>{{$inscricao->enxadrista->lichess_username}}</td> @endif
@@ -97,7 +107,9 @@
                             @endif
                             <td>{{$inscricao->categoria->name}}</td>
                             <td>{{$inscricao->cidade->name}}</td>
-                            <td>@if($inscricao->clube) {{$inscricao->clube->name}} @else Sem Clube @endif</td>
+                            @if(!$evento->hasConfig("is_team_tournament"))
+                                <td>@if($inscricao->clube) {{$inscricao->clube->name}} @else Sem Clube @endif</td>
+                            @endif
                             <td>@if($inscricao->confirmado) Sim @else Não @endif</td>
                             @if($torneio->software->isChessCom())
                                 <td>
