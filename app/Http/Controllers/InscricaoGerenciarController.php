@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Support\MessageBag;
 
+use App\Enum\ConfigType;
+
 use App\CampoPersonalizadoOpcaoInscricao;
 use App\Categoria;
 use App\Cidade;
