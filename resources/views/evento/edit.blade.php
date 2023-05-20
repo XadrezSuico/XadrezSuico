@@ -1139,6 +1139,7 @@
                                                             @endif
                                                         @endif
 														<a class="btn btn-warning" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/inscricoes/sm/all")}}" role="button" target="_blank">Baixar Todas as Inscrições</a><br/>
+														@if($evento->exportacao_sm_modelo == 6) <a class="btn btn-success" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/inscricoes/sm/teams/confirmed")}}" role="button" target="_blank">Baixar Todas os Times com Enxadristas Confirmados</a><br/> @endif
 														@if($evento->exportacao_sm_modelo == 6) <a class="btn btn-warning" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/inscricoes/sm/teams")}}" role="button" target="_blank">Baixar Todas os Times</a><br/> @endif
                                                         <hr/>
 
