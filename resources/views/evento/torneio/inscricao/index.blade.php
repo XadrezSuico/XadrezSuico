@@ -3,7 +3,7 @@
 @section('title', 'Evento #'.$evento->id." - Torneio #".$torneio->id." - Inscrições")
 
 @section('content_header')
-    <h1>Evento #{{$evento->id}} ({{$evento->name}}) - Torneio #{{$torneio->id}} - Inscrições</h1>
+    <h1>Evento #{{$evento->id}} ({{$evento->name}}) - Torneio #{{$torneio->id}} ({{$torneio->name}}) - Inscrições</h1>
 @stop
 
 @section('content')
