@@ -238,6 +238,7 @@ Route::group(["prefix"=>"evento"],function(){
 	        Route::get('/sm/paid', 'InscricaoGerenciarController@list_to_manager_paid')->name('evento.torneios.inscricoes.sm.paid');
 	        Route::get('/sm/all', 'InscricaoGerenciarController@list_to_manager_all')->name('evento.torneios.inscricoes.sm.all');
 	        Route::get('/sm/teams', 'InscricaoGerenciarController@list_to_manager_teams')->name('evento.torneios.inscricoes.sm.teams');
+	        Route::get('/sm/teams/confirmed', 'InscricaoGerenciarController@list_to_manager_teams_with_players_confirmed')->name('evento.torneios.inscricoes.sm.teams.with_players_confirmed');
             Route::get('/whatsapp/{inscricao_id}', 'InscricaoGerenciarController@sendWhatsappMessage')->name('evento.torneios.inscricao.whatspp');
 
         });

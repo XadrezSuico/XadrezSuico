@@ -436,6 +436,41 @@ class InscricaoGerenciarController extends Controller
 
         $torneio = Torneio::find($torneio_id);
 
+        $texto = $this->generateTxt_team_1($torneio->getClubsFromRegistrations(true), $evento, $torneio);
+
+        // file name that will be used in the download
+        $fileName = "Exp_xadrezsuico_ev_" . $id . "_tor_" . $torneio_id . "_teams___" . date("Ymd-His") . "___.TXT";
+
+        // use headers in order to generate the download
+        $headers = [
+            'Content-type' => 'text/plain',
+            'Content-Disposition' => sprintf('attachment; filename="%s"', $fileName),
+            'Content-Length' => strlen($texto),
+        ];
+
+        // make a response, with the content, a 200 response code and the headers
+        return response(utf8_decode($texto))->withHeaders([
+            'Content-Type' => 'text/plain; charset=utf-8',
+            'Cache-Control' => 'no-store, no-cache',
+            'Content-Disposition' => 'attachment; filename="' . $fileName . '"',
+        ]);
+    }
+
+
+    public function list_to_manager_teams_with_players_confirmed($id, $torneio_id)
+    {
+        $user = Auth::user();
+        $evento = Evento::find($id);
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionEventByPerfil($evento->id, [4]) &&
+            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
+        ) {
+            return redirect("/evento/dashboard/".$evento->id);
+        }
+
+        $torneio = Torneio::find($torneio_id);
+
         $texto = $this->generateTxt_team_1($torneio->getClubsFromRegistrations(), $evento, $torneio);
 
         // file name that will be used in the download

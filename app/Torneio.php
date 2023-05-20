@@ -420,10 +420,17 @@ class Torneio extends Model
     }
 
 
-    public function getClubsFromRegistrations(){
+    public function getClubsFromRegistrations($is_confirmed = false){
         $list = [];
+        $registrations = array();
 
-        foreach($this->inscricoes->all() as $inscricao){
+        if($is_confirmed){
+            $registrations = $this->inscricoes()->where([["confirmado","=",true]])->get();
+        }else{
+            $registrations = $this->inscricoes->all();
+        }
+
+        foreach($registrations as $inscricao){
             if($inscricao->clube){
                 $list[($inscricao->clube->id)] = $inscricao->clube;
             }
