@@ -294,7 +294,7 @@
 					<select id="confirmacao_clube_id" class="clube_id this_is_select2 form-control">
 						<option value="">--- Você pode escolher um clube/instituição/escola ---</option>
 						@foreach(\App\Clube::all() as $clube)
-							<option value="{{$clube->id}}">{{$clube->cidade->estado->pais->name}}-{{$clube->cidade->estado->name}}/{{$clube->cidade->name}} - {{$clube->name}}</option>
+							<option value="{{$clube->id}}"> {{$clube->getFullName()}}</option>
 						@endforeach
 					</select>
                     <button id="clubeNaoCadastradoInscricao" onclick="chamaCadastroClube(2)" class="btn btn-success">O meu clube/instituição/escola não está cadastrado</button>
