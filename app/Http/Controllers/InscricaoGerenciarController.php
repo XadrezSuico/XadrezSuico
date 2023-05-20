@@ -155,6 +155,18 @@ class InscricaoGerenciarController extends Controller
                 }
             }
 
+            if($inscricao->confirmado && $evento->hasConfig("is_team_tournament")){
+                if($request->has("config__team_table")){
+                    if($request->input("config__team_table") != "" && $request->input("config__team_table") > 0){
+                        $inscricao->setConfig("team_order",ConfigType::Integer,$request->input("config__team_table"));
+                    }else{
+                        $inscricao->removeConfig("team_order");
+                    }
+                }else{
+                    $inscricao->removeConfig("team_order");
+                }
+            }
+
             if ($evento->e_resultados_manuais && $inscricao->confirmado) {
                 if ($request->has("posicao")) {
                     $inscricao->posicao = $request->input("posicao");
