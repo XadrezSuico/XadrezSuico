@@ -534,7 +534,7 @@
 						<select id="clube_id" name="clube_id" class="form-control this_is_select2 cadastro_enxadrista_select">
 							<option value="">--- Você pode selecionar um clube/instituição/escola ---</option>
 							@foreach(\App\Clube::all() as $clube)
-								<option value="{{$clube->id}}">@if($clube->cidade){{$clube->cidade->estado->pais->name}}-{{$clube->cidade->estado->name}}/{{$clube->cidade->name}} - @endif{{$clube->name}}</option>
+								<option value="{{$clube->id}}">{{$clube->getFullName()}}</option>
 							@endforeach
 						</select>
                     	<button id="clubeNaoCadastradoEnxadrista" onclick="chamaCadastroClube(0)" class="btn btn-success">O meu clube/instituição/escola não está cadastrado</button>
@@ -591,7 +591,7 @@
 					<select id="inscricao_clube_id" class="clube_id this_is_select2 form-control">
 						<option value="">--- Você pode escolher um clube/instituição/escola ---</option>
 						@foreach(\App\Clube::all() as $clube)
-							<option value="{{$clube->id}}">@if($clube->cidade){{$clube->cidade->estado->pais->name}}-{{$clube->cidade->estado->name}}/{{$clube->cidade->name}} - @endif{{$clube->name}}</option>
+							<option value="{{$clube->id}}">{{$clube->getFullName()}}</option>
 						@endforeach
 					</select>
                     <button id="clubeNaoCadastradoInscricao" onclick="chamaCadastroClube(1)" class="btn btn-success">O meu clube/instituição/escola não está cadastrado</button>
@@ -674,7 +674,7 @@
 					<select id="confirmacao_clube_id" class="clube_id this_is_select2 form-control">
 						<option value="">--- Você pode escolher um clube/instituição/escola ---</option>
 						@foreach(\App\Clube::all() as $clube)
-							<option value="{{$clube->id}}">@if($clube->cidade){{$clube->cidade->estado->pais->name}}-{{$clube->cidade->estado->name}}/{{$clube->cidade->name}} - @endif{{$clube->name}}</option>
+							<option value="{{$clube->id}}">{{$clube->getFullName()}}</option>
 						@endforeach
 					</select>
                     <button id="clubeNaoCadastradoInscricao" onclick="chamaCadastroClube(2)" class="btn btn-success">O meu clube/instituição/escola não está cadastrado</button>
