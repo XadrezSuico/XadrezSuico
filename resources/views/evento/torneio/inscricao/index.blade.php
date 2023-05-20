@@ -75,7 +75,7 @@
                             <td>{{$inscricao->id}}</td>
                             @if($evento->hasConfig("is_team_tournament"))
                                 <td>@if($inscricao->clube) {{$inscricao->clube->name}} @else Sem Clube @endif</td>
-                                <td>{{ ($inscricao->hasConfig("team_order")) ? $inscricao->getConfig("team_table",true) : '' }}</td>
+                                <td>{{ ($inscricao->hasConfig("team_order")) ? $inscricao->getConfig("team_order",true) : '' }}</td>
                             @endif
                             <td>#{{$inscricao->enxadrista->id}} - <a href="{{url("/enxadrista/edit/".$inscricao->enxadrista->id)}}" target="_blank">{{$inscricao->enxadrista->name}}</a></td>
                             @if($evento->tipo_rating) <td>{{$inscricao->enxadrista->ratingParaEvento($evento->id)}}</td> @endif
