@@ -450,10 +450,10 @@ class InscricaoGerenciarController extends Controller
 
         $torneio = Torneio::find($torneio_id);
 
-        $texto = $this->generateTxt_team_1($torneio->getClubsFromRegistrations(true), $evento, $torneio);
+        $texto = $this->generateTxt_team_1($torneio->getClubsFromRegistrations(), $evento, $torneio);
 
         // file name that will be used in the download
-        $fileName = "Exp_xadrezsuico_ev_" . $id . "_tor_" . $torneio_id . "_teams__with_players_confirmed__" . date("Ymd-His") . "___.TXT";
+        $fileName = "Exp_xadrezsuico_ev_" . $id . "_tor_" . $torneio_id . "_teams__" . date("Ymd-His") . "___.TXT";
 
         // use headers in order to generate the download
         $headers = [
@@ -485,10 +485,10 @@ class InscricaoGerenciarController extends Controller
 
         $torneio = Torneio::find($torneio_id);
 
-        $texto = $this->generateTxt_team_1($torneio->getClubsFromRegistrations(), $evento, $torneio);
+        $texto = $this->generateTxt_team_1($torneio->getClubsFromRegistrations(true), $evento, $torneio);
 
         // file name that will be used in the download
-        $fileName = "Exp_xadrezsuico_ev_" . $id . "_tor_" . $torneio_id . "_teams___" . date("Ymd-His") . "___.TXT";
+        $fileName = "Exp_xadrezsuico_ev_" . $id . "_tor_" . $torneio_id . "_teams__with_players_confirmed___" . date("Ymd-His") . "___.TXT";
 
         // use headers in order to generate the download
         $headers = [
