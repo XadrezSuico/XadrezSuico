@@ -867,7 +867,8 @@ class InscricaoGerenciarController extends Controller
         usort($inscritos, array("App\Http\Controllers\InscricaoGerenciarController", "cmp_obj"));
 
         $clubs = [];
-        foreach($torneio->getClubsFromRegistrations() as $club){
+
+        foreach($torneio->getClubsFromRegistrations(true) as $club){
             $clubs[] = $club;
         }
         usort($clubs, array("App\Http\Controllers\InscricaoGerenciarController", "cmp_team_obj_alf"));
