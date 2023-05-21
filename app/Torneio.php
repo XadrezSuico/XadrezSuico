@@ -420,11 +420,11 @@ class Torneio extends Model
     }
 
 
-    public function getClubsFromRegistrations($is_confirmed = false){
+    public function getClubsFromRegistrations($get_only_confirmed = false){
         $list = [];
         $registrations = array();
 
-        if($is_confirmed){
+        if($get_only_confirmed){
             $registrations = $this->inscricoes()->where([["confirmado","=",true]])->get();
         }else{
             $registrations = $this->inscricoes->all();
