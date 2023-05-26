@@ -30,7 +30,7 @@
                 <h3 style="margin: 0; padding: 0;"><strong>Nome:</strong> {{$enxadrista->getNomePublico()}}<br/></h3>
                 <strong>Data de Nascimento:</strong> {{$enxadrista->getNascimentoPublico()}}<br/>
                 <strong>Cidade:</strong> {{$enxadrista->cidade->name}}<br/>
-                @if($enxadrista->clube) <strong>Clube:</strong> {{$enxadrista->clube->name}}<br/> @endif
+                @if($enxadrista->clube) <strong>Clube:</strong> {{$enxadrista->clube->getName()}}<br/> @endif
 
                 <h4><strong>Rating Atual:</strong> {{$rating->valor}}</h4>
         </div>

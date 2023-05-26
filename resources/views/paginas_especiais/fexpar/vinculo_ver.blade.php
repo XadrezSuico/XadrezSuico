@@ -35,7 +35,7 @@
             <hr/>
             <h4>Vínculo:</h4>
             <h5><strong>Cidade:</strong> {{$vinculo_consulta->cidade->name}}</h5>
-            <h5><strong>Clube:</strong> {{$vinculo_consulta->clube->name}}</h5>
+            <h5><strong>Clube:</strong> {{$vinculo_consulta->clube->getName()}}</h5>
             <hr/>
             <h4>Dados:</h4>
             <h5><strong>Tipo de Vínculo:</strong> {{$vinculo_consulta->getVinculoType()}}</h5>

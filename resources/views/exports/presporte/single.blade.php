@@ -15,7 +15,7 @@
                 INSTITUIÇÃO:
             </td>
             <td colspan="8" style="border: 1px solid: #000 !important">
-                {{$clube->name}}
+                {{$clube->getName()}}
             </td>
         </tr>
         @foreach(

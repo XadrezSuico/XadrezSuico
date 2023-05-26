@@ -76,7 +76,7 @@
                                     <td>{{$inscricao->enxadrista->id}}</td>
                                     <td>{{$inscricao->enxadrista->getNomePrivado()}}</td>
                                     <td>{{$inscricao->getCidade()}}</td>
-                                    <td>@if($inscricao->clube) {{$inscricao->clube->name}} @else - @endif</td>
+                                    <td>@if($inscricao->clube) {{$inscricao->clube->getName()}} @else - @endif</td>
                                     <td>{{$inscricao->enxadrista->email}}</td>
                                     <td>{{$inscricao->enxadrista->celular}}</td>
                                     @foreach($evento->campos() as $campo)
@@ -133,7 +133,7 @@
                         }
                     @endphp
                     @foreach($inscricoes as $inscricao)
-                         @if($inscricao->desconsiderar_pontuacao_geral) <u><i>(WO)</i></u> @else @if($inscricao->posicao) {{$inscricao->posicao}} @else - @endif @endif - {{$inscricao->enxadrista->getNomePrivado()}} - {{$inscricao->getCidade()}} - @if($inscricao->clube) {{$inscricao->clube->name}} @else - @endif<br/>
+                         @if($inscricao->desconsiderar_pontuacao_geral) <u><i>(WO)</i></u> @else @if($inscricao->posicao) {{$inscricao->posicao}} @else - @endif @endif - {{$inscricao->enxadrista->getNomePrivado()}} - {{$inscricao->getCidade()}} - @if($inscricao->clube) {{$inscricao->clube->getName()}} @else - @endif<br/>
                     @endforeach
                     <br/>
                 @endforeach

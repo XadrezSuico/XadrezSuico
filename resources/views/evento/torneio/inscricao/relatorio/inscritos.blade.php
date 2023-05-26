@@ -25,7 +25,7 @@
                 @if($evento->usa_cbx) <td>{{$inscricao->enxadrista->cbx_rating}}</td> @endif
                 <td>{{$inscricao->categoria->name}}</td>
                 <td>{{$inscricao->cidade->name}}</td>
-                <td>@if($inscricao->clube) {{$inscricao->clube->name}} @else Sem Clube @endif</td>
+                <td>@if($inscricao->clube) {{$inscricao->clube->getName()}} @else Sem Clube @endif</td>
             </tr>
         @endforeach
     </tbody>

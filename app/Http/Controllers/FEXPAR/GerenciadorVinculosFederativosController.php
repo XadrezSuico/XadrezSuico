@@ -315,7 +315,7 @@ class GerenciadorVinculosFederativosController extends Controller
             $p[5] = "#" . $enxadrista->cidade->id . " - " . $enxadrista->cidade->name;
 
             if ($enxadrista->clube) {
-                $p[6] = $enxadrista->clube->id." - ".$enxadrista->clube->name;
+                $p[6] = $enxadrista->clube->id." - ".$enxadrista->clube->getName();
             } else {
                 $p[6] = "Não possui clube";
             }
@@ -351,14 +351,14 @@ class GerenciadorVinculosFederativosController extends Controller
                 }
 
                 $p[5] .= "<hr/>Vínculo por: <strong>#".$vinculo->cidade->id." - ".$vinculo->cidade->name."</strong>";
-                $p[6] .= "<hr/>Vínculo por: <strong>#".$vinculo->clube->id." - ".$vinculo->clube->name."</strong>";
+                $p[6] .= "<hr/>Vínculo por: <strong>#".$vinculo->clube->id." - ".$vinculo->clube->getName()."</strong>";
 
                 $p[8] .= '<hr/><a href="' . url("/especiais/fexpar/vinculos/" . $vinculo->uuid) . '" title="Visualização Pública do Vínculo: ' . $enxadrista->id . ' ' . $enxadrista->name . '" class="btn btn-warning btn-sm" data-toggle="tooltip" data-original-title="Visualização Pública Vínculo" target="_blank"><i class="fa fa-eye"></i></a>';
             }elseif($enxadrista->vinculos()->where([["ano","=",date("Y")],["is_confirmed_system","=",false],["is_confirmed_manually","=",false]])->count() > 0){
                 $pre_vinculo = $enxadrista->vinculos()->where([["ano","=",date("Y")],["is_confirmed_system","=",false],["is_confirmed_manually","=",false]])->first();
                 $p[7] = "<strong>Pré-vinculado</strong>";
                 $p[5] .= "<hr/>Pré-Vínculo por: <strong>#".$pre_vinculo->cidade->id." - ".$pre_vinculo->cidade->name."</strong>";
-                $p[6] .= "<hr/>Pré-Vínculo por: <strong>#".$pre_vinculo->clube->id." - ".$pre_vinculo->clube->name."</strong>";
+                $p[6] .= "<hr/>Pré-Vínculo por: <strong>#".$pre_vinculo->clube->id." - ".$pre_vinculo->clube->getName()."</strong>";
             }else{
                 $apto_para_previnculacao = $enxadrista->estaAptoParaPreVinculacao();
                 if($apto_para_previnculacao > 0){

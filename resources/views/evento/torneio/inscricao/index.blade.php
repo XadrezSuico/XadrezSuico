@@ -74,7 +74,7 @@
                         <tr>
                             <td>{{$inscricao->id}}</td>
                             @if($evento->hasConfig("is_team_tournament"))
-                                <td>@if($inscricao->clube) {{$inscricao->clube->name}} @else Sem Clube @endif</td>
+                                <td>@if($inscricao->clube) {{$inscricao->clube->getName()}} @else Sem Clube @endif</td>
                                 <td>{{ ($inscricao->hasConfig("team_order")) ? $inscricao->getConfig("team_order",true) : '' }}</td>
                             @endif
                             <td>#{{$inscricao->enxadrista->id}} - <a href="{{url("/enxadrista/edit/".$inscricao->enxadrista->id)}}" target="_blank">{{$inscricao->enxadrista->name}}</a></td>
@@ -108,7 +108,7 @@
                             <td>{{$inscricao->categoria->name}}</td>
                             <td>{{$inscricao->cidade->name}}</td>
                             @if(!$evento->hasConfig("is_team_tournament"))
-                                <td>@if($inscricao->clube) {{$inscricao->clube->name}} @else Sem Clube @endif</td>
+                                <td>@if($inscricao->clube) {{$inscricao->clube->getName()}} @else Sem Clube @endif</td>
                             @endif
                             <td>@if($inscricao->confirmado) Sim @else Não @endif</td>
                             @if($torneio->software->isChessCom())

@@ -707,15 +707,15 @@ class Enxadrista extends Model
 
     public function getClubePublico(){
         if($this->last_cadastral_update > "2022-01-01 00:00:00"){
-            return "#".$this->clube->id." - ".$this->clube->name;
+            return "#".$this->clube->id." - ".$this->clube->getName();
         }else{
             if(env("ENTITY_DOMAIN",NULL) == "fexpar.com.br"){
                 if($this->clube->is_fexpar___clube_filiado){
-                    return "#".$this->clube->id." - ".$this->clube->name;
+                    return "#".$this->clube->id." - ".$this->clube->getName();
                 }
             }
             if($this->howOld() >= 18){
-                return "#".$this->clube->id." - ".$this->clube->name;
+                return "#".$this->clube->id." - ".$this->clube->getName();
             }
             return "-- Clube Não Liberado para Esta Lista --";
         }

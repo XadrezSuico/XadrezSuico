@@ -77,7 +77,7 @@
                             </td>
                             <td>{{$inscricao->enxadrista->getNascimentoPrivado()}}</td>
                             <td>{{$inscricao->getCidade()}}</td>
-                            <td>@if($inscricao->clube) {{$inscricao->clube->name}} @else - @endif</td>
+                            <td>@if($inscricao->clube) {{$inscricao->clube->getName()}} @else - @endif</td>
                             <td>@if($inscricao->confirmado) Sim @else Não @endif</td>
                             <td>@if($inscricao->isPresent()) Sim @else Não @endif</td>
                         </tr>

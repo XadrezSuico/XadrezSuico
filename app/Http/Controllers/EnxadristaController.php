@@ -620,7 +620,7 @@ class EnxadristaController extends Controller
             $p[5] = "#" . $enxadrista->cidade->id . " - " . $enxadrista->cidade->name;
 
             if ($enxadrista->clube) {
-                $p[6] = $enxadrista->clube->name;
+                $p[6] = $enxadrista->clube->getName();
             } else {
                 $p[6] = "Não possui clube";
             }

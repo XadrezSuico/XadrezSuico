@@ -108,7 +108,7 @@
                                     <td>{{$inscricao->enxadrista->id}}</td>
                                     <td>{{$inscricao->enxadrista->getNomePrivado()}}</td>
                                     <td>{{$inscricao->getCidade()}}</td>
-                                    <td>@if($inscricao->clube) {{$inscricao->clube->name}} @else - @endif</td>
+                                    <td>@if($inscricao->clube) {{$inscricao->clube->getName()}} @else - @endif</td>
                                 </tr>
                             @endforeach
                         @endforeach

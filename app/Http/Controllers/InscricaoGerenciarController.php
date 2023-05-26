@@ -597,7 +597,7 @@ class InscricaoGerenciarController extends Controller
             $texto .= $inscricao->categoria->code . ";";
             if ($inscricao->clube) {
                 $texto .= $inscricao->cidade->ibge_id . ";";
-                $texto .= $inscricao->cidade->name . " - " . $inscricao->clube->name . ";";
+                $texto .= $inscricao->cidade->name . " - " . $inscricao->clube->getName() . ";";
             } else {
                 $texto .= $inscricao->cidade->ibge_id . ";";
                 $texto .= $inscricao->cidade->name . ";";
@@ -673,7 +673,7 @@ class InscricaoGerenciarController extends Controller
             $texto .= $inscricao->categoria->code . ";";
             if ($inscricao->clube) {
                 $texto .= $inscricao->cidade->ibge_id . ";";
-                $texto .= $inscricao->cidade->name . " - " . $inscricao->clube->name . ";";
+                $texto .= $inscricao->cidade->name . " - " . $inscricao->clube->getName() . ";";
             } else {
                 $texto .= $inscricao->cidade->ibge_id . ";";
                 $texto .= $inscricao->cidade->name . ";";
@@ -749,7 +749,7 @@ class InscricaoGerenciarController extends Controller
             $texto .= $inscricao->categoria->code . ";";
             if ($inscricao->clube) {
                 $texto .= $inscricao->cidade->ibge_id . ";";
-                $texto .= $inscricao->cidade->name . " - " . $inscricao->clube->name . ";";
+                $texto .= $inscricao->cidade->name . " - " . $inscricao->clube->getName() . ";";
             } else {
                 $texto .= $inscricao->cidade->ibge_id . ";";
                 $texto .= $inscricao->cidade->name . ";";
@@ -825,7 +825,7 @@ class InscricaoGerenciarController extends Controller
             $texto .= $inscricao->categoria->code . ";";
             $texto .= "0;";
             if ($inscricao->clube) {
-                $texto .= $inscricao->clube->name . ";";
+                $texto .= $inscricao->clube->getName() . ";";
             } else {
                 $texto .= ";";
             }
@@ -1001,7 +1001,7 @@ class InscricaoGerenciarController extends Controller
             $texto .= $inscricao->categoria->code . ";";
             if ($inscricao->clube) {
                 $texto .= $inscricao->clube->id . ";";
-                $texto .= $inscricao->cidade->name . " - " . $inscricao->clube->name . ";";
+                $texto .= $inscricao->cidade->name . " - " . $inscricao->clube->getName() . ";";
             } else {
                 $texto .= ";";
                 $texto .= $inscricao->cidade->name . ";";
@@ -1098,7 +1098,7 @@ class InscricaoGerenciarController extends Controller
             $texto .= $inscricao->categoria->code . ";";
             if ($inscricao->clube) {
                 $texto .= $inscricao->cidade->ibge_id . ";";
-                $texto .= $inscricao->cidade->name . " - " . $inscricao->clube->name . ";";
+                $texto .= $inscricao->cidade->name . " - " . $inscricao->clube->getName() . ";";
             } else {
                 $texto .= $inscricao->cidade->ibge_id . ";";
                 $texto .= $inscricao->cidade->name . ";";
@@ -1492,7 +1492,7 @@ class InscricaoGerenciarController extends Controller
         if ($temEnxadrista_count > 0) {
             $temEnxadrista = Enxadrista::where([["name", "=", $nome_corrigido], ["born", "=", $enxadrista->born]])->first();
             if ($temEnxadrista->clube) {
-                return response()->json(["ok" => 0, "error" => 1, "message" => "Você já possui cadastro! Você será direcionado(a) à próxima etapa da inscrição!", "registred" => 1, "enxadrista_id" => $temEnxadrista->id, "enxadrista_name" => $temEnxadrista->name . " | " . $temEnxadrista->getBorn(), "cidade" => ["id" => $temEnxadrista->cidade->id, "name" => $temEnxadrista->cidade->name], "clube" => ["id" => $temEnxadrista->clube->id, "name" => $temEnxadrista->clube->name]]);
+                return response()->json(["ok" => 0, "error" => 1, "message" => "Você já possui cadastro! Você será direcionado(a) à próxima etapa da inscrição!", "registred" => 1, "enxadrista_id" => $temEnxadrista->id, "enxadrista_name" => $temEnxadrista->name . " | " . $temEnxadrista->getBorn(), "cidade" => ["id" => $temEnxadrista->cidade->id, "name" => $temEnxadrista->cidade->name], "clube" => ["id" => $temEnxadrista->clube->id, "name" => $temEnxadrista->clube->getName()]]);
             } else {
                 return response()->json([
                     "ok" => 0,
@@ -1544,7 +1544,7 @@ class InscricaoGerenciarController extends Controller
         $enxadrista->save();
         if ($enxadrista->id > 0) {
             if ($enxadrista->clube) {
-                return response()->json(["ok" => 1, "error" => 0, "enxadrista_id" => $enxadrista->id, "cidade" => ["id" => $enxadrista->cidade->id, "name" => $enxadrista->cidade->name], "clube" => ["id" => $enxadrista->clube->id, "name" => $enxadrista->clube->name]]);
+                return response()->json(["ok" => 1, "error" => 0, "enxadrista_id" => $enxadrista->id, "cidade" => ["id" => $enxadrista->cidade->id, "name" => $enxadrista->cidade->name], "clube" => ["id" => $enxadrista->clube->id, "name" => $enxadrista->clube->getName()]]);
             } else {
                 return response()->json(["ok" => 1, "error" => 0, "enxadrista_id" => $enxadrista->id, "cidade" => ["id" => $enxadrista->cidade->id, "name" => $enxadrista->cidade->name], "clube" => ["id" => 0]]);
             }
@@ -1624,14 +1624,14 @@ class InscricaoGerenciarController extends Controller
                 ["name", "=", mb_strtoupper($request->input("name"))],
                 ["cidade_id", "=", $request->input("cidade_id")]
             ])->first();
-            return response()->json(["ok" => 0, "error" => 1, "message" => "Este clube já está cadastrado! Selecionamos ele para você.", "registred" => 1, "clube" => ["id" => $temClube->id, "name" => $temClube->name]]);
+            return response()->json(["ok" => 0, "error" => 1, "message" => "Este clube já está cadastrado! Selecionamos ele para você.", "registred" => 1, "clube" => ["id" => $temClube->id, "name" => $temClube->getName()]]);
         }
 
         $clube->name = mb_strtoupper($request->input("name"));
         $clube->cidade_id = mb_strtoupper($request->input("cidade_id"));
         $clube->save();
         if ($clube->id > 0) {
-            return response()->json(["ok" => 1, "error" => 0, "clube" => ["id" => $clube->id, "name" => $clube->name]]);
+            return response()->json(["ok" => 1, "error" => 0, "clube" => ["id" => $clube->id, "name" => $clube->getName()]]);
         } else {
             return response()->json(["ok" => 0, "error" => 1, "message" => "Um erro inesperado aconteceu. Por favor, tente novamente mais tarde.", "registred" => 0]);
         }
@@ -1679,7 +1679,7 @@ class InscricaoGerenciarController extends Controller
         $enxadrista = Enxadrista::find($enxadrista_id);
         if ($enxadrista) {
             if ($enxadrista->clube) {
-                return response()->json(["ok" => 1, "error" => 0, "cidade" => ["id" => $enxadrista->cidade->id, "name" => $enxadrista->cidade->name], "clube" => ["id" => $enxadrista->clube->id, "name" => $enxadrista->clube->name]]);
+                return response()->json(["ok" => 1, "error" => 0, "cidade" => ["id" => $enxadrista->cidade->id, "name" => $enxadrista->cidade->name], "clube" => ["id" => $enxadrista->clube->id, "name" => $enxadrista->clube->getName()]]);
             } else {
                 return response()->json(["ok" => 1, "error" => 0, "cidade" => ["id" => $enxadrista->cidade->id, "name" => $enxadrista->cidade->name], "clube" => ["id" => 0]]);
             }
@@ -1793,7 +1793,7 @@ class InscricaoGerenciarController extends Controller
         })->get();
         $results = array(array("id" => -1, "text" => "Sem Clube"));
         foreach ($clubes as $clube) {
-            $results[] = array("id" => $clube->id, "text" => (($clube->cidade) ? $clube->cidade->name . " - " : "") . $clube->name);
+            $results[] = array("id" => $clube->id, "text" => $clube->getFullName());
         }
         return response()->json(["results" => $results, "pagination" => true]);
     }
@@ -1867,7 +1867,7 @@ class InscricaoGerenciarController extends Controller
         $inscricao = Inscricao::find($inscricao_id);
         if ($inscricao) {
             if ($inscricao->clube) {
-                return response()->json(["ok" => 1, "error" => 0, "enxadrista" => ["id" => $inscricao->enxadrista->id], "cidade" => ["id" => $inscricao->cidade->id, "name" => $inscricao->cidade->name], "categoria" => ["id" => $inscricao->categoria->id, "name" => $inscricao->categoria->name], "clube" => ["id" => $inscricao->clube->id, "name" => $inscricao->clube->name]]);
+                return response()->json(["ok" => 1, "error" => 0, "enxadrista" => ["id" => $inscricao->enxadrista->id], "cidade" => ["id" => $inscricao->cidade->id, "name" => $inscricao->cidade->name], "categoria" => ["id" => $inscricao->categoria->id, "name" => $inscricao->categoria->name], "clube" => ["id" => $inscricao->clube->id, "name" => $inscricao->clube->getName()]]);
             } else {
                 return response()->json(["ok" => 1, "error" => 0, "enxadrista" => ["id" => $inscricao->enxadrista->id], "cidade" => ["id" => $inscricao->cidade->id, "name" => $inscricao->cidade->name], "categoria" => ["id" => $inscricao->categoria->id, "name" => $inscricao->categoria->name], "clube" => ["id" => 0]]);
             }

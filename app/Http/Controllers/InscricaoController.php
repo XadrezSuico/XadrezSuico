@@ -365,7 +365,7 @@ class InscricaoController extends Controller
             $item["text"] = $enxadrista->getNascimentoPublico() . " | ".$enxadrista->cidade->name;
             $item["permitida_inscricao"] = true;
             if($enxadrista->clube){
-                $item["text"] .= " | Clube: ".$enxadrista->clube->name;
+                $item["text"] .= " | Clube: ".$enxadrista->clube->getName();
             }
             if ($rating) {
                 $item["text"] .= " | Rating: ".$rating;
@@ -471,11 +471,7 @@ class InscricaoController extends Controller
         })->get();
         $results = array(array("id" => -1, "text" => "Sem Clube"));
         foreach ($clubes as $clube) {
-            $text = "";
-            if($clube->cidade){
-                $text .= $clube->cidade->estado->pais->nome . "-" . $clube->cidade->name . "/" . $clube->cidade->estado->nome . " | ";
-            }
-            $results[] = array("id" => $clube->id, "text" => $text.$clube->id." -  " . $clube->name);
+            $results[] = array("id" => $clube->id, "text" => $clube->id." -  " . $clube->getFullName());
         }
         return response()->json(["results" => $results, "pagination" => true]);
     }
@@ -579,7 +575,7 @@ class InscricaoController extends Controller
                 $fields["clube"]["name"] = "";
                 if($enxadrista->clube){
                     $fields["clube"]["id"] = $enxadrista->clube->id;
-                    $fields["clube"]["name"] = $enxadrista->clube->cidade->name."/".$enxadrista->clube->name;
+                    $fields["clube"]["name"] = $enxadrista->clube->getFullName();
                 }
 
 
@@ -608,7 +604,7 @@ class InscricaoController extends Controller
             $retorno["cidade"] = array("id"=>$enxadrista->cidade->id,"name"=>$enxadrista->cidade->name);
             $retorno["cidade"]["estado"] = array("id"=>$enxadrista->cidade->estado->id,"name"=>$enxadrista->cidade->estado->nome);
             $retorno["cidade"]["estado"]["pais"] = array("id"=>$enxadrista->cidade->estado->pais->id,"name"=>$enxadrista->cidade->estado->pais->nome);
-            $retorno["clube"] = ($enxadrista->clube) ? array("id"=>$enxadrista->clube->id,"name"=>$enxadrista->clube->name) : array("id" => 0);
+            $retorno["clube"] = ($enxadrista->clube) ? array("id"=>$enxadrista->clube->id,"name"=>$enxadrista->clube->getName()) : array("id" => 0);
             $retorno["categorias"] = array();
             $categorias = $this->categoriasEnxadrista($evento,$enxadrista);
             if(count($categorias) == 0){
@@ -1583,7 +1579,7 @@ class InscricaoController extends Controller
             $retorno["cidade"] = array("id"=>$inscricao->cidade->id,"name"=>$inscricao->cidade->name);
             $retorno["cidade"]["estado"] = array("id"=>$inscricao->cidade->estado->id,"name"=>$inscricao->cidade->estado->nome);
             $retorno["cidade"]["estado"]["pais"] = array("id"=>$inscricao->cidade->estado->pais->id,"name"=>$inscricao->cidade->estado->pais->nome);
-            $retorno["clube"] = ($inscricao->clube) ? array("id"=>$inscricao->clube->id,"name"=>$inscricao->clube->name) : array("id" => 0);
+            $retorno["clube"] = ($inscricao->clube) ? array("id"=>$inscricao->clube->id,"name"=>$inscricao->clube->getName()) : array("id" => 0);
             $retorno["categoria"] = array("id"=>$inscricao->categoria->id,"name"=>$inscricao->categoria->name);
             $retorno["categorias"] = array();
             $categorias = $this->categoriasEnxadrista($evento,$inscricao->enxadrista);
@@ -1857,14 +1853,14 @@ class InscricaoController extends Controller
             if($temClube->cidade){
 
             }
-            return response()->json(["ok" => 0, "error" => 1, "message" => "Este clube já está cadastrado! Selecionamos ele para você.", "registred" => 1, "clube_id" => $temClube->id, "clube_nome" => $temClube->name, "cidade_nome" => ($temClube->cidade) ? $temClube->cidade->estado->pais->nome."-".$temClube->cidade->name."/".$temClube->cidade->estado->nome : ""]);
+            return response()->json(["ok" => 0, "error" => 1, "message" => "Este clube já está cadastrado! Selecionamos ele para você.", "registred" => 1, "clube_id" => $temClube->id, "clube_nome" => $temClube->getName(), "cidade_nome" => ($temClube->cidade) ? $temClube->cidade->estado->pais->nome."-".$temClube->cidade->name."/".$temClube->cidade->estado->nome : ""]);
         }
 
         $clube->name = mb_strtoupper($request->input("name"));
         $clube->cidade_id = mb_strtoupper($request->input("cidade_id"));
         $clube->save();
         if ($clube->id > 0) {
-            return response()->json(["ok" => 1, "error" => 0, "clube_id" => $clube->id, "clube_nome" => $clube->name, "cidade_nome" => $clube->cidade->estado->pais->nome."-".$clube->cidade->name."/".$clube->cidade->estado->nome]);
+            return response()->json(["ok" => 1, "error" => 0, "clube_id" => $clube->id, "clube_nome" => $clube->getName(), "cidade_nome" => ($clube->cidade) ? $clube->cidade->estado->pais->nome."-".$clube->cidade->name."/".$clube->cidade->estado->nome : ""]);
         } else {
             return response()->json(["ok" => 0, "error" => 1, "message" => "Um erro inesperado aconteceu. Por favor, tente novamente mais tarde.", "registred" => 0]);
         }
@@ -2104,7 +2100,7 @@ class InscricaoController extends Controller
             $item["text"] = $enxadrista->getNascimentoPublico() . " | ".$enxadrista->cidade->name;
             $item["permitida_inscricao"] = true;
             if($enxadrista->clube){
-                $item["text"] .= " | Clube: ".$enxadrista->clube->name;
+                $item["text"] .= " | Clube: ".$enxadrista->clube->getName();
             }
             if ($rating) {
                 $item["text"] .= " | Rating: ".$rating;
@@ -2196,7 +2192,7 @@ class InscricaoController extends Controller
             $retorno["cidade"] = array("id"=>$inscricao->cidade->id,"name"=>$inscricao->cidade->name);
             $retorno["cidade"]["estado"] = array("id"=>$inscricao->cidade->estado->id,"name"=>$inscricao->cidade->estado->nome);
             $retorno["cidade"]["estado"]["pais"] = array("id"=>$inscricao->cidade->estado->pais->id,"name"=>$inscricao->cidade->estado->pais->nome);
-            $retorno["clube"] = ($inscricao->clube) ? array("id"=>$inscricao->clube->id,"name"=>$inscricao->clube->name) : array("id" => 0);
+            $retorno["clube"] = ($inscricao->clube) ? array("id"=>$inscricao->clube->id,"name"=>$inscricao->clube->getName()) : array("id" => 0);
 
             $categorias_free_id = $evento->categorias()->whereNull("xadrezsuicopag_uuid")->pluck("categoria_id")->toArray();
 

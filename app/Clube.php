@@ -169,7 +169,7 @@ class Clube extends Model
             "id" => $this->id,
             "name" => $this->getFullName(),
 
-            "city_id" => $this->cidade->id,
+            "city_id" => ($this->cidade) ? $this->cidade->id : "",
         ];
     }
 }

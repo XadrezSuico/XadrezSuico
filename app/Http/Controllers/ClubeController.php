@@ -193,7 +193,7 @@ class ClubeController extends Controller
         $results = array();
         if(!$request->has("is_fexpar___clube_valido_vinculo_federativo")) $results[] = array("id" => -1, "text" => "Sem Clube");
         foreach ($clubes as $clube) {
-            $results[] = array("id" => $clube->id, "text" => $clube->cidade->estado->pais->nome . "-" . $clube->cidade->name . "/" . $clube->cidade->estado->nome . " | ".$clube->id." -  " . $clube->name);
+            $results[] = array("id" => $clube->id, "text" => $clube->getFullName());
         }
         return response()->json(["results" => $results, "pagination" => true]);
     }

@@ -120,7 +120,7 @@
                 <select id="inscricao_clube_id" class="clube_id this_is_select2 form-control">
                     <option value="">--- Você pode escolher um clube ---</option>
                     @foreach(\App\Clube::all() as $clube)
-                        <option value="{{$clube->id}}">{{$clube->cidade->estado->pais->name}}-{{$clube->cidade->estado->name}}/{{$clube->cidade->name}} - {{$clube->name}}</option>
+                        <option value="{{$clube->id}}">{{$clube->getFullName()}}</option>
                     @endforeach
                 </select>
             </div>
@@ -182,7 +182,7 @@
         },200);
 
         @if($inscricao->clube)
-            var newOptionClube = new Option("{{$inscricao->clube->name}}", {{$inscricao->clube->id}}, false, false);
+            var newOptionClube = new Option("{{$inscricao->clube->getName()}}", {{$inscricao->clube->id}}, false, false);
             $('#inscricao_clube_id').append(newOptionClube).trigger('change');
             $("#inscricao_clube_id").val({{$inscricao->clube->id}}).change();
         @endif

@@ -20,7 +20,7 @@
             <td>{{ $enxadrista->getNameToSM() }}</td>
             <td>BRA</td>
             <td>{{ $enxadrista->cidade->id }}</td>
-            <td>{{ $enxadrista->cidade->name }} @if($enxadrista->clube) - {{$enxadrista->clube->name}} @endif</td>
+            <td>{{ $enxadrista->cidade->name }} @if($enxadrista->clube) - {{$enxadrista->clube->getName()}} @endif</td>
             <td>{{ $enxadrista->getBornToSM() }}</td>
 
             @if($evento->usa_cbx && !$evento->tipo_rating)<td>{{ $enxadrista->showRating(1,$evento->tipo_modalidade) }}</td>@endif

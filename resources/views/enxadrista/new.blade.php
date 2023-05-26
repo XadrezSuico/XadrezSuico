@@ -156,7 +156,7 @@
 						<select id="clube_id" name="clube_id" class="form-control">
 							<option value="">--- Você pode selecionar um clube ---</option>
 							@foreach($clubes as $clube)
-								<option value="{{$clube->id}}">{{$clube->cidade->name}} - {{$clube->name}}</option>
+								<option value="{{$clube->id}}">{{$clube->getFullName()}}</option>
 							@endforeach
 						</select>
 					</div>

@@ -28,7 +28,7 @@
                 <strong>Cidade:</strong> {{$enxadrista->cidade->name}}<br/>
                 <strong>FIDE:</strong> {{$enxadrista->fide_id}}<br/>
                 <strong>CBX:</strong> {{$enxadrista->cbx_id}}<br/>
-                @if($enxadrista->clube) <strong>Clube:</strong> {{$enxadrista->clube->name}}<br/> @endif
+                @if($enxadrista->clube) <strong>Clube:</strong> {{$enxadrista->clube->getName()}}<br/> @endif
         </div>
     </div>
     @foreach($enxadrista->getCategoriasParticipantesbyGrupoEvento($grupo_evento->id) as $categoria)

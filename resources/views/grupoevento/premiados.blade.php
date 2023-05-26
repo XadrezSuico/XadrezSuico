@@ -60,7 +60,7 @@
                                 <td>{{$pontuacao_enxadrista->enxadrista->id}}</td>
                                 <td>{{$pontuacao_enxadrista->enxadrista->getNomePrivado()}}</td>
                                 <td>{{$pontuacao_enxadrista->enxadrista->cidade->getName()}}</td>
-                                <td>@if($pontuacao_enxadrista->enxadrista->clube) {{$pontuacao_enxadrista->enxadrista->clube->name}} @else - @endif</td>
+                                <td>@if($pontuacao_enxadrista->enxadrista->clube) {{$pontuacao_enxadrista->enxadrista->clube->getName()}} @else - @endif</td>
                                 <td>{{$pontuacao_enxadrista->enxadrista->email}}</td>
                                 <td>({{$pontuacao_enxadrista->enxadrista->pais_celular->codigo_iso}}) {{$pontuacao_enxadrista->enxadrista->celular}}</td>
                             </tr>

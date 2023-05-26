@@ -92,7 +92,7 @@
                             <td>{{$inscricao->enxadrista->getNascimentoPrivado()}}</td>
                             <td>{{$inscricao->categoria->id}} - {{$inscricao->categoria->name}}</td>
                             <td>{{$inscricao->getCidade()}}</td>
-                            <td>@if($inscricao->clube) {{$inscricao->clube->name}} @else - @endif</td>
+                            <td>@if($inscricao->clube) {{$inscricao->clube->getName()}} @else - @endif</td>
                             @if($evento->tipo_rating)
                                 <td>{{$inscricao->enxadrista->ratingParaEvento($evento->id,true)}}</td>
                                 <td>@if($inscricao->enxadrista->hasRatingParaEvento($evento->id)) Sim @endif</td>

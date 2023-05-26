@@ -47,7 +47,7 @@
                         <hr/>
                         <h4>Vínculo:</h4>
                         <h5><strong>Cidade:</strong> {{$vinculo->cidade->name}}</h5>
-                        <h5><strong>Clube:</strong> {{$vinculo->clube->name}}</h5>
+                        <h5><strong>Clube:</strong> {{$vinculo->clube->getName()}}</h5>
                         <hr/>
                         <h4>Dados:</h4>
                         @if($vinculo->is_confirmed_system)
@@ -213,7 +213,7 @@
             $('#cidade_id').append(newOptionCidade).trigger('change');
             $("#cidade_id").val("{{$vinculo->cidade->id}}").change();
 
-            var newOptionClube = new Option("{{$vinculo->clube->name}}", "{{$vinculo->clube->id}}", false, false);
+            var newOptionClube = new Option("{{$vinculo->clube->getName()}}", "{{$vinculo->clube->id}}", false, false);
             $('#clube_id').append(newOptionClube).trigger('change');
             $("#clube_id").val("{{$vinculo->clube->id}}").change();
         @endif

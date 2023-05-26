@@ -31,7 +31,7 @@
                     @foreach($clubes as $clube)
                         <tr>
                             <td>{{$clube->id}}</td>
-                            <td>{{$clube->name}}</td>
+                            <td>{{$clube->getName()}}</td>
                             <td>@if($clube->cidade) {{$clube->cidade->name}} @else - @endif</td>
                             <td>
                                 <a class="btn btn-default" href="{{url("/clube/edit/".$clube->id)}}" role="button">Editar</a>
