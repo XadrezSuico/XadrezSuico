@@ -217,7 +217,7 @@ class Torneio_ImportacaoController extends Controller
                             $desempate->delete();
                         }
 
-                        foreach ($torneio->getCountCriteriosNaoManuais() as $criterio) {
+                        foreach ($torneio->getCriteriosNaoManuais() as $criterio) {
                             if ($criterio->softwares_id) {
                                 // echo "Inserindo critério de desempate '".$criterio->criterio->name."' <br/>";
                                 $retornos[] = date("d/m/Y H:i:s") . " - Inserindo critério de desempate '" . $criterio->criterio->name . "' - Valor: " . $line[($fields["Des" . $j])];

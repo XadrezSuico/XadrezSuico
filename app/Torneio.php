@@ -151,6 +151,28 @@ class Torneio extends Model
             ]);
         })->count();
     }
+    public function getCriteriosNaoManuais()
+    {
+        $torneio = $this;
+        if ($this->evento->criterios()->where([["tipo_torneio_id", "=", $this->tipo_torneio_id],["softwares_id","=",$this->software->id],["evento_id","=",$this->evento->id]])->count() > 0) {
+            Log::debug($this->evento->criterios()->where([["tipo_torneio_id", "=", $this->tipo_torneio_id],["softwares_id","=",$this->software->id],["evento_id","=",$this->evento->id]])->whereDoesntHave("criterio", function ($q1) use ($torneio) {
+                $q1->where([
+                    ["is_manual", "=", true],
+                ]);
+            })->count());
+            return $this->evento->criterios()->where([["tipo_torneio_id", "=", $this->tipo_torneio_id],["softwares_id","=",$this->software->id],["evento_id","=",$this->evento->id]])->whereDoesntHave("criterio", function ($q1) use ($torneio) {
+                $q1->where([
+                    ["is_manual", "=", true],
+                ]);
+            })->get();
+        }
+
+        return $this->evento->grupo_evento->criterios()->where([["tipo_torneio_id", "=", $this->tipo_torneio_id],["softwares_id","=",$this->software->id],["evento_id","=",$this->evento->id]])->whereDoesntHave("criterio", function ($q1) use ($torneio) {
+            $q1->where([
+                ["is_manual", "=", true],
+            ]);
+        })->get();
+    }
     public function getCriteriosLista()
     {
         if ($this->evento->criterios()->where([["tipo_torneio_id", "=", $this->tipo_torneio_id],["softwares_id","=",$this->software->id]])->count() > 0) {
