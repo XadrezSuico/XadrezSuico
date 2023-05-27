@@ -13,6 +13,7 @@ use App\TipoTorneio;
 use App\CriterioDesempate;
 
 use DateTime;
+use Log;
 
 class Torneio extends Model
 {
