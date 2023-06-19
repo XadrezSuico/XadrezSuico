@@ -258,7 +258,7 @@ class CategoriaController extends Controller
                     $enxadrista_criterio->categoria_id = $categoria->id;
                     $enxadrista_criterio->criterio_desempate_id = $criterio->criterio->id;
                 }
-                $enxadrista_criterio->valor = $gerador->generate($grupo_evento, $enxadrista, $criterio->criterio);
+                $enxadrista_criterio->valor = $gerador->generate($grupo_evento, $enxadrista, $criterio->criterio, $categoria);
                 $enxadrista_criterio->save();
                 $retornos[] = date("d/m/Y H:i:s") . " - Critério: " . $criterio->criterio->name . " - Valor: " . $enxadrista_criterio->valor;
             }
