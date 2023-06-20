@@ -245,6 +245,12 @@ class PlayerController extends Controller
                         break;
                     case "email":
                         if($request->email){
+                            $validator = \Validator::make($request->all(), [
+                                'email' => 'required|string|email:rfc,dns|max:255',
+                            ]);
+                            if ($validator->fails()) {
+                                return response()->json(["ok" => 0, "error" => 1, "message" => "O e-mail é inválido. Por favor, verifique e tente novamente.", "registred" => 0, "ask" => 0]);
+                            }
                             $enxadrista->email = $request->email;
                         }else{
                             return response()->json(["ok"=>0,"error"=>1,"message"=>"O campo 'E-mail' é obrigatório ser atualizado também."]);
