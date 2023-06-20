@@ -32,7 +32,7 @@
                     @foreach($tipo_rating->ratings()->orderBy("enxadrista_id","ASC")->get() as $rating)
                         <tr>
                             <td>{{$rating->id}}</td>
-                            <td>#{{$rating->enxadrista->id}} - {{$rating->enxadrista->getNomePublico()}}</td>
+                            <td>#{{$rating->enxadrista->getId()}} - {{$rating->enxadrista->getNomePublico()}}</td>
                             <td>{{$rating->enxadrista->getNascimentoPublico()}}</td>
                             <td>{{$rating->valor}}</td>
                             <td>

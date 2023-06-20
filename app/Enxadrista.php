@@ -72,6 +72,10 @@ class Enxadrista extends Model
         return $this->hasMany("App\Vinculo", "enxadrista_id", "id");
     }
 
+    public function getId(){
+        return $this->id;
+    }
+
     public function isDeletavel()
     {
         if ($this->id != null) {
