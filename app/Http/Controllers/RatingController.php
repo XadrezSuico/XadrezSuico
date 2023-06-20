@@ -73,13 +73,14 @@ class RatingController extends Controller
 
         switch ($requisicao["order"][0]["column"]) {
             case 1:
-                $search->leftJoin("enxadrista","enxadrista.id","ratings.enxadrista_id");
-                $search->orderBy("enxadrista.id", mb_strtoupper($requisicao["order"][0]["dir"]));
-                $search->orderBy("enxadrista.name", mb_strtoupper($requisicao["order"][0]["dir"]));
+                $search->orderBy("enxadrista_id", mb_strtoupper($requisicao["order"][0]["dir"]));
                 break;
-            case 2:
-                $search->leftJoin("enxadrista","enxadrista.id","ratings.enxadrista_id");
-                $search->orderBy("enxadrista.born", mb_strtoupper($requisicao["order"][0]["dir"]));
+            // case 2:
+            //     $search->leftJoin("enxadrista","enxadrista.id","ratings.enxadrista_id");
+            //     $search->orderBy("enxadrista.born", mb_strtoupper($requisicao["order"][0]["dir"]));
+            //     break;
+            case 3:
+                $search->orderBy("valor", mb_strtoupper($requisicao["order"][0]["dir"]));
                 break;
             default:
                 $search->orderBy("id", mb_strtoupper($requisicao["order"][0]["dir"]));

@@ -23,9 +23,9 @@
                     <tr>
                         <th>#</th>
                         <th>Nome</th>
-                        <th>Data de Nascimento</th>
+                        <th class="no-sort">Data de Nascimento</th>
                         <th>Rating</th>
-                        <th width="20%">Opções</th>
+                        <th class="no-sort" width="20%">Opções</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -67,7 +67,11 @@
                     "sortAscending":  ": ativar para organizar em ordem crescente da coluna",
                     "sortDescending": ": ativar para organizar em ordem descrescente da coluna"
                 }
-            }
+            },
+            columnDefs: [{
+                orderable: false,
+                targets: "no-sort"
+            }]
         });
     });
 </script>
