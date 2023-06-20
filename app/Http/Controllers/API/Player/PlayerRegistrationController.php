@@ -62,7 +62,7 @@ class PlayerRegistrationController extends Controller
         }
 
         $validator = \Validator::make($request->all(), [
-            'email' => 'required|string|email|max:255',
+            'email' => 'required|string|email:rfc,dns|max:255',
         ]);
         if ($validator->fails()) {
             return response()->json(["ok" => 0, "error" => 1, "message" => "O e-mail é inválido. Por favor, verifique e tente novamente.", "registred" => 0, "ask" => 0]);
