@@ -64,6 +64,7 @@
 <script type="text/javascript">
     $(function () {
         $("#tabela").DataTable({
+            responsive: true,
             processing: true,
             serverSide: true,
             searchDelay: 500,
