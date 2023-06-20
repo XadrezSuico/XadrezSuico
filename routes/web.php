@@ -99,6 +99,7 @@ Route::group(["prefix"=>"rating"],function(){
     Route::get('/', 'RatingController@index')->name('rating.index');
     Route::get('/list/{tipo_rating_id}', 'RatingController@list')->name('rating.list');
     Route::get('/{tipo_rating_id}/view/{rating_id}', 'RatingController@view')->name('rating.view');
+    Route::get('/api/searchList/{tipo_rating_id}', 'RatingController@searchRatingList')->name('rating.api.list');
 });
 
 

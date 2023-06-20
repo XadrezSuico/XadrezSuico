@@ -29,19 +29,6 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($tipo_rating->ratings()->orderBy("enxadrista_id","ASC")->get() as $rating)
-                        @if($rating->enxadrista)
-                            <tr>
-                                <td>{{$rating->id}}</td>
-                                <td>#{{$rating->enxadrista->getId()}} - {{$rating->enxadrista->getNomePublico()}}</td>
-                                <td>{{$rating->enxadrista->getNascimentoPublico()}}</td>
-                                <td>{{$rating->valor}}</td>
-                                <td>
-                                    <a class="btn btn-default" href="{{url("/rating/".$tipo_rating->id."/view/".$rating->id)}}" role="button">Visualizar</a>
-                                </td>
-                            </tr>
-                        @endif
-                    @endforeach
                 </tbody>
             </table>
         </div>
@@ -53,6 +40,34 @@
     $(document).ready(function(){
         $("#tabela").DataTable({
             responsive: true,
+            processing: true,
+            serverSide: true,
+            searchDelay: 500,
+            ajax: '{{url("/rating/api/searchList/".$tipo_rating->id)}}',
+            language: {
+                "decimal":        "",
+                "emptyTable":     "Não há dados na tabela",
+                "info":           "Mostrando de _START_ para _END_ de um total de _TOTAL_ registros",
+                "infoEmpty":      "Mostrando de 0 para 0 de um total de 0 registros",
+                "infoFiltered":   "(filtrado de um total de _MAX_ registros)",
+                "infoPostFix":    "",
+                "thousands":      ",",
+                "lengthMenu":     "Mostrar _MENU_",
+                "loadingRecords": "Carregando...",
+                "processing":     "Processando...",
+                "search":         "Pesquisar:",
+                "zeroRecords":    "Não foram encontrados registros seguindo o filtro",
+                "paginate": {
+                    "first":      "Primeiro",
+                    "last":       "Último",
+                    "next":       "Próximo",
+                    "previous":   "Anterior"
+                },
+                "aria": {
+                    "sortAscending":  ": ativar para organizar em ordem crescente da coluna",
+                    "sortDescending": ": ativar para organizar em ordem descrescente da coluna"
+                }
+            }
         });
     });
 </script>
