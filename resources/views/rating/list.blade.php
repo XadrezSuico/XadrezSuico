@@ -30,15 +30,17 @@
                 </thead>
                 <tbody>
                     @foreach($tipo_rating->ratings()->orderBy("enxadrista_id","ASC")->get() as $rating)
-                        <tr>
-                            <td>{{$rating->id}}</td>
-                            <td>#{{$rating->enxadrista->getId()}} - {{$rating->enxadrista->getNomePublico()}}</td>
-                            <td>{{$rating->enxadrista->getNascimentoPublico()}}</td>
-                            <td>{{$rating->valor}}</td>
-                            <td>
-                                <a class="btn btn-default" href="{{url("/rating/".$tipo_rating->id."/view/".$rating->id)}}" role="button">Visualizar</a>
-                            </td>
-                        </tr>
+                        @if($rating->enxadrista)
+                            <tr>
+                                <td>{{$rating->id}}</td>
+                                <td>#{{$rating->enxadrista->getId()}} - {{$rating->enxadrista->getNomePublico()}}</td>
+                                <td>{{$rating->enxadrista->getNascimentoPublico()}}</td>
+                                <td>{{$rating->valor}}</td>
+                                <td>
+                                    <a class="btn btn-default" href="{{url("/rating/".$tipo_rating->id."/view/".$rating->id)}}" role="button">Visualizar</a>
+                                </td>
+                            </tr>
+                        @endif
                     @endforeach
                 </tbody>
             </table>
