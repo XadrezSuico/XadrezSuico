@@ -54,16 +54,21 @@ class RatingController extends Controller
 
         $requisicao = $request->all();
 
-        $search = $tipo_rating->ratings()->where(function($q1) use ($requisicao){
+        $search = $tipo_rating->ratings()->where(function($q1) use ($requisicao, $tipo_rating){
             $q1->where([
-                ["id","=",$requisicao["search"]["value"]]
+                ["id","=",$requisicao["search"]["value"]],
+                ["tipo_ratings_id","=",$tipo_rating->id]
             ]);
+            $q1->whereHas("enxadrista");
         })
         ->orWhere(function($q1) use ($requisicao){
-            $q1->whereHas("enxadrista", function($q2) use ($requisicao){
+            $q1->whereHas("enxadrista", function($q2) use ($requisicao, $tipo_rating){
                 $q2->where([["id", "=", $requisicao["search"]["value"]]]);
                 $q2->orWhere([["name", "like", "%".$requisicao["search"]["value"]."%"]]);
             });
+            $q1->where([
+                ["tipo_ratings_id","=",$tipo_rating->id]
+            ]);
         });
 
         switch ($requisicao["order"][0]["column"]) {
