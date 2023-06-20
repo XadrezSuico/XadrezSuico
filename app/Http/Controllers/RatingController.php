@@ -61,8 +61,8 @@ class RatingController extends Controller
             ]);
             $q1->whereHas("enxadrista");
         })
-        ->orWhere(function($q1) use ($requisicao){
-            $q1->whereHas("enxadrista", function($q2) use ($requisicao, $tipo_rating){
+        ->orWhere(function($q1) use ($requisicao, $tipo_rating){
+            $q1->whereHas("enxadrista", function($q2) use ($requisicao){
                 $q2->where([["id", "=", $requisicao["search"]["value"]]]);
                 $q2->orWhere([["name", "like", "%".$requisicao["search"]["value"]."%"]]);
             });
