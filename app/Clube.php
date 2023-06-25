@@ -161,8 +161,8 @@ class Clube extends Model
                 "id" => $this->id,
                 "name" => $this->getFullName(),
 
-                "city" => $this->cidade->toAPIObject($include_parent),
-                "city_id" => $this->cidade->id,
+                "city" => ($this->cidade) ? $this->cidade->toAPIObject($include_parent) : "",
+                "city_id" => ($this->cidade) ? $this->cidade->id : "",
             ];
         }
         return [
