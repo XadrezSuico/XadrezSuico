@@ -48,8 +48,15 @@ return [
 
         'daily' => [
             'driver' => 'daily',
-            'path' => storage_path('logs/laravel.log'),
+            'path' => storage_path('logs/xadrezsuico.debug.log'),
             'level' => 'debug',
+            'days' => 14,
+        ],
+
+        'daily_error' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/xadrezsuico.error.log'),
+            'level' => 'error',
             'days' => 14,
         ],
 
@@ -80,6 +87,11 @@ return [
             ],
         ],
 
+        'emergency' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/xadrezsuico.emergency.log'),
+        ],
+
         'syslog' => [
             'driver' => 'syslog',
             'level' => 'debug',
@@ -88,6 +100,7 @@ return [
         'errorlog' => [
             'driver' => 'errorlog',
             'level' => 'debug',
+            'path' => storage_path('logs/xadrezsuico.errorlog.log'),
         ],
     ],
 
