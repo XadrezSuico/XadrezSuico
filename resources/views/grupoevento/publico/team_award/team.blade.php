@@ -119,6 +119,7 @@
                                                     :
                                                     $team_award->getPlace($inscricao->posicao,true)
                                                 }}
+                                                @php($j++)
                                                 @php($total += ($is_points) ? $team_award->getPlace($inscricao->posicao,true,true,$inscricao) : $team_award->getPlace($inscricao->posicao,true))
                                             @else
                                                 0
