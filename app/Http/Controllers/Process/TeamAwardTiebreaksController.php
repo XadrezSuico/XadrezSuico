@@ -31,26 +31,30 @@ class TeamAwardTiebreaksController extends Controller
     public function generate_ta1($evento = null, $grupo_evento = null, $team_score)
     {
         $value = 0;
-        if($evento){
 
-            $categorias_id = $team_score->event_team_award->categories()->pluck("categories_id");
-            return number_format(Inscricao::where([
-                ["confirmado", "=", true],
-                ["desconsiderar_pontuacao_geral", "=", false],
-                ["posicao", "=", 1],
-                ["clube_id", "=", $team_score->clubs_id],
-            ])
-            ->whereIn("categoria_id",$categorias_id)
-            ->orderBy("posicao", "ASC")
-            ->whereHas("torneio", function ($q1) use ($evento) {
+        $categorias_id = $team_score->event_team_award->categories()->pluck("categories_id");
+        return number_format(Inscricao::where([
+            ["confirmado", "=", true],
+            ["desconsiderar_pontuacao_geral", "=", false],
+            ["posicao", "=", 1],
+            ["clube_id", "=", $team_score->clubs_id],
+        ])
+        ->whereIn("categoria_id",$categorias_id)
+        ->orderBy("posicao", "ASC")
+        ->whereHas("torneio", function ($q1) use ($evento, $grupo_evento) {
+            if($evento){
                 $q1->where([
                     ["evento_id", "=", $evento->id],
                 ]);
-            })
-            ->count(), 2, '.', '');
-        }else{
-
-        }
+            }else{
+                $q1->whereHas("evento",function($q2) use ($grupo_evento){
+                    $q2->where([
+                        ["grupo_evento_id","=",$grupo_evento->id]
+                    ]);
+                });
+            }
+        })
+        ->count(), 2, '.', '');
 
         return number_format($value, 2, '.', '');
     }
@@ -60,26 +64,29 @@ class TeamAwardTiebreaksController extends Controller
     public function generate_ta2($evento = null, $grupo_evento = null, $team_score)
     {
         $value = 0;
-        if($evento){
-
-            $categorias_id = $team_score->event_team_award->categories()->pluck("categories_id");
-            return number_format(Inscricao::where([
-                ["confirmado", "=", true],
-                ["desconsiderar_pontuacao_geral", "=", false],
-                ["posicao", "=", 2],
-                ["clube_id", "=", $team_score->clubs_id],
-            ])
-            ->whereIn("categoria_id",$categorias_id)
-            ->orderBy("posicao", "ASC")
-            ->whereHas("torneio", function ($q1) use ($evento) {
+        $categorias_id = $team_score->event_team_award->categories()->pluck("categories_id");
+        return number_format(Inscricao::where([
+            ["confirmado", "=", true],
+            ["desconsiderar_pontuacao_geral", "=", false],
+            ["posicao", "=", 2],
+            ["clube_id", "=", $team_score->clubs_id],
+        ])
+        ->whereIn("categoria_id",$categorias_id)
+        ->orderBy("posicao", "ASC")
+        ->whereHas("torneio", function ($q1) use ($evento, $grupo_evento) {
+            if($evento){
                 $q1->where([
                     ["evento_id", "=", $evento->id],
                 ]);
-            })
-            ->count(), 2, '.', '');
-        }else{
-
-        }
+            }else{
+                $q1->whereHas("evento",function($q2) use ($grupo_evento){
+                    $q2->where([
+                        ["grupo_evento_id","=",$grupo_evento->id]
+                    ]);
+                });
+            }
+        })
+        ->count(), 2, '.', '');
 
         return number_format($value, 2, '.', '');
     }
@@ -89,26 +96,30 @@ class TeamAwardTiebreaksController extends Controller
     public function generate_ta3($evento = null, $grupo_evento = null, $team_score)
     {
         $value = 0;
-        if($evento){
 
-            $categorias_id = $team_score->event_team_award->categories()->pluck("categories_id");
-            return number_format(Inscricao::where([
-                ["confirmado", "=", true],
-                ["desconsiderar_pontuacao_geral", "=", false],
-                ["posicao", "=", 3],
-                ["clube_id", "=", $team_score->clubs_id],
-            ])
-            ->whereIn("categoria_id",$categorias_id)
-            ->orderBy("posicao", "ASC")
-            ->whereHas("torneio", function ($q1) use ($evento) {
+        $categorias_id = $team_score->event_team_award->categories()->pluck("categories_id");
+        return number_format(Inscricao::where([
+            ["confirmado", "=", true],
+            ["desconsiderar_pontuacao_geral", "=", false],
+            ["posicao", "=", 3],
+            ["clube_id", "=", $team_score->clubs_id],
+        ])
+        ->whereIn("categoria_id",$categorias_id)
+        ->orderBy("posicao", "ASC")
+        ->whereHas("torneio", function ($q1) use ($evento, $grupo_evento) {
+            if($evento){
                 $q1->where([
                     ["evento_id", "=", $evento->id],
                 ]);
-            })
-            ->count(), 2, '.', '');
-        }else{
-
-        }
+            }else{
+                $q1->whereHas("evento",function($q2) use ($grupo_evento){
+                    $q2->where([
+                        ["grupo_evento_id","=",$grupo_evento->id]
+                    ]);
+                });
+            }
+        })
+        ->count(), 2, '.', '');
 
         return number_format($value, 2, '.', '');
     }

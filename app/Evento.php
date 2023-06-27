@@ -758,6 +758,14 @@ class Evento extends Model
         return $total;
     }
 
+    public function isEvent(){
+        return true;
+    }
+
+    public function isEventGroup(){
+        return false;
+    }
+
     public function getConfigs(){
         return $this->configs->all();
     }

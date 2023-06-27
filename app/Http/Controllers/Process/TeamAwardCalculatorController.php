@@ -16,8 +16,16 @@ use Log;
 
 class TeamAwardCalculatorController extends Controller
 {
-    public static function sum_scores($evento, $time_award)
+    public static function sum_scores($evento = null, $grupoevento = null, $time_award)
     {
+        $object = null;
+        if($evento){
+            $object = $evento;
+        }elseif($grupoevento){
+            $object = $grupoevento;
+        }else{
+            exit();
+        }
         $retornos = array();
         Log::debug("Função de Soma de Pontos");
         Log::debug("Zerando pontuações existentes");
@@ -44,10 +52,18 @@ class TeamAwardCalculatorController extends Controller
             ["clube_id", "!=", NULL],
         ])
         ->whereIn("categoria_id",$categorias_id)
-        ->whereHas("torneio", function ($q1) use ($evento) {
-            $q1->where([
-                ["evento_id", "=", $evento->id],
-            ]);
+        ->whereHas("torneio", function ($q1) use ($object) {
+            if($object->isEvent()){
+                $q1->where([
+                    ["evento_id", "=", $object->id],
+                ]);
+            }else{
+                $q1->whereHas("evento",function($q2) use ($object){
+                    $q2->where([
+                        ["grupo_evento_id","=",$object->id]
+                    ]);
+                });
+            }
         })
         ->count();
 
@@ -59,17 +75,36 @@ class TeamAwardCalculatorController extends Controller
         ])
         ->whereIn("categoria_id",$categorias_id)
         ->orderBy("posicao", "ASC")
-        ->whereHas("torneio", function ($q1) use ($evento) {
-            $q1->where([
-                ["evento_id", "=", $evento->id],
-            ]);
+        ->whereHas("torneio", function ($q1) use ($object) {
+            if($object->isEvent()){
+                $q1->where([
+                    ["evento_id", "=", $object->id],
+                ]);
+            }else{
+                $q1->whereHas("evento",function($q2) use ($object){
+                    $q2->where([
+                        ["grupo_evento_id","=",$object->id]
+                    ]);
+                });
+            }
         })
         ->get();
 
+        $is_points = false;
+
+        if($time_award->hasConfig("is_points")){
+            if($time_award->getConfig("is_points",true)){
+                $is_points = true;
+            }
+        }
         Log::debug("Total de inscrições encontradas: " . $inscricoes_count);
         foreach ($inscricoes as $inscricao) {
-            if($time_award->hasPlace($inscricao->posicao)){
-                $points = $time_award->getPlace($inscricao->posicao,true);
+            if($time_award->hasPlace($inscricao->posicao) || $is_points){
+                if($is_points){
+                    $points = $time_award->getPlace($inscricao->posicao,true,true,$inscricao);
+                }else{
+                    $points = $time_award->getPlace($inscricao->posicao,true);
+                }
 
 
                 Log::debug("Inscrição #: " . $inscricao->id . " - Enxadrista: " . $inscricao->enxadrista->name);
@@ -109,8 +144,16 @@ class TeamAwardCalculatorController extends Controller
         return $retornos;
     }
 
-    public static function generate_tiebreaks($evento, $team_award)
+    public static function generate_tiebreaks($evento = null, $grupoevento = null, $team_award)
     {
+        $object = null;
+        if($evento){
+            $object = $evento;
+        }elseif($grupoevento){
+            $object = $grupoevento;
+        }else{
+            exit();
+        }
         $retornos = array();
         $retornos[] = date("d/m/Y H:i:s") . " - Função de geração de Critérios de Desempate";
         $tiebreaks = $team_award->tiebreaks()->orderBy("priority","ASC")->get();
@@ -126,7 +169,11 @@ class TeamAwardCalculatorController extends Controller
                     $tiebreak_score->event_team_scores_id = $score->id;
                     $tiebreak_score->tiebreaks_id = $tiebreak_item->tiebreak->id;
                     $tiebreak_score->priority = $tiebreak_item->priority;
-                    $tiebreak_score->value = $generator->generate($evento, null, $score, $tiebreak_item->tiebreak);
+                    if($object->isEvent()){
+                        $tiebreak_score->value = $generator->generate($object, null, $score, $tiebreak_item->tiebreak);
+                    }else{
+                        $tiebreak_score->value = $generator->generate(null, $object, $score, $tiebreak_item->tiebreak);
+                    }
                     $tiebreak_score->save();
                 }
             }
@@ -136,8 +183,16 @@ class TeamAwardCalculatorController extends Controller
         return $retornos;
     }
 
-    public static function classificate_teams($evento, $team_award)
+    public static function classificate_teams($evento = null, $grupoevento = null, $team_award)
     {
+        $object = null;
+        if($evento){
+            $object = $evento;
+        }elseif($grupoevento){
+            $object = $grupoevento;
+        }else{
+            exit();
+        }
         $retornos = array();
         $retornos[] = date("d/m/Y H:i:s") . " - Função de classificação dos enxadristas";
         $retornos[] = date("d/m/Y H:i:s") . " - Listando as pontuações dos enxadristas que possuem alguma pontuação";

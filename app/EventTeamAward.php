@@ -27,15 +27,28 @@ class EventTeamAward extends Model
         return $this->hasMany("App\TiebreakTeamAward","event_team_awards_id","id");
     }
 
-    public function hasPlace($place){
-        if($this->scores()->where([["place","=",$place]])->count() > 0){
+    public function hasPlace($place, $is_points = false, $registration = null){
+        if($is_points){
+            if($registration){
+                if($registration->pontos > 0){
+                    return true;
+                }
+            }
+        }elseif($this->scores()->where([["place","=",$place]])->count() > 0){
             return true;
         }
         return false;
     }
 
-    public function getPlace($place, $return_value = false){
-        if($this->hasPlace($place)){
+    public function getPlace($place = null, $return_value = false, $is_points = false, $registration = null){
+        // if we use registration points to get points
+        if($is_points){
+            if($registration){
+                if($registration->isPresent()){
+                    return $registration->pontos;
+                }
+            }
+        }elseif($this->hasPlace($place)){
             if($return_value){
                 return $this->scores()->where([["place","=",$place]])->first()->score;
             }

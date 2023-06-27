@@ -450,6 +450,18 @@ Route::group(["prefix"=>"grupoevento"],function(){
         Route::post('/new', 'GrupoEventoController@evento_new')->name('grupoevento.evento.new');
     });
 
+
+    Route::group(["prefix"=>"premiacao_time"],function(){
+        Route::get('/classificar/{grupo_evento_id}', 'EventGroup\TeamAwardController@classificar_page')->name('grupoevento.premiacao_time.classificar');
+        Route::get('/classificar/{grupo_evento_id}/call/{time_awards_id}/{action}', 'EventGroup\TeamAwardController@classificar_call')->name('grupoevento.premiacao_time.classificar.call');
+    });
+
+    Route::group(["prefix"=>"{event_id}/team_awards"],function(){
+        Route::get('/standings', 'External\EventGroup\TeamAwardController@standings')->name('external.event_group.team_award.standings');
+        Route::get('/{team_awards_id}/results/team/{clubs_id}', 'External\EventGroup\TeamAwardController@see_team_score')->name('external.event_group.team_award.see_team_score');
+        Route::get('/{team_awards_id}/results', 'External\EventGroup\TeamAwardController@list')->name('external.event_group.team_award.list');
+    });
+
 });
 
 

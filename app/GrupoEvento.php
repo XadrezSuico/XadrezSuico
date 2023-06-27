@@ -95,6 +95,9 @@ class GrupoEvento extends Model
     {
         return $this->hasMany("App\CampoPersonalizado", "grupo_evento_id", "id");
     }
+    public function event_team_awards(){
+        return $this->hasMany("App\EventTeamAward","event_groups_id","id");
+    }
 
     public function isDeletavel()
     {
@@ -193,6 +196,14 @@ class GrupoEvento extends Model
             ->orderBy("enxadrista.name", "ASC")
             ->get();
         return $inscricoes;
+    }
+
+    public function isEvent(){
+        return false;
+    }
+
+    public function isEventGroup(){
+        return true;
     }
 
 

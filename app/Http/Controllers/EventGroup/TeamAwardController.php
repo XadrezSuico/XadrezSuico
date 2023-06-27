@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Event;
+namespace App\Http\Controllers\EventGroup;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -9,11 +9,12 @@ use App\Http\Controllers\Process\TeamAwardCalculatorController;
 
 use Auth;
 
-use App\Evento;
+use App\GrupoEvento;
+
 
 class TeamAwardController extends Controller
 {
-    public function classificar_page($evento_id)
+    public function classificar_page($grupo_evento_id)
     {
         $user = Auth::user();
         if (!$user->hasPermissionGlobal() && !$user->hasPermissionEventByPerfil($id,[7])) {
@@ -21,11 +22,11 @@ class TeamAwardController extends Controller
         }
 
         $retornos = array();
-        $evento = Evento::find($evento_id);
-        return view("evento.times.classificar", compact("evento"));
+        $grupo_evento = GrupoEvento::find($grupo_evento_id);
+        return view("grupoevento.times.classificar", compact("grupo_evento"));
     }
 
-    public function classificar_call($evento_id, $time_awards_id, $action)
+    public function classificar_call($grupo_evento_id, $time_awards_id, $action)
     {
         $user = Auth::user();
         if (!$user->hasPermissionGlobal() && !$user->hasPermissionEventByPerfil($id,[7])) {
@@ -33,24 +34,24 @@ class TeamAwardController extends Controller
         }
 
         $retornos = array();
-        $evento = Evento::find($evento_id);
-        if(!$evento){
-            return response()->json(["ok" => 0, "error" => 1, "message" => "Evento não encontrado."]);
+        $grupoevento = GrupoEvento::find($grupo_evento_id);
+        if(!$grupoevento){
+            return response()->json(["ok" => 0, "error" => 1, "message" => "Grupo de Evento não encontrado."]);
         }
-        if($evento->event_team_awards()->where([["id","=",$time_awards_id]])->count() == 0){
+        if($grupoevento->event_team_awards()->where([["id","=",$time_awards_id]])->count() == 0){
             return response()->json(["ok" => 0, "error" => 1, "message" => "Classificação de Time não encontrada."]);
         }
-        $time_award = $evento->event_team_awards()->where([["id","=",$time_awards_id]])->first();
+        $time_award = $grupoevento->event_team_awards()->where([["id","=",$time_awards_id]])->first();
         try {
             switch ($action) {
                 case 1:
-                    TeamAwardCalculatorController::sum_scores($evento, null, $time_award);
+                    TeamAwardCalculatorController::sum_scores(null, $grupoevento, $time_award);
                     break;
                 case 2:
-                    TeamAwardCalculatorController::generate_tiebreaks($evento, null, $time_award);
+                    TeamAwardCalculatorController::generate_tiebreaks(null, $grupoevento, $time_award);
                     break;
                 case 3:
-                    TeamAwardCalculatorController::classificate_teams($evento, null, $time_award);
+                    TeamAwardCalculatorController::classificate_teams(null, $grupoevento, $time_award);
             }
             return response()->json(["ok" => 1, "error" => 0]);
         } catch (Exception $e) {
