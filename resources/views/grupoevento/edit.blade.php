@@ -21,12 +21,24 @@
 @section("content")
 <!-- Main row -->
 <ul class="nav nav-pills">
-  <li role="presentation"><a href="/grupoevento">Voltar a Lista de Grupos de Evento</a></li>
-  @if($user->hasPermissionGlobal()) <li role="presentation"><a href="/grupoevento/new">Novo Grupo de Evento</a></li>@endif
-  @if($user->hasPermissionGlobal() || $user->hasPermissionGroupEventByPerfil($grupo_evento->id,[7])) <li role="presentation"><a href="/grupoevento/classificar/{{$grupo_evento->id}}">Classificar Grupo de Evento</a></li> @endif
-  <li role="presentation"><a href="/grupoevento/classificacao/{{$grupo_evento->id}}">Visualizar Classificação Pública</a></li>
-  <li role="presentation"><a href="/grupoevento/{{$grupo_evento->id}}/inscricoes/list">Visualizar Inscrições Totais</a></li>
-  <li role="presentation"><a href="/grupoevento/premiados/{{$grupo_evento->id}}">Consultar Premiados (Consulta Atual)</a></li>
+    <li role="presentation"><a href="/grupoevento">Voltar a Lista de Grupos de Evento</a></li>
+    @if($user->hasPermissionGlobal()) <li role="presentation"><a href="/grupoevento/new">Novo Grupo de Evento</a></li>@endif
+</ul>
+<ul class="nav nav-pills">
+    @if($user->hasPermissionGlobal() || $user->hasPermissionGroupEventByPerfil($grupo_evento->id,[7]))
+        <li role="presentation"><a href="/grupoevento/classificar/{{$grupo_evento->id}}">Classificar Grupo de Evento</a></li>
+    @endif
+    <li role="presentation"><a href="/grupoevento/classificacao/{{$grupo_evento->id}}">Visualizar Classificação Pública</a></li>
+    @if($grupo_evento->event_team_awards()->count() > 0)
+        @if($user->hasPermissionGlobal() || $user->hasPermissionGroupEventByPerfil($grupo_evento->id,[7]))
+            <li role="presentation"><a href="/grupoevento/premiacao_time/classificar/{{$grupo_evento->id}}">Classificar Premiação por Times</a></li>
+        @endif
+        <li role="presentation"><a href="/grupoevento/{{$grupo_evento->id}}/team_awards/standings">Visualizar Classificação Premiação por Times Pública</a></li>
+    @endif
+</ul>
+<ul class="nav nav-pills">
+    <li role="presentation"><a href="/grupoevento/{{$grupo_evento->id}}/inscricoes/list">Visualizar Inscrições Totais</a></li>
+    <li role="presentation"><a href="/grupoevento/premiados/{{$grupo_evento->id}}">Consultar Premiados (Consulta Atual)</a></li>
 </ul>
 <div class="row">
   <!-- Left col -->

@@ -101,9 +101,9 @@ class TeamAwardCalculatorController extends Controller
         foreach ($inscricoes as $inscricao) {
             if($time_award->hasPlace($inscricao->posicao) || $is_points){
                 if($is_points){
-                    $points = $time_award->getPlace($inscricao->posicao,true,true,$inscricao);
+                    $points = $time_award->getPlace($inscricao->categoria,$inscricao->posicao,true,true,$inscricao);
                 }else{
-                    $points = $time_award->getPlace($inscricao->posicao,true);
+                    $points = $time_award->getPlace($inscricao->categoria,$inscricao->posicao,true);
                 }
 
 

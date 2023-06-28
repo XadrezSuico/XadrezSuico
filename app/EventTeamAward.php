@@ -40,8 +40,11 @@ class EventTeamAward extends Model
         return false;
     }
 
-    public function getPlace($place = null, $return_value = false, $is_points = false, $registration = null){
+    public function getPlace($category, $place = null, $return_value = false, $is_points = false, $registration = null){
         // if we use registration points to get points
+        if($this->hasConfig("category_".$category->id."_default_points")){
+            return $this->getConfig("category_".$category->id."_default_points",true);
+        }
         if($is_points){
             if($registration){
                 if($registration->isPresent()){

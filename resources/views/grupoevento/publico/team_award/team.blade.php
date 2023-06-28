@@ -92,12 +92,12 @@
                                                     {{
                                                         ($is_points)
                                                         ?
-                                                        $team_award->getPlace($inscricao->posicao,true,true,$inscricao)
+                                                        $team_award->getPlace($inscricao->categoria,$inscricao->posicao,true,true,$inscricao)
                                                         :
-                                                        $team_award->getPlace($inscricao->posicao,true)
+                                                        $team_award->getPlace($inscricao->categoria,$inscricao->posicao,true)
                                                     }}
                                                     @php($j++)
-                                                    @php($total += ($is_points) ? $team_award->getPlace($inscricao->posicao,true,true,$inscricao) : $team_award->getPlace($inscricao->posicao,true))
+                                                    @php($total += ($is_points) ? $team_award->getPlace($inscricao->categoria,$inscricao->posicao,true,true,$inscricao) : $team_award->getPlace($inscricao->categoria,$inscricao->posicao,true))
                                                 @else
                                                     0
                                                 @endif
@@ -115,12 +115,12 @@
                                                 {{
                                                     ($is_points)
                                                     ?
-                                                    $team_award->getPlace($inscricao->posicao,true,true,$inscricao)
+                                                    $team_award->getPlace($inscricao->categoria,$inscricao->posicao,true,true,$inscricao)
                                                     :
-                                                    $team_award->getPlace($inscricao->posicao,true)
+                                                    $team_award->getPlace($inscricao->categoria,$inscricao->posicao,true)
                                                 }}
                                                 @php($j++)
-                                                @php($total += ($is_points) ? $team_award->getPlace($inscricao->posicao,true,true,$inscricao) : $team_award->getPlace($inscricao->posicao,true))
+                                                @php($total += ($is_points) ? $team_award->getPlace($inscricao->categoria,$inscricao->posicao,true,true,$inscricao) : $team_award->getPlace($inscricao->categoria,$inscricao->posicao,true))
                                             @else
                                                 0
                                             @endif

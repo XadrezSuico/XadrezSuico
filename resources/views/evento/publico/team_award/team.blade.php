@@ -72,9 +72,9 @@
                                         @if($team_award->hasConfig("limit_places"))
                                             @if($team_award->getConfig("limit_places",true) > $j)
                                                 @if($team_award->hasPlace($inscricao->posicao))
-                                                    {{$team_award->getPlace($inscricao->posicao,true)}}
+                                                    {{$team_award->getPlace($inscricao->categoria,$inscricao->posicao,true)}}
                                                     @php($j++)
-                                                    @php($total += $team_award->getPlace($inscricao->posicao,true))
+                                                    @php($total += $team_award->getPlace($inscricao->categoria,$inscricao->posicao,true))
                                                 @else
                                                     0
                                                 @endif
@@ -83,8 +83,8 @@
                                             @endif
                                         @else
                                             @if($team_award->hasPlace($inscricao->posicao))
-                                                {{$team_award->getPlace($inscricao->posicao,true)}}
-                                                @php($total += $team_award->getPlace($inscricao->posicao,true))
+                                                {{$team_award->getPlace($inscricao->categoria,$inscricao->posicao,true)}}
+                                                @php($total += $team_award->getPlace($inscricao->categoria,$inscricao->posicao,true))
                                             @else
                                                 0
                                             @endif
