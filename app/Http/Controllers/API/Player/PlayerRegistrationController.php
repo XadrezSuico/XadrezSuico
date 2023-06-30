@@ -82,6 +82,12 @@ class PlayerRegistrationController extends Controller
             }
         }
 
+        if (
+            is_int($nome_corrigido)
+        ) {
+            return response()->json(["ok" => 0, "error" => 1, "message" => "O nome informado do enxadrista não é válido."]);
+        }
+
         // print_r($request->all());
 
         $documentos = array();
