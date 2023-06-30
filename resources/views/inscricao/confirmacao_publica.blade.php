@@ -564,16 +564,6 @@
             for (i = 0; i < data.results.length; i++) {
                 var newOptionPais = new Option("#".concat(data.results[i].id).concat(" - ").concat(data.results[i].text), data.results[i].id, false, false);
                 $('.pais').append(newOptionPais).trigger('change');
-                if(i + 1 == data.results.length){
-                    if(callback){
-                        callback();
-                    }
-                }
-            }
-            if(data.results.length == 0){
-                if(callback){
-                    callback();
-                }
             }
         });
     }
