@@ -506,6 +506,7 @@
 						$("#confirmacao_estados_id").val(data.data.cidade.estado.id).change();
 						setTimeout(function(){
 							buscaCidades(2,function(){
+                                console.log("chegouu")
 								$("#confirmacao_cidade_id").val(data.data.cidade.id).change();
 							});
 						},200);
