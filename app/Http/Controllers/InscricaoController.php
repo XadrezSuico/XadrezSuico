@@ -444,7 +444,6 @@ class InscricaoController extends Controller
                 }
             }
         })
-        ->limit(30)
         ->get();
         $results = array();
         foreach ($paises as $pais) {
