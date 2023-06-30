@@ -66,7 +66,7 @@ Route::group(["prefix"=>"inscricao"],function(){
     Route::group(["prefix"=>"v2"],function(){
         Route::get('/{id}/busca/enxadrista', 'InscricaoController@telav2_buscaEnxadrista')->name('inscricao.v2.busca.enxadrista');
         Route::get('/{id}/busca/enxadrista/confirmacao', 'InscricaoController@telav2_buscaEnxadrista_ConfirmacaoPublica')->name('inscricao.v2.busca.enxadrista.confirmacao');
-        Route::get('/{id}/busca/pais', 'InscricaoController@buscaPais')->name('inscricao.busca.pais');
+        Route::get('/{id}/busca/pais', 'InscricaoController@telav2_buscaPais')->name('inscricao.v2.busca.pais');
         Route::get('/{id}/busca/estado/{pais_id}', 'InscricaoController@telav2_buscaEstado')->name('inscricao.v2.busca.estado');
         Route::get('/{id}/busca/cidade/{estados_id}', 'InscricaoController@telav2_buscaCidade')->name('inscricao.v2.busca.cidade');
         Route::get('/{id}/busca/clube', 'InscricaoController@telav2_buscaClube')->name('inscricao.v2.busca.clube');
