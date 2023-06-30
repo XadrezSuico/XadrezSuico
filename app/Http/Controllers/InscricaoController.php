@@ -452,6 +452,13 @@ class InscricaoController extends Controller
         }
         return response()->json(["results" => $results, "pagination" => true]);
     }
+    public function telav2_buscaPaisUnico($evento_id,$pais_id)
+    {
+        $pais = Pais::find($pais_id);
+        $results = array();
+        if($pais) $results[] = array("id" => $pais->id, "text" => $pais->nome);
+        return response()->json(["results" => $results, "pagination" => true]);
+    }
     public function telav2_buscaEstado($evento_id,$pais_id,Request $request)
     {
         $estados = Estado::where([
