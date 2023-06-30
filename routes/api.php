@@ -87,6 +87,7 @@ Route::group(["prefix"=>"v1"],function(){
         Route::get('/search', 'API\ClubController@search')->name('api.v1.clubs.search');
         Route::get('/get/{id}', 'API\ClubController@get')->name('api.v1.clubs.get');
         Route::post('/new', 'API\ClubController@new')->name('api.v1.clubs.new');
+        Route::get('/searchList', 'API\ClubController@searchList')->name('api.v1.clubs.search.list.select2');
     });
     Route::get('/defaults', 'API\DefaultController@default')->name('api.v1.defaults.defaults');
 });

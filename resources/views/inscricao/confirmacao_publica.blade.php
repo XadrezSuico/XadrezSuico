@@ -59,11 +59,8 @@
             <div class="modal-body">
 				<div class="form-group">
 					<label for="estado_pais_id" class="field-required">País *</label>
-					<select id="estado_pais_id" class="pais_id this_is_select2 form-control">
+					<select id="estado_pais_id" class="pais_id form-control">
 						<option value="">--- Selecione um país ---</option>
-						@foreach(\App\Pais::all() as $pais)
-							<option value="{{$pais->id}}">{{$pais->nome}} @if($pais->codigo_iso) ({{$pais->codigo_iso}}) @endif</option>
-						@endforeach
 					</select>
 				</div>
                 <div class="form-group">
@@ -88,11 +85,8 @@
             <div class="modal-body">
 				<div class="form-group">
 					<label for="cidade_pais_id" class="field-required">País *</label>
-					<select id="cidade_pais_id" class="pais_id this_is_select2 form-control">
+					<select id="cidade_pais_id" class="pais_id form-control">
 						<option value="">--- Selecione um país ---</option>
-						@foreach(\App\Pais::all() as $pais)
-							<option value="{{$pais->id}}">{{$pais->nome}} @if($pais->codigo_iso) ({{$pais->codigo_iso}}) @endif</option>
-						@endforeach
 					</select>
 				</div>
 				<div class="form-group">
@@ -127,11 +121,8 @@
                 </div>
 				<div class="form-group">
 					<label for="clube_pais_id" class="field-required">País *</label>
-					<select id="clube_pais_id" class="pais_id this_is_select2 form-control">
+					<select id="clube_pais_id" class="pais_id form-control">
 						<option value="">--- Selecione um país ---</option>
-						@foreach(\App\Pais::all() as $pais)
-							<option value="{{$pais->id}}">{{$pais->nome}} @if($pais->codigo_iso) ({{$pais->codigo_iso}}) @endif</option>
-						@endforeach
 					</select>
 				</div>
 				<div class="form-group">
@@ -268,11 +259,8 @@
                 </div>
 				<div class="form-group">
 					<label for="confirmacao_pais_id" class="field-required">País *</label>
-					<select id="confirmacao_pais_id" class="pais_id this_is_select2 form-control">
+					<select id="confirmacao_pais_id" class="pais_id form-control">
 						<option value="">--- Selecione um país ---</option>
-						@foreach(\App\Pais::all() as $pais)
-							<option value="{{$pais->id}}">{{$pais->nome}} @if($pais->codigo_iso) ({{$pais->codigo_iso}}) @endif</option>
-						@endforeach
 					</select>
 				</div>
 				<div class="form-group">
@@ -291,11 +279,8 @@
 				</div>
 				<div class="form-group">
 					<label for="confirmacao_clube_id">Clube/Instituição/Escola</label>
-					<select id="confirmacao_clube_id" class="clube_id this_is_select2 form-control">
+					<select id="confirmacao_clube_id" class="clube_id form-control">
 						<option value="">--- Você pode escolher um clube/instituição/escola ---</option>
-						@foreach(\App\Clube::all() as $clube)
-							<option value="{{$clube->id}}"> {{$clube->getFullName()}}</option>
-						@endforeach
 					</select>
                     <button id="clubeNaoCadastradoInscricao" onclick="chamaCadastroClube(2)" class="btn btn-success">O meu clube/instituição/escola não está cadastrado</button>
 				</div>
@@ -342,7 +327,7 @@
   	$(document).ready(function(){
 		$(".this_is_select2").select2();
 
-		$("#inscricao_clube_id").select2({
+		$("#confirmacao_clube_id").select2({
 			ajax: {
 				url: '{{url("/inscricao/v2/".$evento->id."/busca/clube")}}',
 				delay: 250,
@@ -353,6 +338,52 @@
 				}
 			}
 		});
+
+		$("#confirmacao_pais_id").select2({
+			ajax: {
+				url: '{{url("/inscricao/v2/".$evento->id."/busca/pais")}}',
+				delay: 250,
+				processResults: function (data) {
+					return {
+						results: data.results
+					};
+				}
+			}
+		});
+		$("#estado_pais_id").select2({
+			ajax: {
+				url: '{{url("/inscricao/v2/".$evento->id."/busca/pais")}}',
+				delay: 250,
+				processResults: function (data) {
+					return {
+						results: data.results
+					};
+				}
+			}
+		});
+		$("#cidade_pais_id").select2({
+			ajax: {
+				url: '{{url("/inscricao/v2/".$evento->id."/busca/pais")}}',
+				delay: 250,
+				processResults: function (data) {
+					return {
+						results: data.results
+					};
+				}
+			}
+		});
+		$("#clube_pais_id").select2({
+			ajax: {
+				url: '{{url("/inscricao/v2/".$evento->id."/busca/pais")}}',
+				delay: 250,
+				processResults: function (data) {
+					return {
+						results: data.results
+					};
+				}
+			}
+		});
+
 
 		$("#texto_pesquisa").on("keyup",function(){
 			$("#pesquisa div").html("<div class='loading_circle_div'><span class='loading-circle'></span></div>");

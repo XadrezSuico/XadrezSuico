@@ -85,4 +85,43 @@ class ClubController extends Controller
             return response()->json(["ok" => 0, "error" => 1, "message" => "Um erro inesperado aconteceu. Por favor, tente novamente mais tarde.", "registred" => 0]);
         }
     }
+
+
+    public function searchList(Request $request)
+    {
+        if($request->has("is_fexpar___clube_valido_vinculo_federativo")){
+            $clubes = Clube::where([["is_fexpar___clube_valido_vinculo_federativo","=",true]])
+            ->where(function($q1) use ($request) {
+                $q1->where([
+                    ["name", "like", "%" . $request->input("q") . "%"],
+                ])->orWhere(function ($q) use ($request) {
+                    $q->whereHas("cidade", function ($Q) use ($request) {
+                        $Q->where([
+                            ["name", "like", "%" . $request->input("q") . "%"],
+                        ]);
+                    });
+                });
+            })
+            ->limit(30)
+            ->get();
+        }else{
+            $clubes = Clube::where([
+                ["name", "like", "%" . $request->input("q") . "%"],
+            ])->orWhere(function ($q) use ($request) {
+                $q->whereHas("cidade", function ($Q) use ($request) {
+                    $Q->where([
+                        ["name", "like", "%" . $request->input("q") . "%"],
+                    ]);
+                });
+            })
+            ->limit(30)
+            ->get();
+        }
+        $results = array();
+        if(!$request->has("is_fexpar___clube_valido_vinculo_federativo")) $results[] = array("id" => -1, "text" => "Sem Clube");
+        foreach ($clubes as $clube) {
+            $results[] = array("id" => $clube->id, "text" => $clube->getFullName());
+        }
+        return response()->json(["results" => $results, "pagination" => true]);
+    }
 }

@@ -434,26 +434,60 @@ class InscricaoController extends Controller
         return response()->json(["results" => $results, "hasMore" => ($total > 30) ? true : false]);
     }
 
-    public function telav2_buscaEstado($evento_id,$pais_id)
+    public function telav2_buscaPais($evento_id,Request $request)
+    {
+        $paises = Pais::where(function($q1) use ($request){
+            if($request->has("q")){
+                if($request->q != ""){
+                    $q1->where([["id","=",$request->q]]);
+                    $q1->orWhere([["nome","like","%".$request->q."%"]]);
+                }
+            }
+        })->get();
+        $results = array();
+        foreach ($paises as $pais) {
+            $results[] = array("id" => $pais->id, "text" => $pais->nome);
+        }
+        return response()->json(["results" => $results, "pagination" => true]);
+    }
+    public function telav2_buscaEstado($evento_id,$pais_id,Request $request)
     {
         $estados = Estado::where([
             ["pais_id", "=", $pais_id],
-        ])->get();
+        ])
+        ->where(function($q1) use ($request){
+            if($request->has("q")){
+                if($request->q != ""){
+                    $q1->where([["id","=",$request->q]]);
+                    $q1->orWhere([["nome","like","%".$request->q."%"]]);
+                }
+            }
+        })
+        ->get();
         $results = array();
         foreach ($estados as $estado) {
-            $results[] = array("id" => $estado->id, "text" => $estado->nome);
+            $results[] = array("id" => $estado->id, "text" => $estado->getName());
         }
         return response()->json(["results" => $results, "pagination" => true]);
     }
 
-    public function telav2_buscaCidade($evento_id,$estados_id)
+    public function telav2_buscaCidade($evento_id,$estados_id,Request $request)
     {
         $cidades = Cidade::where([
             ["estados_id", "=", $estados_id],
-        ])->get();
+        ])
+        ->where(function($q1) use ($request){
+            if($request->has("q")){
+                if($request->q != ""){
+                    $q1->where([["id","=",$request->q]]);
+                    $q1->orWhere([["name","like","%".$request->q."%"]]);
+                }
+            }
+        })
+        ->get();
         $results = array();
         foreach ($cidades as $cidade) {
-            $results[] = array("id" => $cidade->id, "text" => $cidade->name);
+            $results[] = array("id" => $cidade->id, "text" => $cidade->getName());
         }
         return response()->json(["results" => $results, "pagination" => true]);
     }
