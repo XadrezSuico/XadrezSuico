@@ -2291,10 +2291,10 @@ class InscricaoController extends Controller
         ) {
             return response()->json(["ok" => 0, "error" => 1, "message" => "Um dos campos obrigatórios não está preenchido. Por favor, verifique e envie novamente!", "registred" => 0]);
         } elseif (
-            $request->input("inscricao_id") == null || $request->input("inscricao_id") == "" ||
-            $request->input("categoria_id") == null || $request->input("categoria_id") == "" ||
-            $request->input("cidade_id") == null || $request->input("cidade_id") == "" ||
-            $request->input("evento_id") == null || $request->input("evento_id") == ""
+            $request->input("inscricao_id") == null || $request->input("inscricao_id") == "" || $request->input("inscricao_id") == "null" ||
+            $request->input("categoria_id") == null || $request->input("categoria_id") == "" || $request->input("categoria_id") == "null" ||
+            $request->input("cidade_id") == null || $request->input("cidade_id") == "" || $request->input("cidade_id") == "null" ||
+            $request->input("evento_id") == null || $request->input("evento_id") == "" || $request->input("evento_id") == "null"
         ) {
             return response()->json(["ok" => 0, "error" => 1, "message" => "Um dos campos obrigatórios não está preenchido. Por favor, verifique e envie novamente!"]);
         } elseif (
