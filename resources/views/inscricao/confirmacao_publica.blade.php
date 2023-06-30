@@ -750,6 +750,7 @@
 				}
 			});
 		}else if(place == 2){
+            console.log("chegou");
 			$('#confirmacao_cidade_id').html("").trigger('change');
 			$.getJSON("{{url("/inscricao/v2/".$evento->id."/busca/cidade/")}}/".concat($("#confirmacao_estados_id").val()),function(data){
 				for (i = 0; i < data.results.length; i++) {
