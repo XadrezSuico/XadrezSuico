@@ -328,6 +328,9 @@
 		$(".this_is_select2").select2();
 
 		$(".pais_id").select2();
+        setTimeout(() => {
+            listaPaises();
+        }, 500);
 
 
 
