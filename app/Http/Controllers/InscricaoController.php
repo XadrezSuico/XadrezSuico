@@ -443,7 +443,9 @@ class InscricaoController extends Controller
                     $q1->orWhere([["nome","like","%".$request->q."%"]]);
                 }
             }
-        })->get();
+        })
+        ->limit(30)
+        ->get();
         $results = array();
         foreach ($paises as $pais) {
             $results[] = array("id" => $pais->id, "text" => $pais->nome);
@@ -463,6 +465,7 @@ class InscricaoController extends Controller
                 }
             }
         })
+        ->limit(30)
         ->get();
         $results = array();
         foreach ($estados as $estado) {
@@ -484,6 +487,7 @@ class InscricaoController extends Controller
                 }
             }
         })
+        ->limit(30)
         ->get();
         $results = array();
         foreach ($cidades as $cidade) {
