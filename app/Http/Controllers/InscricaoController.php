@@ -471,7 +471,6 @@ class InscricaoController extends Controller
                 }
             }
         })
-        ->limit(30)
         ->get();
         $results = array();
         foreach ($estados as $estado) {
@@ -493,7 +492,6 @@ class InscricaoController extends Controller
                 }
             }
         })
-        ->limit(30)
         ->get();
         $results = array();
         foreach ($cidades as $cidade) {
@@ -512,7 +510,9 @@ class InscricaoController extends Controller
                     ["name", "like", "%" . $request->input("q") . "%"],
                 ]);
             });
-        })->get();
+        })
+        ->limit(30)
+        ->get();
         $results = array(array("id" => -1, "text" => "Sem Clube"));
         foreach ($clubes as $clube) {
             $results[] = array("id" => $clube->id, "text" => $clube->id." -  " . $clube->getFullName());
