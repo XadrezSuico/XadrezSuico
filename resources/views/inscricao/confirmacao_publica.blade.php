@@ -550,9 +550,8 @@
 						$("#confirmacao_categoria_id").removeAttr("disabled").change();
 					}
 				}
-				$("#confirmacao_pais_id").val(data.data.cidade.estado.pais.id).change();
 				setTimeout(function(){
-					buscaPaises(2,false,function(){
+					buscaPaises(2,data.data.cidade.estado.pais.id,false,function(){
                         buscaEstados(2,false,function(){
                             $("#confirmacao_estados_id").val(data.data.cidade.estado.id).change();
                             setTimeout(function(){
@@ -615,14 +614,15 @@
 	}
 
 
-	function buscaPaises(place,buscaEstado,callback){
+	function buscaPaises(place,pais_id,buscaEstado,callback){
 		if(place == -2){
 			// CADASTRO DE CIDADE
 			$('#cidade_pais_id').html("").trigger('change');
-			$.getJSON("{{url("/inscricao/v2/".$evento->id."/busca/estado/")}}/".concat($("#cidade_pais_id").val()),function(data){
+			$.getJSON("{{url("/inscricao/v2/".$evento->id."/busca/estado/")}}/".concat(pais_id),function(data){
 				for (i = 0; i < data.results.length; i++) {
 					var newOptionEstado = new Option("#".concat(data.results[i].id).concat(" - ").concat(data.results[i].text), data.results[i].id, false, false);
 					$('#cidade_pais_id').append(newOptionEstado).trigger('change');
+					$('#cidade_pais_id').val(pais_id).change();
 					if(i + 1 == data.results.length){
 						if(callback){
 							callback();
@@ -638,10 +638,11 @@
 		}else if(place == -1){
 			// CADASTRO DE CLUBE
 			$('#clube_pais_id').html("").trigger('change');
-			$.getJSON("{{url("/inscricao/v2/".$evento->id."/busca/estado/")}}/".concat($("#clube_pais_id").val()),function(data){
+			$.getJSON("{{url("/inscricao/v2/".$evento->id."/busca/estado/")}}/".concat(pais_id),function(data){
 				for (i = 0; i < data.results.length; i++) {
 					var newOptionEstado = new Option("#".concat(data.results[i].id).concat(" - ").concat(data.results[i].text), data.results[i].id, false, false);
 					$('#clube_pais_id').append(newOptionEstado).trigger('change');
+					$('#clube_pais_id').val(pais_id).change();
 					if(i + 1 == data.results.length){
 						if(callback){
 							callback();
@@ -663,10 +664,11 @@
 		}else if(place == 0){
 			// CADASTRO DE ENXADRISTA
 			$('#pais_id').html("").trigger('change');
-			$.getJSON("{{url("/inscricao/v2/".$evento->id."/busca/estado/")}}/".concat($("#pais_id").val()),function(data){
+			$.getJSON("{{url("/inscricao/v2/".$evento->id."/busca/estado/")}}/".concat(pais_id),function(data){
 				for (i = 0; i < data.results.length; i++) {
 					var newOptionEstado = new Option("#".concat(data.results[i].id).concat(" - ").concat(data.results[i].text), data.results[i].id, false, false);
 					$('#pais_id').append(newOptionEstado).trigger('change');
+					$('#pais_id').val(pais_id).change();
 					if(i + 1 == data.results.length){
 						if(callback){
 							callback();
@@ -688,10 +690,11 @@
 		}else if(place == 1){
 			// INSCRIÇÃO
 			$('#inscricao_pais_id').html("").trigger('change');
-			$.getJSON("{{url("/inscricao/v2/".$evento->id."/busca/estado/")}}/".concat($("#inscricao_pais_id").val()),function(data){
+			$.getJSON("{{url("/inscricao/v2/".$evento->id."/busca/estado/")}}/".concat(pais_id),function(data){
 				for (i = 0; i < data.results.length; i++) {
 					var newOptionEstado = new Option("#".concat(data.results[i].id).concat(" - ").concat(data.results[i].text), data.results[i].id, false, false);
 					$('#inscricao_pais_id').append(newOptionEstado).trigger('change');
+					$('#inscricao_pais_id').val(pais_id).change();
 					if(i + 1 == data.results.length){
 						if(callback){
 							callback();
@@ -713,10 +716,11 @@
 		}else if(place == 2){
 			// CONFIRMAÇÃO DE INSCRIÇÃO
 			$('#confirmacao_pais_id').html("").trigger('change');
-			$.getJSON("{{url("/inscricao/v2/".$evento->id."/busca/estado/")}}/".concat($("#confirmacao_pais_id").val()),function(data){
+			$.getJSON("{{url("/inscricao/v2/".$evento->id."/busca/estado/")}}/".concat(pais_id),function(data){
 				for (i = 0; i < data.results.length; i++) {
 					var newOptionEstado = new Option("#".concat(data.results[i].id).concat(" - ").concat(data.results[i].text), data.results[i].id, false, false);
 					$('#confirmacao_pais_id').append(newOptionEstado).trigger('change');
+					$('#confirmacao_pais_id').val(pais_id).change();
 					if(i + 1 == data.results.length){
 						if(callback){
 							callback();
@@ -1040,26 +1044,30 @@
 	function chamaCadastroCidade(whereFrom){
 		$("#where_from_cadastro_cidade").val(whereFrom);
 		if(whereFrom == 0){
-			$("#cidade_pais_id").val($("#pais_id").val()).change();
 			setTimeout(function(){
-				buscaEstados(-2,false,function(){
-					$("#cidade_estados_id").val($("#estados_id").val()).change();
+				buscaPaises(-2,$("#pais_id").val(),false,function(){
+                    buscaEstados(-2,false,function(){
+                        $("#cidade_estados_id").val($("#estados_id").val()).change();
+                    });
 				});
 			},200);
 		}
 		if(whereFrom == 1){
-			$("#cidade_pais_id").val($("#inscricao_pais_id").val()).change();
 			setTimeout(function(){
-				buscaEstados(-2,false,function(){
-					$("#cidade_estados_id").val($("#inscricao_estados_id").val()).change();
+				buscaPaises(-2,$("#inscricao_pais_id").val(),false,function(){
+                    buscaEstados(-2,false,function(){
+                        $("#cidade_estados_id").val($("#inscricao_estados_id").val()).change();
+                    });
 				});
 			},200);
 		}
 		if(whereFrom == 2){
 			$("#cidade_pais_id").val($("#confirmacao_pais_id").val()).change();
 			setTimeout(function(){
-				buscaEstados(-2,false,function(){
-					$("#cidade_estados_id").val($("#confirmacao_estados_id").val()).change();
+				buscaPaises(-2,$("#confirmacao_pais_id").val(),false,function(){
+                    buscaEstados(-2,false,function(){
+                        $("#cidade_estados_id").val($("#confirmacao_estados_id").val()).change();
+                    });
 				});
 			},200);
 		}
@@ -1087,45 +1095,48 @@
 					$("#novaCidade").modal('hide');
 
 					if($("#where_from_cadastro_cidade").val() == 0){
-						$("#pais_id").val(data.pais_id).change();
 						setTimeout(function(){
-							buscaEstados(0,false,function(){
-								$("#estados_id").val(data.estados_id).change();
-								setTimeout(function(){
-									buscaCidades(0,function(){
-										Loading.destroy();
-										$("#cidade_id").val(data.cidade_id).change();
-										$("#novaCidade").modal('hide');
-									});
-								},200);
+							buscaPaises(0,data.pais_id,false,function(){
+                                buscaEstados(0,false,function(){
+                                    $("#estados_id").val(data.estados_id).change();
+                                    setTimeout(function(){
+                                        buscaCidades(0,function(){
+                                            Loading.destroy();
+                                            $("#cidade_id").val(data.cidade_id).change();
+                                            $("#novaCidade").modal('hide');
+                                        });
+                                    },200);
+                                });
 							});
 						},200);
 					}else if($("#where_from_cadastro_cidade").val() == 1){
-						$("#inscricao_pais_id").val(data.pais_id).change();
 						setTimeout(function(){
-							buscaEstados(1,false,function(){
-								$("#inscricao_estados_id").val(data.estados_id).change();
-								setTimeout(function(){
-									buscaCidades(1,function(){
-										Loading.destroy();
-										$("#inscricao_cidade_id").val(data.cidade_id).change();
-										$("#novaCidade").modal('hide');
-									});
-								},200);
+							buscaPaises(1,data.pais_id,false,function(){
+                                buscaEstados(1,false,function(){
+                                    $("#inscricao_estados_id").val(data.estados_id).change();
+                                    setTimeout(function(){
+                                        buscaCidades(1,function(){
+                                            Loading.destroy();
+                                            $("#inscricao_cidade_id").val(data.cidade_id).change();
+                                            $("#novaCidade").modal('hide');
+                                        });
+                                    },200);
+                                });
 							});
 						},200);
 					}else if($("#where_from_cadastro_cidade").val() == 2){
-						$("#confirmacao_pais_id").val(data.pais_id).change();
 						setTimeout(function(){
-							buscaEstados(2,false,function(){
-								$("#confirmacao_estados_id").val(data.estados_id).change();
-								setTimeout(function(){
-									buscaCidades(2,function(){
-										Loading.destroy();
-										$("#confirmacao_cidade_id").val(data.cidade_id).change();
-										$("#novaCidade").modal('hide');
-									});
-								},200);
+							buscaPaises(2,data.pais_id,false,function(){
+                                buscaEstados(2,false,function(){
+                                    $("#confirmacao_estados_id").val(data.estados_id).change();
+                                    setTimeout(function(){
+                                        buscaCidades(2,function(){
+                                            Loading.destroy();
+                                            $("#confirmacao_cidade_id").val(data.cidade_id).change();
+                                            $("#novaCidade").modal('hide');
+                                        });
+                                    },200);
+                                });
 							});
 						},200);
 					}
@@ -1137,45 +1148,48 @@
 				}else{
 					if(data.registred == 1){
 						if($("#where_from_cadastro_cidade").val() == 0){
-							$("#pais_id").val(data.pais_id).change();
 							setTimeout(function(){
-								buscaEstados(0,false,function(){
-									$("#estados_id").val(data.estados_id).change();
-									setTimeout(function(){
-										buscaCidades(0,function(){
-											Loading.destroy();
-											$("#cidade_id").val(data.cidade_id).change();
-											$("#novaCidade").modal('hide');
-										});
-									},200);
+								buscaPaises(0,data.pais_id,false,function(){
+                                    buscaEstados(0,false,function(){
+                                        $("#estados_id").val(data.estados_id).change();
+                                        setTimeout(function(){
+                                            buscaCidades(0,function(){
+                                                Loading.destroy();
+                                                $("#cidade_id").val(data.cidade_id).change();
+                                                $("#novaCidade").modal('hide');
+                                            });
+                                        },200);
+                                    });
 								});
 							},200);
 						}else if($("#where_from_cadastro_cidade").val() == 1){
-							$("#inscricao_pais_id").val(data.pais_id).change();
 							setTimeout(function(){
-								buscaEstados(1,false,function(){
-									$("#inscricao_estados_id").val(data.estados_id).change();
-									setTimeout(function(){
-										buscaCidades(1,function(){
-											Loading.destroy();
-											$("#inscricao_cidade_id").val(data.cidade_id).change();
-											$("#novaCidade").modal('hide');
-										});
-									},200);
+								buscaPaises(1,data.pais_id,false,function(){
+                                    buscaEstados(1,false,function(){
+                                        $("#inscricao_estados_id").val(data.estados_id).change();
+                                        setTimeout(function(){
+                                            buscaCidades(1,function(){
+                                                Loading.destroy();
+                                                $("#inscricao_cidade_id").val(data.cidade_id).change();
+                                                $("#novaCidade").modal('hide');
+                                            });
+                                        },200);
+                                    })
 								})
 							},200);
 						}else if($("#where_from_cadastro_cidade").val() == 2){
-							$("#confirmacao_pais_id").val(data.pais_id).change();
 							setTimeout(function(){
-								buscaEstados(2,false,function(){
-									$("#confirmacao_estados_id").val(data.estados_id).change();
-									setTimeout(function(){
-										buscaCidades(2,function(){
-											Loading.destroy();
-											$("#confirmacao_cidade_id").val(data.cidade_id).change();
-											$("#novaCidade").modal('hide');
-										});
-									},200);
+								buscaPaises(2,data.pais_id,false,function(){
+                                    buscaEstados(2,false,function(){
+                                        $("#confirmacao_estados_id").val(data.estados_id).change();
+                                        setTimeout(function(){
+                                            buscaCidades(2,function(){
+                                                Loading.destroy();
+                                                $("#confirmacao_cidade_id").val(data.cidade_id).change();
+                                                $("#novaCidade").modal('hide');
+                                            });
+                                        },200);
+                                    })
 								})
 							},200);
 						}
@@ -1232,36 +1246,41 @@
 					$("#novoEstado").modal('hide');
 
 					if($("#where_from_cadastro_estado").val() == 0){
-						$("#pais_id").val(data.pais_id).change();
 						setTimeout(function(){
-							buscaEstados(0,false,function(){
-								$("#estados_id").val(data.estados_id).change();
-								setTimeout(function(){
-									buscaCidades(0,false);
-									$("#novoEstado").modal('hide');
-								},200);
+							buscaPaises(0,data.pais_id,false,function(){
+                                buscaEstados(0,false,function(){
+                                    $("#estados_id").val(data.estados_id).change();
+                                    setTimeout(function(){
+                                        buscaCidades(0,false);
+                                        $("#novoEstado").modal('hide');
+                                    },200);
+                                });
 							});
 						},200);
 					}else if($("#where_from_cadastro_estado").val() == 1){
 						$("#inscricao_pais_id").val(data.pais_id).change();
 						setTimeout(function(){
-							buscaEstados(1,false,function(){
-								$("#inscricao_estados_id").val(data.estados_id).change();
-								setTimeout(function(){
-									buscaCidades(1,false);
-									$("#novoEstado").modal('hide');
-								},200);
+							buscaPaises(1,data.pais_id,false,function(){
+                                buscaEstados(1,false,function(){
+                                    $("#inscricao_estados_id").val(data.estados_id).change();
+                                    setTimeout(function(){
+                                        buscaCidades(1,false);
+                                        $("#novoEstado").modal('hide');
+                                    },200);
+                                });
 							});
 						},200);
 					}else if($("#where_from_cadastro_estado").val() == 2){
 						$("#confirmacao_pais_id").val(data.pais_id).change();
 						setTimeout(function(){
-							buscaEstados(2,false,function(){
-								$("#confirmacao_estados_id").val(data.estados_id).change();
-								setTimeout(function(){
-									buscaCidades(2,false);
-									$("#novoEstado").modal('hide');
-								},200);
+							buscaPaises(2,data.pais_id,false,function(){
+                                buscaEstados(2,false,function(){
+                                    $("#confirmacao_estados_id").val(data.estados_id).change();
+                                    setTimeout(function(){
+                                        buscaCidades(2,false);
+                                        $("#novoEstado").modal('hide');
+                                    },200);
+                                });
 							});
 						},200);
 					}
@@ -1273,36 +1292,39 @@
 				}else{
 					if(data.registred == 1){
 						if($("#where_from_cadastro_cidade").val() == 0){
-							$("#pais_id").val(data.pais_id).change();
 							setTimeout(function(){
-								buscaEstados(0,false,function(){
-									$("#estados_id").val(data.estados_id).change();
-									setTimeout(function(){
-										buscaCidades(0,false);
-										$("#novoEstado").modal('hide');
-									},200);
+								buscaPaises(0,data.pais_id,false,function(){
+                                    buscaEstados(0,false,function(){
+                                        $("#estados_id").val(data.estados_id).change();
+                                        setTimeout(function(){
+                                            buscaCidades(0,false);
+                                            $("#novoEstado").modal('hide');
+                                        },200);
+                                    });
 								});
 							},200);
 						}else if($("#where_from_cadastro_cidade").val() == 1){
-							$("#inscricao_pais_id").val(data.pais_id).change();
 							setTimeout(function(){
-								buscaEstados(1,false,function(){
-									$("#inscricao_estados_id").val(data.estados_id).change();
-									setTimeout(function(){
-										buscaCidades(1,false);
-										$("#novoEstado").modal('hide');
-									},200);
+								buscaPaises(1,data.pais_id,false,function(){
+                                    buscaEstados(1,false,function(){
+                                        $("#inscricao_estados_id").val(data.estados_id).change();
+                                        setTimeout(function(){
+                                            buscaCidades(1,false);
+                                            $("#novoEstado").modal('hide');
+                                        },200);
+                                    })
 								})
 							},200);
 						}else if($("#where_from_cadastro_cidade").val() == 2){
-							$("#confirmacao_pais_id").val(data.pais_id).change();
 							setTimeout(function(){
-								buscaEstados(2,false,function(){
-									$("#confirmacao_estados_id").val(data.estados_id).change();
-									setTimeout(function(){
-										buscaCidades(2,false);
-										$("#novoEstado").modal('hide');
-									},200);
+								buscaPaises(2,data.pais_id,false,function(){
+                                    buscaEstados(2,false,function(){
+                                        $("#confirmacao_estados_id").val(data.estados_id).change();
+                                        setTimeout(function(){
+                                            buscaCidades(2,false);
+                                            $("#novoEstado").modal('hide');
+                                        },200);
+                                    })
 								})
 							},200);
 						}
@@ -1326,41 +1348,44 @@
 	function chamaCadastroClube(whereFrom){
 		$("#where_from_cadastro_clube").val(whereFrom);
 		if(whereFrom == 0){
-			$("#cidade_pais_id").val($("#pais_id").val()).change();
 			setTimeout(function(){
-				buscaEstados(-1,false,function(){
-					$("#clube_estados_id").val($("#estados_id").val()).change();
-					setTimeout(function(){
-						buscaCidades(-1,function(){
-							$("#clube_cidade_id").val($("#cidade_id").val()).change();
-						});
-					},200);
+				buscaPaises(-1,$("#pais_id").val(),false,function(){
+                    buscaEstados(-1,false,function(){
+                        $("#clube_estados_id").val($("#estados_id").val()).change();
+                        setTimeout(function(){
+                            buscaCidades(-1,function(){
+                                $("#clube_cidade_id").val($("#cidade_id").val()).change();
+                            });
+                        },200);
+                    });
 				});
 			},200);
 		}
 		if(whereFrom == 1){
-			$("#clube_pais_id").val($("#inscricao_pais_id").val()).change();
 			setTimeout(function(){
-				buscaEstados(-1,false,function(){
-					$("#clube_estados_id").val($("#inscricao_estados_id").val()).change();
-					setTimeout(function(){
-						buscaCidades(-1,function(){
-							$("#clube_cidade_id").val($("#inscricao_cidade_id").val()).change();
-						});
-					},200);
+				buscaPaises(-1,$("#inscricao_pais_id").val(),false,function(){
+                    buscaEstados(-1,false,function(){
+                        $("#clube_estados_id").val($("#inscricao_estados_id").val()).change();
+                        setTimeout(function(){
+                            buscaCidades(-1,function(){
+                                $("#clube_cidade_id").val($("#inscricao_cidade_id").val()).change();
+                            });
+                        },200);
+                    });
 				});
 			},200);
 		}
 		if(whereFrom == 2){
-			$("#clube_pais_id").val($("#confirmacao_pais_id").val()).change();
 			setTimeout(function(){
-				buscaEstados(-1,false,function(){
-					$("#clube_estados_id").val($("#confirmacao_estados_id").val()).change();
-					setTimeout(function(){
-						buscaCidades(-1,function(){
-							$("#clube_cidade_id").val($("#confirmacao_cidade_id").val()).change();
-						});
-					},200);
+				buscaPaises(-1,$("#confirmacao_pais_id").val(),false,function(){
+                    buscaEstados(-1,false,function(){
+                        $("#clube_estados_id").val($("#confirmacao_estados_id").val()).change();
+                        setTimeout(function(){
+                            buscaCidades(-1,function(){
+                                $("#clube_cidade_id").val($("#confirmacao_cidade_id").val()).change();
+                            });
+                        },200);
+                    });
 				});
 			},200);
 		}
