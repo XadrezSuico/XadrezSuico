@@ -618,7 +618,7 @@
 		if(place == -2){
 			// CADASTRO DE CIDADE
 			$('#cidade_pais_id').html("").trigger('change');
-			$.getJSON("{{url("/inscricao/v2/".$evento->id."/busca/estado/")}}/".concat(pais_id),function(data){
+			$.getJSON("{{url("/inscricao/v2/".$evento->id."/busca/pais/")}}/".concat(pais_id),function(data){
 				for (i = 0; i < data.results.length; i++) {
 					var newOptionEstado = new Option("#".concat(data.results[i].id).concat(" - ").concat(data.results[i].text), data.results[i].id, false, false);
 					$('#cidade_pais_id').append(newOptionEstado).trigger('change');
@@ -638,7 +638,7 @@
 		}else if(place == -1){
 			// CADASTRO DE CLUBE
 			$('#clube_pais_id').html("").trigger('change');
-			$.getJSON("{{url("/inscricao/v2/".$evento->id."/busca/estado/")}}/".concat(pais_id),function(data){
+			$.getJSON("{{url("/inscricao/v2/".$evento->id."/busca/pais/")}}/".concat(pais_id),function(data){
 				for (i = 0; i < data.results.length; i++) {
 					var newOptionEstado = new Option("#".concat(data.results[i].id).concat(" - ").concat(data.results[i].text), data.results[i].id, false, false);
 					$('#clube_pais_id').append(newOptionEstado).trigger('change');
@@ -664,7 +664,7 @@
 		}else if(place == 0){
 			// CADASTRO DE ENXADRISTA
 			$('#pais_id').html("").trigger('change');
-			$.getJSON("{{url("/inscricao/v2/".$evento->id."/busca/estado/")}}/".concat(pais_id),function(data){
+			$.getJSON("{{url("/inscricao/v2/".$evento->id."/busca/pais/")}}/".concat(pais_id),function(data){
 				for (i = 0; i < data.results.length; i++) {
 					var newOptionEstado = new Option("#".concat(data.results[i].id).concat(" - ").concat(data.results[i].text), data.results[i].id, false, false);
 					$('#pais_id').append(newOptionEstado).trigger('change');
@@ -690,7 +690,7 @@
 		}else if(place == 1){
 			// INSCRIÇÃO
 			$('#inscricao_pais_id').html("").trigger('change');
-			$.getJSON("{{url("/inscricao/v2/".$evento->id."/busca/estado/")}}/".concat(pais_id),function(data){
+			$.getJSON("{{url("/inscricao/v2/".$evento->id."/busca/pais/")}}/".concat(pais_id),function(data){
 				for (i = 0; i < data.results.length; i++) {
 					var newOptionEstado = new Option("#".concat(data.results[i].id).concat(" - ").concat(data.results[i].text), data.results[i].id, false, false);
 					$('#inscricao_pais_id').append(newOptionEstado).trigger('change');
@@ -716,7 +716,7 @@
 		}else if(place == 2){
 			// CONFIRMAÇÃO DE INSCRIÇÃO
 			$('#confirmacao_pais_id').html("").trigger('change');
-			$.getJSON("{{url("/inscricao/v2/".$evento->id."/busca/estado/")}}/".concat(pais_id),function(data){
+			$.getJSON("{{url("/inscricao/v2/".$evento->id."/busca/pais/")}}/".concat(pais_id),function(data){
 				for (i = 0; i < data.results.length; i++) {
 					var newOptionEstado = new Option("#".concat(data.results[i].id).concat(" - ").concat(data.results[i].text), data.results[i].id, false, false);
 					$('#confirmacao_pais_id').append(newOptionEstado).trigger('change');
