@@ -17,6 +17,12 @@ class Estado extends Model
     }
 
 
+    public function getName()
+    {
+        return mb_strtoupper($this->nome);
+    }
+
+
     public function toAPIObject($include_parent = false){
         if($include_parent){
             return [
