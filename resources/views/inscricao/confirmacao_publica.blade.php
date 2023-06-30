@@ -327,7 +327,7 @@
   	$(document).ready(function(){
 		$(".this_is_select2").select2();
 
-		$(".pais").select2();
+		$(".pais_id").select2();
 
 
 
@@ -563,7 +563,7 @@
         $.getJSON("{{url("/inscricao/v2/".$evento->id."/busca/pais")}}",function(data){
             for (i = 0; i < data.results.length; i++) {
                 var newOptionPais = new Option("#".concat(data.results[i].id).concat(" - ").concat(data.results[i].text), data.results[i].id, false, false);
-                $('.pais').append(newOptionPais).trigger('change');
+                $('.pais_id').append(newOptionPais).trigger('change');
             }
         });
     }
