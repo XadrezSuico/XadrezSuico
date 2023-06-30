@@ -507,6 +507,7 @@
 						setTimeout(function(){
 							buscaCidades(2,function(){
                                 console.log("chegouu")
+                                console.log(data.data.cidade.id)
 								$("#confirmacao_cidade_id").val(data.data.cidade.id).change();
 							});
 						},200);
