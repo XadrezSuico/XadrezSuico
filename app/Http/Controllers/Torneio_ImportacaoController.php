@@ -160,6 +160,9 @@ class Torneio_ImportacaoController extends Controller
 
                     $j++;
                 }
+                if($torneio->getCountCriteriosNaoManuais() == 0){
+                    $retornos[] = date("d/m/Y H:i:s") . " - ALERTA! Grupo de Evento/Evento não possui critérios de desempate vinculados!!!";
+                }
                 $retornos[] = "<hr/>";
                 $retornos[] = date("d/m/Y H:i:s") . " - Início do Processamento dos Resultados:";
             } else {
@@ -219,19 +222,23 @@ class Torneio_ImportacaoController extends Controller
 
                         foreach ($torneio->getCriteriosNaoManuais() as $criterio) {
                             if ($criterio->softwares_id) {
-                                // echo "Inserindo critério de desempate '".$criterio->criterio->name."' <br/>";
-                                $retornos[] = date("d/m/Y H:i:s") . " - Inserindo critério de desempate '" . $criterio->criterio->name . "' - Valor: " . $line[($fields["Des" . $j])];
-                                $exp_meio = explode("½", $line[($fields["Des" . $j])]);
-                                $exp_virgula = explode(",", $line[($fields["Des" . $j])]);
+                                if(isset($line[($fields["Des" . $j])])){
+                                    // echo "Inserindo critério de desempate '".$criterio->criterio->name."' <br/>";
+                                    $retornos[] = date("d/m/Y H:i:s") . " - Inserindo critério de desempate '" . $criterio->criterio->name . "' - Valor: " . $line[($fields["Des" . $j])];
+                                    $exp_meio = explode("½", $line[($fields["Des" . $j])]);
+                                    $exp_virgula = explode(",", $line[($fields["Des" . $j])]);
 
-                                $desempate = new InscricaoCriterioDesempate;
-                                $desempate->inscricao_id = $inscricao->id;
-                                $desempate->criterio_desempate_id = $criterio->criterio->id;
-                                $desempate->valor = (count($exp_meio) > 1) ? $exp_meio[0] . ".5" : ((count($exp_virgula) > 1) ? $exp_virgula[0] . "." . $exp_virgula[1] : $exp_virgula[0]);
-                                // echo $desempate->valor."\n";
-                                $desempate->save();
-                                $retornos[] = date("d/m/Y H:i:s") . " - Desempate inserido";
-                                $j++;
+                                    $desempate = new InscricaoCriterioDesempate;
+                                    $desempate->inscricao_id = $inscricao->id;
+                                    $desempate->criterio_desempate_id = $criterio->criterio->id;
+                                    $desempate->valor = (count($exp_meio) > 1) ? $exp_meio[0] . ".5" : ((count($exp_virgula) > 1) ? $exp_virgula[0] . "." . $exp_virgula[1] : $exp_virgula[0]);
+                                    // echo $desempate->valor."\n";
+                                    $desempate->save();
+                                    $retornos[] = date("d/m/Y H:i:s") . " - Desempate inserido";
+                                    $j++;
+                                }else{
+                                    $retornos[] = date("d/m/Y H:i:s") . " - ERRO: critério de desempate '" . $criterio->criterio->name . "' - NÃO ENCONTRADO.";
+                                }
                             }
                         }
 
@@ -514,19 +521,24 @@ class Torneio_ImportacaoController extends Controller
 
                         foreach ($torneio->getCriterios() as $criterio) {
                             if ($criterio->softwares_id) {
-                                // echo "Inserindo critério de desempate '".$criterio->criterio->name."' <br/>";
-                                $retornos[] = date("d/m/Y H:i:s") . " - Inserindo critério de desempate '" . $criterio->criterio->name . "' - Valor: " . $line[($fields["Des" . $j])];
-                                $exp_meio = explode("½", $line[($fields["Des" . $j])]);
-                                $exp_virgula = explode(",", $line[($fields["Des" . $j])]);
+                                if(isset($line[($fields["Des" . $j])])){
+                                    // echo "Inserindo critério de desempate '".$criterio->criterio->name."' <br/>";
+                                    $retornos[] = date("d/m/Y H:i:s") . " - Inserindo critério de desempate '" . $criterio->criterio->name . "' - Valor: " . $line[($fields["Des" . $j])];
+                                    $exp_meio = explode("½", $line[($fields["Des" . $j])]);
+                                    $exp_virgula = explode(",", $line[($fields["Des" . $j])]);
 
-                                $desempate = new InscricaoCriterioDesempate;
-                                $desempate->inscricao_id = $inscricao->id;
-                                $desempate->criterio_desempate_id = $criterio->criterio->id;
-                                $desempate->valor = (count($exp_meio) > 1) ? $exp_meio[0] . ".5" : ((count($exp_virgula) > 1) ? $exp_virgula[0] . "." . $exp_virgula[1] : $exp_virgula[0]);
-                                // echo $desempate->valor."\n";
-                                $desempate->save();
-                                $retornos[] = date("d/m/Y H:i:s") . " - Desempate inserido";
-                                $j++;
+                                    $desempate = new InscricaoCriterioDesempate;
+                                    $desempate->inscricao_id = $inscricao->id;
+                                    $desempate->criterio_desempate_id = $criterio->criterio->id;
+                                    $desempate->valor = (count($exp_meio) > 1) ? $exp_meio[0] . ".5" : ((count($exp_virgula) > 1) ? $exp_virgula[0] . "." . $exp_virgula[1] : $exp_virgula[0]);
+                                    // echo $desempate->valor."\n";
+                                    $desempate->save();
+                                    $retornos[] = date("d/m/Y H:i:s") . " - Desempate inserido";
+                                    $j++;
+
+                                }else{
+                                    $retornos[] = date("d/m/Y H:i:s") . " - ERRO: critério de desempate '" . $criterio->criterio->name . "' - NÃO ENCONTRADO.";
+                                }
                             }
                         }
 

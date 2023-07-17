@@ -145,7 +145,7 @@ class Torneio extends Model
             })->count();
         }
 
-        return $this->evento->grupo_evento->criterios()->where([["tipo_torneio_id", "=", $this->tipo_torneio_id],["softwares_id","=",$this->software->id],["evento_id","=",$this->evento->id]])->whereDoesntHave("criterio", function ($q1) use ($torneio) {
+        return $this->evento->grupo_evento->criterios()->where([["tipo_torneio_id", "=", $this->tipo_torneio_id],["softwares_id","=",$this->software->id],["grupo_evento_id","=",$this->evento->grupo_evento->id]])->whereDoesntHave("criterio", function ($q1) use ($torneio) {
             $q1->where([
                 ["is_manual", "=", true],
             ]);
@@ -167,7 +167,7 @@ class Torneio extends Model
             })->get();
         }
 
-        return $this->evento->grupo_evento->criterios()->where([["tipo_torneio_id", "=", $this->tipo_torneio_id],["softwares_id","=",$this->software->id],["evento_id","=",$this->evento->id]])->whereDoesntHave("criterio", function ($q1) use ($torneio) {
+        return $this->evento->grupo_evento->criterios()->where([["tipo_torneio_id", "=", $this->tipo_torneio_id],["softwares_id","=",$this->software->id],["grupo_evento_id","=",$this->evento->grupo_evento->id]])->whereDoesntHave("criterio", function ($q1) use ($torneio) {
             $q1->where([
                 ["is_manual", "=", true],
             ]);
@@ -187,7 +187,7 @@ class Torneio extends Model
             return $this->evento->criterios()->where([["tipo_torneio_id", "=", $this->tipo_torneio_id],["softwares_id","=",$this->software->id],["evento_id","=",$this->evento->id]])->orderBy("prioridade", "ASC")->get();
         }
 
-        return $this->evento->grupo_evento->criterios()->where([["tipo_torneio_id", "=", $this->tipo_torneio_id],["softwares_id","=",$this->software->id],["evento_id","=",$this->evento->id]])->where([["tipo_torneio_id", "=", $this->tipo_torneio_id]])->whereHas("criterio", function ($q1) {$q1->where([["is_manual", "=", false]]);})->orderBy("prioridade", "ASC")->get();
+        return $this->evento->grupo_evento->criterios()->where([["tipo_torneio_id", "=", $this->tipo_torneio_id],["softwares_id","=",$this->software->id],["grupo_evento_id","=",$this->evento->grupo_evento->id]])->where([["tipo_torneio_id", "=", $this->tipo_torneio_id]])->whereHas("criterio", function ($q1) {$q1->where([["is_manual", "=", false]]);})->orderBy("prioridade", "ASC")->get();
     }
     public function getCriteriosManuais()
     {
