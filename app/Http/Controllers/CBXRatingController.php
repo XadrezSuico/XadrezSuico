@@ -43,6 +43,8 @@ class CBXRatingController extends Controller
             $html = (string) $response->getBody();
         }
 
+        $not_found = false;
+
         $nome = CBXRatingController::getName($html);
         if($nome){
             $enxadrista->encontrado_cbx = true;
@@ -93,28 +95,57 @@ class CBXRatingController extends Controller
                                             }
                                         } else {
                                             if($show_text) echo "Erro column";
+
+                                            switch($j){
+                                                case $std:
+                                                    if($show_text) echo "Rating STD: NF";
+                                                    if($save_rating) $enxadrista->deleteRating($codigo_organizacao, 0);
+                                                    break;
+
+                                                case $rpd:
+                                                    if($show_text) echo "Rating RPD: NF";
+                                                    if($save_rating) $enxadrista->deleteRating($codigo_organizacao, 1);
+                                                    break;
+
+                                                case $btz:
+                                                    if($show_text) echo "Rating BTZ: NF";
+                                                    if($save_rating) $enxadrista->deleteRating($codigo_organizacao, 2);
+                                                    break;
+                                            }
                                         }
                                         $j++;
                                     }
                                 } else {
                                     if($show_text) echo "Erro columns " . count($columns);
+                                    $not_found = true;
                                 }
                             }
                             $i++;
                         }
                     } else {
                         if($show_text) echo "Erro explode_table_3";
+                        $not_found = true;
                     }
                 } else {
                     if($show_text) echo "Erro explode_table_2";
+                    $not_found = true;
                 }
             } else {
                 if($show_text) echo "Erro explode_table_1";
+                $not_found = true;
             }
         } else {
             if($show_text) echo "Erro name";
             $enxadrista->encontrado_cbx = false;
+            $not_found = true;
         }
+
+        if($not_found && $save_rating){
+            $enxadrista->deleteRating($codigo_organizacao,0);
+            $enxadrista->deleteRating($codigo_organizacao,1);
+            $enxadrista->deleteRating($codigo_organizacao,2);
+        }
+
         if($save_rating) $enxadrista->cbx_last_update = date("Y-m-d H:i:s");
         if($return_enxadrista){
             return $enxadrista;
