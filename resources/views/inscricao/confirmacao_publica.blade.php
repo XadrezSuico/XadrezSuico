@@ -327,6 +327,19 @@
   	$(document).ready(function(){
 		$(".this_is_select2").select2();
 
+
+		$("#confirmacao_clube_id").select2({
+			ajax: {
+				url: '{{url("/inscricao/v2/".$evento->id."/busca/clube")}}',
+				delay: 250,
+				processResults: function (data) {
+					return {
+						results: data.results
+					};
+				}
+			}
+		});
+
 		$(".pais_id").select2();
         setTimeout(() => {
             listaPaises();
@@ -439,10 +452,10 @@
 			salvarCadastroClube();
 		});
 		$("#go_to_inscricao").on("click",function(){
-			goToInscricao();
+			goToConfirmacao();
 		});
         @if($go_to_inscricao)
-            goToInscricao();
+            goToConfirmacao();
         @endif
   	});
 
@@ -1287,7 +1300,7 @@
 		});
 	}
 
-    function goToInscricao(){
+    function goToConfirmacao(){
         $('html, body').stop().animate({
             'scrollTop': $("#processo_inscricao").offset().top
         }, 600, 'swing');
