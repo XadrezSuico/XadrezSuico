@@ -125,13 +125,15 @@ class VinculoFederativoController extends Controller
                     });
                 })->count();
             if($count > 0){
-                $vinculo->is_confirmed_system = true;
-                $vinculo->system_inscricoes_in_this_club_confirmed = $count;
-                $vinculo->vinculated_at = date("Y-m-d H:i:s");
-                $vinculo->save();
-                activity()
-                ->performedOn($vinculo)
-                ->log('Vínculo confirmado automaticamente.');
+                if($vinculo->clube->is_fexpar___clube_valido_vinculo_federativo){
+                    $vinculo->is_confirmed_system = true;
+                    $vinculo->system_inscricoes_in_this_club_confirmed = $count;
+                    $vinculo->vinculated_at = date("Y-m-d H:i:s");
+                    $vinculo->save();
+                    activity()
+                    ->performedOn($vinculo)
+                    ->log('Vínculo confirmado automaticamente.');
+                }
 
             }else{
                 $vinculo->is_confirmed_system = false;
