@@ -682,6 +682,7 @@ class Enxadrista extends Model
         $codigo_organizacao = 0;
         if($this->getOriginal("fide_id") != $fide_id || $this->fide_id != $fide_id){
             $this->fide_id = $fide_id;
+            $this->fide_name = null;
             $this->fide_last_update = null;
 
             $this->save();
@@ -695,6 +696,7 @@ class Enxadrista extends Model
         $codigo_organizacao = 1;
         if($this->getOriginal("cbx_id") != $cbx_id || $this->cbx_id != $cbx_id){
             $this->cbx_id = $cbx_id;
+            $this->cbx_name = null;
             $this->cbx_last_update = null;
 
             $this->save();
@@ -708,6 +710,7 @@ class Enxadrista extends Model
         $codigo_organizacao = 2;
         if($this->getOriginal("lbx_id") != $lbx_id || $this->lbx_id != $lbx_id){
             $this->lbx_id = $lbx_id;
+            $this->lbx_name = null;
             $this->lbx_last_update = null;
 
             $this->save();
