@@ -153,10 +153,13 @@ class FIDERatingController extends Controller
                 $html = (string) $response->getBody();
             }
 
+            $not_found = true;
+
             $json = json_decode($html);
             if(!isset($json->reason)){
                 $enxadrista->encontrado_fide = true;
                 if(!$return_enxadrista) $enxadrista->save();
+                $not_found = false;
                 if(isset($json->standard_elo)){
                     if(is_numeric($json->standard_elo)){
                         if($show_text) echo "STD:" . $json->standard_elo;
@@ -198,6 +201,14 @@ class FIDERatingController extends Controller
             }else{
                 $enxadrista->encontrado_fide = false;
                 if(!$return_enxadrista) $enxadrista->save();
+            }
+
+
+
+            if($not_found && $save_rating){
+                $enxadrista->deleteRating($codigo_organizacao,0);
+                $enxadrista->deleteRating($codigo_organizacao,1);
+                $enxadrista->deleteRating($codigo_organizacao,2);
             }
 
             if($save_rating) $enxadrista->fide_last_update = date("Y-m-d H:i:s");
