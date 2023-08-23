@@ -426,33 +426,6 @@ class EnxadristaController extends Controller
             $enxadrista->clube_id = null;
         }
         $enxadrista->email = $request->input("email");
-        if ($request->has("cbx_id")) {
-            if ($request->input("cbx_id")) {
-                $enxadrista->cbx_id = $request->input("cbx_id");
-            } else {
-                $enxadrista->cbx_id = null;
-            }
-        } else {
-            $enxadrista->cbx_id = null;
-        }
-        if ($request->has("fide_id")) {
-            if ($request->input("fide_id")) {
-                $enxadrista->fide_id = $request->input("fide_id");
-            } else {
-                $enxadrista->fide_id = null;
-            }
-        } else {
-            $enxadrista->fide_id = null;
-        }
-        if ($request->has("lbx_id")) {
-            if ($request->input("lbx_id")) {
-                $enxadrista->lbx_id = $request->input("lbx_id");
-            } else {
-                $enxadrista->lbx_id = null;
-            }
-        } else {
-            $enxadrista->lbx_id = null;
-        }
         if ($request->has("lichess_username")) {
             if ($request->input("lichess_username")) {
                 $enxadrista->lichess_username = mb_strtolower($request->input("lichess_username"));
@@ -472,6 +445,35 @@ class EnxadristaController extends Controller
             $enxadrista->chess_com_username = null;
         }
         $enxadrista->save();
+
+
+        if ($request->has("cbx_id")) {
+            if ($request->input("cbx_id")) {
+                $enxadrista->setCBXID($request->input("cbx_id"));
+            } else {
+                $enxadrista->setCBXID();
+            }
+        } else {
+            $enxadrista->setCBXID();
+        }
+        if ($request->has("fide_id")) {
+            if ($request->input("fide_id")) {
+                $enxadrista->setFIDEID($request->input("fide_id"));
+            } else {
+                $enxadrista->setFIDEID();
+            }
+        } else {
+            $enxadrista->setFIDEID();
+        }
+        if ($request->has("lbx_id")) {
+            if ($request->input("lbx_id")) {
+                $enxadrista->setLBXID($request->input("lbx_id"));
+            } else {
+                $enxadrista->setLBXID(null);
+            }
+        } else {
+            $enxadrista->setLBXID(null);
+        }
 
         foreach($enxadrista->documentos->all() as $documento){
             $documento->delete();

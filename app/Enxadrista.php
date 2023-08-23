@@ -678,6 +678,46 @@ class Enxadrista extends Model
         return false;
     }
 
+    public function setFIDEID($fide_id = null){
+        $codigo_organizacao = 0;
+        if($this->getOriginal("fide_id") != $fide_id || $this->fide_id != $fide_id){
+            $this->fide_id = $fide_id;
+            $this->fide_last_update = null;
+
+            $this->save();
+
+            $this->deleteRating($codigo_organizacao,0);
+            $this->deleteRating($codigo_organizacao,1);
+            $this->deleteRating($codigo_organizacao,2);
+        }
+    }
+    public function setCBXID($cbx_id = null){
+        $codigo_organizacao = 1;
+        if($this->getOriginal("cbx_id") != $cbx_id || $this->cbx_id != $cbx_id){
+            $this->cbx_id = $cbx_id;
+            $this->cbx_last_update = null;
+
+            $this->save();
+
+            $this->deleteRating($codigo_organizacao,0);
+            $this->deleteRating($codigo_organizacao,1);
+            $this->deleteRating($codigo_organizacao,2);
+        }
+    }
+    public function setLBXID($lbx_id = null){
+        $codigo_organizacao = 2;
+        if($this->getOriginal("lbx_id") != $lbx_id || $this->lbx_id != $lbx_id){
+            $this->lbx_id = $lbx_id;
+            $this->lbx_last_update = null;
+
+            $this->save();
+
+            $this->deleteRating($codigo_organizacao,0);
+            $this->deleteRating($codigo_organizacao,1);
+            $this->deleteRating($codigo_organizacao,2);
+        }
+    }
+
 
     public function getInscricoesByClube($clube_id, $year = null, $is_confirmed = true){
         if(!$year){
