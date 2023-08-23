@@ -684,6 +684,7 @@ class Enxadrista extends Model
             $this->fide_id = $fide_id;
             $this->fide_name = null;
             $this->fide_last_update = null;
+            $this->encontrado_fide = false;
 
             $this->save();
 
@@ -698,6 +699,7 @@ class Enxadrista extends Model
             $this->cbx_id = $cbx_id;
             $this->cbx_name = null;
             $this->cbx_last_update = null;
+            $this->encontrado_cbx = false;
 
             $this->save();
 
@@ -712,6 +714,7 @@ class Enxadrista extends Model
             $this->lbx_id = $lbx_id;
             $this->lbx_name = null;
             $this->lbx_last_update = null;
+            $this->encontrado_lbx = false;
 
             $this->save();
 
