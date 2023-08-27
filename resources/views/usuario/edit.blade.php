@@ -90,7 +90,10 @@
 							<select class="form-control" name="grupo_evento_id" id="grupo_evento_id">
 								<option value=""> --- Selecione ---</option>
 								@foreach(\App\GrupoEvento::all() as $grupo_evento)
-                        			@if(\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() || \Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($grupo_evento->id,[6,7]) || \Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfilByGroupEvent($grupo_evento->id,[3,4,5]))
+                        			@if(
+                                        \Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
+                                        \Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($grupo_evento->id,[7])
+                                    )
 										<option value="{{$grupo_evento->id}}">{{$grupo_evento->id}} - {{$grupo_evento->name}}</option>
 									@endif
 								@endforeach
@@ -101,7 +104,9 @@
 							<select class="form-control" name="evento_id" id="evento_id">
 								<option value=""> --- Selecione ---</option>
 								@foreach(\App\Evento::all() as $evento)
-                        			@if(\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() || \Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[6,7]) || \Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[3,4,5]))
+                        			@if(\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
+                                    \Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7]) ||
+                                    \Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4]))
 										<option value="{{$evento->id}}">{{$evento->id}} - {{$evento->name}}</option>
 									@endif
 								@endforeach
