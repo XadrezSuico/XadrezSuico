@@ -17,7 +17,7 @@ class SeedEmailTemplateAddInscricaoRecebidaPagamentoPendente extends Migration
      */
     public function up()
     {
-        $email_template_7 = EmailTemplate::where(["email_type","=",7])->whereNull("grupo_evento_id")->whereNull("evento_id")->first();
+        $email_template_7 = EmailTemplate::where([["email_type","=",7]])->whereNull("grupo_evento_id")->whereNull("evento_id")->first();
         if(!$email_template_7){
             $email_template_7 = new EmailTemplate;
             $email_template_7->email_type = 7;
