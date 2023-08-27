@@ -148,7 +148,7 @@
                                 )
                                     @if(
                                         \Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfilByGroupEvent($perfil->evento->id,[7]) ||
-                                        \Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($perfil->id,[4])
+                                        \Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($perfil->evento->id,[4])
                                     )
                                         @php($permission_check = true)
                                     @endif
@@ -160,8 +160,7 @@
                                     !$permission_check
                                 )
                                     @if(
-                                        \Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($perfil->grupo_evento->id,[7]) ||
-                                        \Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($perfil->id,[4])
+                                        \Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($perfil->grupo_evento->id,[7])
                                     )
                                         @php($permission_check = true)
                                     @endif
