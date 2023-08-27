@@ -133,52 +133,87 @@
 						</thead>
 						<tbody>
 							@foreach($user->perfis->all() as $perfil)
-								<tr>
-									<td>{{$perfil->perfil->id}}</td>
-									<td>{{$perfil->perfil->name}}</td>
-									<td>
-										@if(
-											$perfil->perfil->id == 3 ||
-											$perfil->perfil->id == 4 ||
-											$perfil->perfil->id == 5
-										)
-											Evento: {{$perfil->evento->id}} - {{$perfil->evento->name}}
-										@else
-											@if(
-												$perfil->perfil->id == 6 ||
-												$perfil->perfil->id == 7
-											)
-												Grupo de Evento: {{$perfil->grupo_evento->id}} - {{$perfil->grupo_evento->name}}
-											@else
-												-
-											@endif
-										@endif
-									</td>
-									<td>
-										@if(
-											$perfil->perfil->id == 3 ||
-											$perfil->perfil->id == 4 ||
-											$perfil->perfil->id == 5
-										)
-											@if(\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobalbyPerfil([1]) || \Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($perfil->evento->grupo_evento->id,[7]))
-												<a class="btn btn-danger" href="{{url("/usuario/".$user->id."/perfis/remove/".$perfil->id)}}" role="button"><i class="fa fa-times"></i></a>
-											@endif
-										@else
-											@if(
-												$perfil->perfil->id == 6 ||
-												$perfil->perfil->id == 7
-											)
-											@if(\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobalbyPerfil([1]) || \Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($perfil->grupo_evento->id,[7]))
-												<a class="btn btn-danger" href="{{url("/usuario/".$user->id."/perfis/remove/".$perfil->id)}}" role="button"><i class="fa fa-times"></i></a>
-											@endif
-											@else
-												@if(\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobalbyPerfil([1]))
-													<a class="btn btn-danger" href="{{url("/usuario/".$user->id."/perfis/remove/".$perfil->id)}}" role="button"><i class="fa fa-times"></i></a>
-												@endif
-											@endif
-										@endif
-									</td>
-								</tr>
+                                @php($permission_check = false)
+                                @if(
+                                    \Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal()
+                                )
+                                    @php($permission_check = true)
+                                @endif
+                                @if(
+                                    ($perfil->perfil->id == 3 ||
+                                    $perfil->perfil->id == 4 ||
+                                    $perfil->perfil->id == 5)
+                                    &&
+                                    !$permission_check
+                                )
+                                    @if(
+                                        \Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfilByGroupEvent($perfil->evento->id,[7]) ||
+                                        \Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($perfil->id,[4])
+                                    )
+                                        @php($permission_check = true)
+                                    @endif
+                                @endif
+                                @if(
+                                    ($perfil->perfil->id == 6 ||
+                                    $perfil->perfil->id == 7)
+                                    &&
+                                    !$permission_check
+                                )
+                                    @if(
+                                        \Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($perfil->evento->id,[7]) ||
+                                        \Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($perfil->id,[4])
+                                    )
+                                        @php($permission_check = true)
+                                    @endif
+                                @endif
+                                @if($permission_check)
+                                    <tr>
+                                        <td>{{$perfil->perfil->id}}</td>
+                                        <td>{{$perfil->perfil->name}}</td>
+                                        <td>
+                                            @if(
+                                                $perfil->perfil->id == 3 ||
+                                                $perfil->perfil->id == 4 ||
+                                                $perfil->perfil->id == 5
+                                            )
+                                                Evento: {{$perfil->evento->id}} - {{$perfil->evento->name}}
+                                            @else
+                                                @if(
+                                                    $perfil->perfil->id == 6 ||
+                                                    $perfil->perfil->id == 7
+                                                )
+                                                    Grupo de Evento: {{$perfil->grupo_evento->id}} - {{$perfil->grupo_evento->name}}
+                                                @else
+                                                    -
+                                                @endif
+                                            @endif
+                                        </td>
+                                        <td>
+                                            @if(
+                                                $perfil->perfil->id == 3 ||
+                                                $perfil->perfil->id == 4 ||
+                                                $perfil->perfil->id == 5
+                                            )
+                                                @if(\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobalbyPerfil([1]) || \Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($perfil->evento->grupo_evento->id,[7]))
+                                                    <a class="btn btn-danger" href="{{url("/usuario/".$user->id."/perfis/remove/".$perfil->id)}}" role="button"><i class="fa fa-times"></i></a>
+                                                @endif
+                                            @else
+                                                @if(
+                                                    $perfil->perfil->id == 6 ||
+                                                    $perfil->perfil->id == 7
+                                                )
+                                                @if(\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobalbyPerfil([1]) || \Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($perfil->grupo_evento->id,[7]))
+                                                    <a class="btn btn-danger" href="{{url("/usuario/".$user->id."/perfis/remove/".$perfil->id)}}" role="button"><i class="fa fa-times"></i></a>
+                                                @endif
+                                                @else
+                                                    @if(\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobalbyPerfil([1]))
+                                                        <a class="btn btn-danger" href="{{url("/usuario/".$user->id."/perfis/remove/".$perfil->id)}}" role="button"><i class="fa fa-times"></i></a>
+                                                    @endif
+                                                @endif
+                                            @endif
+                                        </td>
+                                    </tr>
+							    @endif
 							@endforeach
 						</tbody>
 					</table>
