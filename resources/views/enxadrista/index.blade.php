@@ -4,6 +4,7 @@
         $permitido_edicao = false;
         if(
             \Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
+            \Illuminate\Support\Facades\Auth::user()->hasPermissionGlobalbyPerfil([9]) ||
             \Illuminate\Support\Facades\Auth::user()->hasPermissionEventsByPerfil([4])
         ){
             $permitido_edicao = true;
@@ -31,8 +32,7 @@
             <li role="presentation"><a href="{{url("/enxadrista/new")}}">Novo Enxadrista</a></li>
 
             @if(
-                \Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
-                \Illuminate\Support\Facades\Auth::user()->hasPermissionGlobalbyPerfil([9])
+                \Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal()
             )
                 <li role="presentation"><a href="{{url("/enxadrista/download")}}">Baixar Base de Dados (Apenas Administradores e Super-Administradores)</a></li>
             @endif
