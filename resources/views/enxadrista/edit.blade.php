@@ -4,6 +4,7 @@
         $permitido_edicao = false;
         if(
             \Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
+            \Illuminate\Support\Facades\Auth::user()->hasPermissionGlobalByPerfil([9]) ||
             \Illuminate\Support\Facades\Auth::user()->hasPermissionEventsByPerfil([4])
         ){
             $permitido_edicao = true;
