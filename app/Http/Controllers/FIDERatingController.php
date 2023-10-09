@@ -199,6 +199,7 @@ class FIDERatingController extends Controller
                     if($save_rating) $enxadrista->deleteRating($codigo_organizacao, 2);
                 }
             }else{
+                $enxadrista->fide_name = null;
                 $enxadrista->encontrado_fide = false;
                 if(!$return_enxadrista) $enxadrista->save();
             }

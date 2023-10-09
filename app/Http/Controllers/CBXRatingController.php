@@ -136,6 +136,7 @@ class CBXRatingController extends Controller
             }
         } else {
             if($show_text) echo "Erro name";
+            $enxadrista->cbx_name = null;
             $enxadrista->encontrado_cbx = false;
             $not_found = true;
         }
