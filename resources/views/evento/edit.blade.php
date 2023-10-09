@@ -376,6 +376,7 @@
 									<select name="exportacao_sm_modelo" id="exportacao_sm_modelo" class="form-control width-100" @if(!\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() && !\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4]) && !\Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])) disabled="disabled" @endif>
 										<option value="0">Padrão XadrezSuíço</option>
 										<option value="1">FIDE</option>
+										<option value="7">FIDE - Exporta somente clube</option>
 										<option value="2">LBX</option>
 										<option value="3">Padrão XadrezSuíço (Nome no Sobrenome, e Sobrenome no Nome)</option>
 										<option value="4">Padrão XadrezSuíço Chess.com (Nome no Sobrenome, Sobrenome no Nome e no Nome também informa o Usuário do Chess.com)</option>

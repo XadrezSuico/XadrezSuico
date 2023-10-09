@@ -511,6 +511,9 @@ class InscricaoGerenciarController extends Controller
             case 1:
                 // FIDE
                 return $this->generateTxt_1($inscricoes, $evento, $torneio);
+            case 7:
+                // FIDE sem cidade
+                return $this->generateTxt_7($inscricoes, $evento, $torneio);
             case 2:
                 // LBX
                 return $this->generateTxt_2($inscricoes, $evento, $torneio);
@@ -1005,6 +1008,95 @@ class InscricaoGerenciarController extends Controller
             } else {
                 $texto .= ";";
                 $texto .= $inscricao->cidade->name . ";";
+            }
+
+            $texto .= ((count($explode_fide_name) > 1) ? $explode_fide_name[0] : $inscricao->enxadrista->lastname) . ";";
+            $texto .= ((count($explode_fide_name) > 1) ? $explode_fide_name[1] : $inscricao->enxadrista->firstname) . ";";
+            $texto .= $inscricao->enxadrista->id . "\r\n";
+        }
+        return $texto;
+    }
+
+
+    private function generateTxt_7($inscricoes, $evento, $torneio){
+        $texto = "No;Nome Completo;ID;FED;FIDE;id FIDE;";
+        if ($evento->usa_cbx) {
+            $texto .= "Elonac;";
+        }
+        $texto .= "Sexo;DNasc;Cat;Gr;NoClube;Nome Clube;Sobrenome;Nome;Fonte\r\n";
+
+        $i = 1;
+
+        $inscritos = array();
+        foreach ($inscricoes as $inscricao) {
+            $inscritos[] = $inscricao;
+        }
+        usort($inscritos, array("App\Http\Controllers\InscricaoGerenciarController", "cmp_obj"));
+
+        foreach ($inscritos as $inscricao) {
+            $explode_fide_name = explode(",",$inscricao->enxadrista->fide_name);
+
+            $texto .= $i++ . ";";
+            $texto .= $inscricao->enxadrista->name . ";";
+            $texto .= $inscricao->enxadrista->cbx_id . ";";
+            $texto .= $inscricao->enxadrista->pais_nascimento->codigo_iso.";";
+
+            if ($evento->tipo_rating) {
+                if ($inscricao->enxadrista->showRatingInterno($evento->tipo_rating->id)) {
+                    $texto .= $inscricao->enxadrista->showRatingInterno($evento->tipo_rating->id) . ";";
+                } else {
+                    $fide = $inscricao->enxadrista->showRating(0, $evento->tipo_modalidade);
+                    $cbx = $inscricao->enxadrista->showRating(1, $evento->tipo_modalidade);
+                    $lbx = $inscricao->enxadrista->showRating(2, $evento->tipo_modalidade);
+
+                    $found = false;
+                    if($fide){
+                        if($fide > $evento->tipo_rating->tipo_rating->showRatingRegraIdade($inscricao->enxadrista->howOld(), $evento)){
+                            $texto .= $fide . ";";
+                            $found = true;
+                        }
+                    }
+                    if($lbx && !$found){
+                        if($lbx > $evento->tipo_rating->tipo_rating->showRatingRegraIdade($inscricao->enxadrista->howOld(), $evento)){
+                            $texto .= $lbx . ";";
+                            $found = true;
+                        }
+                    }
+                    if($cbx && !$found){
+                        if($cbx > $evento->tipo_rating->tipo_rating->showRatingRegraIdade($inscricao->enxadrista->howOld(), $evento)){
+                            $texto .= $cbx . ";";
+                            $found = true;
+                        }
+                    }
+
+                    if(!$found) $texto .= $evento->tipo_rating->tipo_rating->showRatingRegraIdade($inscricao->enxadrista->howOld(), $evento) . ";";
+                }
+            } else {
+                if ($evento->usa_fide) {
+                    $texto .= $inscricao->enxadrista->showRating(0, $evento->tipo_modalidade) . ";";
+                    $texto .= $inscricao->enxadrista->fide_id . ";";
+                } elseif ($evento->usa_lbx) {
+                    $texto .= $inscricao->enxadrista->showRating(2, $evento->tipo_modalidade) . ";";
+                    $texto .= $inscricao->enxadrista->lbx_id . ";";
+                }
+                if ($evento->usa_cbx) {
+                    $texto .= $inscricao->enxadrista->showRating(1, $evento->tipo_modalidade) . ";";
+                }
+            }
+            if($inscricao->enxadrista->sexo->abbr == "F"){
+                $texto .= "f;";
+            }else{
+                $texto .= ";";
+            }
+            $texto .= $inscricao->enxadrista->getBornToSM() . ";";
+            $texto .= $inscricao->categoria->cat_code . ";";
+            $texto .= $inscricao->categoria->code . ";";
+            if ($inscricao->clube) {
+                $texto .= $inscricao->clube->id . ";";
+                $texto .= $inscricao->clube->getName() . ";";
+            } else {
+                $texto .= ";";
+                $texto .= ";";
             }
 
             $texto .= ((count($explode_fide_name) > 1) ? $explode_fide_name[0] : $inscricao->enxadrista->lastname) . ";";
