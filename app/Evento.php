@@ -806,7 +806,7 @@ class Evento extends Model
             }
         }
         if(!$tournament){
-            return "-- Sem Torneios --";
+            $tournament["tournament"] = "-- Sem Torneios --";
         }
 
         return $tournament;
