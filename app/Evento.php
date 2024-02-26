@@ -757,6 +757,34 @@ class Evento extends Model
         }
         return $total;
     }
+    public function howManyConfirmedPaid()
+    {
+        $total = 0;
+        foreach ($this->torneios->all() as $torneio) {
+            $total += $torneio->inscricoes()->where([["paid", "=", true],["confirmado","=",true]])->count();
+        }
+        return $total;
+    }
+    public function howManyConfirmedFree()
+    {
+        $total = 0;
+
+        $categorias_id = $this->categorias()->whereNull("xadrezsuicopag_uuid")->pluck("categoria_id")->toArray();
+
+        foreach ($this->torneios->all() as $torneio) {
+            $total += $torneio->inscricoes()->whereIn("categoria_id", $categorias_id)->where([["confirmado", "=", true]])->count();
+        }
+        return $total;
+    }
+    public function howManyConfirmedNotPaid()
+    {
+        $total = 0;
+        $categorias_id = $this->categorias()->whereNotNull("xadrezsuicopag_uuid")->pluck("categoria_id")->toArray();
+        foreach ($this->torneios->all() as $torneio) {
+            $total += $torneio->inscricoes()->where([["paid", "=", false],["confirmado", "=", true]])->whereIn("categoria_id", $categorias_id)->count();
+        }
+        return $total;
+    }
 
     public function isEvent(){
         return true;
@@ -764,6 +792,24 @@ class Evento extends Model
 
     public function isEventGroup(){
         return false;
+    }
+
+    public function getTournamentWithMoreRegistrations()
+    {
+        $total = 0;
+        $tournament = ["tournament"=>null,"total"=>0];
+
+        foreach($this->torneios->all() as $torneio){
+            if($torneio->inscricoes()->count() > $tournament["total"]){
+                $tournament["tournament"] = $torneio;
+                $tournament["total"] = $torneio->inscricoes()->count();
+            }
+        }
+        if(!$tournament){
+            return "-- Sem Torneios --";
+        }
+
+        return $tournament;
     }
 
     public function getConfigs(){
