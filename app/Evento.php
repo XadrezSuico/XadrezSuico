@@ -797,7 +797,7 @@ class Evento extends Model
     public function getTournamentWithMoreRegistrations()
     {
         $total = 0;
-        $tournament = ["tournament"=>null,"total"=>0];
+        $tournament = ["status"=>true,"tournament"=>null,"total"=>0];
 
         foreach($this->torneios->all() as $torneio){
             if($torneio->inscricoes()->count() > $tournament["total"]){
@@ -806,6 +806,7 @@ class Evento extends Model
             }
         }
         if(!$tournament){
+            $tournament["status"] = true;
             $tournament["tournament"] = "-- Sem Torneios --";
         }
 

@@ -483,7 +483,7 @@
                                         <!-- small box -->
                                         <div class="small-box bg-aqua">
                                             <div class="inner">
-                                            <h3>{{$bigger_tournament["tournament"]->name}}</h3>
+                                            <h3>{{$bigger_tournament["status"] ? $bigger_tournament["tournament"]->name : $bigger_tournament["tournament"]}}</h3>
 
                                             <p>Maior Torneio</p>
                                             </div>
