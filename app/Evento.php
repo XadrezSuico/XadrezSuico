@@ -805,7 +805,7 @@ class Evento extends Model
                 $tournament["total"] = $torneio->inscricoes()->count();
             }
         }
-        if(!$tournament){
+        if(!$tournament["tournament"]){
             $tournament["status"] = false;
             $tournament["tournament"] = "-- Sem Torneios --";
         }
