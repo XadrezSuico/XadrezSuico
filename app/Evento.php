@@ -806,7 +806,7 @@ class Evento extends Model
             }
         }
         if(!$tournament){
-            $tournament["status"] = true;
+            $tournament["status"] = false;
             $tournament["tournament"] = "-- Sem Torneios --";
         }
 
