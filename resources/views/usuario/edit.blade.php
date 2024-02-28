@@ -83,6 +83,11 @@
 									    <option value="13">13 - XadrezSuíçoPAG - Operador</option>
                                     @endif
 								@endif
+								@if(\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobalbyPerfil([1]))
+									<option value="14">14 - XadrezSuíço Classificador - Admin</option>
+									<option value="15">15 - XadrezSuíço Classificador - Operador</option>
+									<option value="16">16 - XadrezSuíço Classificador - Operador (Regras)</option>
+								@endif
 							</select>
 						</div>
 						<div class="form-group" id="grupo_evento" style="display: none">
@@ -173,7 +178,10 @@
                                             @if(
                                                 $perfil->perfil->id == 3 ||
                                                 $perfil->perfil->id == 4 ||
-                                                $perfil->perfil->id == 5
+                                                $perfil->perfil->id == 5 ||
+                                                $perfil->perfil->id == 14 ||
+                                                $perfil->perfil->id == 15 ||
+                                                $perfil->perfil->id == 16
                                             )
                                                 Evento: {{$perfil->evento->id}} - {{$perfil->evento->name}}
                                             @else
@@ -239,7 +247,10 @@
 				if(
 					$("#perfils_id").val() == 3 ||
 					$("#perfils_id").val() == 4 ||
-					$("#perfils_id").val() == 5
+					$("#perfils_id").val() == 5 ||
+					$("#perfils_id").val() == 14 ||
+					$("#perfils_id").val() == 15 ||
+					$("#perfils_id").val() == 16
 				){
 					$("#evento").show(100);
 				}else if(

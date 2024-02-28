@@ -124,6 +124,20 @@ class Evento extends Model
         return $this->hasMany("App\CampoPersonalizado", "evento_id", "id");
     }
 
+    public function event_classificators()
+    {
+        return $this->hasMany("App\Classification\EventClassificate", "event_id", "id");
+    }
+    public function event_classificates()
+    {
+        return $this->hasMany("App\Classification\EventClassificate", "event_classificator_id", "id");
+    }
+
+    public function event_classificate_rules()
+    {
+        return $this->hasMany("App\Classification\EventClassificateRule", "event_id", "id");
+    }
+
     public function tipo_rating()
     {
         if ($this->tipo_rating_interno()->count() > 0) {
@@ -811,6 +825,16 @@ class Evento extends Model
         }
 
         return $tournament;
+    }
+
+    public function classificator_getCategories(){
+        $categories = array();
+        foreach($this->event_classificates->all() as $event_classificate){
+            foreach($event_classificate->event->categorias->all() as $categoria_relacionada){
+                $categories[] = $categoria_relacionada->categoria;
+            }
+        }
+        return $categories;
     }
 
     public function getConfigs(){

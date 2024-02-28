@@ -175,10 +175,14 @@ class UserController extends Controller
         $perfil_user = new PerfilUser;
         $perfil_user->users_id = $id;
         $perfil_user->perfils_id = $request->input("perfils_id");
-        if (
+        if
+        (
             $request->input("perfils_id") == 3 ||
             $request->input("perfils_id") == 4 ||
-            $request->input("perfils_id") == 5
+            $request->input("perfils_id") == 5 ||
+            $request->input("perfils_id") == 14 ||
+            $request->input("perfils_id") == 15 ||
+            $request->input("perfils_id") == 16
         ) {
             $perfil_user->evento_id = $request->input("evento_id");
         } elseif (

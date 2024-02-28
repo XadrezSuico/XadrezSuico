@@ -56,6 +56,7 @@
 				<li role="presentation"><a id="tab_pontuacao" href="#pontuacao" aria-controls="pontuacao" role="tab" data-toggle="tab">Pontuação</a></li>
 				<li role="presentation"><a id="tab_campo_personalizado" href="#campo_personalizado" aria-controls="campo_personalizado" role="tab" data-toggle="tab">Campo Personalizado</a></li>
 				<li role="presentation"><a id="tab_email_template" href="#email_template" aria-controls="email_template" role="tab" data-toggle="tab">Templates de E-mail</a></li>
+			    <li role="presentation"><a id="tab_classificator" href="#classificator" aria-controls="classificator" role="tab" data-toggle="tab">XadrezSuíço Classificador</a></li>
 			@endif
 		</ul>
 
@@ -797,6 +798,63 @@
 						</div>
 					</section>
 				</div>
+
+                <div role="tabpanel" class="tab-pane" id="classificator">
+                    <br/>
+                    <section class="col-lg-12 connectedSortable">
+                        <div class="box box-primary">
+                            <div class="box-header">
+                                <h3 class="box-title">Categorias Vinculadas</h3>
+                            </div>
+                            <!-- form start -->
+                                <div class="box-body">
+
+                                    <ul class="nav nav-pills">
+                                        <li role="presentation"><a href="{{url("/grupoevento/".$grupo_evento->id."/classificator/category/new")}}">Novo Vínculo de Categoria</a></li>
+                                    </ul>
+                                    <table id="tabela_classificators" class="table-responsive table-condensed table-striped" style="width: 100%">
+                                        <thead>
+                                            <tr>
+                                                <th>#</th>
+                                                <th>Categoria Base</th>
+                                                <th>Categoria deste Evento</th>
+                                                <th width="20%">Opções</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach($grupo_evento->categorias->all() as $categoria)
+                                                @foreach($categoria->event_classificates->all() as $event_class_category)
+                                                    <tr>
+                                                        <td>{{$event_class_category->id}}</td>
+                                                        <td>
+                                                            {{$event_class_category->category->id}} - {{$event_class_category->category->name}}<br/>
+                                                            @if($event_class_category->category->evento)
+                                                                Evento: {{$event_class_category->category->evento->name}}
+                                                            @else
+                                                                Grupo de Evento: {{$event_class_category->category->grupo_evento->name}}
+                                                            @endif
+                                                        </td>
+                                                        <td>
+                                                            {{$event_class_category->category_classificator->id}} - {{$event_class_category->category_classificator->name}}<br/>
+                                                            @if($event_class_category->category_classificator->evento)
+                                                                Evento: {{$event_class_category->category_classificator->evento->name}}
+                                                            @else
+                                                                Grupo de Evento: {{$event_class_category->category_classificator->grupo_evento->name}}
+                                                            @endif
+                                                        </td>
+                                                        <td>
+                                                            <a class="btn btn-default" href="{{url("/grupoevento/".$grupo_evento->id."/classificator/category/edit/".$event_class_category->id)}}" role="button">Editar</a>
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <!-- /.box-body -->
+                        </div>
+                    </section>
+                </div>
 			@endif
 		</div>
 

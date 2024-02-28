@@ -100,6 +100,15 @@ class Categoria extends Model
         return $this->hasMany("App\CategoriaEvento", "categoria_id", "id");
     }
 
+    public function event_classificators()
+    {
+        return $this->hasMany("App\Classification\EventClassificateCategory", "category_id", "id");
+    }
+    public function event_classificates()
+    {
+        return $this->hasMany("App\Classification\EventClassificateCategory", "category_classificator_id", "id");
+    }
+
     public function getTorneioByEvento($evento)
     {
         $categoria = $this;

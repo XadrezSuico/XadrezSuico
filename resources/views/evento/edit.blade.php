@@ -38,6 +38,7 @@
 			<li role="presentation"><a id="tab_torneio" href="#torneio" aria-controls="torneio" role="tab" data-toggle="tab">Torneios</a></li>
 			<li role="presentation"><a id="tab_campo_personalizado" href="#campo_personalizado" aria-controls="campo_personalizado" role="tab" data-toggle="tab">Campos Personalizados Adicionais</a></li>
             <li role="presentation"><a id="tab_email_template" href="#email_template" aria-controls="email_template" role="tab" data-toggle="tab">Templates de E-mail</a></li>
+			<li role="presentation"><a id="tab_classificator" href="#classificator" aria-controls="classificator" role="tab" data-toggle="tab">XadrezSuíço Classificador</a></li>
         </ul>
 
 		<!-- Tab panes -->
@@ -477,6 +478,37 @@
                                     </div>
                                 @endif
 
+                                @php($bigger_tournament = $evento->getTournamentWithMoreRegistrations())
+                                    <!-- Maior Torneio -->
+                                    <div class="col-sm-12 col-md-8">
+                                        <!-- small box -->
+                                        <div class="small-box bg-aqua">
+                                            <div class="inner">
+                                            <h3>{{$bigger_tournament["status"] ? $bigger_tournament["tournament"]->name : $bigger_tournament["tournament"]}}</h3>
+
+                                            <p>Maior Torneio</p>
+                                            </div>
+                                            <div class="icon">
+                                            <i class="fa fa-award"></i>
+                                            </div>
+                                            <!--<a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>-->
+                                        </div>
+                                    </div>
+                                    <!-- Maior Torneio Total -->
+                                    <div class="col-sm-12 col-md-4">
+                                        <!-- small box -->
+                                        <div class="small-box bg-aqua">
+                                            <div class="inner">
+                                            <h3>{{$bigger_tournament["total"]}}</h3>
+
+                                            <p>Total de Inscritos no Maior Torneio</p>
+                                            </div>
+                                            <div class="icon">
+                                            <i class="fa fa-award"></i>
+                                            </div>
+                                            <!--<a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>-->
+                                        </div>
+                                    </div>
 
 
                             </div>
@@ -1466,6 +1498,98 @@
                                                     <a class="btn btn-default" href="{{url("/emailtemplate/edit/".$template->id)}}" role="button">Editar</a>
                                                 </td>
                                             </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                            <!-- /.box-body -->
+                    </div>
+                </section>
+            </div>
+            <div role="tabpanel" class="tab-pane" id="classificator">
+                <br/>
+                <section class="col-lg-12 connectedSortable">
+                    <div class="box box-primary">
+                        <div class="box-header">
+                            <h3 class="box-title">XadrezSuíço Classificador</h3>
+                        </div>
+                        <!-- form start -->
+                            <div class="box-body">
+
+                                <ul class="nav nav-pills">
+                                    <li role="presentation"><a href="{{url("/evento/".$evento->id."/classificator/new")}}">Novo Classificador</a></li>
+                                </ul>
+                                <table id="tabela_classificators" class="table-responsive table-condensed table-striped" style="width: 100%">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Evento Classificador à Este</th>
+                                            <th width="20%">Opções</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach($evento->event_classificators->all() as $event_classificate)
+                                            <tr>
+                                                <td>{{$event_classificate->id}}</td>
+                                                <td>
+                                                    {{$event_classificate->event_classificator->name}}<br/>
+                                                    Grupo de Evento: {{$event_classificate->event_classificator->grupo_evento->name}}
+                                                </td>
+                                                <td>
+                                                    <a class="btn btn-default" href="{{url("/evento/".$evento->id."/classificator/edit/".$event_classificate->id)}}" role="button">Editar</a>
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                            <!-- /.box-body -->
+                    </div>
+                    <div class="box box-primary">
+                        <div class="box-header">
+                            <h3 class="box-title">Categorias Vinculadas</h3>
+                        </div>
+                        <!-- form start -->
+                            <div class="box-body">
+
+                                <ul class="nav nav-pills">
+                                    <li role="presentation"><a href="{{url("/evento/".$evento->id."/classificator/category/new")}}">Novo Vínculo de Categoria</a></li>
+                                </ul>
+                                <table id="tabela_classificators" class="table-responsive table-condensed table-striped" style="width: 100%">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Categoria Base</th>
+                                            <th>Categoria deste Evento</th>
+                                            <th width="20%">Opções</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach($evento->categorias_cadastradas->all() as $categoria)
+                                            @foreach($categoria->event_classificates->all() as $event_class_category)
+                                                <tr>
+                                                    <td>{{$event_class_category->id}}</td>
+                                                    <td>
+                                                        {{$event_class_category->category->id}} - {{$event_class_category->category->name}}<br/>
+                                                        @if($event_class_category->category->evento)
+                                                            Evento: {{$event_class_category->category->evento->name}}
+                                                        @else
+                                                            Grupo de Evento: {{$event_class_category->category->grupo_evento->name}}
+                                                        @endif
+                                                    </td>
+                                                    <td>
+                                                        {{$event_class_category->category_classificator->id}} - {{$event_class_category->category_classificator->name}}<br/>
+                                                        @if($event_class_category->category_classificator->evento)
+                                                            Evento: {{$event_class_category->category_classificator->evento->name}}
+                                                        @else
+                                                            Grupo de Evento: {{$event_class_category->category_classificator->grupo_evento->name}}
+                                                        @endif
+                                                    </td>
+                                                    <td>
+                                                        <a class="btn btn-default" href="{{url("/evento/".$evento->id."/classificator/category/edit/".$event_class_category->id)}}" role="button">Editar</a>
+                                                    </td>
+                                                </tr>
+                                            @endforeach
                                         @endforeach
                                     </tbody>
                                 </table>

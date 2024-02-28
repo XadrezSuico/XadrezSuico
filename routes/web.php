@@ -158,9 +158,21 @@ Route::group(["prefix"=>"evento"],function(){
         Route::get('/presporte/single', 'Event\ExportController@export_presporte_single')->name('evento.exports.presporte.single');
         Route::get('/presporte/team', 'Event\ExportController@export_presporte_team')->name('evento.exports.presporte.team');
     });
-    Route::group(["prefix"=>"premiacao_time"],function(){
+    Route::group(["prefix" => "premiacao_time"], function () {
         Route::get('/classificar/{evento_id}', 'Event\TeamAwardController@classificar_page')->name('evento.premiacao_time.classificar');
         Route::get('/classificar/{evento_id}/call/{time_awards_id}/{action}', 'Event\TeamAwardController@classificar_call')->name('evento.premiacao_time.classificar.call');
+    });
+    Route::group(["prefix" =>"{evento_id}/classificator"], function () {
+        Route::group(["prefix" => "category"], function () {
+            Route::get('/new', 'Classification\EventCategoryController@new')->name('evento.classificator.category.new');
+            Route::post('/new', 'Classification\EventCategoryController@new_post')->name('evento.classificator.category.new.post');
+            Route::get('/edit/{id}', 'Classification\EventCategoryController@edit')->name('evento.classificator.category.edit');
+            Route::post('/edit/{id}', 'Classification\EventCategoryController@edit_post')->name('evento.classificator.category.edit.post');
+        });
+        Route::get('/new', 'Classification\ClassificateEventController@new')->name('evento.classificator.new');
+        Route::post('/new', 'Classification\ClassificateEventController@new_post')->name('evento.classificator.new.post');
+        Route::get('/edit/{id}', 'Classification\ClassificateEventController@edit')->name('evento.classificator.edit');
+        Route::post('/edit/{id}', 'Classification\ClassificateEventController@edit_post')->name('evento.classificator.edit.post');
     });
 
 
@@ -462,6 +474,16 @@ Route::group(["prefix"=>"grupoevento"],function(){
         Route::get('/standings', 'External\EventGroup\TeamAwardController@standings')->name('external.event_group.team_award.standings');
         Route::get('/{team_awards_id}/results/team/{clubs_id}', 'External\EventGroup\TeamAwardController@see_team_score')->name('external.event_group.team_award.see_team_score');
         Route::get('/{team_awards_id}/results', 'External\EventGroup\TeamAwardController@list')->name('external.event_group.team_award.list');
+    });
+
+
+    Route::group(["prefix" => "{grupo_evento_id}/classificator"], function () {
+        Route::group(["prefix" => "category"], function () {
+            Route::get('/new', 'Classification\EventGroupCategoryController@new')->name('grupoevento.classificator.category.new');
+            Route::post('/new', 'Classification\EventGroupCategoryController@new_post')->name('grupoevento.classificator.category.new.post');
+            Route::get('/edit/{id}', 'Classification\EventGroupCategoryController@edit')->name('grupoevento.classificator.category.edit');
+            Route::post('/edit/{id}', 'Classification\EventGroupCategoryController@edit_post')->name('grupoevento.classificator.category.edit.post');
+        });
     });
 
 });

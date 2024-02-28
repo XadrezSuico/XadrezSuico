@@ -207,6 +207,22 @@ class GrupoEvento extends Model
     }
 
 
+    public function classificator_getCategories()
+    {
+        $categories = array();
+        foreach ($this->eventos->all() as $evento) {
+            foreach ($evento->event_classificates->all() as $event_classificate) {
+                foreach ($event_classificate->event->categorias->all() as $categoria_relacionada) {
+                    if(!in_array($categoria_relacionada->categoria,$categories)){
+                        $categories[] = $categoria_relacionada->categoria;
+                    }
+                }
+            }
+        }
+        return $categories;
+    }
+
+
 
     public function toAPIObject(){
         return [
