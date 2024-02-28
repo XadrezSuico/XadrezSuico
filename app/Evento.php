@@ -804,7 +804,7 @@ class Evento extends Model
     {
         $total = 0;
         foreach ($this->torneios->all() as $torneio) {
-            $total += $torneio->inscricoes()->where([["paid", "=", true], ["confirmado", "=", true],["desconsiderar_pontuacao_geral", "=", true]])->count();
+            $total += $torneio->inscricoes()->where([["paid", "=", true], ["confirmado", "=", true],["desconsiderar_pontuacao_geral", "=", false]])->count();
         }
         return $total;
     }
@@ -815,7 +815,7 @@ class Evento extends Model
         $categorias_id = $this->categorias()->whereNull("xadrezsuicopag_uuid")->pluck("categoria_id")->toArray();
 
         foreach ($this->torneios->all() as $torneio) {
-            $total += $torneio->inscricoes()->whereIn("categoria_id", $categorias_id)->where([["confirmado", "=", true], ["desconsiderar_pontuacao_geral", "=", true]])->count();
+            $total += $torneio->inscricoes()->whereIn("categoria_id", $categorias_id)->where([["confirmado", "=", true], ["desconsiderar_pontuacao_geral", "=", false]])->count();
         }
         return $total;
     }
@@ -824,7 +824,7 @@ class Evento extends Model
         $total = 0;
         $categorias_id = $this->categorias()->whereNotNull("xadrezsuicopag_uuid")->pluck("categoria_id")->toArray();
         foreach ($this->torneios->all() as $torneio) {
-            $total += $torneio->inscricoes()->where([["paid", "=", false], ["confirmado", "=", true], ["desconsiderar_pontuacao_geral", "=", true]])->whereIn("categoria_id", $categorias_id)->count();
+            $total += $torneio->inscricoes()->where([["paid", "=", false], ["confirmado", "=", true], ["desconsiderar_pontuacao_geral", "=", false]])->whereIn("categoria_id", $categorias_id)->count();
         }
         return $total;
     }
