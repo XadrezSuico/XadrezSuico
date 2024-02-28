@@ -431,6 +431,8 @@
                                             <!--<a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>-->
                                         </div>
                                     </div>
+
+
                                     <!-- Total de Confirmados Pagos -->
                                     <div class="col-sm-6 col-md-4">
                                         <!-- small box -->
@@ -469,6 +471,53 @@
                                             <h3>{{$evento->howManyConfirmedNotPaid()}}</h3>
 
                                             <p>Total de Confirmados Não Pagos</p>
+                                            </div>
+                                            <div class="icon">
+                                            <i class="fa fa-money"></i>
+                                            </div>
+                                            <!--<a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>-->
+                                        </div>
+                                    </div>
+
+
+                                    <!-- Total de Presentes Pagos -->
+                                    <div class="col-sm-6 col-md-4">
+                                        <!-- small box -->
+                                        <div class="small-box bg-aqua">
+                                            <div class="inner">
+                                            <h3>{{$evento->howManyPresentPaid()}}</h3>
+
+                                            <p>Total de Presentes Pagos</p>
+                                            </div>
+                                            <div class="icon">
+                                            <i class="fa fa-money"></i>
+                                            </div>
+                                            <!--<a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>-->
+                                        </div>
+                                    </div>
+                                    <!-- Total de Presentes Gratuidades -->
+                                    <div class="col-sm-6 col-md-4">
+                                        <!-- small box -->
+                                        <div class="small-box bg-aqua">
+                                            <div class="inner">
+                                            <h3>{{$evento->howManyPresentFree()}}</h3>
+
+                                            <p>Total de Presentes Gratuidades</p>
+                                            </div>
+                                            <div class="icon">
+                                            <i class="fa fa-money"></i>
+                                            </div>
+                                            <!--<a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>-->
+                                        </div>
+                                    </div>
+                                    <!-- Total de Presentes Não Pagos -->
+                                    <div class="col-sm-6 col-md-4">
+                                        <!-- small box -->
+                                        <div class="small-box bg-aqua">
+                                            <div class="inner">
+                                            <h3>{{$evento->howManyPresentNotPaid()}}</h3>
+
+                                            <p>Total de Presentes Não Pagos</p>
                                             </div>
                                             <div class="icon">
                                             <i class="fa fa-money"></i>
