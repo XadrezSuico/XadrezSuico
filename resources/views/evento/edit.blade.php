@@ -749,16 +749,18 @@
                                         <small><strong>IMPORTANTE!</strong> Essa configuração serve para caso tenha um grupo de evento que classifica para este grupo de evento. Aqui vai o Evento Classificador que classifica para este Evento.</small>
                                     </div>
                                 @else
-                                    <div class="form-group">
-                                        <label for="grupo_evento_classificador_id">Grupo de Evento Classificador</label>
-                                        <select name="grupo_evento_classificador_id" id="grupo_evento_classificador_id" class="form-control width-100">
-                                            <option value="">--- Você pode selecionar um grupo de evento ---</option>
-                                            @foreach($evento->grupo_evento->all() as $gec)
-                                                <option value="{{$gec->id}}">{{$gec->id}} - {{$gec->name}}</option>
-                                            @endforeach
-                                        </select>
-                                        <small><strong>IMPORTANTE!</strong> Essa configuração serve para caso tenha um grupo de evento que classifica para este grupo de evento.</small>
-                                    </div>
+                                    @if($evento->grupo_evento_classificador)
+                                        <div class="form-group">
+                                            <label for="grupo_evento_classificador_id">Grupo de Evento Classificador</label>
+                                            <select name="grupo_evento_classificador_id" id="grupo_evento_classificador_id" class="form-control width-100">
+                                                <option value="">--- Você pode selecionar um grupo de evento ---</option>
+                                                @foreach($evento->grupo_evento->all() as $gec)
+                                                    <option value="{{$gec->id}}">{{$gec->id}} - {{$gec->name}}</option>
+                                                @endforeach
+                                            </select>
+                                            <small><strong>IMPORTANTE!</strong> Essa configuração serve para caso tenha um grupo de evento que classifica para este grupo de evento.</small>
+                                        </div>
+                                    @endif
                                 @endif
                                 <hr/>
                                 <div class="form-group">
