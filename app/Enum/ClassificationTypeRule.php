@@ -8,7 +8,7 @@ class ClassificationTypeRule
     const PRE_CLASSIFICATE = "pre-classificate";
     const PLACE_BY_QUANTITY = "place-by-quantity";
 
-    private $types = array(
+    static $types = array(
         "position" => array(
             "name" => "Posição",
             "description" => "Indica a quantidade de vagas considerando as primeiras posições da categoria."
@@ -27,11 +27,11 @@ class ClassificationTypeRule
         ),
     );
 
-    public function list(){
-        return $this->types;
+    public static function list(){
+        return self::$types;
     }
 
-    public function get($id){
-        return $this->types[($id)];
+    public static function get($id){
+        return self::$types[($id)];
     }
 }

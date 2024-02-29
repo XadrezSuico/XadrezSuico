@@ -169,6 +169,12 @@ Route::group(["prefix"=>"evento"],function(){
             Route::get('/edit/{id}', 'Classification\EventCategoryController@edit')->name('evento.classificator.category.edit');
             Route::post('/edit/{id}', 'Classification\EventCategoryController@edit_post')->name('evento.classificator.category.edit.post');
         });
+        Route::group(["prefix" => "{event_classificates_id}/rule"], function () {
+            Route::get('/new', 'Classification\ClassificateEventRuleController@new')->name('evento.classificator.rule.new');
+            Route::post('/new', 'Classification\ClassificateEventRuleController@new_post')->name('evento.classificator.rule.new.post');
+            Route::get('/edit/{id}', 'Classification\ClassificateEventRuleController@edit')->name('evento.classificator.rule.edit');
+            Route::post('/edit/{id}', 'Classification\ClassificateEventRuleController@edit_post')->name('evento.classificator.rule.edit.post');
+        });
         Route::get('/new', 'Classification\ClassificateEventController@new')->name('evento.classificator.new');
         Route::post('/new', 'Classification\ClassificateEventController@new_post')->name('evento.classificator.new.post');
         Route::get('/edit/{id}', 'Classification\ClassificateEventController@edit')->name('evento.classificator.edit');

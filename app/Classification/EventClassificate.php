@@ -16,13 +16,8 @@ class EventClassificate extends Model
         return $this->belongsTo("App\Evento", "event_classificator_id", "id");
     }
 
-    public function categories()
-    {
-        return $this->belongsTo("App\Classification\EventClassificateCategory", "event_classificates_id", "id");
-    }
-
     public function rules()
     {
-        return $this->belongsTo("App\Classification\EventClassificateRule", "event_classificates_id", "id");
+        return $this->hasMany("App\Classification\EventClassificateRule", "event_classificates_id", "id");
     }
 }

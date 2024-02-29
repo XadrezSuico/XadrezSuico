@@ -1564,6 +1564,63 @@
             <div role="tabpanel" class="tab-pane" id="classificator">
                 <br/>
                 <section class="col-lg-12 connectedSortable">
+                    @foreach($evento->event_classificates->all() as $event_classificates)
+
+                        <div class="box box-primary">
+                            <div class="box-header">
+                                <h3 class="box-title">XadrezSuíço Classificador - Regras de Classificação para o Evento #{{$event_classificates->event->id}} - {{$event_classificates->event->name}}</h3>
+                            </div>
+                            <!-- form start -->
+                                <div class="box-body">
+
+                                    <ul class="nav nav-pills">
+                                        <li role="presentation"><a href="{{url("/evento/".$evento->id."/classificator/".$event_classificates->id."/rule/new")}}">Nova Regra</a></li>
+                                    </ul>
+                                    <table id="tabela_classificators" class="table-responsive table-condensed table-striped" style="width: 100%">
+                                        <thead>
+                                            <tr>
+                                                <th>#</th>
+                                                <th>Regra</th>
+                                                <th>Configurações</th>
+                                                <th width="20%">Opções</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach($event_classificates->rules->all() as $rule)
+                                                <tr>
+                                                    <td>{{$rule->id}}</td>
+                                                    <td>{{$rule->getRuleName()}}</td>
+                                                    <td>
+                                                        @switch($rule->type)
+                                                            @case(\App\Enum\ClassificationTypeRule::POSITION)
+                                                                Posição Relativa: {{$rule->value}}
+                                                            @break
+                                                            @case(\App\Enum\ClassificationTypeRule::POSITION_ABSOLUTE)
+                                                                Posição Absoluta: {{$rule->value}}
+                                                            @break
+                                                            @case(\App\Enum\ClassificationTypeRule::PRE_CLASSIFICATE)
+                                                                Pré-classificação pelo Evento: #{{$rule->event->id}} - {{$rule->event->name}}
+                                                            @break
+                                                            @case(\App\Enum\ClassificationTypeRule::PLACE_BY_QUANTITY)
+                                                                @if($rule->is_absolute)
+                                                                    Vagas a Cada: {{$rule->value}} (Completos).
+                                                                @else
+                                                                    Vagas a Cada: {{$rule->value}} (ou fração).
+                                                                @endif
+                                                            @break
+                                                        @endswitch
+                                                    </td>
+                                                    <td>
+                                                        <a class="btn btn-default" href="{{url("/evento/".$evento->id."/classificator/".$event_classificates->id."/rule/edit/".$rule->id)}}" role="button">Editar</a>
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <!-- /.box-body -->
+                        </div>
+                    @endforeach
                     <div class="box box-primary">
                         <div class="box-header">
                             <h3 class="box-title">XadrezSuíço Classificador</h3>

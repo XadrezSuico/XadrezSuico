@@ -22,7 +22,7 @@ class CreateEventClassificateRulesTable extends Migration
             $table->enum('type',["position", "position-absolute", "pre-classificate","place-by-quantity"]);
             $table->integer('value')->default(0);
 
-            $table->integer('event_id')->unsigned();
+            $table->integer('event_id')->unsigned()->nullable();
             $table->foreign('event_id')->references("id")->on("evento");
 
             $table->boolean('is_absolute')->default(0)->comment("Se vale exclusivamente para aquela posição da regra ou se repassa para o próximo caso esteja impedido de uso da vaga.");
