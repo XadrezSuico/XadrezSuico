@@ -152,6 +152,25 @@ class EventoGerenciarController extends Controller
         } else {
             $evento->data_limite_inscricoes_abertas = null;
         }
+        if ($request->has("date_start_registration")) {
+            if($request->input("date_start_registration") != ""){
+                $datetime = DateTime::createFromFormat("d/m/Y H:i:s", $request->date_start_registration.":00");
+                $datetime_check = DateTime::createFromFormat("Y-m-d H:i:s", "2000-01-01 00:00:00");
+                if($datetime){
+                    if($datetime->format("U") > $datetime_check->format("U")){
+                        $evento->setConfig("date_start_registration", ConfigType::DateTime, $datetime->format("Y-m-d H:i:s"));
+                    } else {
+                        $evento->removeConfig("date_start_registration");
+                    }
+                } else {
+                    $evento->removeConfig("date_start_registration");
+                }
+            } else {
+                $evento->removeConfig("date_start_registration");
+            }
+        } else {
+            $evento->removeConfig("date_start_registration");
+        }
         if ($request->has("e_permite_visualizar_lista_inscritos_publica")) {
             $evento->e_permite_visualizar_lista_inscritos_publica = true;
         } else {

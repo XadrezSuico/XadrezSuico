@@ -190,7 +190,14 @@ class Evento extends Model
     public function getTimelineItems(){
         $items = [];
 
-        if($this->data_limite_inscricoes_abertas){
+        if ($this->hasConfig("date_start_registration",true)) {
+            $items[] = [
+                "datetime" => $this->getDataInicioInscricoesOnline(),
+                "text" => "Início das Inscrições Online",
+                "is_expected" => false
+            ];
+        }
+        if ($this->data_limite_inscricoes_abertas) {
             $items[] = [
                 "datetime" => $this->getDataFimInscricoesOnline(),
                 "text" => "Fim das Inscrições Online",
@@ -234,6 +241,18 @@ class Evento extends Model
 
     }
 
+    public function getDataInicioInscricoesOnline()
+    {
+        if($this->hasConfig("date_start_registration")){
+            $datetime = DateTime::createFromFormat('Y-m-d H:i:s', $this->getConfig("date_start_registration", true));
+            if ($datetime) {
+                return $datetime->format("d/m/Y H:i");
+            } else {
+                return false;
+            }
+        }
+        return false;
+    }
     public function getDataFimInscricoesOnline()
     {
         $datetime = DateTime::createFromFormat('Y-m-d H:i:s', $this->data_limite_inscricoes_abertas);
@@ -242,7 +261,6 @@ class Evento extends Model
         } else {
             return false;
         }
-
     }
 
     public function getUrlName(){
@@ -300,9 +318,24 @@ class Evento extends Model
         return $this->criterios->all();
     }
 
+
+    public function ja_abriu_as_inscricoes()
+    {
+        if($this->hasConfig("date_start_registration")){
+            $datetime = DateTime::createFromFormat('Y-m-d H:i:s', $this->getConfig("date_start_registration",true));
+            if($datetime->format("U") > time()){
+                return false;
+            }
+        }
+        return true;
+    }
+
     public function inscricoes_encerradas($api = false, $only_date = false)
     {
         if($this->is_inscricoes_bloqueadas){
+            return true;
+        }
+        if(!$this->ja_abriu_as_inscricoes() && !$only_date) {
             return true;
         }
         $datetime = DateTime::createFromFormat('Y-m-d H:i:s', $this->data_limite_inscricoes_abertas);
@@ -891,6 +924,10 @@ class Evento extends Model
                         return $event_config->boolean;
                     case ConfigType::String:
                         return $event_config->string;
+                    case ConfigType::Date:
+                        return $event_config->date;
+                    case ConfigType::DateTime:
+                        return $event_config->datetime;
                 }
             }
 
@@ -940,6 +977,12 @@ class Evento extends Model
                 break;
             case ConfigType::String:
                 $event_config->string = $value;
+                break;
+            case ConfigType::Date:
+                $event_config->date = $value;
+                break;
+            case ConfigType::DateTime:
+                $event_config->datetime = $value;
                 break;
         }
 

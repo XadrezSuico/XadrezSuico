@@ -642,6 +642,10 @@
 									<input name="link" id="evento_link" class="form-control" type="text" value="{{$evento->link}}" @if(!\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() && !\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4]) && !\Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])) disabled="disabled" @endif />
 								</div>
 								<div class="form-group">
+									<label for="evento_data_limite_inscricoes_abertas">Data e Hora de Início das Inscrições</label>
+									<input name="date_start_registration" id="date_start_registration" class="form-control" type="text" value="{{$evento->getDataInicioInscricoesOnline()}}" @if(!\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() && !\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4]) && !\Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])) disabled="disabled" @endif />
+								</div>
+								<div class="form-group">
 									<label for="evento_data_limite_inscricoes_abertas">Data e Hora Limite para Inscrições</label>
 									<input name="data_limite_inscricoes_abertas" id="evento_data_limite_inscricoes_abertas" class="form-control" type="text" value="{{$evento->getDataFimInscricoesOnline()}}" @if(!\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() && !\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4]) && !\Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])) disabled="disabled" @endif />
 								</div>
@@ -1735,6 +1739,7 @@
 		@endif
 		$("#evento_data_inicio").mask("00/00/0000");
 		$("#evento_data_fim").mask("00/00/0000");
+		$("#date_start_registration").mask("00/00/0000 00:00");
 		$("#evento_data_limite_inscricoes_abertas").mask("00/00/0000 00:00");
 		$("#confirmacao_publica_inicio").mask("00/00/0000 00:00");
 		$("#confirmacao_publica_final").mask("00/00/0000 00:00");

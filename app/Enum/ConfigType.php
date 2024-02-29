@@ -8,13 +8,16 @@ class ConfigType
     const Decimal = "decimal";
     const Boolean = "boolean";
     const String = "string";
+    const Date = "date";
+    const DateTime = "datetime";
 
     private $types = array(
         "integer" => array("name"=>"Número Inteiro"),
         "float" => array("name"=>"Número Real"),
         "decimal" => array("name"=>"Número Real (Monetário)"),
         "boolean" => array("name"=>"Booleano"),
-        "string" => array("name"=>"Texto Curto (até 255 caracteres)"),
+        "date" => array("name"=>"Data"),
+        "datetime" => array("name" => "Data e Hora"),
     );
 
     public function list(){

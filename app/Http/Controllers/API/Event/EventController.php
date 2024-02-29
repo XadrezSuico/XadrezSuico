@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
 use App\Evento;
+use DateTime;
 
 class EventController extends Controller
 {
@@ -66,7 +67,10 @@ class EventController extends Controller
                 $retorno["event"]["info"]["is_registering"] = false;
                 if($evento->is_inscricoes_bloqueadas){
                     $retorno["event"]["info"]["registering_status"] = "O evento não permite inscrições no momento.";
-                }elseif($evento->inscricoes_encerradas(false,true)){
+                } elseif (!$evento->ja_abriu_as_inscricoes()) {
+                    $datetime = DateTime::createFromFormat("Y-m-d H:i:s", $evento->getConfig("date_start_registration", true));
+                    $retorno["event"]["info"]["registering_status"] = "As inscrições ainda não abriram. Elas abrem em " . $datetime->format("d/m/Y H:i") . ".";
+                } elseif ($evento->inscricoes_encerradas(false, true)) {
                     $retorno["event"]["info"]["registering_status"] = "Prazo para Inscrição Encerrado.";
                 }elseif($evento->estaLotado()){
                     $retorno["event"]["info"]["registering_status"] = "O evento chegou ao limite de inscritos.";
