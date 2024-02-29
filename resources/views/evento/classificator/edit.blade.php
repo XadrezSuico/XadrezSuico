@@ -61,7 +61,7 @@
 <script type="text/javascript">
   $(document).ready(function(){
         $("#event_classificator_id").select2();
-        $("#event_classificator_id").val([{{$event_classificate->category_id}}]).change();
+        $("#event_classificator_id").val([{{$event_classificate->event_classificator_id}}]).change();
   });
 </script>
 @endsection
