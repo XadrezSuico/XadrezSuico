@@ -27,6 +27,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 use App\Enum\EmailType;
+use Illuminate\Support\MessageBag;
 
 class GrupoEventoController extends Controller
 {
@@ -95,6 +96,84 @@ class GrupoEventoController extends Controller
         $this->importEmailTemplates($grupo_evento->id);
 
         return view('grupoevento.edit', compact("grupo_evento", "torneio_templates", "categorias", "criterios_desempate", "tipos_torneio", "softwares", "criterios_desempate_geral", "tipos_rating", "cidades", "tab", "user"));
+    }
+    public function clone($id)
+    {
+        $user = Auth::user();
+        if (!$user->hasPermissionGlobal() && !$user->hasPermissionGroupEventByPerfil($id, [6, 7])) {
+            return redirect("/grupoevento");
+        }
+
+        $grupo_evento = GrupoEvento::find($id);
+
+        $novo_grupo_evento = $grupo_evento->replicate();
+        $novo_grupo_evento->name .= " (CÓPIA)";
+        $novo_grupo_evento->save();
+
+        foreach ($grupo_evento->criterios->all() as $criterio) {
+            $criterio_novo_grupo = $criterio->replicate();
+            $criterio_novo_grupo->grupo_evento_id = $novo_grupo_evento->id;
+            $criterio_novo_grupo->save();
+        }
+
+        foreach ($grupo_evento->criterios_gerais->all() as $criterio) {
+            $criterio_novo_grupo = $criterio->replicate();
+            $criterio_novo_grupo->grupo_evento_id = $novo_grupo_evento->id;
+            $criterio_novo_grupo->save();
+        }
+
+        foreach ($grupo_evento->pontuacoes->all() as $pontuacao) {
+            $pontuacao_novo_grupo = $pontuacao->replicate();
+            $pontuacao_novo_grupo->grupo_evento_id = $novo_grupo_evento->id;
+            $pontuacao_novo_grupo->save();
+        }
+
+        $categories_relationship = array();
+        foreach ($grupo_evento->categorias->all() as $categoria) {
+            $categoria_novo_grupo = $categoria->replicate();
+            $categoria_novo_grupo->grupo_evento_id = $novo_grupo_evento->id;
+            $categoria_novo_grupo->save();
+
+            foreach($categoria->sexos->all() as $categoria_sexo){
+                $categoria_sexo_novo_grupo = $categoria_sexo->replicate();
+                $categoria_sexo_novo_grupo->categoria_id = $categoria_novo_grupo->id;
+                $categoria_sexo_novo_grupo->save();
+            }
+
+            $categories_relationship[$categoria->id] = $categoria_novo_grupo->id;
+        }
+
+        /* todo: CAMPO PERSONALIZADO */
+
+
+        foreach ($grupo_evento->torneios_template->all() as $torneio_template) {
+            $torneio_template_novo_grupo = $torneio_template->replicate();
+            $torneio_template_novo_grupo->grupo_evento_id = $novo_grupo_evento->id;
+            $torneio_template_novo_grupo->save();
+
+            foreach($torneio_template->categorias->all() as $template_categoria) {
+                $template_categoria_novo_grupo = $template_categoria->replicate();
+                $template_categoria_novo_grupo->categoria_id = $categories_relationship[$template_categoria_novo_grupo->categoria_id];
+                $template_categoria_novo_grupo->torneio_template_id = $torneio_template_novo_grupo->id;
+                $template_categoria_novo_grupo->save();
+            }
+        }
+
+        $this->importEmailTemplates($novo_grupo_evento->id);
+
+        if(!$user->hasPermissionGlobal()){
+            foreach($user->perfis()->where([["grupo_evento_id","=",$grupo_evento->id]])->get() as $user_profile){
+                $new_user_profile = $user_profile->replicate();
+                $new_user_profile->grupo_evento_id = $novo_grupo_evento->id;
+                $new_user_profile->save();
+            }
+        }
+
+        $messageBag = new MessageBag;
+        $messageBag->add("type", "success");
+        $messageBag->add("alerta", "O Grupo de Evento #{$grupo_evento->id} - {$grupo_evento->name} foi clonado com sucesso!");
+
+        return redirect("/grupoevento/dashboard/".$novo_grupo_evento->id)->withErrors($messageBag);
     }
     public function edit_post($id, Request $request)
     {

@@ -41,6 +41,14 @@
                                             <a class="btn btn-danger" href="{{url("/grupoevento/delete/".$grupo_evento->id)}}" role="button">Apagar</a>
                                         @endif
                                     @endif
+                                    @if(
+                                        \Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
+                                        \Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($id, [6, 7])
+                                    )
+                                        <br/>
+                                        <br/>
+                                        <a class="btn btn-danger" href="{{url("/grupoevento/clone/".$grupo_evento->id)}}" role="button">Clonar Grupo de Evento</a>
+                                    @endif
                                 </td>
                             </tr>
                         @endif
