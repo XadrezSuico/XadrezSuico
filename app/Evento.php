@@ -899,6 +899,89 @@ class Evento extends Model
         return $categories;
     }
 
+    public function hasCategoryForEnxadrista($enxadrista)
+    {
+        $evento = $this;
+        $this->categorias()->whereHas("categoria", function ($q1) use ($enxadrista, $evento) {
+            $q1->where(function ($q2) use ($enxadrista, $evento) {
+                $q2->where(function ($q3) use ($enxadrista, $evento) {
+                    $q3->where([["idade_minima", "<=", $enxadrista->howOldForEvento($evento->getYear())]]);
+                    $q3->where([["idade_maxima", ">=", $enxadrista->howOldForEvento($evento->getYear())]]);
+                })
+                    ->orWhere(function ($q3) use ($enxadrista, $evento) {
+                        $q3->where([["idade_minima", "<=", $enxadrista->howOldForEvento($evento->getYear())]]);
+                        $q3->where([["idade_maxima", "=", null]]);
+                    })
+                    ->orWhere(function ($q3) use ($enxadrista, $evento) {
+                        $q3->where([["idade_minima", "=", null]]);
+                        $q3->where([["idade_maxima", ">=", $enxadrista->howOldForEvento($evento->getYear())]]);
+                    })
+                    ->orWhere(function ($q3) {
+                        $q3->where([["idade_minima", "=", null]]);
+                        $q3->where([["idade_maxima", "=", null]]);
+                    });
+            })
+                ->where(function ($q2) use ($enxadrista) {
+                    $q2->where(function ($q3) use ($enxadrista) {
+                        if ($enxadrista->sexos_id) {
+                            $q3->where(function ($q4) use ($enxadrista) {
+                                $q4->whereHas("sexos", function ($q5) use ($enxadrista) {
+                                    $q5->where([["sexos_id", "=", $enxadrista->sexos_id]]);
+                                });
+                            });
+                            $q3->orWhere(function ($q4) {
+                                $q4->doesntHave("sexos");
+                            });
+                        } else {
+                            $q3->whereDoesntHave("sexos");
+                        }
+                    });
+                });
+        })
+            ->count() > 0;
+    }
+    public function getCategoryForEnxadrista($enxadrista)
+    {
+        $evento = $this;
+        $this->categorias()->whereHas("categoria", function ($q1) use ($enxadrista, $evento) {
+            $q1->where(function ($q2) use ($enxadrista, $evento) {
+                $q2->where(function ($q3) use ($enxadrista, $evento) {
+                    $q3->where([["idade_minima", "<=", $enxadrista->howOldForEvento($evento->getYear())]]);
+                    $q3->where([["idade_maxima", ">=", $enxadrista->howOldForEvento($evento->getYear())]]);
+                })
+                    ->orWhere(function ($q3) use ($enxadrista, $evento) {
+                        $q3->where([["idade_minima", "<=", $enxadrista->howOldForEvento($evento->getYear())]]);
+                        $q3->where([["idade_maxima", "=", null]]);
+                    })
+                    ->orWhere(function ($q3) use ($enxadrista, $evento) {
+                        $q3->where([["idade_minima", "=", null]]);
+                        $q3->where([["idade_maxima", ">=", $enxadrista->howOldForEvento($evento->getYear())]]);
+                    })
+                    ->orWhere(function ($q3) {
+                        $q3->where([["idade_minima", "=", null]]);
+                        $q3->where([["idade_maxima", "=", null]]);
+                    });
+            })
+                ->where(function ($q2) use ($enxadrista) {
+                    $q2->where(function ($q3) use ($enxadrista) {
+                        if ($enxadrista->sexos_id) {
+                            $q3->where(function ($q4) use ($enxadrista) {
+                                $q4->whereHas("sexos", function ($q5) use ($enxadrista) {
+                                    $q5->where([["sexos_id", "=", $enxadrista->sexos_id]]);
+                                });
+                            });
+                            $q3->orWhere(function ($q4) {
+                                $q4->doesntHave("sexos");
+                            });
+                        } else {
+                            $q3->whereDoesntHave("sexos");
+                        }
+                    });
+                });
+        })
+        ->first();
+    }
+
     public function getConfigs(){
         return $this->configs->all();
     }
