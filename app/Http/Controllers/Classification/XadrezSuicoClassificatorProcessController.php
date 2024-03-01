@@ -283,7 +283,7 @@ class XadrezSuicoClassificatorProcessController extends Controller
                                         }
                                     }
                                     if ($category->idade_maxima) {
-                                        if ($classificacao->enxadrista->howOldForEvento($xzsuic_classificator->event->id) > $category->idade_minima) {
+                                        if ($classificacao->enxadrista->howOldForEvento($xzsuic_classificator->event->id) > $category->idade_maxima) {
                                             $this->log[] = date("d/m/Y H:i:s") . " - Categoria inválida - Obtendo nova categoria.";
                                             $category = $this->getNewCategory($xzsuic_classificator->event, $classificacao->enxadrista);
                                             if ($category) {
@@ -547,7 +547,7 @@ class XadrezSuicoClassificatorProcessController extends Controller
                                         }
                                     }
                                     if ($category->idade_maxima) {
-                                        if ($classificacao->enxadrista->howOldForEvento($xzsuic_classificator->event->id) > $category->idade_minima) {
+                                        if ($classificacao->enxadrista->howOldForEvento($xzsuic_classificator->event->id) > $category->idade_maxima) {
                                             $this->log[] = date("d/m/Y H:i:s") . " - Categoria inválida - Obtendo nova categoria.";
                                             $category = $this->getNewCategory($xzsuic_classificator->event, $classificacao->enxadrista);
                                             if ($category) {
@@ -825,7 +825,7 @@ class XadrezSuicoClassificatorProcessController extends Controller
                                             }
                                         }
                                         if ($category->idade_maxima) {
-                                            if ($classificacao->enxadrista->howOldForEvento($xzsuic_classificator->event->id) > $category->idade_minima) {
+                                            if ($classificacao->enxadrista->howOldForEvento($xzsuic_classificator->event->id) > $category->idade_maxima) {
                                                 $this->log[] = date("d/m/Y H:i:s") . " - Categoria inválida - Obtendo nova categoria.";
                                                 $category = $this->getNewCategory($xzsuic_classificator->event, $classificacao->enxadrista);
                                                 if ($category) {
@@ -1117,7 +1117,7 @@ class XadrezSuicoClassificatorProcessController extends Controller
                                         }
                                     }
                                     if ($category->idade_maxima) {
-                                        if ($classificacao->enxadrista->howOldForEvento($xzsuic_classificator->event->id) > $category->idade_minima) {
+                                        if ($classificacao->enxadrista->howOldForEvento($xzsuic_classificator->event->id) > $category->idade_maxima) {
                                             $this->log[] = date("d/m/Y H:i:s") . " - Categoria inválida - Obtendo nova categoria.";
                                             $category = $this->getNewCategory($xzsuic_classificator->event, $classificacao->enxadrista);
                                             if ($category) {
