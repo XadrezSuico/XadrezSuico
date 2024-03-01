@@ -147,6 +147,6 @@ class ClassificateEventRuleController extends Controller
         }
         $event_classificate_rule->save();
 
-        return redirect("/evento/" . $evento->id . "/classificator/classificator/".$event_classificates->id."/rule/" . $event_classificate_rule->id);
+        return redirect("/evento/" . $evento->id . "/classificator/".$event_classificates->id."/rule/" . $event_classificate_rule->id);
     }
 }
