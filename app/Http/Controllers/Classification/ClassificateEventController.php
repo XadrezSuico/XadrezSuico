@@ -10,6 +10,10 @@ use Illuminate\Support\Facades\Auth;
 
 class ClassificateEventController extends Controller
 {
+    public function __construct()
+    {
+        return $this->middleware("auth");
+    }
     public function new($event_id)
     {
         $user = Auth::user();

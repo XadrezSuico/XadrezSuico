@@ -34,4 +34,13 @@ class ClassificationTypeRule
     public static function get($id){
         return self::$types[($id)];
     }
+
+    public static function getProcessOrder(){
+        return [
+            self::PRE_CLASSIFICATE,
+            self::POSITION_ABSOLUTE,
+            self::POSITION,
+            self::PLACE_BY_QUANTITY
+        ];
+    }
 }

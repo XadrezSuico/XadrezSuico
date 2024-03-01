@@ -179,6 +179,8 @@ Route::group(["prefix"=>"evento"],function(){
         Route::post('/new', 'Classification\ClassificateEventController@new_post')->name('evento.classificator.new.post');
         Route::get('/edit/{id}', 'Classification\ClassificateEventController@edit')->name('evento.classificator.edit');
         Route::post('/edit/{id}', 'Classification\ClassificateEventController@edit_post')->name('evento.classificator.edit.post');
+        Route::get('{event_classificates_id}/process', 'Classification\XadrezSuicoClassificatorProcessController@process')->name('evento.classificator.process');
+        Route::get('{event_classificates_id}/classificated/delete', 'Classification\XadrezSuicoClassificatorProcessController@delete_classified')->name('evento.classificator.delete_classified');
     });
 
 

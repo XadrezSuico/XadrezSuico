@@ -39,6 +39,12 @@ class EmailTemplateHelper
             case EmailType::InscricaoConfirmadaComPagamentoAutomatico:
                 return $this->generateInscricaoConfirmadaComPagamentoAutomatico($object);
                 break;
+
+
+
+            case EmailType::XadrezSuicoClassificadorProcessamento:
+                return $this->generateXadrezSuicoClassificadorProcessamento($object);
+                break;
         }
     }
 
@@ -385,4 +391,37 @@ class EmailTemplateHelper
 
         return $text;
     }
+
+
+    private function generateXadrezSuicoClassificadorProcessamento($data)
+    {
+        // Busca Template de E-mail Geral
+        $email_template = EmailTemplate::where([["email_type", "=", EmailType::XadrezSuicoClassificadorProcessamento]])->whereNull("evento_id")->whereNull("grupo_evento_id")->first();
+
+        $email_template->subject = $this->fillXadrezSuicoClassificadorProcessamentoFields($email_template->subject, $data);
+        $email_template->message = $this->fillXadrezSuicoClassificadorProcessamentoFields($email_template->message, $data);
+
+        return $email_template;
+    }
+
+    private function fillXadrezSuicoClassificadorProcessamentoFields($text, $data)
+    {
+        // User
+        $text = str_replace("{user.id}", $data["user"]->id, $text);
+        $text = str_replace("{user.name}", $data["user"]->name, $text);
+
+        // Log
+        $text = str_replace("{log}", "<ul><li>" . implode("</li><li>", $data["log"]) . "</li></ul>", $text);
+
+        // XadrezSuico Classificador
+        $text = str_replace("{xadrezsuicoclassificador.id}", $data["classificator"]->id, $text);
+        $text = str_replace("{xadrezsuicoclassificador.event.from.id}", $data["classificator"]->event_classificator->id, $text);
+        $text = str_replace("{xadrezsuicoclassificador.event.from.name}", $data["classificator"]->event_classificator->name, $text);
+        $text = str_replace("{xadrezsuicoclassificador.event.to.id}", $data["classificator"]->event->id, $text);
+        $text = str_replace("{xadrezsuicoclassificador.event.to.name}", $data["classificator"]->event->name, $text);
+
+        return $text;
+    }
+
+
 }

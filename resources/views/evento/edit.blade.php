@@ -1568,10 +1568,22 @@
 
                         <div class="box box-primary">
                             <div class="box-header">
-                                <h3 class="box-title">XadrezSuíço Classificador - Regras de Classificação para o Evento #{{$event_classificates->event->id}} - {{$event_classificates->event->name}}</h3>
+                                <h3 class="box-title">XadrezSuíço Classificador - Regras e Processos de Classificação para o Evento #{{$event_classificates->event->id}} - {{$event_classificates->event->name}}</h3>
                             </div>
                             <!-- form start -->
                                 <div class="box-body">
+                                    @php($total_classified = $event_classificates->howMuchClassificated())
+                                    @if($total_classified > 0)
+                                        <div class="alert alert-success" role="alert">
+                                            <strong>Classificado!</strong><br/>
+                                            O presente classificador foi classificado.<br/>
+                                            Total de Classificados: {{$total_classified}}
+                                        </div>
+                                    @endif
+                                    <ul class="nav nav-pills">
+                                        <li role="presentation"><a href="{{url("/evento/".$evento->id."/classificator/".$event_classificates->id."/process")}}">!!!! Processar Classificações (Use com cuidado)</a></li>
+                                        <li role="presentation"><a href="{{url("/evento/".$evento->id."/classificator/".$event_classificates->id."/classificated/delete")}}">!!!! Remover classificados</a></li>
+                                    </ul>
 
                                     <ul class="nav nav-pills">
                                         <li role="presentation"><a href="{{url("/evento/".$evento->id."/classificator/".$event_classificates->id."/rule/new")}}">Nova Regra</a></li>
@@ -1582,6 +1594,9 @@
                                                 <th>#</th>
                                                 <th>Regra</th>
                                                 <th>Configurações</th>
+                                                @if($total_classified > 0)
+                                                    <th>Total de Classificados</th>
+                                                @endif
                                                 <th width="20%">Opções</th>
                                             </tr>
                                         </thead>
@@ -1610,6 +1625,9 @@
                                                             @break
                                                         @endswitch
                                                     </td>
+                                                    @if($total_classified > 0)
+                                                        <td>{{$rule->howMuchClassificated()}}</td>
+                                                    @endif
                                                     <td>
                                                         <a class="btn btn-default" href="{{url("/evento/".$evento->id."/classificator/".$event_classificates->id."/rule/edit/".$rule->id)}}" role="button">Editar</a>
                                                     </td>

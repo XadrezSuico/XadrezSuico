@@ -294,6 +294,9 @@ class InscricaoGerenciarController extends Controller
             foreach ($inscricao->criterios_desempate->all() as $criterios) {
                 $criterios->delete();
             }
+            foreach ($inscricao->configs->all() as $config) {
+                $config->delete();
+            }
             $inscricao->delete();
         }
         return redirect("/evento/" . $evento->id . "/torneios/" . $torneio->id . "/inscricoes");

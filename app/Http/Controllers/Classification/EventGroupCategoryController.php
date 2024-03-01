@@ -11,6 +11,10 @@ use Illuminate\Support\Facades\Auth;
 
 class EventGroupCategoryController extends Controller
 {
+    public function __construct()
+    {
+        return $this->middleware("auth");
+    }
     public function new($group_event_id)
     {
         $user = Auth::user();

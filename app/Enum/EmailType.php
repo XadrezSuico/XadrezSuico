@@ -13,6 +13,8 @@ class EmailType
     const PagamentoConfirmadoInscricaoConfirmada = 8;
     const InscricaoConfirmadaComPagamentoAutomatico = 9;
 
+    const XadrezSuicoClassificadorProcessamento = 10;
+
     private $types = array(
         1 => array("name"=>"Confirmação de Cadastro de Enxadrista","is_general"=>1),
         2 => array("name"=>"Confirmação de Inscrição","is_general"=>0),
@@ -23,6 +25,7 @@ class EmailType
         7 => array("name"=>"Inscrição Recebida - Pagamento Pendente","is_general"=>0),
         8 => array("name"=>"Pagamento Confirmado - Inscrição Confirmada","is_general"=>0),
         9 => array("name"=>"Inscrição Confirmada Automaticamente Pelo Pagamento","is_general"=>0),
+        10 => array("name"=>"XadrezSuíço Classificador - Processamento","is_general"=>1),
     );
 
     public function list(){

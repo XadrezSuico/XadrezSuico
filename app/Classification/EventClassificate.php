@@ -2,6 +2,7 @@
 
 namespace App\Classification;
 
+use App\Inscricao;
 use Illuminate\Database\Eloquent\Model;
 
 class EventClassificate extends Model
@@ -19,5 +20,22 @@ class EventClassificate extends Model
     public function rules()
     {
         return $this->hasMany("App\Classification\EventClassificateRule", "event_classificates_id", "id");
+    }
+
+    public function howMuchClassificated(){
+        $xzsuic_classificator = $this;
+
+        return Inscricao::whereHas("torneio", function ($q1) use ($xzsuic_classificator) {
+            $q1->whereHas("evento", function ($q2) use ($xzsuic_classificator) {
+                $q2->where([["id", "=", $xzsuic_classificator->event->id]]);
+            });
+        })
+        ->whereHas("configs", function ($q1) use ($xzsuic_classificator) {
+            $q1->where([
+                ["key", "=", "event_classificator_id"],
+                ["integer", "=", $xzsuic_classificator->event_classificator->id],
+            ]);
+        })
+        ->count();
     }
 }
