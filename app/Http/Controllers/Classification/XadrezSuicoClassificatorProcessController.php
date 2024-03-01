@@ -180,8 +180,9 @@ class XadrezSuicoClassificatorProcessController extends Controller
                 foreach ($xzsuic_classificator->event->event_classificators()->whereHas("event_classificator", function ($q1) use ($xzsuic_classificator) {
                     $q1->where([["data_inicio", "<=", $xzsuic_classificator->event_classificator->data_inicio]]);
                 })->get() as $event_classificator) {
-                    $tournament_classificators_before_this[] = $event_classificator->event->id;
+                    $tournament_classificators_before_this[] = $event_classificator->event_classificator->id;
                 }
+                $this->log[] = date("d/m/Y H:i:s") . " - Torneios anteriores a este: " . implode(",", $tournament_classificators_before_this);
 
                 foreach ($category_classificator->inscricoes()->whereHas("torneio", function ($q1) use ($xzsuic_classificator) {
                     $q1->where([["evento_id", "=", $xzsuic_classificator->event_classificator->id]]);
@@ -383,6 +384,8 @@ class XadrezSuicoClassificatorProcessController extends Controller
 
                                     $inscricao_on_event->setConfig("event_classificator_id", ConfigType::Integer, $xzsuic_classificator->event_classificator->id);
                                     $inscricao_on_event->setConfig("event_classificator_rule_id", ConfigType::Integer, $rule->id);
+                                    $inscricao_on_event->inscricao_from = $classificacao->id;
+                                    $inscricao_on_event->save();
 
                                     $classification_found = true;
                                 }
@@ -442,8 +445,9 @@ class XadrezSuicoClassificatorProcessController extends Controller
                 foreach ($xzsuic_classificator->event->event_classificators()->whereHas("event_classificator", function ($q1) use ($xzsuic_classificator) {
                     $q1->where([["data_inicio", "<=", $xzsuic_classificator->event_classificator->data_inicio]]);
                 })->get() as $event_classificator) {
-                    $tournament_classificators_before_this[] = $event_classificator->event->id;
+                    $tournament_classificators_before_this[] = $event_classificator->event_classificator->id;
                 }
+                $this->log[] = date("d/m/Y H:i:s") . " - Torneios anteriores a este: " . implode(",", $tournament_classificators_before_this);
 
                 foreach ($category_classificator->inscricoes()->whereHas("torneio", function ($q1) use ($xzsuic_classificator) {
                     $q1->where([["evento_id", "=", $xzsuic_classificator->event_classificator->id]]);
@@ -647,6 +651,8 @@ class XadrezSuicoClassificatorProcessController extends Controller
 
                                     $inscricao_on_event->setConfig("event_classificator_id", ConfigType::Integer, $xzsuic_classificator->event_classificator->id);
                                     $inscricao_on_event->setConfig("event_classificator_rule_id", ConfigType::Integer, $rule->id);
+                                    $inscricao_on_event->inscricao_from = $classificacao->id;
+                                    $inscricao_on_event->save();
 
                                     $classification_found = true;
                                 }
@@ -717,8 +723,9 @@ class XadrezSuicoClassificatorProcessController extends Controller
                 foreach ($xzsuic_classificator->event->event_classificators()->whereHas("event_classificator", function ($q1) use ($xzsuic_classificator) {
                     $q1->where([["data_inicio", "<=", $xzsuic_classificator->event_classificator->data_inicio]]);
                 })->get() as $event_classificator) {
-                    $tournament_classificators_before_this[] = $event_classificator->event->id;
+                    $tournament_classificators_before_this[] = $event_classificator->event_classificator->id;
                 }
+                $this->log[] = date("d/m/Y H:i:s") . " - Torneios anteriores a este: " . implode(",", $tournament_classificators_before_this);
 
                 foreach (
                     $category_classificator->inscricoes()->whereHas("torneio", function ($q1) use ($xzsuic_classificator) {
@@ -922,6 +929,8 @@ class XadrezSuicoClassificatorProcessController extends Controller
 
                                         $inscricao_on_event->setConfig("event_classificator_id", ConfigType::Integer, $xzsuic_classificator->event_classificator->id);
                                         $inscricao_on_event->setConfig("event_classificator_rule_id", ConfigType::Integer, $rule->id);
+                                        $inscricao_on_event->inscricao_from = $classificacao->id;
+                                        $inscricao_on_event->save();
                                     }
                                 }
                             } else {
@@ -1013,8 +1022,9 @@ class XadrezSuicoClassificatorProcessController extends Controller
                 foreach ($xzsuic_classificator->event->event_classificators()->whereHas("event_classificator", function ($q1) use ($xzsuic_classificator) {
                     $q1->where([["data_inicio", "<=", $xzsuic_classificator->event_classificator->data_inicio]]);
                 })->get() as $event_classificator) {
-                    $tournament_classificators_before_this[] = $event_classificator->event->id;
+                    $tournament_classificators_before_this[] = $event_classificator->event_classificator->id;
                 }
+                $this->log[] = date("d/m/Y H:i:s") . " - Torneios anteriores a este: ".implode(",", $tournament_classificators_before_this);
 
                 foreach ($category_classificator->inscricoes()->whereHas("torneio", function ($q1) use ($xzsuic_classificator) {
                     $q1->where([["evento_id", "=", $xzsuic_classificator->event_classificator->id]]);
@@ -1217,6 +1227,8 @@ class XadrezSuicoClassificatorProcessController extends Controller
 
                                     $inscricao_on_event->setConfig("event_classificator_id", ConfigType::Integer, $xzsuic_classificator->event_classificator->id);
                                     $inscricao_on_event->setConfig("event_classificator_rule_id", ConfigType::Integer, $rule->id);
+                                    $inscricao_on_event->inscricao_from = $classificacao->id;
+                                    $inscricao_on_event->save();
 
                                     $total_registrations++;
                                 }
