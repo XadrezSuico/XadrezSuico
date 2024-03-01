@@ -180,7 +180,7 @@ class XadrezSuicoClassificatorProcessController extends Controller
                 foreach ($xzsuic_classificator->event->event_classificators()->whereHas("event_classificator", function ($q1) use ($xzsuic_classificator) {
                     $q1->where([["data_inicio", "<=", $xzsuic_classificator->event_classificator->data_inicio]]);
                 })->get() as $event_classificator) {
-                    $tournament_classificators_before_this[] = $event_classificator->event_classificator->id;
+                    $tournament_classificators_before_this[] = $event_classificator->event->id;
                 }
 
                 foreach ($category_classificator->inscricoes()->whereHas("torneio", function ($q1) use ($xzsuic_classificator) {
@@ -442,7 +442,7 @@ class XadrezSuicoClassificatorProcessController extends Controller
                 foreach ($xzsuic_classificator->event->event_classificators()->whereHas("event_classificator", function ($q1) use ($xzsuic_classificator) {
                     $q1->where([["data_inicio", "<=", $xzsuic_classificator->event_classificator->data_inicio]]);
                 })->get() as $event_classificator) {
-                    $tournament_classificators_before_this[] = $event_classificator->id;
+                    $tournament_classificators_before_this[] = $event_classificator->event->id;
                 }
 
                 foreach ($category_classificator->inscricoes()->whereHas("torneio", function ($q1) use ($xzsuic_classificator) {
@@ -717,7 +717,7 @@ class XadrezSuicoClassificatorProcessController extends Controller
                 foreach ($xzsuic_classificator->event->event_classificators()->whereHas("event_classificator", function ($q1) use ($xzsuic_classificator) {
                     $q1->where([["data_inicio", "<=", $xzsuic_classificator->event_classificator->data_inicio]]);
                 })->get() as $event_classificator) {
-                    $tournament_classificators_before_this[] = $event_classificator->id;
+                    $tournament_classificators_before_this[] = $event_classificator->event->id;
                 }
 
                 foreach (
@@ -1013,7 +1013,7 @@ class XadrezSuicoClassificatorProcessController extends Controller
                 foreach ($xzsuic_classificator->event->event_classificators()->whereHas("event_classificator", function ($q1) use ($xzsuic_classificator) {
                     $q1->where([["data_inicio", "<=", $xzsuic_classificator->event_classificator->data_inicio]]);
                 })->get() as $event_classificator) {
-                    $tournament_classificators_before_this[] = $event_classificator->id;
+                    $tournament_classificators_before_this[] = $event_classificator->event->id;
                 }
 
                 foreach ($category_classificator->inscricoes()->whereHas("torneio", function ($q1) use ($xzsuic_classificator) {
