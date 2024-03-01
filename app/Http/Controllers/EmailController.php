@@ -47,7 +47,11 @@ class EmailController extends Controller
         $emails = Email::where([["is_sent", "=", false]])->orderBy("id", "ASC")->limit(intval(date("i")/2) + 10)->get();
         foreach ($emails as $email) {
             $email_send = new EmailSend($email);
-            Mail::to($email->email, $email->enxadrista->name)->send($email_send);
+            if($email->enxadrista){
+                Mail::to($email->email, $email->enxadrista->name)->send($email_send);
+            }else {
+                Mail::to($email->email, "XadrezSuíço")->send($email_send);
+            }
             $email->is_sent = true;
             $email->sent_at = date("Y-m-d H:i:s");
             $email->save();
