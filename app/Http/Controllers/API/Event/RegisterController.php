@@ -13,7 +13,8 @@ use App\Inscricao;
 use App\Enxadrista;
 use App\Categoria;
 use App\CampoPersonalizadoOpcaoInscricao;
-
+use App\Classification\EventClassificateRule;
+use App\Enum\ClassificationTypeRule;
 use App\Rating;
 use App\MovimentacaoRating;
 
@@ -358,6 +359,33 @@ class RegisterController extends Controller
                 }
 
                 $item["custom_fields"] = array();
+                if($evento->event_classificators()->count() > 0){
+                    $item_rule = array("id" => null,);
+                    if($inscricao->hasConfig("event_classificator_id")){
+                        $event_that_classificated = Evento::where([["id","=",$inscricao->getConfig("event_classificator_id",true)]])->first();
+                        if($inscricao->hasConfig("event_classificator_rule_id")){
+                            $rule_that_classificated = EventClassificateRule::where([["id", "=", $inscricao->getConfig("event_classificator_rule_id",true)]])->first();
+
+                            $item_rule["public_name"] = "Classificado pelo Evento";
+                            $item_rule["value"] = $event_that_classificated->name. " - ". ClassificationTypeRule::get($rule_that_classificated->type)["name"];
+
+                            if ($rule_that_classificated->value) {
+                                $item_rule["value"] .= " - Valor: " . $rule_that_classificated->value;
+                            }
+                            if ($rule_that_classificated->event) {
+                                $item_rule["value"] .= " - Evento: " . $rule_that_classificated->event->name;
+                            }
+                        }else{
+                            $item_rule["public_name"] = "Classificado pelo Evento";
+                            $item_rule["value"] = $event_that_classificated->name;
+                        }
+                    }else {
+                        $item_rule["public_name"] = "Classificado pelo Evento";
+                        $item_rule["value"] = "-";
+                    }
+
+                    $item["custom_fields"][] = $item_rule;
+                }
                 foreach($evento->getPublicCustomFields() as $custom_field){
                     if($inscricao->hasOpcao($custom_field->id)){
                         $item["custom_fields"][] = $inscricao->getOpcao($custom_field->id)->toAPIObject();

@@ -122,6 +122,12 @@ class EventController extends Controller
             }
 
             $retorno["event"]["info"]["custom_fields"] = array();
+
+
+            if ($evento->event_classificators()->count() > 0) {
+                $retorno["event"]["info"]["custom_fields"][] = ["id" => null, "public_name" => "Classificado pelo Evento"];
+            }
+
             foreach($evento->getPublicCustomFields() as $custom_field){
                 $retorno["event"]["info"]["custom_fields"][] = $custom_field->toAPIObject();
             }
