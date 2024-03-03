@@ -227,7 +227,7 @@
 												<tr>
 													<td>{{$evento->id}}</td>
 													<td>{{$evento->name}}</td>
-													<td>
+													<td data-order="{{$evento->data_inicio}}">
                                                         @if($evento->getDataInicio() == $evento->getDataFim())
                                                             {{$evento->getDataInicio()}}
                                                         @else
