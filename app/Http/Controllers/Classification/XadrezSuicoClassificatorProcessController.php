@@ -175,13 +175,7 @@ class XadrezSuicoClassificatorProcessController extends Controller
 
                 $classification_found = false;
 
-                $tournament_classificators_before_this = array();
-
-                foreach ($xzsuic_classificator->event->event_classificators()->whereHas("event_classificator", function ($q1) use ($xzsuic_classificator) {
-                    $q1->where([["data_inicio", "<=", $xzsuic_classificator->event_classificator->data_inicio]]);
-                })->get() as $event_classificator) {
-                    $tournament_classificators_before_this[] = $event_classificator->event_classificator->id;
-                }
+                $tournament_classificators_before_this = $this->getTournamentsBeforeThis($xzsuic_classificator);
                 $this->log[] = date("d/m/Y H:i:s") . " - Torneios anteriores a este: " . implode(",", $tournament_classificators_before_this);
 
                 foreach ($category_classificator->inscricoes()->whereHas("torneio", function ($q1) use ($xzsuic_classificator) {
@@ -270,30 +264,10 @@ class XadrezSuicoClassificatorProcessController extends Controller
                                     ])
                                     ->count() == 0
                                 ) {
-
-                                    if ($category->idade_minima) {
-                                        if ($classificacao->enxadrista->howOldForEvento($xzsuic_classificator->event->id) < $category->idade_minima) {
-                                            $this->log[] = date("d/m/Y H:i:s") . " - Categoria inválida - Obtendo nova categoria.";
-                                            $category = $this->getNewCategory($xzsuic_classificator->event, $classificacao->enxadrista);
-                                            if ($category) {
-                                                $this->log[] = date("d/m/Y H:i:s") . " - Nova Categoria Encontrada - #{$categoria->id} - {$categoria->name}.";
-                                            } else {
-                                                $this->log[] = date("d/m/Y H:i:s") . " - Não há categoria para classificar este enxadrista - Ignorando.";
-                                                continue;
-                                            }
-                                        }
-                                    }
-                                    if ($category->idade_maxima) {
-                                        if ($classificacao->enxadrista->howOldForEvento($xzsuic_classificator->event->id) > $category->idade_maxima) {
-                                            $this->log[] = date("d/m/Y H:i:s") . " - Categoria inválida - Obtendo nova categoria.";
-                                            $category = $this->getNewCategory($xzsuic_classificator->event, $classificacao->enxadrista);
-                                            if ($category) {
-                                                $this->log[] = date("d/m/Y H:i:s") . " - Nova Categoria Encontrada - #{$categoria->id} - {$categoria->name}.";
-                                            } else {
-                                                $this->log[] = date("d/m/Y H:i:s") . " - Não há categoria para classificar este enxadrista - Ignorando.";
-                                                continue;
-                                            }
-                                        }
+                                    $category = $this->getCategory($xzsuic_classificator->event,$classificacao->enxadrista,$category);
+                                    if (!$category) {
+                                        $this->log[] = date("d/m/Y H:i:s") . " - Não há categoria para classificar este enxadrista - Ignorando.";
+                                        continue;
                                     }
 
                                     if ($xzsuic_classificator->event->torneios()->whereHas("categorias", function ($q1) use ($category) {
@@ -440,13 +414,7 @@ class XadrezSuicoClassificatorProcessController extends Controller
 
                 $classification_found = false;
 
-                $tournament_classificators_before_this = array();
-
-                foreach ($xzsuic_classificator->event->event_classificators()->whereHas("event_classificator", function ($q1) use ($xzsuic_classificator) {
-                    $q1->where([["data_inicio", "<=", $xzsuic_classificator->event_classificator->data_inicio]]);
-                })->get() as $event_classificator) {
-                    $tournament_classificators_before_this[] = $event_classificator->event_classificator->id;
-                }
+                $tournament_classificators_before_this = $this->getTournamentsBeforeThis($xzsuic_classificator);
                 $this->log[] = date("d/m/Y H:i:s") . " - Torneios anteriores a este: " . implode(",", $tournament_classificators_before_this);
 
                 foreach ($category_classificator->inscricoes()->whereHas("torneio", function ($q1) use ($xzsuic_classificator) {
@@ -537,30 +505,10 @@ class XadrezSuicoClassificatorProcessController extends Controller
                                     ])
                                     ->count() == 0
                                 ) {
-
-                                    if ($category->idade_minima) {
-                                        if ($classificacao->enxadrista->howOldForEvento($xzsuic_classificator->event->id) < $category->idade_minima) {
-                                            $this->log[] = date("d/m/Y H:i:s") . " - Categoria inválida - Obtendo nova categoria.";
-                                            $category = $this->getNewCategory($xzsuic_classificator->event, $classificacao->enxadrista);
-                                            if ($category) {
-                                                $this->log[] = date("d/m/Y H:i:s") . " - Nova Categoria Encontrada - #{$categoria->id} - {$categoria->name}.";
-                                            } else {
-                                                $this->log[] = date("d/m/Y H:i:s") . " - Não há categoria para classificar este enxadrista - Ignorando.";
-                                                continue;
-                                            }
-                                        }
-                                    }
-                                    if ($category->idade_maxima) {
-                                        if ($classificacao->enxadrista->howOldForEvento($xzsuic_classificator->event->id) > $category->idade_maxima) {
-                                            $this->log[] = date("d/m/Y H:i:s") . " - Categoria inválida - Obtendo nova categoria.";
-                                            $category = $this->getNewCategory($xzsuic_classificator->event, $classificacao->enxadrista);
-                                            if ($category) {
-                                                $this->log[] = date("d/m/Y H:i:s") . " - Nova Categoria Encontrada - #{$categoria->id} - {$categoria->name}.";
-                                            } else {
-                                                $this->log[] = date("d/m/Y H:i:s") . " - Não há categoria para classificar este enxadrista - Ignorando.";
-                                                continue;
-                                            }
-                                        }
+                                    $category = $this->getCategory($xzsuic_classificator->event, $classificacao->enxadrista, $category);
+                                    if (!$category) {
+                                        $this->log[] = date("d/m/Y H:i:s") . " - Não há categoria para classificar este enxadrista - Ignorando.";
+                                        continue;
                                     }
 
                                     if ($xzsuic_classificator->event->torneios()->whereHas("categorias", function ($q1) use ($category) {
@@ -718,13 +666,7 @@ class XadrezSuicoClassificatorProcessController extends Controller
                     ->orderBy("posicao", "ASC")
                     ->count();
 
-                $tournament_classificators_before_this = array();
-
-                foreach ($xzsuic_classificator->event->event_classificators()->whereHas("event_classificator", function ($q1) use ($xzsuic_classificator) {
-                    $q1->where([["data_inicio", "<=", $xzsuic_classificator->event_classificator->data_inicio]]);
-                })->get() as $event_classificator) {
-                    $tournament_classificators_before_this[] = $event_classificator->event_classificator->id;
-                }
+                $tournament_classificators_before_this = $this->getTournamentsBeforeThis($xzsuic_classificator);
                 $this->log[] = date("d/m/Y H:i:s") . " - Torneios anteriores a este: " . implode(",", $tournament_classificators_before_this);
 
                 foreach (
@@ -818,31 +760,12 @@ class XadrezSuicoClassificatorProcessController extends Controller
                                         ])
                                         ->count() == 0
                                     ) {
+                                        $category = $this->getCategory($xzsuic_classificator->event, $classificacao->enxadrista, $category);
+                                        if (!$category) {
+                                            $this->log[] = date("d/m/Y H:i:s") . " - Não há categoria para classificar este enxadrista - Ignorando.";
+                                            continue;
+                                        }
 
-                                        if ($category->idade_minima) {
-                                            if ($classificacao->enxadrista->howOldForEvento($xzsuic_classificator->event->id) < $category->idade_minima) {
-                                                $this->log[] = date("d/m/Y H:i:s") . " - Categoria inválida - Obtendo nova categoria.";
-                                                $category = $this->getNewCategory($xzsuic_classificator->event, $classificacao->enxadrista);
-                                                if ($category) {
-                                                    $this->log[] = date("d/m/Y H:i:s") . " - Nova Categoria Encontrada - #{$categoria->id} - {$categoria->name}.";
-                                                } else {
-                                                    $this->log[] = date("d/m/Y H:i:s") . " - Não há categoria para classificar este enxadrista - Ignorando.";
-                                                    continue;
-                                            }
-                                            }
-                                        }
-                                        if ($category->idade_maxima) {
-                                            if ($classificacao->enxadrista->howOldForEvento($xzsuic_classificator->event->id) > $category->idade_maxima) {
-                                                $this->log[] = date("d/m/Y H:i:s") . " - Categoria inválida - Obtendo nova categoria.";
-                                                $category = $this->getNewCategory($xzsuic_classificator->event, $classificacao->enxadrista);
-                                                if ($category) {
-                                                    $this->log[] = date("d/m/Y H:i:s") . " - Nova Categoria Encontrada - #{$categoria->id} - {$categoria->name}.";
-                                                } else {
-                                                    $this->log[] = date("d/m/Y H:i:s") . " - Não há categoria para classificar este enxadrista - Ignorando.";
-                                                    continue;
-                                                }
-                                            }
-                                        }
                                         if ($xzsuic_classificator->event->torneios()->whereHas("categorias", function ($q1) use ($category) {
                                             $q1->where([["categoria_id", "=", $category->id]]);
                                         })->count() > 0) {
@@ -1017,25 +940,21 @@ class XadrezSuicoClassificatorProcessController extends Controller
 
                 $total_registrations = 0;
 
-                $tournament_classificators_before_this = array();
-
-                foreach ($xzsuic_classificator->event->event_classificators()->whereHas("event_classificator", function ($q1) use ($xzsuic_classificator) {
-                    $q1->where([["data_inicio", "<=", $xzsuic_classificator->event_classificator->data_inicio]]);
-                })->get() as $event_classificator) {
-                    $tournament_classificators_before_this[] = $event_classificator->event_classificator->id;
-                }
+                $tournament_classificators_before_this = $this->getTournamentsBeforeThis($xzsuic_classificator);
                 $this->log[] = date("d/m/Y H:i:s") . " - Torneios anteriores a este: ".implode(",", $tournament_classificators_before_this);
 
-                foreach ($category_classificator->inscricoes()->whereHas("torneio", function ($q1) use ($xzsuic_classificator) {
-                    $q1->where([["evento_id", "=", $xzsuic_classificator->event_classificator->id]]);
-                })
+                foreach (
+                    $category_classificator->inscricoes()->whereHas("torneio", function ($q1) use ($xzsuic_classificator) {
+                        $q1->where([["evento_id", "=", $xzsuic_classificator->event_classificator->id]]);
+                    })
                     ->where([
                         ["confirmado", "=", true],
                         ["desconsiderar_pontuacao_geral", "=", false],
                     ])
                     ->whereNotNull("posicao")
                     ->orderBy("posicao", "ASC")
-                    ->get() as $classificacao) {
+                    ->get() as $classificacao
+                ) {
                     if ($total_registrations < $total_places) {
                         $this->log[] = date("d/m/Y H:i:s") . " - Posição: #{$classificacao->posicao} - Enxadrista #{$classificacao->enxadrista->id} - {$classificacao->enxadrista->name}.";
                         if (
@@ -1044,12 +963,18 @@ class XadrezSuicoClassificatorProcessController extends Controller
                                     $q2->where([["id", "=", $xzsuic_classificator->event->id]]);
                                 });
                             })
-                            ->where(function ($q0) use ($xzsuic_classificator, $tournament_classificators_before_this) {
+                            ->where(function ($q0) use ($xzsuic_classificator, $tournament_classificators_before_this, $rule) {
                                 $q0->whereHas("configs", function ($q1) use ($xzsuic_classificator, $tournament_classificators_before_this) {
                                     $q1->where([
                                         ["key", "=", "event_classificator_id"],
                                     ]);
                                     $q1->whereIn("integer", $tournament_classificators_before_this);
+                                })
+                                ->whereHas("configs", function ($q1) use ($xzsuic_classificator, $tournament_classificators_before_this, $rule) {
+                                    $q1->where([
+                                        ["key", "=", "event_classificator_rule_id"],
+                                    ]);
+                                    $q1->where([["integer", "=", $rule->id]]);
                                 })
                                 ->orWhereHas("configs", function ($q1) use ($xzsuic_classificator, $tournament_classificators_before_this) {
                                     $q1->where([
@@ -1113,30 +1038,10 @@ class XadrezSuicoClassificatorProcessController extends Controller
                                     ])
                                     ->count() == 0
                                 ) {
-
-                                    if($category->idade_minima){
-                                        if($classificacao->enxadrista->howOldForEvento($xzsuic_classificator->event->id) < $category->idade_minima){
-                                            $this->log[] = date("d/m/Y H:i:s") . " - Categoria inválida - Obtendo nova categoria.";
-                                            $category = $this->getNewCategory($xzsuic_classificator->event, $classificacao->enxadrista);
-                                            if($category){
-                                                $this->log[] = date("d/m/Y H:i:s") . " - Nova Categoria Encontrada - #{$categoria->id} - {$categoria->name}.";
-                                            }else{
-                                                $this->log[] = date("d/m/Y H:i:s") . " - Não há categoria para classificar este enxadrista - Ignorando.";
-                                                continue;
-                                            }
-                                        }
-                                    }
-                                    if ($category->idade_maxima) {
-                                        if ($classificacao->enxadrista->howOldForEvento($xzsuic_classificator->event->id) > $category->idade_maxima) {
-                                            $this->log[] = date("d/m/Y H:i:s") . " - Categoria inválida - Obtendo nova categoria.";
-                                            $category = $this->getNewCategory($xzsuic_classificator->event, $classificacao->enxadrista);
-                                            if ($category) {
-                                                $this->log[] = date("d/m/Y H:i:s") . " - Nova Categoria Encontrada - #{$categoria->id} - {$categoria->name}.";
-                                            }else{
-                                                $this->log[] = date("d/m/Y H:i:s") . " - Não há categoria para classificar este enxadrista - Ignorando.";
-                                                continue;
-                                            }
-                                        }
+                                    $category = $this->getCategory($xzsuic_classificator->event, $classificacao->enxadrista, $category);
+                                    if (!$category) {
+                                        $this->log[] = date("d/m/Y H:i:s") . " - Não há categoria para classificar este enxadrista - Ignorando.";
+                                        continue;
                                     }
 
                                     if ($xzsuic_classificator->event->torneios()->whereHas("categorias", function ($q1) use ($category) {
@@ -1246,11 +1151,55 @@ class XadrezSuicoClassificatorProcessController extends Controller
     }
 
 
+    public function getCategory($event, $enxadrista, $category){
+        if ($category->idade_minima) {
+            if ($enxadrista->howOldForEvento($event->id) < $category->idade_minima) {
+                $this->log[] = date("d/m/Y H:i:s") . " - Categoria inválida - Obtendo nova categoria.";
+                $category = $this->getNewCategory($event, $enxadrista);
+                if ($category) {
+                    $this->log[] = date("d/m/Y H:i:s") . " - Nova Categoria Encontrada - #{$category->id} - {$category->name}.";
+                } else {
+                    $this->log[] = date("d/m/Y H:i:s") . " - Não há categoria para classificar este enxadrista - Ignorando.";
+                    return false;
+                }
+            }
+        }
+        if ($category->idade_maxima) {
+            if ($enxadrista->howOldForEvento($event->id) > $category->idade_maxima) {
+                $this->log[] = date("d/m/Y H:i:s") . " - Categoria inválida - Obtendo nova categoria.";
+                $category = $this->getNewCategory($event, $enxadrista);
+                if ($category) {
+                    $this->log[] = date("d/m/Y H:i:s") . " - Nova Categoria Encontrada - #{$category->id} - {$category->name}.";
+                } else {
+                    $this->log[] = date("d/m/Y H:i:s") . " - Não há categoria para classificar este enxadrista - Ignorando.";
+                    return false;
+                }
+            }
+        }
+
+        return $category;
+    }
+
     public function getNewCategory($event, $enxadrista){
-        if($event->hasCategoryForEnxadrista($enxadrista)){
+        if ($event->hasCategoryForEnxadrista($enxadrista)) {
             return $event->getCategoryForEnxadrista($enxadrista);
         }
 
         return null;
+    }
+
+    public function getTournamentsBeforeThis($xzsuic_classificator){
+        $tournament_classificators_before_this = array();
+
+        foreach ($xzsuic_classificator->event->event_classificators()->whereHas("event_classificator", function ($q1) use ($xzsuic_classificator) {
+            $q1->where([
+                ["id", "!=", $xzsuic_classificator->event_classificator->id],
+                ["data_inicio", "<=", $xzsuic_classificator->event_classificator->data_inicio]
+            ]);
+        })->get() as $event_classificator) {
+            $tournament_classificators_before_this[] = $event_classificator->event_classificator->id;
+        }
+
+        return $tournament_classificators_before_this;
     }
 }
