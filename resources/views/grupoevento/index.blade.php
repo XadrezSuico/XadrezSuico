@@ -43,7 +43,7 @@
                                     @endif
                                     @if(
                                         \Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
-                                        \Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($id, [6, 7])
+                                        \Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($grupo_evento->id, [6, 7])
                                     )
                                         <br/>
                                         <br/>

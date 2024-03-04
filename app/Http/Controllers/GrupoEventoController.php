@@ -435,7 +435,7 @@ class GrupoEventoController extends Controller
     public function classificar_page($grupo_evento_id)
     {
         $user = Auth::user();
-        if (!$user->hasPermissionGlobal() && !$user->hasPermissionGroupEventByPerfil($id,[7])) {
+        if (!$user->hasPermissionGlobal() && !$user->hasPermissionGroupEventByPerfil($grupo_evento_id,[7])) {
             return redirect("/grupoevento");
         }
 
@@ -447,7 +447,7 @@ class GrupoEventoController extends Controller
     public function classificar_call($grupo_evento_id, $categoria_id, $action)
     {
         $user = Auth::user();
-        if (!$user->hasPermissionGlobal() && !$user->hasPermissionGroupEventByPerfil($id,[7])) {
+        if (!$user->hasPermissionGlobal() && !$user->hasPermissionGroupEventByPerfil($grupo_evento_id,[7])) {
             return redirect("/grupoevento");
         }
 

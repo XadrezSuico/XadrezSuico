@@ -115,7 +115,7 @@
                                     <small><strong>IMPORTANTE!</strong> Essa configuração serve para caso tenha um grupo de evento que classifica para este grupo de evento. Aqui vai o Grupo de Evento que classifica para este Grupo de Evento.</small>
 								</div>
 								<div class="form-group">
-									<label><input type="checkbox" id="e_pontuacao_resultado_para_geral" name="e_pontuacao_resultado_para_geral" @if($grupo_evento->e_pontuacao_resultado_para_geral) checked="checked" @endif @if(!\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal()) disabled="disabled" @endif > A pontuação do enxadrista será composta pelos seus resultados?</label>
+									<label><input type="checkbox" id="e_pontuacao_resultado_para_geral" name="e_pontuacao_resultado_para_geral" @if($grupo_evento->e_pontuacao_resultado_para_geral) checked="checked" @endif @if(!\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() && !$user->hasPermissionGroupEventByPerfil($grupo_evento->id,[7])) disabled="disabled" @endif > A pontuação do enxadrista será composta pelos seus resultados?</label>
 								</div>
 							</div>
 							<!-- /.box-body -->
