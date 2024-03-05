@@ -107,12 +107,18 @@ class XadrezSuicoClassificatorProcessController extends Controller
         }
 
         $count = 0;
-        foreach(Inscricao::whereHas("configs",function($q1) use ($event_id,$event_classificates_id){
-            $q1->where([
-                ["key", "=", "event_classificator_id"],
-                ["integer", "=", $event_id],
-            ]);
-        })->get() as $inscricao){
+        foreach(
+            Inscricao::whereHas("configs",function($q1) use ($event_id){
+                $q1->where([
+                    ["key", "=", "event_classificator_id"],
+                    ["integer", "=", $event_id],
+                ]);
+            })
+            ->whereHas("torneio", function ($q1) use ($event_classificates) {
+                $q1->where([["evento_id", "=", $event_classificates->event->id]]);
+            })
+            ->get() as $inscricao
+        ){
             if ($inscricao->isDeletavel()) {
                 foreach ($inscricao->opcoes->all() as $campo) {
                     $campo->delete();
@@ -344,17 +350,21 @@ class XadrezSuicoClassificatorProcessController extends Controller
                                             $q2->where([["id", "=", $xzsuic_classificator->event->id]]);
                                         });
                                     })
-                                        ->whereDoesntHave("configs", function ($q1) use ($xzsuic_classificator, $tournament_classificators_before_this) {
-                                            $q1->where([
-                                                ["key", "=", "event_classificator_id"],
-                                            ]);
-                                        })
-                                        ->whereDoesntHave("configs", function ($q1) use ($xzsuic_classificator, $tournament_classificators_before_this) {
-                                            $q1->where([
-                                                ["key", "=", "classificated_manually"],
-                                                ["boolean", "=", true],
-                                            ]);
-                                        })->first();
+                                    ->whereDoesntHave("configs", function ($q1) use ($xzsuic_classificator, $tournament_classificators_before_this) {
+                                        $q1->where([
+                                            ["key", "=", "event_classificator_id"],
+                                        ]);
+                                    })
+                                    ->whereDoesntHave("configs", function ($q1) use ($xzsuic_classificator, $tournament_classificators_before_this) {
+                                        $q1->where([
+                                            ["key", "=", "classificated_manually"],
+                                            ["boolean", "=", true],
+                                        ]);
+                                    })
+                                    ->where([
+                                        ["enxadrista_id", "=", $classificacao->enxadrista_id]
+                                    ])
+                                    ->first();
 
                                     $inscricao_on_event->setConfig("event_classificator_id", ConfigType::Integer, $xzsuic_classificator->event_classificator->id);
                                     $inscricao_on_event->setConfig("event_classificator_rule_id", ConfigType::Integer, $rule->id);
@@ -585,17 +595,21 @@ class XadrezSuicoClassificatorProcessController extends Controller
                                             $q2->where([["id", "=", $xzsuic_classificator->event->id]]);
                                         });
                                     })
-                                        ->whereDoesntHave("configs", function ($q1) use ($xzsuic_classificator, $tournament_classificators_before_this) {
-                                            $q1->where([
-                                                ["key", "=", "event_classificator_id"],
-                                            ]);
-                                        })
-                                        ->whereDoesntHave("configs", function ($q1) use ($xzsuic_classificator, $tournament_classificators_before_this) {
-                                            $q1->where([
-                                                ["key", "=", "classificated_manually"],
-                                                ["boolean", "=", true],
-                                            ]);
-                                        })->first();
+                                    ->whereDoesntHave("configs", function ($q1) use ($xzsuic_classificator, $tournament_classificators_before_this) {
+                                        $q1->where([
+                                            ["key", "=", "event_classificator_id"],
+                                        ]);
+                                    })
+                                    ->whereDoesntHave("configs", function ($q1) use ($xzsuic_classificator, $tournament_classificators_before_this) {
+                                        $q1->where([
+                                            ["key", "=", "classificated_manually"],
+                                            ["boolean", "=", true],
+                                        ]);
+                                    })
+                                    ->where([
+                                        ["enxadrista_id", "=", $classificacao->enxadrista_id]
+                                    ])
+                                    ->first();
 
                                     $inscricao_on_event->setConfig("event_classificator_id", ConfigType::Integer, $xzsuic_classificator->event_classificator->id);
                                     $inscricao_on_event->setConfig("event_classificator_rule_id", ConfigType::Integer, $rule->id);
@@ -838,17 +852,21 @@ class XadrezSuicoClassificatorProcessController extends Controller
                                                 $q2->where([["id", "=", $xzsuic_classificator->event->id]]);
                                             });
                                         })
-                                            ->whereDoesntHave("configs", function ($q1) use ($xzsuic_classificator, $tournament_classificators_before_this) {
-                                                $q1->where([
-                                                    ["key", "=", "event_classificator_id"],
-                                                ]);
-                                            })
-                                            ->whereDoesntHave("configs", function ($q1) use ($xzsuic_classificator, $tournament_classificators_before_this) {
-                                                $q1->where([
-                                                    ["key", "=", "classificated_manually"],
-                                                    ["boolean", "=", true],
-                                                ]);
-                                            })->first();
+                                        ->whereDoesntHave("configs", function ($q1) use ($xzsuic_classificator, $tournament_classificators_before_this) {
+                                            $q1->where([
+                                                ["key", "=", "event_classificator_id"],
+                                            ]);
+                                        })
+                                        ->whereDoesntHave("configs", function ($q1) use ($xzsuic_classificator, $tournament_classificators_before_this) {
+                                            $q1->where([
+                                                ["key", "=", "classificated_manually"],
+                                                ["boolean", "=", true],
+                                            ]);
+                                        })
+                                        ->where([
+                                            ["enxadrista_id", "=", $classificacao->enxadrista_id]
+                                        ])
+                                        ->first();
 
                                         $inscricao_on_event->setConfig("event_classificator_id", ConfigType::Integer, $xzsuic_classificator->event_classificator->id);
                                         $inscricao_on_event->setConfig("event_classificator_rule_id", ConfigType::Integer, $rule->id);
@@ -1118,17 +1136,22 @@ class XadrezSuicoClassificatorProcessController extends Controller
                                             $q2->where([["id", "=", $xzsuic_classificator->event->id]]);
                                         });
                                     })
-                                        ->whereDoesntHave("configs", function ($q1) use ($xzsuic_classificator, $tournament_classificators_before_this) {
-                                            $q1->where([
-                                                ["key", "=", "event_classificator_id"],
-                                            ]);
-                                        })
-                                        ->whereDoesntHave("configs", function ($q1) use ($xzsuic_classificator, $tournament_classificators_before_this) {
-                                            $q1->where([
-                                                ["key", "=", "classificated_manually"],
-                                                ["boolean", "=", true],
-                                            ]);
-                                        })->first();
+                                    ->whereDoesntHave("configs", function ($q1) use ($xzsuic_classificator, $tournament_classificators_before_this) {
+                                        $q1->where([
+                                            ["key", "=", "event_classificator_id"],
+                                        ]);
+                                    })
+                                    ->whereDoesntHave("configs", function ($q1) use ($xzsuic_classificator, $tournament_classificators_before_this) {
+                                        $q1->where([
+                                            ["key", "=", "classificated_manually"],
+                                            ["boolean", "=", true],
+                                        ]);
+                                    })
+
+                                    ->where([
+                                        ["enxadrista_id", "=", $classificacao->enxadrista_id]
+                                    ])
+                                    ->first();
 
                                     $inscricao_on_event->setConfig("event_classificator_id", ConfigType::Integer, $xzsuic_classificator->event_classificator->id);
                                     $inscricao_on_event->setConfig("event_classificator_rule_id", ConfigType::Integer, $rule->id);

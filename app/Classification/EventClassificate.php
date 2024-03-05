@@ -36,6 +36,20 @@ class EventClassificate extends Model
                 ["integer", "=", $xzsuic_classificator->event_classificator->id],
             ]);
         })
+        ->whereHas("configs", function ($q1) use ($xzsuic_classificator) {
+            $q1->where([
+                ["key", "=", "event_classificator_rule_id"],
+            ]);
+            $q1->whereIn("integer",  $xzsuic_classificator->getRulesId());
+        })
         ->count();
+    }
+
+    public function getRulesId(){
+        $ids = array();
+        foreach($this->rules->all() as $rule){
+            $ids[] = $rule->id;
+        }
+        return $ids;
     }
 }
