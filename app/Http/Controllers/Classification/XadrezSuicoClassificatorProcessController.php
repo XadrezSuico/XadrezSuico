@@ -938,7 +938,6 @@ class XadrezSuicoClassificatorProcessController extends Controller
                 ->where([
                     ["confirmado", "=", true],
                     ["desconsiderar_pontuacao_geral", "=", false],
-                    ["posicao", "=", $rule->value],
                 ])
                 ->whereNotNull("posicao")
                 ->orderBy("posicao", "ASC")
