@@ -89,7 +89,7 @@ class Inscricao extends Model
                     Log::debug("Deletando Inscricao - #{$model->id} - Possui UUID");
                     $xadrezsuicopag_controller = XadrezSuicoPagController::getInstance();
 
-                    $return = $xadrezsuicopag_controller->factory("registration")->delete($model);
+                    $return = $xadrezsuicopag_controller->factory("registration")->delete($model->getPaymentInfo("uuid"));
 
                     if(!$return["ok"] == 1){
                         Log::debug("Deletando Inscricao - #{$model->id} - Retorno falso - ".json_encode($return));
