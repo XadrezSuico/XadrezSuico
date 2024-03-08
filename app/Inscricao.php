@@ -79,7 +79,7 @@ class Inscricao extends Model
 
                     $return = $xadrezsuicopag_controller->factory("registration")->delete($model);
 
-                    if(!$return->ok == 1){
+                    if(!$return["ok"] == 1){
                         return false;
                     }
                 }
