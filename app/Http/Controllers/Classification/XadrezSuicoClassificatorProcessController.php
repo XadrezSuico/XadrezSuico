@@ -294,52 +294,55 @@ class XadrezSuicoClassificatorProcessController extends Controller
                                         $inscricao_nova->xadrezsuico_aceito = $classificacao->xadrezsuico_aceito;
                                         $inscricao_nova->is_aceito_imagem = $classificacao->xadrezsuico_aceito;
                                         $inscricao_nova->inscricao_from = $classificacao->id;
-                                        $inscricao_nova->save();
 
-                                        $inscricao_nova->setConfig("event_classificator_id", ConfigType::Integer, $xzsuic_classificator->event_classificator->id);
-                                        $inscricao_nova->setConfig("event_classificator_rule_id", ConfigType::Integer, $rule->id);
+                                        if($inscricao_nova->save()){
+                                            $inscricao_nova->setConfig("event_classificator_id", ConfigType::Integer, $xzsuic_classificator->event_classificator->id);
+                                            $inscricao_nova->setConfig("event_classificator_rule_id", ConfigType::Integer, $rule->id);
 
-                                        if ($xzsuic_classificator->event->tipo_rating) {
-                                            $rating_count = $inscricao_nova->enxadrista->ratings()->where([
-                                                ["tipo_ratings_id", "=", $xzsuic_classificator->event->tipo_rating->id]
-                                            ])->count();
-                                            if ($rating_count == 0) {
-                                                $rating_inicial = $inscricao_nova->enxadrista->ratingParaEvento($xzsuic_classificator->event->id);
+                                            if ($xzsuic_classificator->event->tipo_rating) {
+                                                $rating_count = $inscricao_nova->enxadrista->ratings()->where([
+                                                    ["tipo_ratings_id", "=", $xzsuic_classificator->event->tipo_rating->id]
+                                                ])->count();
+                                                if ($rating_count == 0) {
+                                                    $rating_inicial = $inscricao_nova->enxadrista->ratingParaEvento($xzsuic_classificator->event->id);
 
-                                                $rating = new Rating;
-                                                $rating->tipo_ratings_id = $xzsuic_classificator->event->tipo_rating->tipo_rating->id;
-                                                $rating->enxadrista_id = $inscricao_nova->enxadrista->id;
-                                                $rating->valor = $rating_inicial;
-                                                $rating->save();
+                                                    $rating = new Rating;
+                                                    $rating->tipo_ratings_id = $xzsuic_classificator->event->tipo_rating->tipo_rating->id;
+                                                    $rating->enxadrista_id = $inscricao_nova->enxadrista->id;
+                                                    $rating->valor = $rating_inicial;
+                                                    $rating->save();
 
-                                                $movimentacao = new MovimentacaoRating;
-                                                $movimentacao->tipo_ratings_id = $rating->tipo_ratings_id;
-                                                $movimentacao->ratings_id = $rating->id;
-                                                $movimentacao->valor = $rating_inicial;
-                                                $movimentacao->is_inicial = true;
-                                                $movimentacao->save();
+                                                    $movimentacao = new MovimentacaoRating;
+                                                    $movimentacao->tipo_ratings_id = $rating->tipo_ratings_id;
+                                                    $movimentacao->ratings_id = $rating->id;
+                                                    $movimentacao->valor = $rating_inicial;
+                                                    $movimentacao->is_inicial = true;
+                                                    $movimentacao->save();
+                                                }
                                             }
-                                        }
 
-                                        if ($inscricao_nova->enxadrista->email) {
-                                            if ($xzsuic_classificator->event->isPaid() && $inscricao_nova->getPaymentInfo("link")) {
-                                                EmailController::schedule(
-                                                    $inscricao_nova->enxadrista->email,
-                                                    $inscricao_nova,
-                                                    EmailType::InscricaoRecebidaPagamentoPendente,
-                                                    $inscricao_nova->enxadrista
-                                                );
-                                            } else {
-                                                EmailController::schedule(
-                                                    $inscricao_nova->enxadrista->email,
-                                                    $inscricao_nova,
-                                                    EmailType::ConfirmacaoInscricao,
-                                                    $inscricao_nova->enxadrista
-                                                );
+                                            if ($inscricao_nova->enxadrista->email) {
+                                                if ($xzsuic_classificator->event->isPaid() && $inscricao_nova->getPaymentInfo("link")) {
+                                                    EmailController::schedule(
+                                                        $inscricao_nova->enxadrista->email,
+                                                        $inscricao_nova,
+                                                        EmailType::InscricaoRecebidaPagamentoPendente,
+                                                        $inscricao_nova->enxadrista
+                                                    );
+                                                } else {
+                                                    EmailController::schedule(
+                                                        $inscricao_nova->enxadrista->email,
+                                                        $inscricao_nova,
+                                                        EmailType::ConfirmacaoInscricao,
+                                                        $inscricao_nova->enxadrista
+                                                    );
+                                                }
                                             }
-                                        }
 
-                                        $classification_found = true;
+                                            $classification_found = true;
+                                        } else {
+                                            $this->log[] = date("d/m/Y H:i:s") . " - ERRO!!! Enxadrista JÁ inscrito!";
+                                        }
                                     } else {
                                         $this->log[] = date("d/m/Y H:i:s") . " - ERRO!!! Categoria não possui torneio!";
                                     }
@@ -539,52 +542,55 @@ class XadrezSuicoClassificatorProcessController extends Controller
                                         $inscricao_nova->xadrezsuico_aceito = $classificacao->xadrezsuico_aceito;
                                         $inscricao_nova->is_aceito_imagem = $classificacao->xadrezsuico_aceito;
                                         $inscricao_nova->inscricao_from = $classificacao->id;
-                                        $inscricao_nova->save();
+                                        if($inscricao_nova->save()){
 
-                                        $inscricao_nova->setConfig("event_classificator_id", ConfigType::Integer, $xzsuic_classificator->event_classificator->id);
-                                        $inscricao_nova->setConfig("event_classificator_rule_id", ConfigType::Integer, $rule->id);
+                                            $inscricao_nova->setConfig("event_classificator_id", ConfigType::Integer, $xzsuic_classificator->event_classificator->id);
+                                            $inscricao_nova->setConfig("event_classificator_rule_id", ConfigType::Integer, $rule->id);
 
-                                        if ($xzsuic_classificator->event->tipo_rating) {
-                                            $rating_count = $inscricao_nova->enxadrista->ratings()->where([
-                                                ["tipo_ratings_id", "=", $xzsuic_classificator->event->tipo_rating->id]
-                                            ])->count();
-                                            if ($rating_count == 0) {
-                                                $rating_inicial = $inscricao_nova->enxadrista->ratingParaEvento($xzsuic_classificator->event->id);
+                                            if ($xzsuic_classificator->event->tipo_rating) {
+                                                $rating_count = $inscricao_nova->enxadrista->ratings()->where([
+                                                    ["tipo_ratings_id", "=", $xzsuic_classificator->event->tipo_rating->id]
+                                                ])->count();
+                                                if ($rating_count == 0) {
+                                                    $rating_inicial = $inscricao_nova->enxadrista->ratingParaEvento($xzsuic_classificator->event->id);
 
-                                                $rating = new Rating;
-                                                $rating->tipo_ratings_id = $xzsuic_classificator->event->tipo_rating->tipo_rating->id;
-                                                $rating->enxadrista_id = $inscricao_nova->enxadrista->id;
-                                                $rating->valor = $rating_inicial;
-                                                $rating->save();
+                                                    $rating = new Rating;
+                                                    $rating->tipo_ratings_id = $xzsuic_classificator->event->tipo_rating->tipo_rating->id;
+                                                    $rating->enxadrista_id = $inscricao_nova->enxadrista->id;
+                                                    $rating->valor = $rating_inicial;
+                                                    $rating->save();
 
-                                                $movimentacao = new MovimentacaoRating;
-                                                $movimentacao->tipo_ratings_id = $rating->tipo_ratings_id;
-                                                $movimentacao->ratings_id = $rating->id;
-                                                $movimentacao->valor = $rating_inicial;
-                                                $movimentacao->is_inicial = true;
-                                                $movimentacao->save();
+                                                    $movimentacao = new MovimentacaoRating;
+                                                    $movimentacao->tipo_ratings_id = $rating->tipo_ratings_id;
+                                                    $movimentacao->ratings_id = $rating->id;
+                                                    $movimentacao->valor = $rating_inicial;
+                                                    $movimentacao->is_inicial = true;
+                                                    $movimentacao->save();
+                                                }
                                             }
-                                        }
 
-                                        if ($inscricao_nova->enxadrista->email) {
-                                            if ($xzsuic_classificator->event->isPaid() && $inscricao_nova->getPaymentInfo("link")) {
-                                                EmailController::schedule(
-                                                    $inscricao_nova->enxadrista->email,
-                                                    $inscricao_nova,
-                                                    EmailType::InscricaoRecebidaPagamentoPendente,
-                                                    $inscricao_nova->enxadrista
-                                                );
-                                            } else {
-                                                EmailController::schedule(
-                                                    $inscricao_nova->enxadrista->email,
-                                                    $inscricao_nova,
-                                                    EmailType::ConfirmacaoInscricao,
-                                                    $inscricao_nova->enxadrista
-                                                );
+                                            if ($inscricao_nova->enxadrista->email) {
+                                                if ($xzsuic_classificator->event->isPaid() && $inscricao_nova->getPaymentInfo("link")) {
+                                                    EmailController::schedule(
+                                                        $inscricao_nova->enxadrista->email,
+                                                        $inscricao_nova,
+                                                        EmailType::InscricaoRecebidaPagamentoPendente,
+                                                        $inscricao_nova->enxadrista
+                                                    );
+                                                } else {
+                                                    EmailController::schedule(
+                                                        $inscricao_nova->enxadrista->email,
+                                                        $inscricao_nova,
+                                                        EmailType::ConfirmacaoInscricao,
+                                                        $inscricao_nova->enxadrista
+                                                    );
+                                                }
                                             }
-                                        }
 
-                                        $classification_found = true;
+                                            $classification_found = true;
+                                        } else {
+                                            $this->log[] = date("d/m/Y H:i:s") . " - ERRO!!! Enxadrista JÁ inscrito!";
+                                        }
                                     } else {
                                         $this->log[] = date("d/m/Y H:i:s") . " - ERRO!!! Categoria não possui torneio!";
                                     }
@@ -682,7 +688,7 @@ class XadrezSuicoClassificatorProcessController extends Controller
 
                 $tournament_classificators_before_this = $this->getTournamentsBeforeThis($xzsuic_classificator);
                 $this->log[] = date("d/m/Y H:i:s") . " - Torneios anteriores a este: " . implode(",", $tournament_classificators_before_this);
-
+                $is_found = false;
                 foreach (
                     $category_classificator->inscricoes()->whereHas("torneio", function ($q1) use ($xzsuic_classificator) {
                         $q1->where([["evento_id", "=", $xzsuic_classificator->event_classificator->id]]);
@@ -690,6 +696,7 @@ class XadrezSuicoClassificatorProcessController extends Controller
                     ->where([
                         ["confirmado", "=", true],
                         ["desconsiderar_pontuacao_geral", "=", false],
+                        ["posicao", "=", $rule->value],
                     ])
                     ->whereNotNull("posicao")
                     ->orderBy("posicao", "ASC")
@@ -798,49 +805,52 @@ class XadrezSuicoClassificatorProcessController extends Controller
                                             $inscricao_nova->xadrezsuico_aceito = $classificacao->xadrezsuico_aceito;
                                             $inscricao_nova->is_aceito_imagem = $classificacao->xadrezsuico_aceito;
                                             $inscricao_nova->inscricao_from = $classificacao->id;
-                                            $inscricao_nova->save();
+                                            if($inscricao_nova->save()){
 
-                                            $inscricao_nova->setConfig("event_classificator_id", ConfigType::Integer, $xzsuic_classificator->event_classificator->id);
-                                            $inscricao_nova->setConfig("event_classificator_rule_id", ConfigType::Integer, $rule->id);
+                                                $inscricao_nova->setConfig("event_classificator_id", ConfigType::Integer, $xzsuic_classificator->event_classificator->id);
+                                                $inscricao_nova->setConfig("event_classificator_rule_id", ConfigType::Integer, $rule->id);
 
-                                            if ($xzsuic_classificator->event->tipo_rating) {
-                                                $rating_count = $inscricao_nova->enxadrista->ratings()->where([
-                                                    ["tipo_ratings_id", "=", $xzsuic_classificator->event->tipo_rating->id]
-                                                ])->count();
-                                                if ($rating_count == 0) {
-                                                    $rating_inicial = $inscricao_nova->enxadrista->ratingParaEvento($xzsuic_classificator->event->id);
+                                                if ($xzsuic_classificator->event->tipo_rating) {
+                                                    $rating_count = $inscricao_nova->enxadrista->ratings()->where([
+                                                        ["tipo_ratings_id", "=", $xzsuic_classificator->event->tipo_rating->id]
+                                                    ])->count();
+                                                    if ($rating_count == 0) {
+                                                        $rating_inicial = $inscricao_nova->enxadrista->ratingParaEvento($xzsuic_classificator->event->id);
 
-                                                    $rating = new Rating;
-                                                    $rating->tipo_ratings_id = $xzsuic_classificator->event->tipo_rating->tipo_rating->id;
-                                                    $rating->enxadrista_id = $inscricao_nova->enxadrista->id;
-                                                    $rating->valor = $rating_inicial;
-                                                    $rating->save();
+                                                        $rating = new Rating;
+                                                        $rating->tipo_ratings_id = $xzsuic_classificator->event->tipo_rating->tipo_rating->id;
+                                                        $rating->enxadrista_id = $inscricao_nova->enxadrista->id;
+                                                        $rating->valor = $rating_inicial;
+                                                        $rating->save();
 
-                                                    $movimentacao = new MovimentacaoRating;
-                                                    $movimentacao->tipo_ratings_id = $rating->tipo_ratings_id;
-                                                    $movimentacao->ratings_id = $rating->id;
-                                                    $movimentacao->valor = $rating_inicial;
-                                                    $movimentacao->is_inicial = true;
-                                                    $movimentacao->save();
+                                                        $movimentacao = new MovimentacaoRating;
+                                                        $movimentacao->tipo_ratings_id = $rating->tipo_ratings_id;
+                                                        $movimentacao->ratings_id = $rating->id;
+                                                        $movimentacao->valor = $rating_inicial;
+                                                        $movimentacao->is_inicial = true;
+                                                        $movimentacao->save();
+                                                    }
                                                 }
-                                            }
 
-                                            if ($inscricao_nova->enxadrista->email) {
-                                                if ($xzsuic_classificator->event->isPaid() && $inscricao_nova->getPaymentInfo("link")) {
-                                                    EmailController::schedule(
-                                                        $inscricao_nova->enxadrista->email,
-                                                        $inscricao_nova,
-                                                        EmailType::InscricaoRecebidaPagamentoPendente,
-                                                        $inscricao_nova->enxadrista
-                                                    );
-                                                } else {
-                                                    EmailController::schedule(
-                                                        $inscricao_nova->enxadrista->email,
-                                                        $inscricao_nova,
-                                                        EmailType::ConfirmacaoInscricao,
-                                                        $inscricao_nova->enxadrista
-                                                    );
+                                                if ($inscricao_nova->enxadrista->email) {
+                                                    if ($xzsuic_classificator->event->isPaid() && $inscricao_nova->getPaymentInfo("link")) {
+                                                        EmailController::schedule(
+                                                            $inscricao_nova->enxadrista->email,
+                                                            $inscricao_nova,
+                                                            EmailType::InscricaoRecebidaPagamentoPendente,
+                                                            $inscricao_nova->enxadrista
+                                                        );
+                                                    } else {
+                                                        EmailController::schedule(
+                                                            $inscricao_nova->enxadrista->email,
+                                                            $inscricao_nova,
+                                                            EmailType::ConfirmacaoInscricao,
+                                                            $inscricao_nova->enxadrista
+                                                        );
+                                                    }
                                                 }
+                                            }else{
+                                                $this->log[] = date("d/m/Y H:i:s") . " - ERRO!!! Enxadrista JÁ inscrito!";
                                             }
                                         } else {
                                             $this->log[] = date("d/m/Y H:i:s") . " - ERRO!!! Categoria não possui torneio!";
@@ -1079,52 +1089,55 @@ class XadrezSuicoClassificatorProcessController extends Controller
                                         $inscricao_nova->xadrezsuico_aceito = $classificacao->xadrezsuico_aceito;
                                         $inscricao_nova->is_aceito_imagem = $classificacao->xadrezsuico_aceito;
                                         $inscricao_nova->inscricao_from = $classificacao->id;
-                                        $inscricao_nova->save();
+                                        if($inscricao_nova->save()){
 
-                                        $inscricao_nova->setConfig("event_classificator_id", ConfigType::Integer, $xzsuic_classificator->event_classificator->id);
-                                        $inscricao_nova->setConfig("event_classificator_rule_id", ConfigType::Integer, $rule->id);
+                                            $inscricao_nova->setConfig("event_classificator_id", ConfigType::Integer, $xzsuic_classificator->event_classificator->id);
+                                            $inscricao_nova->setConfig("event_classificator_rule_id", ConfigType::Integer, $rule->id);
 
-                                        if ($xzsuic_classificator->event->tipo_rating) {
-                                            $rating_count = $inscricao_nova->enxadrista->ratings()->where([
-                                                ["tipo_ratings_id", "=", $xzsuic_classificator->event->tipo_rating->id]
-                                            ])->count();
-                                            if ($rating_count == 0) {
-                                                $rating_inicial = $inscricao_nova->enxadrista->ratingParaEvento($xzsuic_classificator->event->id);
+                                            if ($xzsuic_classificator->event->tipo_rating) {
+                                                $rating_count = $inscricao_nova->enxadrista->ratings()->where([
+                                                    ["tipo_ratings_id", "=", $xzsuic_classificator->event->tipo_rating->id]
+                                                ])->count();
+                                                if ($rating_count == 0) {
+                                                    $rating_inicial = $inscricao_nova->enxadrista->ratingParaEvento($xzsuic_classificator->event->id);
 
-                                                $rating = new Rating;
-                                                $rating->tipo_ratings_id = $xzsuic_classificator->event->tipo_rating->tipo_rating->id;
-                                                $rating->enxadrista_id = $inscricao_nova->enxadrista->id;
-                                                $rating->valor = $rating_inicial;
-                                                $rating->save();
+                                                    $rating = new Rating;
+                                                    $rating->tipo_ratings_id = $xzsuic_classificator->event->tipo_rating->tipo_rating->id;
+                                                    $rating->enxadrista_id = $inscricao_nova->enxadrista->id;
+                                                    $rating->valor = $rating_inicial;
+                                                    $rating->save();
 
-                                                $movimentacao = new MovimentacaoRating;
-                                                $movimentacao->tipo_ratings_id = $rating->tipo_ratings_id;
-                                                $movimentacao->ratings_id = $rating->id;
-                                                $movimentacao->valor = $rating_inicial;
-                                                $movimentacao->is_inicial = true;
-                                                $movimentacao->save();
+                                                    $movimentacao = new MovimentacaoRating;
+                                                    $movimentacao->tipo_ratings_id = $rating->tipo_ratings_id;
+                                                    $movimentacao->ratings_id = $rating->id;
+                                                    $movimentacao->valor = $rating_inicial;
+                                                    $movimentacao->is_inicial = true;
+                                                    $movimentacao->save();
+                                                }
                                             }
-                                        }
 
-                                        if ($inscricao_nova->enxadrista->email) {
-                                            if ($xzsuic_classificator->event->isPaid() && $inscricao_nova->getPaymentInfo("link")) {
-                                                EmailController::schedule(
-                                                    $inscricao_nova->enxadrista->email,
-                                                    $inscricao_nova,
-                                                    EmailType::InscricaoRecebidaPagamentoPendente,
-                                                    $inscricao_nova->enxadrista
-                                                );
-                                            } else {
-                                                EmailController::schedule(
-                                                    $inscricao_nova->enxadrista->email,
-                                                    $inscricao_nova,
-                                                    EmailType::ConfirmacaoInscricao,
-                                                    $inscricao_nova->enxadrista
-                                                );
+                                            if ($inscricao_nova->enxadrista->email) {
+                                                if ($xzsuic_classificator->event->isPaid() && $inscricao_nova->getPaymentInfo("link")) {
+                                                    EmailController::schedule(
+                                                        $inscricao_nova->enxadrista->email,
+                                                        $inscricao_nova,
+                                                        EmailType::InscricaoRecebidaPagamentoPendente,
+                                                        $inscricao_nova->enxadrista
+                                                    );
+                                                } else {
+                                                    EmailController::schedule(
+                                                        $inscricao_nova->enxadrista->email,
+                                                        $inscricao_nova,
+                                                        EmailType::ConfirmacaoInscricao,
+                                                        $inscricao_nova->enxadrista
+                                                    );
+                                                }
                                             }
-                                        }
 
-                                        $total_registrations++;
+                                            $total_registrations++;
+                                        } else {
+                                            $this->log[] = date("d/m/Y H:i:s") . " - ERRO!!! Enxadrista JÁ inscrito!";
+                                        }
                                     } else {
                                         $this->log[] = date("d/m/Y H:i:s") . " - ERRO!!! Categoria não possui torneio!";
                                     }
