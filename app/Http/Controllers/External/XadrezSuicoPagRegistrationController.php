@@ -4,6 +4,7 @@ namespace App\Http\Controllers\External;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class XadrezSuicoPagRegistrationController extends Controller
 {
@@ -101,6 +102,7 @@ class XadrezSuicoPagRegistrationController extends Controller
         } else {
             $client = new \GuzzleHttp\Client(['http_errors' => false]);
         }
+
         Log::debug("XadrezSuicoPagRegistrationController::delete URL: ". env("XADREZSUICOPAG_URI") . "/api/v1/system/registration/delete/" . $registration_uuid);
         $response = $client->request('get', env("XADREZSUICOPAG_URI") . "/api/v1/system/registration/delete/" . $registration_uuid, [
             'headers' => [
