@@ -101,7 +101,7 @@ class XadrezSuicoPagRegistrationController extends Controller
         } else {
             $client = new \GuzzleHttp\Client(['http_errors' => false]);
         }
-        Log::debug("XadrezSuicoPagRegistrationController::delete URL: ". env("XADREZSUICOPAG_URI") . "/api/v1/system/registration/delete/" . $registration_uuid)
+        Log::debug("XadrezSuicoPagRegistrationController::delete URL: ". env("XADREZSUICOPAG_URI") . "/api/v1/system/registration/delete/" . $registration_uuid);
         $response = $client->request('get', env("XADREZSUICOPAG_URI") . "/api/v1/system/registration/delete/" . $registration_uuid, [
             'headers' => [
                 "System-Id" => env("XADREZSUICOPAG_SYSTEM_ID"),
