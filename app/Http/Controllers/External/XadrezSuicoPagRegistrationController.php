@@ -117,6 +117,6 @@ class XadrezSuicoPagRegistrationController extends Controller
             }
         }
         $json = json_decode($response->getBody());
-        return ["ok" => 0, "error" => 1, "message" => "Motivo: Código HTTP XadrezSuíçoPAG Incorreto: " . $json->message];
+        return ["ok" => 0, "error" => 1, "message" => "Motivo: Código HTTP XadrezSuíçoPAG Incorreto: " . json_encode($json)];
     }
 }
