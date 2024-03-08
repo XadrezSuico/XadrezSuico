@@ -1672,7 +1672,7 @@
                                                         \Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($event_classificate->event_classificator->id,[3,4,5]) ||
                                                         \Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($event_classificate->event_classificator->grupo_evento->id,[6,7])
                                                     )
-                                                        <a class="btn btn-default" href="{{url("/evento/dashboard/".$event_classificate->event_classificator->id)}}" role="button">Editar</a>
+                                                        <a class="btn btn-warning mr-1" href="{{url("/evento/dashboard/".$event_classificate->event_classificator->id)}}" role="button">Acessar Dashboard do Evento</a>
                                                     @endif
                                                     <a class="btn btn-default" href="{{url("/evento/".$evento->id."/classificator/edit/".$event_classificate->id)}}" role="button">Editar</a>
                                                 </td>
