@@ -74,18 +74,26 @@ class Inscricao extends Model
 
         self::deleting(function($model){
             if(!$model->isFree()){
+                Log::debug("Deletando Inscricao - #{$model->id} - Inscrição paga");
                 if ($model->getPaymentInfo("uuid")) {
+                    Log::debug("Deletando Inscricao - #{$model->id} - Possui UUID");
                     $xadrezsuicopag_controller = XadrezSuicoPagController::getInstance();
 
                     $return = $xadrezsuicopag_controller->factory("registration")->delete($model);
 
                     if(!$return["ok"] == 1){
+                        Log::debug("Deletando Inscricao - #{$model->id} - Retorno falso - ".json_encode($return));
                         return false;
+                    }else{
+                        Log::debug("Deletando Inscricao - #{$model->id} - Retorno verdadeiro");
+
                     }
                 }
                 if($model->paid){
+                    Log::debug("Deletando Inscricao - #{$model->id} - Já Paga");
                     return false;
                 }
+                Log::debug("Deletando Inscricao - #{$model->id} - Excluída");
             }
         });
 
