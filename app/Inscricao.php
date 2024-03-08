@@ -72,9 +72,22 @@ class Inscricao extends Model
         //     // ... code here
         // });
 
-        // self::deleting(function($model){
-        //     // ... code here
-        // });
+        self::deleting(function($model){
+            if(!$model->isFree()){
+                if ($model->getPaymentInfo("uuid")) {
+                    $xadrezsuicopag_controller = XadrezSuicoPagController::getInstance();
+
+                    $return = $xadrezsuicopag_controller->factory("registration")->delete($model);
+
+                    if(!$return->ok == 1){
+                        return false;
+                    }
+                }
+                if($model->paid){
+                    return false;
+                }
+            }
+        });
 
         // self::deleted(function($model){
         //     // ... code here

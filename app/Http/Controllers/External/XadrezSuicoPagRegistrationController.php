@@ -67,29 +67,56 @@ class XadrezSuicoPagRegistrationController extends Controller
             }
         }
     }
-    public function get($registration_uuid){
+    public function get($registration_uuid)
+    {
 
-        if(env("APP_ENV","local") != "production") {
-            $client = new \GuzzleHttp\Client(["verify"=>false,'http_errors' => false]);
-        }else{
+        if (env("APP_ENV", "local") != "production") {
+            $client = new \GuzzleHttp\Client(["verify" => false, 'http_errors' => false]);
+        } else {
             $client = new \GuzzleHttp\Client(['http_errors' => false]);
         }
-        $response = $client->request('get', env("XADREZSUICOPAG_URI")."/api/v1/system/registration/get/".$registration_uuid, [
+        $response = $client->request('get', env("XADREZSUICOPAG_URI") . "/api/v1/system/registration/get/" . $registration_uuid, [
             'headers' => [
                 "System-Id" => env("XADREZSUICOPAG_SYSTEM_ID"),
                 "System-Token" => env("XADREZSUICOPAG_SYSTEM_TOKEN")
             ]
         ]);
 
-        if($response->getStatusCode() < 300){
+        if ($response->getStatusCode() < 300) {
             $json = json_decode($response->getBody());
-            if($json->ok == 1){
+            if ($json->ok == 1) {
                 return $json;
-            }else{
-                return ["ok"=>0,"error"=>1,"message"=>"Motivo Externo (XadrezSuíçoPAG): ".$json->message];
+            } else {
+                return ["ok" => 0, "error" => 1, "message" => "Motivo Externo (XadrezSuíçoPAG): " . $json->message];
             }
         }
         $json = json_decode($response->getBody());
-        return ["ok"=>0,"error"=>1,"message"=>"Motivo: Código HTTP XadrezSuíçoPAG Incorreto: ".$json->message];
+        return ["ok" => 0, "error" => 1, "message" => "Motivo: Código HTTP XadrezSuíçoPAG Incorreto: " . $json->message];
+    }
+    public function delete($registration_uuid)
+    {
+
+        if (env("APP_ENV", "local") != "production") {
+            $client = new \GuzzleHttp\Client(["verify" => false, 'http_errors' => false]);
+        } else {
+            $client = new \GuzzleHttp\Client(['http_errors' => false]);
+        }
+        $response = $client->request('get', env("XADREZSUICOPAG_URI") . "/api/v1/system/registration/delete/" . $registration_uuid, [
+            'headers' => [
+                "System-Id" => env("XADREZSUICOPAG_SYSTEM_ID"),
+                "System-Token" => env("XADREZSUICOPAG_SYSTEM_TOKEN")
+            ]
+        ]);
+
+        if ($response->getStatusCode() < 300) {
+            $json = json_decode($response->getBody());
+            if ($json->ok == 1) {
+                return $json;
+            } else {
+                return ["ok" => 0, "error" => 1, "message" => "Motivo Externo (XadrezSuíçoPAG): " . $json->message];
+            }
+        }
+        $json = json_decode($response->getBody());
+        return ["ok" => 0, "error" => 1, "message" => "Motivo: Código HTTP XadrezSuíçoPAG Incorreto: " . $json->message];
     }
 }
