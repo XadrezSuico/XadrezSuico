@@ -116,6 +116,11 @@ class XadrezSuicoPagRegistrationController extends Controller
             if ($json["ok"] == 1) {
                 return $json;
             } else {
+                if(isset($json["result"])){
+                    if($json["result"]){
+                        return ["ok" => 1, "error" => 0, "message" => "Retorno de Erro mas que não existe."];
+                    }
+                }
                 return ["ok" => 0, "error" => 1, "message" => "Motivo Externo (XadrezSuíçoPAG): " . $json["message"]];
             }
         }
