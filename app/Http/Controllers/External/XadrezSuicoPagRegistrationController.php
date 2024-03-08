@@ -113,7 +113,7 @@ class XadrezSuicoPagRegistrationController extends Controller
 
         if ($response->getStatusCode() < 300) {
             $json = json_decode($response->getBody(),true);
-            if ($json->ok == 1) {
+            if ($json["ok"] == 1) {
                 return $json;
             } else {
                 return ["ok" => 0, "error" => 1, "message" => "Motivo Externo (XadrezSuíçoPAG): " . $json->message];
