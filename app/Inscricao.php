@@ -40,6 +40,16 @@ class Inscricao extends Model
                 $model->uuid = Str::uuid();
                 Log::debug("uuid: ".$model->uuid);
             }
+
+            $torneio = Torneio::find($model->torneio_id);
+
+            if(Inscricao::where([["enxadrista_id","=",$model->enxadrista_id]])->whereHas("torneio_id",function($q1) use ($torneio){
+                $q1->where([["evento_id","=",$torneio->evento_id]]);
+            })->count() > 0) {
+                Log::debug("Inscrição do Enxadrista {$model->enxadrista_id} no Evento {$torneio->evento_id} impossibilitada - Já possui inscrição.");
+
+                return false;
+            }
         });
 
         self::created(function($model){
