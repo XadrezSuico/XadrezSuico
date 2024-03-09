@@ -28,7 +28,7 @@ use Maatwebsite\Excel\Facades\Excel;
 
 use App\Enum\EmailType;
 use App\Enum\ConfigType;
-
+use App\Helper\SingletonValueHelper;
 use Log;
 
 class EventoGerenciarController extends Controller
@@ -936,6 +936,16 @@ class EventoGerenciarController extends Controller
 
         $evento = Evento::find($id);
         if ($evento) {
+            if($evento->isPaid()){
+                $xadrezsuicopag_controller = XadrezSuicoPagController::getInstance();
+
+                $return = $xadrezsuicopag_controller->factory("registration")->is_deletable_by_event($evento->xadrezsuicopag_uuid);
+
+                if($return["ok"] == 1){
+                    SingletonValueHelper::getInstance($evento->xadrezsuicopag_uuid)->set($return["registrations_results"]);
+                }
+            }
+
             return view("evento.inscricoes", compact("evento"));
         }
         return redirect("/evento");

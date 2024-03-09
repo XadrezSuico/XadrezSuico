@@ -10,7 +10,7 @@ use Spatie\Activitylog\Traits\LogsActivity;
 use Illuminate\Support\Str;
 
 use App\Enum\ConfigType;
-
+use App\Helper\SingletonValueHelper;
 use Log;
 
 
@@ -204,16 +204,30 @@ class Inscricao extends Model
         }
         if($check_payment){
             if(!$this->isFree()){
-                $xadrezsuicopag_controller = XadrezSuicoPagController::getInstance();
+                if(SingletonValueHelper::has($this->torneio->evento->xadrezsuicopag_uuid)){
+                    $singleton_value = SingletonValueHelper::getInstance($this->torneio->evento->xadrezsuicopag_uuid);
 
-                $return = $xadrezsuicopag_controller->factory("registration")->is_deletable($this->getPaymentInfo("uuid"));
+                    if($singleton_value->get()){
+                        $results = $singleton_value->get();
+                        if(is_array($results)){
+                            if(isset($results[$this->getPaymentInfo("uuid")])) {
+                                if (!$results[$this->getPaymentInfo("uuid")]){
+                                    return false;
+                                }
+                            }
+                        }
+                    }
+                }else{
+                    $xadrezsuicopag_controller = XadrezSuicoPagController::getInstance();
 
-                if ($return["ok"] == 1) {
-                    if(!$return["result"]){
-                        return false;
+                    $return = $xadrezsuicopag_controller->factory("registration")->is_deletable($this->getPaymentInfo("uuid"));
+
+                    if ($return["ok"] == 1) {
+                        if (!$return["result"]) {
+                            return false;
+                        }
                     }
                 }
-                return null;
             }
         }
         if ($this->id != null) {

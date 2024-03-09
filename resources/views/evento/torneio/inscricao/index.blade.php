@@ -145,11 +145,14 @@
                                     @endif
                                     @if($inscricao->confirmado) <a class="btn btn-default" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/inscricoes/unconfirm/".$inscricao->id)}}" role="button">Desconfirmar</a> @endif
                                     <a class="btn btn-default" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/inscricoes/edit/".$inscricao->id)}}" role="button">Editar</a>
-                                    @if($inscricao->isDeletavel()) <a class="btn btn-danger" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/inscricoes/delete/".$inscricao->id)}}" role="button">Apagar</a> @endif
-                                    @if(
-                                        \Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal())
-                                        @if($inscricao->isDeletavel(true))
-                                            <a class="btn btn-danger" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/inscricoes/delete_admin/".$inscricao->id)}}?route=event_registration_list" role="button">Apagar (Admin)</a>
+                                    @if($inscricao->isDeletavel())
+                                        <a class="btn btn-danger" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/inscricoes/delete/".$inscricao->id)}}" role="button">Apagar</a>
+                                    @else
+                                        @if(
+                                            \Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal())
+                                            @if($inscricao->isDeletavel(true))
+                                                <a class="btn btn-danger" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/inscricoes/delete_admin/".$inscricao->id)}}?route=event_registration_list" role="button">Apagar (Admin)</a>
+                                            @endif
                                         @endif
                                     @endif
                                 @else
