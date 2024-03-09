@@ -2,24 +2,36 @@
 namespace App\Helper;
 
 use App\Helper\Singleton\SingletonValue;
+use Illuminate\Support\Facades\Log;
 
 class SingletonValueHelper
 {
-    private static $values = [];
+    private static $instance = null;
 
-    public static function getInstance($id)
+    private $values = [];
+
+    public static function getInstance()
     {
-        if (!isset($values[$id])) {
-            self::$values[$id] = new SingletonValue;
+        if (self::$instance == null) {
+            Log::debug("generating SingletonValueHelper instance");
+            self::$instance = new static();
         }
-        return self::$values[$id];
+
+        return self::$instance;
     }
 
-    public static function has($id)
+    public function has($id)
     {
-        if (!isset($values[$id])) {
-            return false;
-        }
-        return true;
+        return isset($this->values[$id]);
+    }
+
+    public function get($id)
+    {
+        return $this->values[$id];
+    }
+
+    public function set($id,$value)
+    {
+        $this->values[$id] = $value;
     }
 }

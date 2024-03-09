@@ -204,20 +204,29 @@ class Inscricao extends Model
         }
         if($check_payment){
             if(!$this->isFree()){
-                if(SingletonValueHelper::has($this->torneio->evento->xadrezsuicopag_uuid)){
-                    $singleton_value = SingletonValueHelper::getInstance($this->torneio->evento->xadrezsuicopag_uuid);
+                if(SingletonValueHelper::getInstance()->has($this->torneio->evento->xadrezsuicopag_uuid)){
+                    Log::debug("SingletonValueHelper::has - true");
+                    $singleton_value = SingletonValueHelper::getInstance();
 
-                    if($singleton_value->get()){
-                        $results = $singleton_value->get();
+                    if($singleton_value->get($this->torneio->evento->xadrezsuicopag_uuid)){
+                        $results = $singleton_value->get($this->torneio->evento->xadrezsuicopag_uuid);
                         if(is_array($results)){
                             if(isset($results[$this->getPaymentInfo("uuid")])) {
                                 if (!$results[$this->getPaymentInfo("uuid")]){
+                                    Log::debug("SingletonValueHelper::get - registration uuid result = false");
                                     return false;
+                                }else{
+                                    Log::debug("SingletonValueHelper::get - registration uuid result = true");
                                 }
+                            }else{
+                                Log::debug("SingletonValueHelper::get - has not the registration uuid");
                             }
+                        }else {
+                            Log::debug("SingletonValueHelper::get - is not array");
                         }
                     }
                 }else{
+                    Log::debug("SingletonValueHelper::has - false");
                     $xadrezsuicopag_controller = XadrezSuicoPagController::getInstance();
 
                     $return = $xadrezsuicopag_controller->factory("registration")->is_deletable($this->getPaymentInfo("uuid"));

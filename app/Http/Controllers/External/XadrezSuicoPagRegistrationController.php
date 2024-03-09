@@ -103,7 +103,7 @@ class XadrezSuicoPagRegistrationController extends Controller
             $client = new \GuzzleHttp\Client(['http_errors' => false]);
         }
 
-        Log::debug("XadrezSuicoPagRegistrationController::delete URL: " . env("XADREZSUICOPAG_URI") . "/api/v1/system/registration/check_deletable/" . $registration_uuid);
+        Log::debug("XadrezSuicoPagRegistrationController::is_deletable URL: " . env("XADREZSUICOPAG_URI") . "/api/v1/system/registration/check_deletable/" . $registration_uuid);
         $response = $client->request('get', env("XADREZSUICOPAG_URI") . "/api/v1/system/registration/check_deletable/" . $registration_uuid, [
             'headers' => [
                 "System-Id" => env("XADREZSUICOPAG_SYSTEM_ID"),
@@ -131,7 +131,7 @@ class XadrezSuicoPagRegistrationController extends Controller
             $client = new \GuzzleHttp\Client(['http_errors' => false]);
         }
 
-        Log::debug("XadrezSuicoPagRegistrationController::delete URL: " . env("XADREZSUICOPAG_URI") . "/api/v1/system/registration/check_deletable_by_event/" . $uuid);
+        Log::debug("XadrezSuicoPagRegistrationController::is_deletable_by_event URL: " . env("XADREZSUICOPAG_URI") . "/api/v1/system/registration/check_deletable_by_event/" . $uuid);
         $response = $client->request('get', env("XADREZSUICOPAG_URI") . "/api/v1/system/registration/check_deletable_by_event/" . $uuid, [
             'headers' => [
                 "System-Id" => env("XADREZSUICOPAG_SYSTEM_ID"),

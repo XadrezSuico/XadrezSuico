@@ -942,7 +942,13 @@ class EventoGerenciarController extends Controller
                 $return = $xadrezsuicopag_controller->factory("registration")->is_deletable_by_event($evento->xadrezsuicopag_uuid);
 
                 if($return["ok"] == 1){
-                    SingletonValueHelper::getInstance($evento->xadrezsuicopag_uuid)->set($return["registrations_results"]);
+                    SingletonValueHelper::getInstance()->set($evento->xadrezsuicopag_uuid,$return["registrations_results"]);
+                    Log::debug("is_deletable_by_event - ok");
+                    Log::debug("is_deletable_by_event - ".json_encode($return));
+                    Log::debug("is_deletable_by_event  instance - " . json_encode(SingletonValueHelper::getInstance()->get($evento->xadrezsuicopag_uuid)));
+                }else{
+                    Log::debug("is_deletable_by_event - not ok");
+                    Log::debug("is_deletable_by_event - ".json_encode($return));
                 }
             }
 
