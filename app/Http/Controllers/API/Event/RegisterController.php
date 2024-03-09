@@ -360,7 +360,7 @@ class RegisterController extends Controller
 
                 $item["custom_fields"] = array();
                 if($evento->event_classificators()->count() > 0){
-                    $item_rule = array("id" => null,);
+                    $item_rule = array("id" => null,"value"=>null, "public_name"=>null);
                     if($inscricao->hasConfig("event_classificator_id")){
                         $event_that_classificated = Evento::where([["id","=",$inscricao->getConfig("event_classificator_id",true)]])->first();
                         if($inscricao->hasConfig("event_classificator_rule_id")){

@@ -66,6 +66,9 @@
                         <th>Presente?</th>
                         <th>Inscrição Inicial</th>
                         <th>Posição</th>
+                        @if ($evento->event_classificators()->count() > 0)
+                            <th>Classificado pelo Evento</th>
+                        @endif
 				    	@foreach($evento->campos() as $campo)
                             <th>{{$campo->name}}</th>
                         @endforeach
@@ -112,12 +115,35 @@
                             @endif
                             <td>
                                 @if($inscricao->confirmado) Sim @else Não @endif
-                            </th>
+                            </td>
                             <td>
                                 @if($inscricao->isPresent()) Sim @else Não @endif
                             </th>
                             <td>@if($inscricao->from) {{$inscricao->from->id}} @else - @endif</td>
                             <td>@if($inscricao->from) @if($inscricao->from->posicao) {{$inscricao->from->posicao}} @else - @endif @else - @endif</td>
+                            @if ($evento->event_classificators()->count() > 0)
+                                <td>
+                                    @if($inscricao->hasConfig("event_classificator_id"))
+                                        @php($event_that_classificated = \App\Evento::where([["id","=",$inscricao->getConfig("event_classificator_id",true)]])->first())
+                                        @if($inscricao->hasConfig("event_classificator_rule_id"))
+                                            @php($rule_that_classificated = \App\Classification\EventClassificateRule::where([["id", "=", $inscricao->getConfig("event_classificator_rule_id",true)]])->first())
+
+                                            @php($classified_event_rule = $event_that_classificated->name. " - ". \App\Enum\ClassificationTypeRule::get($rule_that_classificated->type)["name"])
+
+                                            @if ($rule_that_classificated->value)
+                                                {{$classified_event_rule}} - Valor: {{$rule_that_classificated->value}}
+                                            @endif
+                                            @if ($rule_that_classificated->event)
+                                                {{$classified_event_rule}} - Evento: {{$rule_that_classificated->event->name}}
+                                            @endif
+                                        @else
+                                            {{$event_that_classificated->name}}
+                                        @endif
+                                    @else
+                                        -
+                                    @endif
+                                </td>
+                            @endif
                             @foreach($evento->campos() as $campo)
                                 @if($inscricao->hasOpcao($campo->id))
                                     <td>{{$inscricao->getOpcao($campo->id)->opcao->name}}</td>
