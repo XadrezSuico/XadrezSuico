@@ -273,7 +273,7 @@ class InscricaoGerenciarController extends Controller
         return redirect("/evento/" . $evento->id . "/torneios/" . $torneio->id . "/inscricoes");
     }
 
-    public function delete($id, $torneio_id, $inscricao_id)
+    public function delete($id, $torneio_id, $inscricao_id, Request $request)
     {
         $user = Auth::user();
         $evento = Evento::find($id);
@@ -299,10 +299,15 @@ class InscricaoGerenciarController extends Controller
             }
             $inscricao->delete();
         }
+        if($request->has("route")){
+            if($request->route == "event_registration_list"){
+                return redirect("/evento/" . $evento->id . "/inscricoes/list");
+            }
+        }
         return redirect("/evento/" . $evento->id . "/torneios/" . $torneio->id . "/inscricoes");
     }
 
-    public function delete_admin($id, $torneio_id, $inscricao_id)
+    public function delete_admin($id, $torneio_id, $inscricao_id, Request $request)
     {
         $user = Auth::user();
         $evento = Evento::find($id);
@@ -327,6 +332,11 @@ class InscricaoGerenciarController extends Controller
                 $config->delete();
             }
             $inscricao->delete();
+        }
+        if ($request->has("route")) {
+            if ($request->route == "event_registration_list") {
+                return redirect("/evento/" . $evento->id . "/inscricoes/list");
+            }
         }
         return redirect("/evento/" . $evento->id . "/torneios/" . $torneio->id . "/inscricoes");
     }

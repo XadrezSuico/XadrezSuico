@@ -149,11 +149,11 @@
                                     @if(
                                         \Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal())
                                         @if($inscricao->isDeletavel(true))
-                                            <a class="btn btn-danger" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/inscricoes/delete_admin/".$inscricao->id)}}" role="button">Apagar (Admin)</a>
+                                            <a class="btn btn-danger" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/inscricoes/delete_admin/".$inscricao->id)}}?route=event_registration_list" role="button">Apagar (Admin)</a>
                                         @endif
                                     @endif
                                 @else
-                                    <a class="btn btn-default" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/inscricoes/edit/".$inscricao->id)}}" role="button">Visualizar</a>
+                                    <a class="btn btn-default" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/inscricoes/edit/".$inscricao->id)}}?route=event_registration_list" role="button">Visualizar</a>
                                 @endif
                             </td>
                         </tr>
