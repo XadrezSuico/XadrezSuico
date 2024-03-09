@@ -92,7 +92,7 @@ class Inscricao extends Model
                     $return = $xadrezsuicopag_controller->factory("registration")->delete($model->getPaymentInfo("uuid"));
 
                     if($return["ok"] == 1){
-                        if($return["result"]){
+                        if(!$return["result"]){
                             Log::debug("Deletando Inscricao - #{$model->id} - Retorno falso - ".json_encode($return));
                             return false;
                         }else{
