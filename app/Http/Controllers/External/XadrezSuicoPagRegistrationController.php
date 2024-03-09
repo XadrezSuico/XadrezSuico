@@ -174,7 +174,7 @@ class XadrezSuicoPagRegistrationController extends Controller
             } else {
                 if (isset($json["result"])) {
                     if ($json["result"]) {
-                        return ["ok" => 1, "error" => 0, "message" => "Retorno de Erro mas que não existe."];
+                        return ["ok" => 1, "error" => 0 , "result" => $json["result"], "message" => "Retorno de Erro mas que não existe."];
                     }
                 }
                 return ["ok" => 0, "error" => 1, "message" => "Motivo Externo (XadrezSuíçoPAG): " . $json["message"]];
