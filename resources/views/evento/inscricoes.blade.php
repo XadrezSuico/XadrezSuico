@@ -181,12 +181,12 @@
                                 )
                                     <a class="btn btn-default" href="{{url("/evento/".$evento->id."/torneios/".$inscricao->torneio->id."/inscricoes/edit/".$inscricao->id)}}" role="button" target="_blank">Editar</a>
                                     @if($inscricao->isDeletavel())
-                                        <a class="btn btn-danger" href="{{url("/evento/".$evento->id."/torneios/".$inscricao->torneio->id."/inscricoes/delete/".$inscricao->id)}}" role="button">Apagar</a>
+                                        <a class="btn btn-danger" href="{{url("/evento/".$evento->id."/torneios/".$inscricao->torneio->id."/inscricoes/delete/".$inscricao->id)}}?route=event_registration_list" role="button">Apagar</a>
                                     @else
                                         @if(
                                             \Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal())
                                             @if($inscricao->isDeletavel(true))
-                                                <a class="btn btn-danger" href="{{url("/evento/".$evento->id."/torneios/".$inscricao->torneio->id."/inscricoes/delete_admin/".$inscricao->id)}}" role="button">Apagar (Admin)</a>
+                                                <a class="btn btn-danger" href="{{url("/evento/".$evento->id."/torneios/".$inscricao->torneio->id."/inscricoes/delete_admin/".$inscricao->id)}}?route=event_registration_list" role="button">Apagar (Admin)</a>
                                             @endif
                                         @endif
                                     @endif
