@@ -91,12 +91,15 @@ class Inscricao extends Model
 
                     $return = $xadrezsuicopag_controller->factory("registration")->delete($model->getPaymentInfo("uuid"));
 
-                    if(!$return["ok"] == 1){
-                        Log::debug("Deletando Inscricao - #{$model->id} - Retorno falso - ".json_encode($return));
-                        return false;
-                    }else{
-                        Log::debug("Deletando Inscricao - #{$model->id} - Retorno verdadeiro");
-
+                    if($return["ok"] == 1){
+                        if($return["result"]){
+                            Log::debug("Deletando Inscricao - #{$model->id} - Retorno falso - ".json_encode($return));
+                            return false;
+                        }else{
+                            Log::debug("Deletando Inscricao - #{$model->id} - Retorno verdadeiro");
+                        }
+                    }else {
+                        Log::debug("Deletando Inscricao - #{$model->id} - Sem retorno");
                     }
                 }
                 if($model->paid){
@@ -192,8 +195,27 @@ class Inscricao extends Model
         return url("/inscricao/".$this->uuid."/lichess");
     }
 
-    public function isDeletavel()
+    public function isDeletavel($only_required_checks = false, $check_payment = false)
     {
+        if(!$only_required_checks){
+            if($this->paid){
+                return false;
+            }
+        }
+        if($check_payment){
+            if(!$this->isFree()){
+                $xadrezsuicopag_controller = XadrezSuicoPagController::getInstance();
+
+                $return = $xadrezsuicopag_controller->factory("registration")->is_deletable($this->getPaymentInfo("uuid"));
+
+                if ($return["ok"] == 1) {
+                    if(!$return["result"]){
+                        return false;
+                    }
+                }
+                return null;
+            }
+        }
         if ($this->id != null) {
             // if ($this->criterios_desempate()->count() == 0) {
                 return true;

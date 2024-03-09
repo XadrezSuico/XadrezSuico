@@ -94,6 +94,34 @@ class XadrezSuicoPagRegistrationController extends Controller
         $json = json_decode($response->getBody());
         return ["ok" => 0, "error" => 1, "message" => "Motivo: Código HTTP XadrezSuíçoPAG Incorreto: " . $json->message];
     }
+    public function is_deletable($registration_uuid)
+    {
+
+        if (env("APP_ENV", "local") != "production") {
+            $client = new \GuzzleHttp\Client(["verify" => false, 'http_errors' => false]);
+        } else {
+            $client = new \GuzzleHttp\Client(['http_errors' => false]);
+        }
+
+        Log::debug("XadrezSuicoPagRegistrationController::delete URL: " . env("XADREZSUICOPAG_URI") . "/api/v1/system/registration/delete/" . $registration_uuid);
+        $response = $client->request('get', env("XADREZSUICOPAG_URI") . "/api/v1/system/registration/check_deletable/" . $registration_uuid, [
+            'headers' => [
+                "System-Id" => env("XADREZSUICOPAG_SYSTEM_ID"),
+                "System-Token" => env("XADREZSUICOPAG_SYSTEM_TOKEN")
+            ]
+        ]);
+
+        if ($response->getStatusCode() < 300) {
+            $json = json_decode($response->getBody(), true);
+            if ($json["ok"] == 1) {
+                return $json;
+            } else {
+                return ["ok" => 0, "error" => 1, "message" => "Motivo Externo (XadrezSuíçoPAG): " . $json["message"]];
+            }
+        }
+        $json = json_decode($response->getBody());
+        return ["ok" => 0, "error" => 1, "message" => "Motivo: Código HTTP XadrezSuíçoPAG Incorreto (" . $response->getStatusCode() . "): " . json_encode($json)];
+    }
     public function delete($registration_uuid)
     {
 
@@ -103,7 +131,7 @@ class XadrezSuicoPagRegistrationController extends Controller
             $client = new \GuzzleHttp\Client(['http_errors' => false]);
         }
 
-        Log::debug("XadrezSuicoPagRegistrationController::delete URL: ". env("XADREZSUICOPAG_URI") . "/api/v1/system/registration/delete/" . $registration_uuid);
+        Log::debug("XadrezSuicoPagRegistrationController::delete URL: " . env("XADREZSUICOPAG_URI") . "/api/v1/system/registration/delete/" . $registration_uuid);
         $response = $client->request('get', env("XADREZSUICOPAG_URI") . "/api/v1/system/registration/delete/" . $registration_uuid, [
             'headers' => [
                 "System-Id" => env("XADREZSUICOPAG_SYSTEM_ID"),
@@ -112,12 +140,12 @@ class XadrezSuicoPagRegistrationController extends Controller
         ]);
 
         if ($response->getStatusCode() < 300) {
-            $json = json_decode($response->getBody(),true);
+            $json = json_decode($response->getBody(), true);
             if ($json["ok"] == 1) {
                 return $json;
             } else {
-                if(isset($json["result"])){
-                    if($json["result"]){
+                if (isset($json["result"])) {
+                    if ($json["result"]) {
                         return ["ok" => 1, "error" => 0, "message" => "Retorno de Erro mas que não existe."];
                     }
                 }
@@ -125,6 +153,6 @@ class XadrezSuicoPagRegistrationController extends Controller
             }
         }
         $json = json_decode($response->getBody());
-        return ["ok" => 0, "error" => 1, "message" => "Motivo: Código HTTP XadrezSuíçoPAG Incorreto (". $response->getStatusCode()."): " . json_encode($json)];
+        return ["ok" => 0, "error" => 1, "message" => "Motivo: Código HTTP XadrezSuíçoPAG Incorreto (" . $response->getStatusCode() . "): " . json_encode($json)];
     }
 }

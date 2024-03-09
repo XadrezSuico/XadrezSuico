@@ -174,7 +174,22 @@
                                 </td>
                             @endif
                             <td>
-                                <a class="btn btn-default" href="{{url("/evento/".$evento->id."/torneios/".$inscricao->torneio->id."/inscricoes/edit/".$inscricao->id)}}" role="button" target="_blank">Editar</a>
+                                @if(
+                                    \Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
+                                    \Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($event_classificate->event_classificator->id,[3,4,5]) ||
+                                    \Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($event_classificate->event_classificator->grupo_evento->id,[6,7])
+                                )
+                                    <a class="btn btn-default" href="{{url("/evento/".$evento->id."/torneios/".$inscricao->torneio->id."/inscricoes/edit/".$inscricao->id)}}" role="button" target="_blank">Editar</a>
+                                    @if($inscricao->isDeletavel())
+                                        <a class="btn btn-danger" href="{{url("/evento/".$evento->id."/torneios/".$inscricao->torneio->id."/inscricoes/delete/".$inscricao->id)}}" role="button">Apagar</a>
+                                    @endif
+                                    @if(
+                                        \Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal())
+                                        @if($inscricao->isDeletavel(true,true))
+                                            <a class="btn btn-danger" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/inscricoes/delete_admin/".$inscricao->id)}}" role="button">Apagar (Admin)</a>
+                                        @endif
+                                    @endif
+                                @endif
                             </td>
                         </tr>
                     @endforeach

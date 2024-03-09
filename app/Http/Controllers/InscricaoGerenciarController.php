@@ -282,12 +282,41 @@ class InscricaoGerenciarController extends Controller
             !$user->hasPermissionEventByPerfil($evento->id, [4]) &&
             !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
         ) {
-            return redirect("/evento/dashboard/".$evento->id);
+            return redirect("/evento/dashboard/" . $evento->id);
         }
 
         $torneio = Torneio::find($torneio_id);
         $inscricao = Inscricao::find($inscricao_id);
         if ($inscricao->isDeletavel()) {
+            foreach ($inscricao->opcoes->all() as $campo) {
+                $campo->delete();
+            }
+            foreach ($inscricao->criterios_desempate->all() as $criterios) {
+                $criterios->delete();
+            }
+            foreach ($inscricao->configs->all() as $config) {
+                $config->delete();
+            }
+            $inscricao->delete();
+        }
+        return redirect("/evento/" . $evento->id . "/torneios/" . $torneio->id . "/inscricoes");
+    }
+
+    public function delete_admin($id, $torneio_id, $inscricao_id)
+    {
+        $user = Auth::user();
+        $evento = Evento::find($id);
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionEventByPerfil($evento->id, [4]) &&
+            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
+        ) {
+            return redirect("/evento/dashboard/" . $evento->id);
+        }
+
+        $torneio = Torneio::find($torneio_id);
+        $inscricao = Inscricao::find($inscricao_id);
+        if ($inscricao->isDeletavel(true)) {
             foreach ($inscricao->opcoes->all() as $campo) {
                 $campo->delete();
             }
