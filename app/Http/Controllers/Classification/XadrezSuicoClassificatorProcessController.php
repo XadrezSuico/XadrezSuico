@@ -119,7 +119,7 @@ class XadrezSuicoClassificatorProcessController extends Controller
             })
             ->get() as $inscricao
         ){
-            if ($inscricao->isDeletavel(true,true)) {
+            if ($inscricao->isDeletavel(true)) {
                 foreach ($inscricao->opcoes->all() as $campo) {
                     $campo->delete();
                 }

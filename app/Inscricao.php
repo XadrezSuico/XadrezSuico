@@ -195,7 +195,7 @@ class Inscricao extends Model
         return url("/inscricao/".$this->uuid."/lichess");
     }
 
-    public function isDeletavel($only_required_checks = false, $check_payment = false)
+    public function isDeletavel($only_required_checks = false, $check_payment = true)
     {
         if(!$only_required_checks){
             if($this->paid){
