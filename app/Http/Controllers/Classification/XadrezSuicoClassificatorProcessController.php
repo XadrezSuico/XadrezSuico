@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Classification;
 
+use App\Classification\EventClassificateRule;
 use App\Enum\ClassificationType;
 use App\Enum\ClassificationTypeRule;
 use App\Enum\ConfigType;
@@ -243,8 +244,89 @@ class XadrezSuicoClassificatorProcessController extends Controller
                                 ])
                                 ->count() > 0
                             ) {
-                                $this->log[] = date("d/m/Y H:i:s") . " - Já foi classificado por este mesmo evento.";
+                                $this->log[] = date("d/m/Y H:i:s") . " - Já foi classificado por este mesmo evento e regra.";
                                 $classification_found = true;
+                            } elseif (
+                                Inscricao::whereHas("torneio", function ($q1) use ($xzsuic_classificator) {
+                                    $q1->whereHas("evento", function ($q2) use ($xzsuic_classificator) {
+                                        $q2->where([["id", "=", $xzsuic_classificator->event->id]]);
+                                    });
+                                })
+                                ->whereHas("configs", function ($q1) use ($xzsuic_classificator, $tournament_classificators_before_this) {
+                                    $q1->where([
+                                        ["key", "=", "event_classificator_id"],
+                                    ]);
+                                    $q1->where([["integer", "=", $xzsuic_classificator->event_classificator->id]]);
+                                })
+                                ->whereHas("configs", function ($q1) use ($xzsuic_classificator, $tournament_classificators_before_this, $rule) {
+                                    $q1->where([
+                                        ["key", "=", "event_classificator_rule_id"],
+                                    ]);
+                                    $q1->where([["integer", "!=", $rule->id], ["integer", "!=", null]]);
+                                })
+                                ->where([
+                                    ["enxadrista_id", "=", $classificacao->enxadrista_id]
+                                ])
+                                ->count() > 0
+                            ) {
+                                $this->log[] = date("d/m/Y H:i:s") . " - Já foi classificado por este mesmo evento mas não pela mesma regra.";
+                                $this->log[] = date("d/m/Y H:i:s") . " - Avaliar a preferência da regra.";
+
+                                $inscricao_to_check = Inscricao::whereHas("torneio", function ($q1) use ($xzsuic_classificator) {
+                                    $q1->whereHas("evento", function ($q2) use ($xzsuic_classificator) {
+                                        $q2->where([["id", "=", $xzsuic_classificator->event->id]]);
+                                    });
+                                })
+                                    ->whereHas("configs", function ($q1) use ($xzsuic_classificator, $tournament_classificators_before_this) {
+                                        $q1->where([
+                                            ["key", "=", "event_classificator_id"],
+                                        ]);
+                                        $q1->where([["integer", "=", $xzsuic_classificator->event_classificator->id]]);
+                                    })
+                                    ->whereHas("configs", function ($q1) use ($xzsuic_classificator, $tournament_classificators_before_this, $rule) {
+                                        $q1->where([
+                                            ["key", "=", "event_classificator_rule_id"],
+                                        ]);
+                                        $q1->where([["integer", "!=", $rule->id], ["integer", "!=", null]]);
+                                    })
+                                    ->where([
+                                        ["enxadrista_id", "=", $classificacao->enxadrista_id]
+                                    ])
+                                    ->first();
+
+                                $rule_id = $inscricao_to_check->getConfig("event_classificator_rule_id");
+                                $rule_to_check = EventClassificateRule::where([["id","=",$rule_id]])->first();
+                                if ($rule_to_check) {
+                                    // Minor number - More Priority
+                                    $rule_priority = ClassificationTypeRule::getOrderPriority($rule->type);
+                                    $rule_to_check_priority = ClassificationTypeRule::getOrderPriority($rule_to_check->type);
+
+                                    if ($rule_priority < $rule_to_check_priority) {
+                                        $this->log[] = date("d/m/Y H:i:s") . " - REGRA PRIORITÁRIA - Trocando regra.";
+
+                                        $inscricao_to_check->setConfig("event_classificator_id", ConfigType::Integer, $xzsuic_classificator->event_classificator->id);
+                                        $inscricao_to_check->setConfig("event_classificator_rule_id", ConfigType::Integer, $rule->id);
+                                        $inscricao_to_check->inscricao_from = $classificacao->id;
+                                        $inscricao_to_check->save();
+
+                                        $classification_found = true;
+                                    } elseif ($rule_priority == $rule_to_check_priority) {
+                                        $this->log[] = date("d/m/Y H:i:s") . " - REGRA IGUAL - Avaliando se a regra atual foi inserida antes da outra.";
+                                        if ($rule->id > $rule_to_check->id) {
+                                            $this->log[] = date("d/m/Y H:i:s") . " - REGRA IGUAL - REGRA INSERIDA ANTES - Trocando regra.";
+                                            $inscricao_to_check->setConfig("event_classificator_id", ConfigType::Integer, $xzsuic_classificator->event_classificator->id);
+                                            $inscricao_to_check->setConfig("event_classificator_rule_id", ConfigType::Integer, $rule->id);
+                                            $inscricao_to_check->inscricao_from = $classificacao->id;
+                                            $inscricao_to_check->save();
+
+                                            $classification_found = true;
+                                        } else {
+                                            $this->log[] = date("d/m/Y H:i:s") . " - REGRA IGUAL - REGRA INSERIDA DEPOIS - Mantendo regra.";
+                                        }
+                                    } else {
+                                        $this->log[] = date("d/m/Y H:i:s") . " - REGRA COM MENOR PRIORIDADE - Mantendo regra.";
+                                    }
+                                }
                             } else {
                                 $this->log[] = date("d/m/Y H:i:s") . " - Ainda não foi classificado.";
 
@@ -493,7 +575,88 @@ class XadrezSuicoClassificatorProcessController extends Controller
                             ) {
                                 $this->log[] = date("d/m/Y H:i:s") . " - Já foi classificado por este mesmo evento.";
                                 $classification_found = true;
-                            } else {
+                            } elseif (
+                                Inscricao::whereHas("torneio", function ($q1) use ($xzsuic_classificator) {
+                                    $q1->whereHas("evento", function ($q2) use ($xzsuic_classificator) {
+                                        $q2->where([["id", "=", $xzsuic_classificator->event->id]]);
+                                    });
+                                })
+                                ->whereHas("configs", function ($q1) use ($xzsuic_classificator, $tournament_classificators_before_this) {
+                                    $q1->where([
+                                        ["key", "=", "event_classificator_id"],
+                                    ]);
+                                    $q1->where([["integer", "=", $xzsuic_classificator->event_classificator->id]]);
+                                })
+                                ->whereHas("configs", function ($q1) use ($xzsuic_classificator, $tournament_classificators_before_this, $rule) {
+                                    $q1->where([
+                                        ["key", "=", "event_classificator_rule_id"],
+                                    ]);
+                                    $q1->where([["integer", "!=", $rule->id], ["integer", "!=", null]]);
+                                })
+                                ->where([
+                                    ["enxadrista_id", "=", $classificacao->enxadrista_id]
+                                ])
+                                ->count() > 0
+                            ) {
+                                $this->log[] = date("d/m/Y H:i:s") . " - Já foi classificado por este mesmo evento mas não pela mesma regra.";
+                                $this->log[] = date("d/m/Y H:i:s") . " - Avaliar a preferência da regra.";
+
+                                $inscricao_to_check = Inscricao::whereHas("torneio", function ($q1) use ($xzsuic_classificator) {
+                                    $q1->whereHas("evento", function ($q2) use ($xzsuic_classificator) {
+                                        $q2->where([["id", "=", $xzsuic_classificator->event->id]]);
+                                    });
+                                })
+                                    ->whereHas("configs", function ($q1) use ($xzsuic_classificator, $tournament_classificators_before_this) {
+                                        $q1->where([
+                                            ["key", "=", "event_classificator_id"],
+                                        ]);
+                                        $q1->where([["integer", "=", $xzsuic_classificator->event_classificator->id]]);
+                                    })
+                                    ->whereHas("configs", function ($q1) use ($xzsuic_classificator, $tournament_classificators_before_this, $rule) {
+                                        $q1->where([
+                                            ["key", "=", "event_classificator_rule_id"],
+                                        ]);
+                                        $q1->where([["integer", "!=", $rule->id], ["integer", "!=", null]]);
+                                    })
+                                    ->where([
+                                        ["enxadrista_id", "=", $classificacao->enxadrista_id]
+                                    ])
+                                    ->first();
+
+                                $rule_id = $inscricao_to_check->getConfig("event_classificator_rule_id");
+                                $rule_to_check = EventClassificateRule::where([["id","=",$rule_id]])->first();
+                                if ($rule_to_check) {
+                                    // Minor number - More Priority
+                                    $rule_priority = ClassificationTypeRule::getOrderPriority($rule->type);
+                                    $rule_to_check_priority = ClassificationTypeRule::getOrderPriority($rule_to_check->type);
+
+                                    if ($rule_priority < $rule_to_check_priority) {
+                                        $this->log[] = date("d/m/Y H:i:s") . " - REGRA PRIORITÁRIA - Trocando regra.";
+
+                                        $inscricao_to_check->setConfig("event_classificator_id", ConfigType::Integer, $xzsuic_classificator->event_classificator->id);
+                                        $inscricao_to_check->setConfig("event_classificator_rule_id", ConfigType::Integer, $rule->id);
+                                        $inscricao_to_check->inscricao_from = $classificacao->id;
+                                        $inscricao_to_check->save();
+
+                                        $classification_found = true;
+                                    } elseif ($rule_priority == $rule_to_check_priority) {
+                                        $this->log[] = date("d/m/Y H:i:s") . " - REGRA IGUAL - Avaliando se a regra atual foi inserida antes da outra.";
+                                        if ($rule->id > $rule_to_check->id) {
+                                            $this->log[] = date("d/m/Y H:i:s") . " - REGRA IGUAL - REGRA INSERIDA ANTES - Trocando regra.";
+                                            $inscricao_to_check->setConfig("event_classificator_id", ConfigType::Integer, $xzsuic_classificator->event_classificator->id);
+                                            $inscricao_to_check->setConfig("event_classificator_rule_id", ConfigType::Integer, $rule->id);
+                                            $inscricao_to_check->inscricao_from = $classificacao->id;
+                                            $inscricao_to_check->save();
+
+                                            $classification_found = true;
+                                        } else {
+                                            $this->log[] = date("d/m/Y H:i:s") . " - REGRA IGUAL - REGRA INSERIDA DEPOIS - Mantendo regra.";
+                                        }
+                                    } else {
+                                        $this->log[] = date("d/m/Y H:i:s") . " - REGRA COM MENOR PRIORIDADE - Mantendo regra.";
+                                    }
+                                }
+                            }  else {
                                 $this->log[] = date("d/m/Y H:i:s") . " - Ainda não foi classificado.";
 
                                 if (
@@ -756,6 +919,87 @@ class XadrezSuicoClassificatorProcessController extends Controller
                                     ) {
                                         $this->log[] = date("d/m/Y H:i:s") . " - Já foi classificado por este mesmo evento.";
                                         $classification_found = true;
+                                    } elseif (
+                                        Inscricao::whereHas("torneio", function ($q1) use ($xzsuic_classificator) {
+                                            $q1->whereHas("evento", function ($q2) use ($xzsuic_classificator) {
+                                                $q2->where([["id", "=", $xzsuic_classificator->event->id]]);
+                                            });
+                                        })
+                                        ->whereHas("configs", function ($q1) use ($xzsuic_classificator, $tournament_classificators_before_this) {
+                                            $q1->where([
+                                                ["key", "=", "event_classificator_id"],
+                                            ]);
+                                            $q1->where([["integer", "=", $xzsuic_classificator->event_classificator->id]]);
+                                        })
+                                        ->whereHas("configs", function ($q1) use ($xzsuic_classificator, $tournament_classificators_before_this, $rule) {
+                                            $q1->where([
+                                                ["key", "=", "event_classificator_rule_id"],
+                                            ]);
+                                            $q1->where([["integer", "!=", $rule->id], ["integer", "!=", null]]);
+                                        })
+                                        ->where([
+                                            ["enxadrista_id", "=", $classificacao->enxadrista_id]
+                                        ])
+                                        ->count() > 0
+                                    ) {
+                                        $this->log[] = date("d/m/Y H:i:s") . " - Já foi classificado por este mesmo evento mas não pela mesma regra.";
+                                        $this->log[] = date("d/m/Y H:i:s") . " - Avaliar a preferência da regra.";
+
+                                        $inscricao_to_check = Inscricao::whereHas("torneio", function ($q1) use ($xzsuic_classificator) {
+                                            $q1->whereHas("evento", function ($q2) use ($xzsuic_classificator) {
+                                                $q2->where([["id", "=", $xzsuic_classificator->event->id]]);
+                                            });
+                                        })
+                                        ->whereHas("configs", function ($q1) use ($xzsuic_classificator, $tournament_classificators_before_this) {
+                                            $q1->where([
+                                                ["key", "=", "event_classificator_id"],
+                                            ]);
+                                            $q1->where([["integer", "=", $xzsuic_classificator->event_classificator->id]]);
+                                        })
+                                        ->whereHas("configs", function ($q1) use ($xzsuic_classificator, $tournament_classificators_before_this, $rule) {
+                                            $q1->where([
+                                                ["key", "=", "event_classificator_rule_id"],
+                                            ]);
+                                            $q1->where([["integer", "!=", $rule->id], ["integer", "!=", null]]);
+                                        })
+                                        ->where([
+                                            ["enxadrista_id", "=", $classificacao->enxadrista_id]
+                                        ])
+                                        ->first();
+
+                                        $rule_id = $inscricao_to_check->getConfig("event_classificator_rule_id");
+                                        $rule_to_check = EventClassificateRule::where([["id", "=", $rule_id]])->first();
+                                        if ($rule_to_check) {
+                                            // Minor number - More Priority
+                                            $rule_priority = ClassificationTypeRule::getOrderPriority($rule->type);
+                                            $rule_to_check_priority = ClassificationTypeRule::getOrderPriority($rule_to_check->type);
+
+                                            if ($rule_priority < $rule_to_check_priority) {
+                                                $this->log[] = date("d/m/Y H:i:s") . " - REGRA PRIORITÁRIA - Trocando regra.";
+
+                                                $inscricao_to_check->setConfig("event_classificator_id", ConfigType::Integer, $xzsuic_classificator->event_classificator->id);
+                                                $inscricao_to_check->setConfig("event_classificator_rule_id", ConfigType::Integer, $rule->id);
+                                                $inscricao_to_check->inscricao_from = $classificacao->id;
+                                                $inscricao_to_check->save();
+
+                                                $classification_found = true;
+                                            } elseif ($rule_priority == $rule_to_check_priority) {
+                                                $this->log[] = date("d/m/Y H:i:s") . " - REGRA IGUAL - Avaliando se a regra atual foi inserida antes da outra.";
+                                                if ($rule->id > $rule_to_check->id) {
+                                                    $this->log[] = date("d/m/Y H:i:s") . " - REGRA IGUAL - REGRA INSERIDA ANTES - Trocando regra.";
+                                                    $inscricao_to_check->setConfig("event_classificator_id", ConfigType::Integer, $xzsuic_classificator->event_classificator->id);
+                                                    $inscricao_to_check->setConfig("event_classificator_rule_id", ConfigType::Integer, $rule->id);
+                                                    $inscricao_to_check->inscricao_from = $classificacao->id;
+                                                    $inscricao_to_check->save();
+
+                                                    $classification_found = true;
+                                                } else {
+                                                    $this->log[] = date("d/m/Y H:i:s") . " - REGRA IGUAL - REGRA INSERIDA DEPOIS - Mantendo regra.";
+                                                }
+                                            } else {
+                                                $this->log[] = date("d/m/Y H:i:s") . " - REGRA COM MENOR PRIORIDADE - Mantendo regra.";
+                                            }
+                                        }
                                     } else {
                                         $this->log[] = date("d/m/Y H:i:s") . " - Ainda não foi classificado.";
 
@@ -979,8 +1223,89 @@ class XadrezSuicoClassificatorProcessController extends Controller
                                     ])
                                     ->count() > 0
                                 ) {
-                                    $this->log[] = date("d/m/Y H:i:s") . " - Já foi classificado por este mesmo evento.";
+                                    $this->log[] = date("d/m/Y H:i:s") . " - Já foi classificado por este mesmo evento e regra.";
                                     $classification_found = true;
+                                } elseif (
+                                    Inscricao::whereHas("torneio", function ($q1) use ($xzsuic_classificator) {
+                                        $q1->whereHas("evento", function ($q2) use ($xzsuic_classificator) {
+                                            $q2->where([["id", "=", $xzsuic_classificator->event->id]]);
+                                        });
+                                    })
+                                    ->whereHas("configs", function ($q1) use ($xzsuic_classificator, $tournament_classificators_before_this) {
+                                        $q1->where([
+                                            ["key", "=", "event_classificator_id"],
+                                        ]);
+                                        $q1->where([["integer", "=", $xzsuic_classificator->event_classificator->id]]);
+                                    })
+                                    ->whereHas("configs", function ($q1) use ($xzsuic_classificator, $tournament_classificators_before_this, $rule) {
+                                        $q1->where([
+                                            ["key", "=", "event_classificator_rule_id"],
+                                        ]);
+                                        $q1->where([["integer", "!=", $rule->id], ["integer", "!=", null]]);
+                                    })
+                                    ->where([
+                                        ["enxadrista_id", "=", $classificacao->enxadrista_id]
+                                    ])
+                                    ->count() > 0
+                                ) {
+                                    $this->log[] = date("d/m/Y H:i:s") . " - Já foi classificado por este mesmo evento mas não pela mesma regra.";
+                                    $this->log[] = date("d/m/Y H:i:s") . " - Avaliar a preferência da regra.";
+
+                                    $inscricao_to_check = Inscricao::whereHas("torneio", function ($q1) use ($xzsuic_classificator) {
+                                        $q1->whereHas("evento", function ($q2) use ($xzsuic_classificator) {
+                                            $q2->where([["id", "=", $xzsuic_classificator->event->id]]);
+                                        });
+                                    })
+                                    ->whereHas("configs", function ($q1) use ($xzsuic_classificator, $tournament_classificators_before_this) {
+                                        $q1->where([
+                                            ["key", "=", "event_classificator_id"],
+                                        ]);
+                                        $q1->where([["integer", "=", $xzsuic_classificator->event_classificator->id]]);
+                                    })
+                                    ->whereHas("configs", function ($q1) use ($xzsuic_classificator, $tournament_classificators_before_this, $rule) {
+                                        $q1->where([
+                                            ["key", "=", "event_classificator_rule_id"],
+                                        ]);
+                                        $q1->where([["integer", "!=", $rule->id], ["integer", "!=", null]]);
+                                    })
+                                    ->where([
+                                        ["enxadrista_id", "=", $classificacao->enxadrista_id]
+                                    ])
+                                    ->first();
+
+                                    $rule_id = $inscricao_to_check->getConfig("event_classificator_rule_id");
+                                    $rule_to_check = EventClassificateRule::where([["id", "=", $rule_id]])->first();
+                                    if($rule_to_check){
+                                        // Minor number - More Priority
+                                        $rule_priority = ClassificationTypeRule::getOrderPriority($rule->type);
+                                        $rule_to_check_priority = ClassificationTypeRule::getOrderPriority($rule_to_check->type);
+
+                                        if($rule_priority < $rule_to_check_priority){
+                                            $this->log[] = date("d/m/Y H:i:s") . " - REGRA PRIORITÁRIA - Trocando regra.";
+
+                                            $inscricao_to_check->setConfig("event_classificator_id", ConfigType::Integer, $xzsuic_classificator->event_classificator->id);
+                                            $inscricao_to_check->setConfig("event_classificator_rule_id", ConfigType::Integer, $rule->id);
+                                            $inscricao_to_check->inscricao_from = $classificacao->id;
+                                            $inscricao_to_check->save();
+
+                                            $classification_found = true;
+                                        } elseif ($rule_priority == $rule_to_check_priority) {
+                                            $this->log[] = date("d/m/Y H:i:s") . " - REGRA IGUAL - Avaliando se a regra atual foi inserida antes da outra.";
+                                            if($rule->id > $rule_to_check->id){
+                                            $this->log[] = date("d/m/Y H:i:s") . " - REGRA IGUAL - REGRA INSERIDA ANTES - Trocando regra.";
+                                                $inscricao_to_check->setConfig("event_classificator_id", ConfigType::Integer, $xzsuic_classificator->event_classificator->id);
+                                                $inscricao_to_check->setConfig("event_classificator_rule_id", ConfigType::Integer, $rule->id);
+                                                $inscricao_to_check->inscricao_from = $classificacao->id;
+                                                $inscricao_to_check->save();
+
+                                                $classification_found = true;
+                                            }else{
+                                                $this->log[] = date("d/m/Y H:i:s") . " - REGRA IGUAL - REGRA INSERIDA DEPOIS - Mantendo regra.";
+                                            }
+                                        }else{
+                                            $this->log[] = date("d/m/Y H:i:s") . " - REGRA COM MENOR PRIORIDADE - Mantendo regra.";
+                                        }
+                                    }
                                 } else {
                                     $this->log[] = date("d/m/Y H:i:s") . " - Ainda não foi classificado.";
 
@@ -1265,6 +1590,87 @@ class XadrezSuicoClassificatorProcessController extends Controller
                             ) {
                                 $this->log[] = date("d/m/Y H:i:s") . " - Já foi classificado por este mesmo evento.";
                                 $total_registrations++;
+                            } elseif (
+                                Inscricao::whereHas("torneio", function ($q1) use ($xzsuic_classificator) {
+                                    $q1->whereHas("evento", function ($q2) use ($xzsuic_classificator) {
+                                        $q2->where([["id", "=", $xzsuic_classificator->event->id]]);
+                                    });
+                                })
+                                ->whereHas("configs", function ($q1) use ($xzsuic_classificator, $tournament_classificators_before_this) {
+                                    $q1->where([
+                                        ["key", "=", "event_classificator_id"],
+                                    ]);
+                                    $q1->where([["integer", "=", $xzsuic_classificator->event_classificator->id]]);
+                                })
+                                ->whereHas("configs", function ($q1) use ($xzsuic_classificator, $tournament_classificators_before_this, $rule) {
+                                    $q1->where([
+                                        ["key", "=", "event_classificator_rule_id"],
+                                    ]);
+                                    $q1->where([["integer", "!=", $rule->id], ["integer", "!=", null]]);
+                                })
+                                ->where([
+                                    ["enxadrista_id", "=", $classificacao->enxadrista_id]
+                                ])
+                                ->count() > 0
+                            ) {
+                                $this->log[] = date("d/m/Y H:i:s") . " - Já foi classificado por este mesmo evento mas não pela mesma regra.";
+                                $this->log[] = date("d/m/Y H:i:s") . " - Avaliar a preferência da regra.";
+
+                                $inscricao_to_check = Inscricao::whereHas("torneio", function ($q1) use ($xzsuic_classificator) {
+                                    $q1->whereHas("evento", function ($q2) use ($xzsuic_classificator) {
+                                        $q2->where([["id", "=", $xzsuic_classificator->event->id]]);
+                                    });
+                                })
+                                    ->whereHas("configs", function ($q1) use ($xzsuic_classificator, $tournament_classificators_before_this) {
+                                        $q1->where([
+                                            ["key", "=", "event_classificator_id"],
+                                        ]);
+                                        $q1->where([["integer", "=", $xzsuic_classificator->event_classificator->id]]);
+                                    })
+                                    ->whereHas("configs", function ($q1) use ($xzsuic_classificator, $tournament_classificators_before_this, $rule) {
+                                        $q1->where([
+                                            ["key", "=", "event_classificator_rule_id"],
+                                        ]);
+                                        $q1->where([["integer", "!=", $rule->id], ["integer", "!=", null]]);
+                                    })
+                                    ->where([
+                                        ["enxadrista_id", "=", $classificacao->enxadrista_id]
+                                    ])
+                                    ->first();
+
+                                $rule_id = $inscricao_to_check->getConfig("event_classificator_rule_id");
+                                $rule_to_check = EventClassificateRule::where([["id","=",$rule_id]])->first();
+                                if ($rule_to_check) {
+                                    // Minor number - More Priority
+                                    $rule_priority = ClassificationTypeRule::getOrderPriority($rule->type);
+                                    $rule_to_check_priority = ClassificationTypeRule::getOrderPriority($rule_to_check->type);
+
+                                    if ($rule_priority < $rule_to_check_priority) {
+                                        $this->log[] = date("d/m/Y H:i:s") . " - REGRA PRIORITÁRIA - Trocando regra.";
+
+                                        $inscricao_to_check->setConfig("event_classificator_id", ConfigType::Integer, $xzsuic_classificator->event_classificator->id);
+                                        $inscricao_to_check->setConfig("event_classificator_rule_id", ConfigType::Integer, $rule->id);
+                                        $inscricao_to_check->inscricao_from = $classificacao->id;
+                                        $inscricao_to_check->save();
+
+                                        $total_registrations++;
+                                    } elseif ($rule_priority == $rule_to_check_priority) {
+                                        $this->log[] = date("d/m/Y H:i:s") . " - REGRA IGUAL - Avaliando se a regra atual foi inserida antes da outra.";
+                                        if ($rule->id > $rule_to_check->id) {
+                                            $this->log[] = date("d/m/Y H:i:s") . " - REGRA IGUAL - REGRA INSERIDA ANTES - Trocando regra.";
+                                            $inscricao_to_check->setConfig("event_classificator_id", ConfigType::Integer, $xzsuic_classificator->event_classificator->id);
+                                            $inscricao_to_check->setConfig("event_classificator_rule_id", ConfigType::Integer, $rule->id);
+                                            $inscricao_to_check->inscricao_from = $classificacao->id;
+                                            $inscricao_to_check->save();
+
+                                            $total_registrations++;
+                                        } else {
+                                            $this->log[] = date("d/m/Y H:i:s") . " - REGRA IGUAL - REGRA INSERIDA DEPOIS - Mantendo regra.";
+                                        }
+                                    } else {
+                                        $this->log[] = date("d/m/Y H:i:s") . " - REGRA COM MENOR PRIORIDADE - Mantendo regra.";
+                                    }
+                                }
                             } else {
                                 $this->log[] = date("d/m/Y H:i:s") . " - Ainda não foi classificado.";
 

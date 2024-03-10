@@ -31,8 +31,13 @@ class ClassificationTypeRule
         return self::$types;
     }
 
-    public static function get($id){
+    public static function get($id)
+    {
         return self::$types[($id)];
+    }
+    public static function getOrderPriority($type)
+    {
+        return array_search($type,self::getProcessOrder());
     }
 
     public static function getProcessOrder(){
