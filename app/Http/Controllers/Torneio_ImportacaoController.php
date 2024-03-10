@@ -181,12 +181,59 @@ class Torneio_ImportacaoController extends Controller
                     } else {
                         $retornos[] = date("d/m/Y H:i:s") . " - Enxadrista com o Código #" . $line[($fields["ID"])] . " não encontrado.";
                     }
+
+                    if (!$inscricao) {
+                        $retornos[] = date("d/m/Y H:i:s") . " - Inscrição do Enxadrista com o Código #" . $line[($fields["ID"])] . " não encontrado neste torneio.";
+                        if (
+                            Inscricao::whereHas("torneio", function ($q1) use ($torneio) {
+                                $q1->where([["evento_id", "=", $torneio->evento_id]]);
+                            })
+                            ->where([
+                                ["enxadrista_id", "=", Enxadrista::getStaticId($line[($fields["ID"])])],
+                            ])->count() > 0
+                        ) {
+                            $inscricao = Inscricao::whereHas("torneio", function ($q1) use ($torneio) {
+                                $q1->where([["evento_id", "=", $torneio->evento_id]]);
+                            })
+                            ->where([
+                                ["enxadrista_id", "=", Enxadrista::getStaticId($line[($fields["ID"])])],
+                            ])->first();
+                            $retornos[] = date("d/m/Y H:i:s") . " - Encontrada a Inscrição #{$inscricao->id}, porém, não pertence a este torneio (Categoria #{$inscricao->categoria->id} - {$inscricao->categoria->name}).";
+                            $retornos[] = date("d/m/Y H:i:s") . " - Trocando categoria e torneio.";
+
+                            $inscricao->torneio_id = $torneio->id;
+
+                            if ($torneio->categorias()->whereHas("categoria", function ($q1) use ($line, $fields) {
+                                $q1->where([["code", "=", $line[($fields["Gr"])]]]);
+                            })->count() == 0) {
+                                $retornos[] = date("d/m/Y H:i:s") . " - Categoria não encontrada no torneio - Ignorando.";
+                                $i++;
+                                continue;
+                            }
+
+                            $categoria = $torneio->categorias()->whereHas("categoria", function ($q1) use ($line, $fields) {
+                                $q1->where([["code", "=", $line[($fields["Gr"])]]]);
+                            })->first();
+
+                            $inscricao->categoria_id = $categoria->id;
+                            $inscricao->save();
+                        }
+                    }
                     if (!$inscricao) {
                         $retornos[] = date("d/m/Y H:i:s") . " - Não há inscrição deste enxadrista";
                         if ($enxadrista) {
-                            $categoria = Categoria::where([["code", "=", $line[($fields["Gr"])]]])->whereHas("eventos", function ($q1) use ($torneio) {
-                                $q1->where([["evento_id", "=", $torneio->evento->id]]);
+                            if ($torneio->categorias()->whereHas("categoria", function ($q1) use ($line, $fields) {
+                                $q1->where([["code", "=", $line[($fields["Gr"])]]]);
+                            })->count() == 0) {
+                                $retornos[] = date("d/m/Y H:i:s") . " - Categoria não encontrada no torneio - Ignorando.";
+                                $i++;
+                                continue;
+                            }
+
+                            $categoria = $torneio->categorias()->whereHas("categoria", function ($q1) use ($line, $fields) {
+                                $q1->where([["code", "=", $line[($fields["Gr"])]]]);
                             })->first();
+
                             if ($categoria) {
                                 $retornos[] = date("d/m/Y H:i:s") . " - Efetuando inscrição...";
                                 $inscricao = new Inscricao;
@@ -481,11 +528,56 @@ class Torneio_ImportacaoController extends Controller
                         $retornos[] = date("d/m/Y H:i:s") . " - Enxadrista com o Código #" . $line[($fields["ID"])] . " não encontrado.";
                     }
                     if (!$inscricao) {
+                        $retornos[] = date("d/m/Y H:i:s") . " - Inscrição do Enxadrista com o Código #" . $line[($fields["ID"])] . " não encontrado neste torneio.";
+                        if (Inscricao::whereHas("torneio", function ($q1) use ($torneio) {
+                            $q1->where([["evento_id", "=", $torneio->evento_id]]);
+                        })
+                            ->where([
+                                ["enxadrista_id", "=", Enxadrista::getStaticId($line[($fields["ID"])])],
+                            ])->count() > 0
+                        ) {
+                            $inscricao = Inscricao::whereHas("torneio", function ($q1) use ($torneio) {
+                                $q1->where([["evento_id", "=", $torneio->evento_id]]);
+                            })
+                                ->where([
+                                    ["enxadrista_id", "=", Enxadrista::getStaticId($line[($fields["ID"])])],
+                                ])->first();
+                            $retornos[] = date("d/m/Y H:i:s") . " - Encontrada a Inscrição #{$inscricao->id}, porém, não pertence a este torneio (Categoria #{$inscricao->categoria->id} - {$inscricao->categoria->name}).";
+                            $retornos[] = date("d/m/Y H:i:s") . " - Trocando categoria e torneio.";
+
+                            $inscricao->torneio_id = $torneio->id;
+
+                            if ($torneio->categorias()->whereHas("categoria", function ($q1) use ($line, $fields) {
+                                $q1->where([["code", "=", $line[($fields["Gr"])]]]);
+                            })->count() == 0) {
+                                $retornos[] = date("d/m/Y H:i:s") . " - Categoria não encontrada no torneio - Ignorando.";
+                                $i++;
+                                continue;
+                            }
+
+                            $categoria = $torneio->categorias()->whereHas("categoria", function ($q1) use ($line, $fields) {
+                                $q1->where([["code", "=", $line[($fields["Gr"])]]]);
+                            })->first();
+
+                            $inscricao->categoria_id = $categoria->id;
+                            $inscricao->save();
+                        }
+                    }
+                    if (!$inscricao) {
                         $retornos[] = date("d/m/Y H:i:s") . " - Não há inscrição deste enxadrista";
                         if ($enxadrista) {
-                            $categoria = Categoria::where([["code", "=", $line[($fields["Gr"])]]])->whereHas("eventos", function ($q1) use ($torneio) {
-                                $q1->where([["evento_id", "=", $torneio->evento->id]]);
+                            if ($torneio->categorias()->whereHas("categoria", function ($q1) use ($line, $fields) {
+                                $q1->where([["code", "=", $line[($fields["Gr"])]]]);
+                            })->count() == 0) {
+                                $retornos[] = date("d/m/Y H:i:s") . " - Categoria não encontrada no torneio - Ignorando.";
+                                $i++;
+                                continue;
+                            }
+
+                            $categoria = $torneio->categorias()->whereHas("categoria", function ($q1) use ($line, $fields) {
+                                $q1->where([["code", "=", $line[($fields["Gr"])]]]);
                             })->first();
+
                             if ($categoria) {
                                 $retornos[] = date("d/m/Y H:i:s") . " - Efetuando inscrição...";
                                 $inscricao = new Inscricao;
@@ -661,18 +753,59 @@ class Torneio_ImportacaoController extends Controller
                         ["enxadrista_id", "=", Enxadrista::getStaticId($line[($fields["ID"])])],
                         ["torneio_id", "=", $torneio->id],
                     ])
-                        ->first();
+                    ->first();
                     $enxadrista = Enxadrista::find(Enxadrista::getStaticId($line[($fields["ID"])]));
                     if ($enxadrista) {
                         $retornos[] = date("d/m/Y H:i:s") . " - Enxadrista de Código #" . $enxadrista->id . " - " . $enxadrista->name;
-                    } else {
-                        $retornos[] = date("d/m/Y H:i:s") . " - Enxadrista com o Código #" . $line[($fields["ID"])] . " não encontrado.";
+                    }
+                    if(!$inscricao) {
+                        $retornos[] = date("d/m/Y H:i:s") . " - Inscrição do Enxadrista com o Código #" . $line[($fields["ID"])] . " não encontrado neste torneio.";
+                        if(Inscricao::whereHas("torneio",function($q1) use ($torneio){
+                            $q1->where([["evento_id","=",$torneio->evento_id]]);
+                        })
+                        ->where([
+                            ["enxadrista_id", "=", Enxadrista::getStaticId($line[($fields["ID"])])],
+                        ])->count() > 0){
+                            $inscricao = Inscricao::whereHas("torneio", function ($q1) use ($torneio) {
+                                $q1->where([["evento_id", "=", $torneio->evento_id]]);
+                            })
+                            ->where([
+                                ["enxadrista_id", "=", Enxadrista::getStaticId($line[($fields["ID"])])],
+                            ])->first();
+                            $retornos[] = date("d/m/Y H:i:s") . " - Encontrada a Inscrição #{$inscricao->id}, porém, não pertence a este torneio (Categoria #{$inscricao->categoria->id} - {$inscricao->categoria->name}).";
+                            $retornos[] = date("d/m/Y H:i:s") . " - Trocando categoria e torneio.";
+
+                            $inscricao->torneio_id = $torneio->id;
+
+                            if($torneio->categorias()->whereHas("categoria", function ($q1) use ($line, $fields) {
+                                $q1->where([["code", "=", $line[($fields["Gr"])]]]);
+                            })->count() == 0){
+                                $retornos[] = date("d/m/Y H:i:s") . " - Categoria não encontrada no torneio - Ignorando.";
+                                $i++;
+                                continue;
+                            }
+
+                            $categoria = $torneio->categorias()->whereHas("categoria",function ($q1) use ($line, $fields){
+                                $q1->where([["code", "=", $line[($fields["Gr"])]]]);
+                            })->first();
+
+                            $inscricao->categoria_id = $categoria->id;
+                            $inscricao->save();
+                        }
                     }
                     if (!$inscricao) {
                         $retornos[] = date("d/m/Y H:i:s") . " - Não há inscrição deste enxadrista";
                         if ($enxadrista) {
-                            $categoria = Categoria::where([["code", "=", $line[($fields["Gr"])]]])->whereHas("eventos", function ($q1) use ($torneio) {
-                                $q1->where([["evento_id", "=", $torneio->evento->id]]);
+                            if ($torneio->categorias()->whereHas("categoria", function ($q1) use ($line, $fields) {
+                                $q1->where([["code", "=", $line[($fields["Gr"])]]]);
+                            })->count() == 0) {
+                                $retornos[] = date("d/m/Y H:i:s") . " - Categoria não encontrada no torneio - Ignorando.";
+                                $i++;
+                                continue;
+                            }
+
+                            $categoria = $torneio->categorias()->whereHas("categoria", function ($q1) use ($line, $fields) {
+                                $q1->where([["code", "=", $line[($fields["Gr"])]]]);
                             })->first();
                             if ($categoria) {
                                 $retornos[] = date("d/m/Y H:i:s") . " - Efetuando inscrição...";
