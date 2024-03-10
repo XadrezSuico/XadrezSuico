@@ -96,8 +96,19 @@ class ListaEnxadristasController extends Controller
         $retorno = array("draw" => $requisicao["draw"], "recordsTotal" => $recordsTotal, "recordsFiltered" => $total, "data" => array(), "requisicao" => $requisicao);
         foreach ($enxadristas->get() as $enxadrista) {
             $p = array();
-            $p[0] = $enxadrista->id;
-            $p[1] = $enxadrista->name;
+            if ($enxadrista->hasConfig("united_to")) {
+                $p[0] = "<span style='text-decoration: line-through; color: red;'>" . $enxadrista->id . "</span>";
+            } else {
+                $p[0] = $enxadrista->id;
+            }
+            if ($enxadrista->hasConfig("united_to")) {
+                $p[1] = "<span style='text-decoration: line-through; color: red;'>" . $enxadrista->name . "</span>";
+                $new_enxadrista = Enxadrista::find($enxadrista->getConfig("united_to", true));
+                $p[1] .= "<br/>Cadastro unido ao cadastro <strong>#{$new_enxadrista->id} - {$new_enxadrista->name}</strong>";
+            } else {
+
+                $p[1] = $enxadrista->name;
+            }
 
             $p[2] = $enxadrista->getNascimentoPublico();
 
