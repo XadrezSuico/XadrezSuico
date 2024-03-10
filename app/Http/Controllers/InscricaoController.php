@@ -208,6 +208,22 @@ class InscricaoController extends Controller
         return redirect("/inscricao/" . $id);
     }
 
+
+    public function visualizar_classificados($id,$classificator_id)
+    {
+        $evento = Evento::find($id);
+        if ($evento) {
+            if($evento->event_classificates()->where([["id","=",$classificator_id]])->count() > 0){
+                $xdzsc_classificador = $evento->event_classificates()->where([["id", "=", $classificator_id]])->first();
+
+
+                return view("inscricao.classificados", compact("evento","xdzsc_classificador"));
+            }
+
+        }
+        return abort(404);
+    }
+
     public function editar_inscricao($uuid)
     {
         $inscricao_count = Inscricao::where([["uuid","=",$uuid]])->count();
@@ -1922,6 +1938,7 @@ class InscricaoController extends Controller
      */
     public function categoriasEnxadrista($evento, $enxadrista, $is_user_with_permission = false)
     {
+        $is_user_with_permission = false;
         if(Auth::check()){
             if(
                 Auth::user()->hasPermissionGlobal() ||
@@ -1931,49 +1948,8 @@ class InscricaoController extends Controller
                 $is_user_with_permission = true;
             }
         }
-        $categorias = $evento->categorias()->whereHas("categoria", function ($q1) use ($enxadrista, $evento, $is_user_with_permission) {
-            $q1->where(function ($q2) use ($enxadrista, $evento) {
-                $q2->where(function ($q3) use ($enxadrista, $evento) {
-                    $q3->where([["idade_minima", "<=", $enxadrista->howOldForEvento($evento->getYear())]]);
-                    $q3->where([["idade_maxima", ">=", $enxadrista->howOldForEvento($evento->getYear())]]);
-                })
-                    ->orWhere(function ($q3) use ($enxadrista, $evento) {
-                        $q3->where([["idade_minima", "<=", $enxadrista->howOldForEvento($evento->getYear())]]);
-                        $q3->where([["idade_maxima", "=", null]]);
-                    })
-                    ->orWhere(function ($q3) use ($enxadrista, $evento) {
-                        $q3->where([["idade_minima", "=", null]]);
-                        $q3->where([["idade_maxima", ">=", $enxadrista->howOldForEvento($evento->getYear())]]);
-                    })
-                    ->orWhere(function ($q3) {
-                        $q3->where([["idade_minima", "=", null]]);
-                        $q3->where([["idade_maxima", "=", null]]);
-                    });
-            })
-            ->where(function ($q2) use ($enxadrista) {
-                $q2->where(function ($q3) use ($enxadrista) {
-                    if ($enxadrista->sexos_id) {
-                        $q3->where(function ($q4) use ($enxadrista) {
-                            $q4->whereHas("sexos", function ($q5) use ($enxadrista) {
-                                $q5->where([["sexos_id", "=", $enxadrista->sexos_id]]);
-                            });
-                        });
-                        $q3->orWhere(function ($q4) {
-                            $q4->doesntHave("sexos");
-                        });
-                    } else {
-                        $q3->whereDoesntHave("sexos");
-                    }
-                });
-            });
-            if(!$is_user_with_permission){
-                $q1->where([["is_private","=",false]]);
-            }
-        })
-        ->get();
-        // echo ($categorias); exit();
         $results = array();
-        foreach ($categorias as $categoria) {
+        foreach ($evento->getCategoriesForEnxadrista($enxadrista, $is_user_with_permission) as $categoria) {
             $results[] = $categoria;
         }
         return $results;

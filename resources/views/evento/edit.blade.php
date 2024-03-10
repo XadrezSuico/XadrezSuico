@@ -1583,6 +1583,9 @@
                                     <ul class="nav nav-pills">
                                         <li role="presentation"><a href="{{url("/evento/".$evento->id."/classificator/".$event_classificates->id."/process")}}">!!!! Processar Classificações (Use com cuidado)</a></li>
                                         <li role="presentation"><a href="{{url("/evento/".$evento->id."/classificator/".$event_classificates->id."/classificated/delete")}}">!!!! Remover classificados</a></li>
+                                        @if($total_classified > 0)
+                                            <li role="presentation"><a href="{{url("/inscricao/classificados/".$evento->id."/".$event_classificates->id)}}">[PÚBLICO] Lista de Classificados</a></li>
+                                        @endif
                                     </ul>
 
                                     <ul class="nav nav-pills">

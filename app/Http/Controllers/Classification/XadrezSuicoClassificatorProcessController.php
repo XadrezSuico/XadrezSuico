@@ -654,42 +654,254 @@ class XadrezSuicoClassificatorProcessController extends Controller
         foreach ($xzsuic_classificator->rules()->where([["type", "=", $type]])->orderBy("id", "ASC")->get() as $rule) {
             $this->log[] = date("d/m/Y H:i:s") . " - Regra #{$rule->id} - Evento Pré-Classificador: #{$rule->event->id} - {$rule->event->name}";
 
-            foreach ($xzsuic_classificator->event_classificator->categorias()->whereHas("categoria", function ($q1) use ($xzsuic_classificator) {
-                $q1->whereHas("event_classificates", function ($q2) use ($xzsuic_classificator) {
-                    $q2->whereHas("category", function ($q3) use ($xzsuic_classificator) {
-                        $q3->whereHas("eventos", function ($q4) use ($xzsuic_classificator) {
-                            $q4->where([["evento_id", "=", $xzsuic_classificator->event->id]]);
+            if($rule->is_absolute){
+                // Se absoluta, só vale para as categorias que classificam
+                foreach ($xzsuic_classificator->event_classificator->categorias()->whereHas("categoria", function ($q1) use ($xzsuic_classificator) {
+                    $q1->whereHas("event_classificates", function ($q2) use ($xzsuic_classificator) {
+                        $q2->whereHas("category", function ($q3) use ($xzsuic_classificator) {
+                            $q3->whereHas("eventos", function ($q4) use ($xzsuic_classificator) {
+                                $q4->where([["evento_id", "=", $xzsuic_classificator->event->id]]);
+                            });
                         });
                     });
-                });
-            })->get() as $category_event_classificator) {
-                $category_classificator = $category_event_classificator->categoria;
-                $category = $category_classificator->event_classificates()->whereHas("category", function ($q2) use ($xzsuic_classificator) {
-                    $q2->whereHas("eventos", function ($q3) use ($xzsuic_classificator) {
-                        $q3->where([["evento_id", "=", $xzsuic_classificator->event->id]]);
-                    });
-                })->first()->category;
+                })->get() as $category_event_classificator) {
+                    $category_classificator = $category_event_classificator->categoria;
+                    $category = $category_classificator->event_classificates()->whereHas("category", function ($q2) use ($xzsuic_classificator) {
+                        $q2->whereHas("eventos", function ($q3) use ($xzsuic_classificator) {
+                            $q3->where([["evento_id", "=", $xzsuic_classificator->event->id]]);
+                        });
+                    })->first()->category;
 
-                $this->log[] = date("d/m/Y H:i:s") . " - INÍCIO PROCESSAMENTO CATEGORIA.";
-                $this->log[] = date("d/m/Y H:i:s") . " - Categoria Classificadora: #{$category_classificator->id} - {$category_classificator->name}.";
-                $this->log[] = date("d/m/Y H:i:s") . " - Categoria Destino: #{$category->id} - {$category->name}.";
+                    $this->log[] = date("d/m/Y H:i:s") . " - INÍCIO PROCESSAMENTO CATEGORIA.";
+                    $this->log[] = date("d/m/Y H:i:s") . " - Categoria Classificadora: #{$category_classificator->id} - {$category_classificator->name}.";
+                    $this->log[] = date("d/m/Y H:i:s") . " - Categoria Destino: #{$category->id} - {$category->name}.";
 
-                $registrations_valid_total = $category_classificator->inscricoes()->whereHas("torneio", function ($q1) use ($xzsuic_classificator) {
-                    $q1->where([["evento_id", "=", $xzsuic_classificator->event_classificator->id]]);
-                })
-                    ->where([
-                        ["confirmado", "=", true],
-                        ["desconsiderar_pontuacao_geral", "=", false]
-                    ])
-                    ->whereNotNull("posicao")
-                    ->orderBy("posicao", "ASC")
-                    ->count();
+                    $registrations_valid_total = $category_classificator->inscricoes()->whereHas("torneio", function ($q1) use ($xzsuic_classificator) {
+                        $q1->where([["evento_id", "=", $xzsuic_classificator->event_classificator->id]]);
+                    })
+                        ->where([
+                            ["confirmado", "=", true],
+                            ["desconsiderar_pontuacao_geral", "=", false]
+                        ])
+                        ->whereNotNull("posicao")
+                        ->orderBy("posicao", "ASC")
+                        ->count();
 
-                $tournament_classificators_before_this = $this->getTournamentsBeforeThis($xzsuic_classificator);
-                $this->log[] = date("d/m/Y H:i:s") . " - Torneios anteriores a este: " . implode(",", $tournament_classificators_before_this);
-                $is_found = false;
-                foreach (
-                    $category_classificator->inscricoes()->whereHas("torneio", function ($q1) use ($xzsuic_classificator) {
+                    $tournament_classificators_before_this = $this->getTournamentsBeforeThis($xzsuic_classificator);
+                    $this->log[] = date("d/m/Y H:i:s") . " - Torneios anteriores a este: " . implode(",", $tournament_classificators_before_this);
+                    $is_found = false;
+                    foreach (
+                        $category_classificator->inscricoes()->whereHas("torneio", function ($q1) use ($xzsuic_classificator) {
+                            $q1->where([["evento_id", "=", $xzsuic_classificator->event_classificator->id]]);
+                        })
+                        ->where([
+                            ["confirmado", "=", true],
+                            ["desconsiderar_pontuacao_geral", "=", false]
+                        ])
+                        ->whereNotNull("posicao")
+                        ->orderBy("posicao", "ASC")
+                        ->get() as $classificacao
+                    ) {
+                            $this->log[] = date("d/m/Y H:i:s") . " - Posição: #{$classificacao->posicao} - Enxadrista #{$classificacao->enxadrista->id} - {$classificacao->enxadrista->name}.";
+                            if($classificacao->enxadrista->estaInscrito($rule->event->id)){
+                                $this->log[] = date("d/m/Y H:i:s") . " - ENXADRISTA INSCRITO - Possui Direto a Vaga.";
+
+                                if (
+                                    Inscricao::whereHas("torneio", function ($q1) use ($xzsuic_classificator) {
+                                        $q1->whereHas("evento", function ($q2) use ($xzsuic_classificator) {
+                                            $q2->where([["id", "=", $xzsuic_classificator->event->id]]);
+                                        });
+                                    })
+                                    ->where(function ($q0) use ($xzsuic_classificator, $tournament_classificators_before_this) {
+                                        $q0->whereHas("configs", function ($q1) use ($xzsuic_classificator, $tournament_classificators_before_this) {
+                                            $q1->where([
+                                                ["key", "=", "event_classificator_id"],
+                                            ]);
+                                            $q1->whereIn("integer", $tournament_classificators_before_this);
+                                        })
+                                        ->orWhereHas("configs", function ($q1) use ($xzsuic_classificator, $tournament_classificators_before_this) {
+                                            $q1->where([
+                                                ["key", "=", "classificated_manually"],
+                                                ["boolean", "=", true],
+                                            ]);
+                                        });
+                                    })
+                                    ->where([
+                                        ["enxadrista_id", "=", $classificacao->enxadrista_id]
+                                    ])
+                                    ->count() == 0
+                                ) {
+                                    if (
+                                        Inscricao::whereHas("torneio", function ($q1) use ($xzsuic_classificator) {
+                                            $q1->whereHas("evento", function ($q2) use ($xzsuic_classificator) {
+                                                $q2->where([["id", "=", $xzsuic_classificator->event->id]]);
+                                            });
+                                        })
+                                        ->whereHas("configs", function ($q1) use ($xzsuic_classificator, $tournament_classificators_before_this) {
+                                            $q1->where([
+                                                ["key", "=", "event_classificator_id"],
+                                            ]);
+                                            $q1->where([["integer","=", $xzsuic_classificator->event_classificator->id]]);
+                                        })
+                                        ->whereHas("configs", function ($q1) use ($xzsuic_classificator, $tournament_classificators_before_this,$rule) {
+                                            $q1->where([
+                                                ["key", "=", "event_classificator_rule_id"],
+                                            ]);
+                                            $q1->where([["integer","=",$rule->id]]);
+                                        })
+                                        ->where([
+                                            ["enxadrista_id", "=", $classificacao->enxadrista_id]
+                                        ])
+                                        ->count() > 0
+                                    ) {
+                                        $this->log[] = date("d/m/Y H:i:s") . " - Já foi classificado por este mesmo evento.";
+                                        $classification_found = true;
+                                    } else {
+                                        $this->log[] = date("d/m/Y H:i:s") . " - Ainda não foi classificado.";
+
+                                        if (
+                                            Inscricao::whereHas("torneio", function ($q1) use ($xzsuic_classificator) {
+                                                $q1->whereHas("evento", function ($q2) use ($xzsuic_classificator) {
+                                                    $q2->where([["id", "=", $xzsuic_classificator->event->id]]);
+                                                });
+                                            })
+                                            ->whereDoesntHave("configs", function ($q1) use ($xzsuic_classificator, $tournament_classificators_before_this) {
+                                                $q1->where([
+                                                    ["key", "=", "event_classificator_id"],
+                                                ]);
+                                            })
+                                            ->whereDoesntHave("configs", function ($q1) use ($xzsuic_classificator, $tournament_classificators_before_this) {
+                                                $q1->where([
+                                                    ["key", "=", "classificated_manually"],
+                                                    ["boolean", "=", true],
+                                                ]);
+                                            })
+                                            ->where([
+                                                ["enxadrista_id", "=", $classificacao->enxadrista_id]
+                                            ])
+                                            ->count() == 0
+                                        ) {
+                                            $category = $this->getCategory($xzsuic_classificator->event, $classificacao->enxadrista, $category);
+                                            if (!$category) {
+                                                $this->log[] = date("d/m/Y H:i:s") . " - Não há categoria para classificar este enxadrista - Ignorando.";
+                                                continue;
+                                            }
+
+                                            if ($xzsuic_classificator->event->torneios()->whereHas("categorias", function ($q1) use ($category) {
+                                                $q1->where([["categoria_id", "=", $category->id]]);
+                                            })->count() > 0) {
+                                                $torneio = $xzsuic_classificator->event->torneios()->whereHas("categorias", function ($q1) use ($category) {
+                                                    $q1->where([["categoria_id", "=", $category->id]]);
+                                                })->first();
+
+                                                $inscricao_nova = new Inscricao;
+                                                $inscricao_nova->enxadrista_id = $classificacao->enxadrista_id;
+                                                $inscricao_nova->categoria_id = $category->id;
+                                                $inscricao_nova->cidade_id = $classificacao->cidade_id;
+                                                $inscricao_nova->clube_id = $classificacao->clube_id;
+                                                $inscricao_nova->torneio_id = $torneio->id;
+                                                $inscricao_nova->regulamento_aceito = $classificacao->regulamento_aceito;
+                                                $inscricao_nova->confirmado = false;
+                                                $inscricao_nova->xadrezsuico_aceito = $classificacao->xadrezsuico_aceito;
+                                                $inscricao_nova->is_aceito_imagem = $classificacao->xadrezsuico_aceito;
+                                                $inscricao_nova->inscricao_from = $classificacao->id;
+                                                if($inscricao_nova->save()){
+
+                                                    $inscricao_nova->setConfig("event_classificator_id", ConfigType::Integer, $xzsuic_classificator->event_classificator->id);
+                                                    $inscricao_nova->setConfig("event_classificator_rule_id", ConfigType::Integer, $rule->id);
+
+                                                    if ($xzsuic_classificator->event->tipo_rating) {
+                                                        $rating_count = $inscricao_nova->enxadrista->ratings()->where([
+                                                            ["tipo_ratings_id", "=", $xzsuic_classificator->event->tipo_rating->id]
+                                                        ])->count();
+                                                        if ($rating_count == 0) {
+                                                            $rating_inicial = $inscricao_nova->enxadrista->ratingParaEvento($xzsuic_classificator->event->id);
+
+                                                            $rating = new Rating;
+                                                            $rating->tipo_ratings_id = $xzsuic_classificator->event->tipo_rating->tipo_rating->id;
+                                                            $rating->enxadrista_id = $inscricao_nova->enxadrista->id;
+                                                            $rating->valor = $rating_inicial;
+                                                            $rating->save();
+
+                                                            $movimentacao = new MovimentacaoRating;
+                                                            $movimentacao->tipo_ratings_id = $rating->tipo_ratings_id;
+                                                            $movimentacao->ratings_id = $rating->id;
+                                                            $movimentacao->valor = $rating_inicial;
+                                                            $movimentacao->is_inicial = true;
+                                                            $movimentacao->save();
+                                                        }
+                                                    }
+
+                                                    if ($inscricao_nova->enxadrista->email) {
+                                                        if ($xzsuic_classificator->event->isPaid() && $inscricao_nova->getPaymentInfo("link")) {
+                                                            EmailController::schedule(
+                                                                $inscricao_nova->enxadrista->email,
+                                                                $inscricao_nova,
+                                                                EmailType::InscricaoRecebidaPagamentoPendente,
+                                                                $inscricao_nova->enxadrista
+                                                            );
+                                                        } else {
+                                                            EmailController::schedule(
+                                                                $inscricao_nova->enxadrista->email,
+                                                                $inscricao_nova,
+                                                                EmailType::ConfirmacaoInscricao,
+                                                                $inscricao_nova->enxadrista
+                                                            );
+                                                        }
+                                                    }
+                                                }else{
+                                                    $this->log[] = date("d/m/Y H:i:s") . " - ERRO!!! Enxadrista JÁ inscrito!";
+                                                }
+                                            } else {
+                                                $this->log[] = date("d/m/Y H:i:s") . " - ERRO!!! Categoria não possui torneio!";
+                                            }
+                                        } else {
+                                            $this->log[] = date("d/m/Y H:i:s") . " - O mesmo já encontra inscrito pro evento - Apenas homologar classificação.";
+                                            $inscricao_on_event = Inscricao::whereHas("torneio", function ($q1) use ($xzsuic_classificator) {
+                                                $q1->whereHas("evento", function ($q2) use ($xzsuic_classificator) {
+                                                    $q2->where([["id", "=", $xzsuic_classificator->event->id]]);
+                                                });
+                                            })
+                                            ->whereDoesntHave("configs", function ($q1) use ($xzsuic_classificator, $tournament_classificators_before_this) {
+                                                $q1->where([
+                                                    ["key", "=", "event_classificator_id"],
+                                                ]);
+                                            })
+                                            ->whereDoesntHave("configs", function ($q1) use ($xzsuic_classificator, $tournament_classificators_before_this) {
+                                                $q1->where([
+                                                    ["key", "=", "classificated_manually"],
+                                                    ["boolean", "=", true],
+                                                ]);
+                                            })
+                                            ->where([
+                                                ["enxadrista_id", "=", $classificacao->enxadrista_id]
+                                            ])
+                                            ->first();
+
+                                            $inscricao_on_event->setConfig("event_classificator_id", ConfigType::Integer, $xzsuic_classificator->event_classificator->id);
+                                            $inscricao_on_event->setConfig("event_classificator_rule_id", ConfigType::Integer, $rule->id);
+                                            $inscricao_on_event->inscricao_from = $classificacao->id;
+                                            $inscricao_on_event->save();
+                                        }
+                                    }
+                                } else {
+                                    $this->log[] = date("d/m/Y H:i:s") . " - Já foi classificado por outro evento ou manualmente.";
+                                }
+                            }else{
+                                $this->log[] = date("d/m/Y H:i:s") . " - ENXADRISTA NÃO INSCRITO - NÃO possui Direto a Vaga.";
+
+                            }
+
+                    }
+                    $this->log[] = date("d/m/Y H:i:s") . " - FIM PROCESSAMENTO CATEGORIA.";
+                }
+            }else{
+                foreach($xzsuic_classificator->event_classificator->categorias->all() as $categoria){
+                    $category_classificator = $categoria->categoria;
+                    $this->log[] = date("d/m/Y H:i:s") . " - INÍCIO PROCESSAMENTO CATEGORIA.";
+                    $this->log[] = date("d/m/Y H:i:s") . " - Categoria do Evento: #{$category_classificator->id} - {$category_classificator->name}.";
+
+                    $registrations_valid_total = $category_classificator->inscricoes()->whereHas("torneio", function ($q1) use ($xzsuic_classificator) {
                         $q1->where([["evento_id", "=", $xzsuic_classificator->event_classificator->id]]);
                     })
                     ->where([
@@ -698,10 +910,25 @@ class XadrezSuicoClassificatorProcessController extends Controller
                     ])
                     ->whereNotNull("posicao")
                     ->orderBy("posicao", "ASC")
-                    ->get() as $classificacao
-                ) {
+                    ->count();
+
+                    $tournament_classificators_before_this = $this->getTournamentsBeforeThis($xzsuic_classificator);
+                    $this->log[] = date("d/m/Y H:i:s") . " - Torneios anteriores a este: " . implode(",", $tournament_classificators_before_this);
+                    $is_found = false;
+                    foreach (
+                        $category_classificator->inscricoes()->whereHas("torneio", function ($q1) use ($xzsuic_classificator) {
+                        $q1->where([["evento_id", "=", $xzsuic_classificator->event_classificator->id]]);
+                        })
+                        ->where([
+                            ["confirmado", "=", true],
+                            ["desconsiderar_pontuacao_geral", "=", false]
+                        ])
+                        ->whereNotNull("posicao")
+                        ->orderBy("posicao", "ASC")
+                        ->get() as $classificacao
+                    ) {
                         $this->log[] = date("d/m/Y H:i:s") . " - Posição: #{$classificacao->posicao} - Enxadrista #{$classificacao->enxadrista->id} - {$classificacao->enxadrista->name}.";
-                        if($classificacao->enxadrista->estaInscrito($rule->event->id)){
+                        if ($classificacao->enxadrista->estaInscrito($rule->event->id)) {
                             $this->log[] = date("d/m/Y H:i:s") . " - ENXADRISTA INSCRITO - Possui Direto a Vaga.";
 
                             if (
@@ -717,12 +944,12 @@ class XadrezSuicoClassificatorProcessController extends Controller
                                         ]);
                                         $q1->whereIn("integer", $tournament_classificators_before_this);
                                     })
-                                    ->orWhereHas("configs", function ($q1) use ($xzsuic_classificator, $tournament_classificators_before_this) {
-                                        $q1->where([
-                                            ["key", "=", "classificated_manually"],
-                                            ["boolean", "=", true],
-                                        ]);
-                                    });
+                                        ->orWhereHas("configs", function ($q1) use ($xzsuic_classificator, $tournament_classificators_before_this) {
+                                            $q1->where([
+                                                ["key", "=", "classificated_manually"],
+                                                ["boolean", "=", true],
+                                            ]);
+                                        });
                                 })
                                 ->where([
                                     ["enxadrista_id", "=", $classificacao->enxadrista_id]
@@ -739,13 +966,13 @@ class XadrezSuicoClassificatorProcessController extends Controller
                                         $q1->where([
                                             ["key", "=", "event_classificator_id"],
                                         ]);
-                                        $q1->where([["integer","=", $xzsuic_classificator->event_classificator->id]]);
+                                        $q1->where([["integer", "=", $xzsuic_classificator->event_classificator->id]]);
                                     })
-                                    ->whereHas("configs", function ($q1) use ($xzsuic_classificator, $tournament_classificators_before_this,$rule) {
+                                    ->whereHas("configs", function ($q1) use ($xzsuic_classificator, $tournament_classificators_before_this, $rule) {
                                         $q1->where([
                                             ["key", "=", "event_classificator_rule_id"],
                                         ]);
-                                        $q1->where([["integer","=",$rule->id]]);
+                                        $q1->where([["integer", "=", $rule->id]]);
                                     })
                                     ->where([
                                         ["enxadrista_id", "=", $classificacao->enxadrista_id]
@@ -779,7 +1006,7 @@ class XadrezSuicoClassificatorProcessController extends Controller
                                         ])
                                         ->count() == 0
                                     ) {
-                                        $category = $this->getCategory($xzsuic_classificator->event, $classificacao->enxadrista, $category);
+                                        $category = $this->getCategory($xzsuic_classificator->event, $classificacao->enxadrista);
                                         if (!$category) {
                                             $this->log[] = date("d/m/Y H:i:s") . " - Não há categoria para classificar este enxadrista - Ignorando.";
                                             continue;
@@ -803,7 +1030,7 @@ class XadrezSuicoClassificatorProcessController extends Controller
                                             $inscricao_nova->xadrezsuico_aceito = $classificacao->xadrezsuico_aceito;
                                             $inscricao_nova->is_aceito_imagem = $classificacao->xadrezsuico_aceito;
                                             $inscricao_nova->inscricao_from = $classificacao->id;
-                                            if($inscricao_nova->save()){
+                                            if ($inscricao_nova->save()) {
 
                                                 $inscricao_nova->setConfig("event_classificator_id", ConfigType::Integer, $xzsuic_classificator->event_classificator->id);
                                                 $inscricao_nova->setConfig("event_classificator_rule_id", ConfigType::Integer, $rule->id);
@@ -847,7 +1074,7 @@ class XadrezSuicoClassificatorProcessController extends Controller
                                                         );
                                                     }
                                                 }
-                                            }else{
+                                            } else {
                                                 $this->log[] = date("d/m/Y H:i:s") . " - ERRO!!! Enxadrista JÁ inscrito!";
                                             }
                                         } else {
@@ -860,21 +1087,21 @@ class XadrezSuicoClassificatorProcessController extends Controller
                                                 $q2->where([["id", "=", $xzsuic_classificator->event->id]]);
                                             });
                                         })
-                                        ->whereDoesntHave("configs", function ($q1) use ($xzsuic_classificator, $tournament_classificators_before_this) {
-                                            $q1->where([
-                                                ["key", "=", "event_classificator_id"],
-                                            ]);
-                                        })
-                                        ->whereDoesntHave("configs", function ($q1) use ($xzsuic_classificator, $tournament_classificators_before_this) {
-                                            $q1->where([
-                                                ["key", "=", "classificated_manually"],
-                                                ["boolean", "=", true],
-                                            ]);
-                                        })
-                                        ->where([
-                                            ["enxadrista_id", "=", $classificacao->enxadrista_id]
-                                        ])
-                                        ->first();
+                                            ->whereDoesntHave("configs", function ($q1) use ($xzsuic_classificator, $tournament_classificators_before_this) {
+                                                $q1->where([
+                                                    ["key", "=", "event_classificator_id"],
+                                                ]);
+                                            })
+                                            ->whereDoesntHave("configs", function ($q1) use ($xzsuic_classificator, $tournament_classificators_before_this) {
+                                                $q1->where([
+                                                    ["key", "=", "classificated_manually"],
+                                                    ["boolean", "=", true],
+                                                ]);
+                                            })
+                                            ->where([
+                                                ["enxadrista_id", "=", $classificacao->enxadrista_id]
+                                            ])
+                                            ->first();
 
                                         $inscricao_on_event->setConfig("event_classificator_id", ConfigType::Integer, $xzsuic_classificator->event_classificator->id);
                                         $inscricao_on_event->setConfig("event_classificator_rule_id", ConfigType::Integer, $rule->id);
@@ -885,13 +1112,13 @@ class XadrezSuicoClassificatorProcessController extends Controller
                             } else {
                                 $this->log[] = date("d/m/Y H:i:s") . " - Já foi classificado por outro evento ou manualmente.";
                             }
-                        }else{
+                        } else {
                             $this->log[] = date("d/m/Y H:i:s") . " - ENXADRISTA NÃO INSCRITO - NÃO possui Direto a Vaga.";
-
                         }
-
+                    }
+                    $this->log[] = date("d/m/Y H:i:s") . " - FIM PROCESSAMENTO CATEGORIA.";
                 }
-                $this->log[] = date("d/m/Y H:i:s") . " - FIM PROCESSAMENTO CATEGORIA.";
+
             }
         }
 
@@ -1184,39 +1411,54 @@ class XadrezSuicoClassificatorProcessController extends Controller
     }
 
 
-    public function getCategory($event, $enxadrista, $category){
-        if ($category->idade_minima) {
-            if ($enxadrista->howOldForEvento($event->id) < $category->idade_minima) {
-                $this->log[] = date("d/m/Y H:i:s") . " - Categoria inválida - Obtendo nova categoria.";
-                $category = $this->getNewCategory($event, $enxadrista);
-                if ($category) {
-                    $this->log[] = date("d/m/Y H:i:s") . " - Nova Categoria Encontrada - #{$category->id} - {$category->name}.";
-                } else {
-                    $this->log[] = date("d/m/Y H:i:s") . " - Não há categoria para classificar este enxadrista - Ignorando.";
-                    return false;
+    public function getCategory($event, $enxadrista, $category = null){
+        if($category){
+            if ($category->idade_minima) {
+                if ($enxadrista->howOldForEvento($event->id) < $category->idade_minima) {
+                    $this->log[] = date("d/m/Y H:i:s") . " - Categoria inválida - Obtendo nova categoria.";
+                    $category = $this->getNewCategory($event, $enxadrista);
+                    if ($category) {
+                        $this->log[] = date("d/m/Y H:i:s") . " - Nova Categoria Encontrada - #{$category->id} - {$category->name}.";
+                    } else {
+                        $this->log[] = date("d/m/Y H:i:s") . " - Não há categoria para classificar este enxadrista - Ignorando.";
+                        return false;
+                    }
                 }
             }
-        }
-        if ($category->idade_maxima) {
-            if ($enxadrista->howOldForEvento($event->id) > $category->idade_maxima) {
-                $this->log[] = date("d/m/Y H:i:s") . " - Categoria inválida - Obtendo nova categoria.";
-                $category = $this->getNewCategory($event, $enxadrista);
-                if ($category) {
-                    $this->log[] = date("d/m/Y H:i:s") . " - Nova Categoria Encontrada - #{$category->id} - {$category->name}.";
-                } else {
-                    $this->log[] = date("d/m/Y H:i:s") . " - Não há categoria para classificar este enxadrista - Ignorando.";
-                    return false;
+            if ($category->idade_maxima) {
+                if ($enxadrista->howOldForEvento($event->id) > $category->idade_maxima) {
+                    $this->log[] = date("d/m/Y H:i:s") . " - Categoria inválida - Obtendo nova categoria.";
+                    $category = $this->getNewCategory($event, $enxadrista);
+                    if ($category) {
+                        $this->log[] = date("d/m/Y H:i:s") . " - Nova Categoria Encontrada - #{$category->id} - {$category->name}.";
+                    } else {
+                        $this->log[] = date("d/m/Y H:i:s") . " - Não há categoria para classificar este enxadrista - Ignorando.";
+                        return false;
+                    }
                 }
+            }
+        }else{
+            $this->log[] = date("d/m/Y H:i:s") . " - Não possui categoria - Obtendo categoria.";
+            $category = $this->getNewCategory($event, $enxadrista);
+            if ($category) {
+                $this->log[] = date("d/m/Y H:i:s") . " - Nova Categoria Encontrada - #{$category->id} - {$category->name}.";
+            } else {
+                $this->log[] = date("d/m/Y H:i:s") . " - Não há categoria para classificar este enxadrista - Ignorando.";
+                return false;
             }
         }
 
         return $category;
     }
 
-    public function getNewCategory($event, $enxadrista){
+    public function getNewCategory(Evento $event, $enxadrista){
+        $this->log[] = date("d/m/Y H:i:s") . " - getNewCategory.";
         if ($event->hasCategoryForEnxadrista($enxadrista)) {
-            return $event->getCategoryForEnxadrista($enxadrista);
+            $this->log[] = date("d/m/Y H:i:s") . " - getNewCategory - Found.";
+            // $this->log[] = date("d/m/Y H:i:s") . " - getNewCategory - ".json_encode($event->getCategoryForEnxadrista($enxadrista)->categoria);
+            return $event->getCategoryForEnxadrista($enxadrista)->categoria;
         }
+        $this->log[] = date("d/m/Y H:i:s") . " - getNewCategory - Not found - event {$event->id} - ".$enxadrista->howOldForEvento($event->getYear())." yo. - event year:".$event->getYear()." - count: ".count((array) $event->getCategoryForEnxadrista($enxadrista)).".";
 
         return null;
     }

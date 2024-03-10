@@ -22,7 +22,8 @@ class EventClassificate extends Model
         return $this->hasMany("App\Classification\EventClassificateRule", "event_classificates_id", "id");
     }
 
-    public function howMuchClassificated(){
+    public function getRegistrationsClassificated()
+    {
         $xzsuic_classificator = $this;
 
         return Inscricao::whereHas("torneio", function ($q1) use ($xzsuic_classificator) {
@@ -42,7 +43,31 @@ class EventClassificate extends Model
             ]);
             $q1->whereIn("integer",  $xzsuic_classificator->getRulesId());
         })
-        ->count();
+        ->get();
+    }
+
+    public function howMuchClassificated()
+    {
+        $xzsuic_classificator = $this;
+
+        return Inscricao::whereHas("torneio", function ($q1) use ($xzsuic_classificator) {
+            $q1->whereHas("evento", function ($q2) use ($xzsuic_classificator) {
+                $q2->where([["id", "=", $xzsuic_classificator->event->id]]);
+            });
+        })
+            ->whereHas("configs", function ($q1) use ($xzsuic_classificator) {
+                $q1->where([
+                    ["key", "=", "event_classificator_id"],
+                    ["integer", "=", $xzsuic_classificator->event_classificator->id],
+                ]);
+            })
+            ->whereHas("configs", function ($q1) use ($xzsuic_classificator) {
+                $q1->where([
+                    ["key", "=", "event_classificator_rule_id"],
+                ]);
+                $q1->whereIn("integer",  $xzsuic_classificator->getRulesId());
+            })
+            ->count();
     }
 
     public function getRulesId(){
