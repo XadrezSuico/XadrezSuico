@@ -122,6 +122,8 @@ class Torneio_ImportacaoController extends Controller
         $lines = str_getcsv($results, "\n");
         $i = 0;
         $k = -1;
+        $total_des = 0;
+        $des_ended = false;
         $fields = array();
         foreach ($lines as $line) {
             $columns = str_getcsv($line, ";");
@@ -129,9 +131,16 @@ class Torneio_ImportacaoController extends Controller
                 $j = 0;
                 $retornos[] = date("d/m/Y H:i:s") . " - Capturando as informações de campos no cabeçalho:";
                 foreach ($columns as $column) {
-                    if ($k >= 0 && $k < $torneio->getCountCriteriosNaoManuais()) {
-                        $retornos[] = date("d/m/Y H:i:s") . " - " . ($k + 1) . "º Critério de Desempate [" . $j . "] - Total: " . $torneio->getCountCriteriosNaoManuais();
-                        $fields["Des" . ($k + 1)] = $j;
+                    if ($k >= 0 && $k < $torneio->getCountCriteriosNaoManuais() && !$des_ended) {
+                        if ($column == "Clas") {
+                            $retornos[] = date("d/m/Y H:i:s") . " - " . ($k + 1) . "º Critério de Desempate [" . $j . "] - ERRO! Acabou os critérios de desempate do Arquivo.";
+                            $des_ended = true;
+                            continue;
+                        } else {
+                            $retornos[] = date("d/m/Y H:i:s") . " - " . ($k + 1) . "º Critério de Desempate [" . $j . "] - Total: " . $torneio->getCountCriteriosNaoManuais();
+                            $fields["Des" . ($k + 1)] = $j;
+                            $total_des++;
+                        }
                         $k++;
                     } else {
                         switch ($column) {
@@ -269,7 +278,7 @@ class Torneio_ImportacaoController extends Controller
                         }
 
                         foreach ($torneio->getCriteriosNaoManuais() as $criterio) {
-                            if ($criterio->softwares_id) {
+                            if ($criterio->softwares_id && $j <= $total_des) {
                                 if(isset($line[($fields["Des" . $j])])){
                                     // echo "Inserindo critério de desempate '".$criterio->criterio->name."' <br/>";
                                     $retornos[] = date("d/m/Y H:i:s") . " - Inserindo critério de desempate '" . $criterio->criterio->name . "' - Valor: " . $line[($fields["Des" . $j])];
@@ -463,6 +472,8 @@ class Torneio_ImportacaoController extends Controller
         $lines = str_getcsv($results, "\n");
         $i = 0;
         $k = -1;
+        $total_des = 0;
+        $des_ended = false;
         $fields = array();
         foreach ($lines as $line) {
             $columns = str_getcsv($line, ";");
@@ -470,9 +481,16 @@ class Torneio_ImportacaoController extends Controller
                 $j = 0;
                 $retornos[] = date("d/m/Y H:i:s") . " - Capturando as informações de campos no cabeçalho:";
                 foreach ($columns as $column) {
-                    if ($k >= 0 && $k < $torneio->getCountCriteriosNaoManuais()) {
-                        $retornos[] = date("d/m/Y H:i:s") . " - " . ($k + 1) . "º Critério de Desempate [" . $j . "] - Total: " . $torneio->getCountCriteriosNaoManuais();
-                        $fields["Des" . ($k + 1)] = $j;
+                    if ($k >= 0 && $k < $torneio->getCountCriteriosNaoManuais() && !$des_ended) {
+                        if ($column == "Clas") {
+                            $retornos[] = date("d/m/Y H:i:s") . " - " . ($k + 1) . "º Critério de Desempate [" . $j . "] - ERRO! Acabou os critérios de desempate do Arquivo.";
+                            $des_ended = true;
+                            continue;
+                        } else {
+                            $retornos[] = date("d/m/Y H:i:s") . " - " . ($k + 1) . "º Critério de Desempate [" . $j . "] - Total: " . $torneio->getCountCriteriosNaoManuais();
+                            $fields["Des" . ($k + 1)] = $j;
+                            $total_des++;
+                        }
                         $k++;
                     } else {
                         switch ($column) {
@@ -613,7 +631,7 @@ class Torneio_ImportacaoController extends Controller
                         }
 
                         foreach ($torneio->getCriterios() as $criterio) {
-                            if ($criterio->softwares_id) {
+                            if ($criterio->softwares_id && $j <= $total_des) {
                                 if(isset($line[($fields["Des" . $j])])){
                                     // echo "Inserindo critério de desempate '".$criterio->criterio->name."' <br/>";
                                     $retornos[] = date("d/m/Y H:i:s") . " - Inserindo critério de desempate '" . $criterio->criterio->name . "' - Valor: " . $line[($fields["Des" . $j])];
