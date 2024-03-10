@@ -19,7 +19,7 @@ class EmailController extends Controller
         $schedule_email->subject = $subject;
         $schedule_email->text = $text;
         if ($enxadrista != null) {
-            $schedule_email->enxadrista_id = $enxadrista->id;
+            $schedule_email->enxadrista_id = $enxadrista->getId();
         }
         $schedule_email->save();
         return true;
@@ -36,7 +36,7 @@ class EmailController extends Controller
         $schedule_email->subject = $email_template->subject;
         $schedule_email->text = $email_template->message;
         if ($enxadrista != null) {
-            $schedule_email->enxadrista_id = $enxadrista->id;
+            $schedule_email->enxadrista_id = $enxadrista->getId();
         }
         $schedule_email->save();
         return true;

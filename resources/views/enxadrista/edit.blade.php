@@ -3,9 +3,12 @@
 @php
         $permitido_edicao = false;
         if(
-            \Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
+           ( \Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
             \Illuminate\Support\Facades\Auth::user()->hasPermissionGlobalByPerfil([9]) ||
             \Illuminate\Support\Facades\Auth::user()->hasPermissionEventsByPerfil([4])
+           )
+           &&
+           !$enxadrista->hasConfig("united_to")
         ){
             $permitido_edicao = true;
         }
@@ -39,6 +42,14 @@
 <div class="row">
   <!-- Left col -->
   <section class="col-lg-12 connectedSortable">
+    @if($enxadrista->hasConfig("united_to"))
+        <div class="alert alert-warning">
+            <strong>AVISO!</strong><br/>
+                Este cadastro foi unido ao cadastro de ID
+                <strong>#{{$enxadrista->getConfig("united_to",true)}} - {{\App\Enxadrista::find($enxadrista->getConfig("united_to",true))->name}}</strong>
+                e com isso não será possível edição ou uso deste cadastro.
+        </div>
+    @endif
 	<div class="box box-primary" id="inscricao">
 		<div class="box-header">
 			<h3 class="box-title">Editar Clube</h3>

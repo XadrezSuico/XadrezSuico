@@ -10,18 +10,23 @@ use App\Enxadrista;
 class PlayerController extends Controller
 {
     public function list(Request $request){
-        $enxadristas = Enxadrista::where([
-            ["id", "like", "%" . $request->input("q") . "%"],
-        ])
-        ->orWhere([
-            ["name", "like", "%" . $request->input("q") . "%"],
-        ])
-        ->orWhere(function($q1) use ($request){
-            $q1->whereHas("documentos",function($q2) use ($request){
-                $q2->where([
-                    ["numero","=",$request->input("q")]
-                ]);
+        $enxadristas = Enxadrista::where(function ($q1) use ($request) {
+            $q1->where([
+                ["id", "like", "%" . $request->input("q") . "%"],
+            ])
+            ->orWhere([
+                ["name", "like", "%" . $request->input("q") . "%"],
+            ])
+            ->orWhere(function ($q1) use ($request) {
+                $q1->whereHas("documentos", function ($q2) use ($request) {
+                    $q2->where([
+                        ["numero", "=", $request->input("q")]
+                    ]);
+                });
             });
+        })
+        ->whereDoesntHave("configs", function ($q1) {
+            $q1->where([["key", "=", "united_to"]]);
         })->orderBy("name", "ASC")->limit(30)->get();
 
         $results = array();
@@ -42,20 +47,24 @@ class PlayerController extends Controller
         }
 
 
-        $total = Enxadrista::where([
-            ["id", "like", "%" . $request->input("q") . "%"],
-        ])
-        ->orWhere([
-            ["name", "like", "%" . $request->input("q") . "%"],
-        ])
-        ->orWhere(function($q1) use ($request){
-            $q1->whereHas("documentos",function($q2) use ($request){
-                $q2->where([
-                    ["numero","=",$request->input("q")]
-                ]);
+        $total = Enxadrista::where(function ($q1) use ($request) {
+            $q1->where([
+                ["id", "like", "%" . $request->input("q") . "%"],
+            ])
+            ->orWhere([
+                ["name", "like", "%" . $request->input("q") . "%"],
+            ])
+            ->orWhere(function ($q1) use ($request) {
+                $q1->whereHas("documentos", function ($q2) use ($request) {
+                    $q2->where([
+                        ["numero", "=", $request->input("q")]
+                    ]);
+                });
             });
-        })->orderBy("name", "ASC")
-        ->count();
+        })
+        ->whereDoesntHave("configs", function ($q1) {
+            $q1->where([["key", "=", "united_to"]]);
+        })->count();
 
 
         return response()->json(["ok"=>1, "error"=>0, "players" => $results, "result" => ($total > 30) ? true : false]);

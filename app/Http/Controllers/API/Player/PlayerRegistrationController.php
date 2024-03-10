@@ -122,6 +122,9 @@ class PlayerRegistrationController extends Controller
                                 ["numero","=",$request->documents[$tipo_documento_pais->tipo_documento->id]],
                             ]);
                         }
+                    })
+                    ->whereDoestHave("configs", function ($q1) {
+                        $q1->where([["key", "=", "united_to"]]);
                     })->count();
                     if($enxadrista_count > 0){
                         $enxadrista = Enxadrista::whereHas("documentos",function($q1) use($request, $tipo_documento_pais){
@@ -136,6 +139,9 @@ class PlayerRegistrationController extends Controller
                                     ["numero","=",$request->documents[$tipo_documento_pais->tipo_documento->id]],
                                 ]);
                             }
+                        })
+                        ->whereDoesntHave("configs", function ($q1) {
+                            $q1->where([["key", "=", "united_to"]]);
                         })->first();
 
                         $array = [
@@ -185,7 +191,13 @@ class PlayerRegistrationController extends Controller
             return response()->json(["ok" => 0, "error" => 1, "message" => "A data de nascimento parece inválida. Por favor, verifique e tente novamente.", "registred" => 0, "ask" => 0]);
         }
 
-        $temEnxadrista = Enxadrista::where([["name", "=", $nome_corrigido], ["born", "=", $enxadrista->born]])->first();
+        $temEnxadrista = Enxadrista::where([
+            ["name", "=", $nome_corrigido],
+            ["born", "=", $enxadrista->born]
+        ])
+        ->whereDoestHave("configs", function ($q1) {
+            $q1->where([["key", "=", "united_to"]]);
+        })->first();
         if ($temEnxadrista) {
             if ($temEnxadrista->id) {
                 if ($temEnxadrista->clube) {
@@ -426,8 +438,18 @@ class PlayerRegistrationController extends Controller
                 return response()->json(["ok" => 0, "error" => 1, "message" => "A data de nascimento parece inválida. Por favor, verifique e tente novamente.", "registred" => 0, "ask" => 0]);
             }
 
-            if(Enxadrista::where([["name","=",$request->name],["born","=",$enxadrista->born]])->count() > 0){
-                $enxadrista = Enxadrista::where([["name","=",$request->name],["born","=",$enxadrista->born]])->first();
+            if(Enxadrista::where([
+                ["name","=",$request->name],["born","=",$enxadrista->born]
+            ])
+            ->whereDoestHave("configs", function ($q1) {
+                $q1->where([["key", "=", "united_to"]]);
+            })->count() > 0){
+                $enxadrista = Enxadrista::where([
+                    ["name","=",$request->name],["born","=",$enxadrista->born]
+                ])
+                ->whereDoestHave("configs", function ($q1) {
+                    $q1->where([["key", "=", "united_to"]]);
+                })->first();
                 return response()->json([
                     "ok" => 1,
                     "error" => 0,
@@ -458,6 +480,9 @@ class PlayerRegistrationController extends Controller
                         ]);
                     }
                 })
+                ->whereDoestHave("configs", function ($q1) {
+                    $q1->where([["key", "=", "united_to"]]);
+                })
                 ->count();
                 if($enxadrista_count > 0){
                     $enxadrista = Enxadrista::whereHas("documentos",function($q1) use($key, $document){
@@ -472,6 +497,9 @@ class PlayerRegistrationController extends Controller
                                 ["numero","=",$document],
                             ]);
                         }
+                    })
+                    ->whereDoestHave("configs", function ($q1) {
+                        $q1->where([["key", "=", "united_to"]]);
                     })
                     ->first();
 

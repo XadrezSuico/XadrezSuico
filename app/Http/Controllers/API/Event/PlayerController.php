@@ -26,26 +26,32 @@ class PlayerController extends Controller
             $evento = Evento::where([["uuid","=",$uuid]])->first();
 
 
-            $enxadristas = Enxadrista::where([
-            ["id", "like", "%" . $request->input("q") . "%"],
-            ])
-            ->orWhere([
-                ["name", "like", "%" . $request->input("q") . "%"],
-            ])
-            ->orWhere(function($q1) use ($request){
-                $q1->whereHas("documentos",function($q2) use ($request){
-                    $q2->where([
-                        ["numero","=",$request->input("q")]
-                    ]);
+            $enxadristas = Enxadrista::where(function($q1) use ($request){
+                $q1->where([
+                ["id", "like", "%" . $request->input("q") . "%"],
+                ])
+                ->orWhere([
+                    ["name", "like", "%" . $request->input("q") . "%"],
+                ])
+                ->orWhere(function($q1) use ($request){
+                    $q1->whereHas("documentos",function($q2) use ($request){
+                        $q2->where([
+                            ["numero","=",$request->input("q")]
+                        ]);
+                    });
                 });
-            })->orderBy("name", "ASC")->limit(30)->get();
+            })
+            ->whereDoesntHave("configs",function($q1){
+                $q1->where([["key","=","united_to"]]);
+            })
+            ->orderBy("name", "ASC")->limit(30)->get();
 
             $results = array();
             foreach($enxadristas as $enxadrista){
 
                 $rating = $enxadrista->ratingParaEvento($evento->id);
                 $item = array();
-                $item["id"] = $enxadrista->id;
+                $item["id"] = $enxadrista->getId();
                 $item["name"] = $enxadrista->name;
                 $item["birthday"] = $enxadrista->getNascimentoPublico();
                 $item["fide_id"] = ($enxadrista->fide_id) ? intval($enxadrista->fide_id) : null;
@@ -68,18 +74,23 @@ class PlayerController extends Controller
             }
 
 
-            $total = Enxadrista::where([
-                ["id", "like", "%" . $request->input("q") . "%"],
-            ])
-            ->orWhere([
-                ["name", "like", "%" . $request->input("q") . "%"],
-            ])
-            ->orWhere(function($q1) use ($request){
-                $q1->whereHas("documentos",function($q2) use ($request){
-                    $q2->where([
-                        ["numero","=",$request->input("q")]
-                    ]);
-                });
+            $total = Enxadrista::where(function ($q1) use ($request) {
+                $q1->where([
+                    ["id", "like", "%" . $request->input("q") . "%"],
+                ])
+                    ->orWhere([
+                        ["name", "like", "%" . $request->input("q") . "%"],
+                    ])
+                    ->orWhere(function ($q1) use ($request) {
+                        $q1->whereHas("documentos", function ($q2) use ($request) {
+                            $q2->where([
+                                ["numero", "=", $request->input("q")]
+                            ]);
+                        });
+                    });
+            })
+            ->whereDoesntHave("configs", function ($q1) {
+                $q1->where([["key", "=", "united_to"]]);
             })->orderBy("name", "ASC")
             ->count();
 
@@ -97,13 +108,13 @@ class PlayerController extends Controller
 
 
             $count = Enxadrista::where([
-                ["id", "=", $id],
+                ["id", "=", Enxadrista::getStaticId($id)],
             ])->count();
 
             if($count == 0){
                 return response()->json(["ok"=>0,"error"=>1,"message"=>"Enxadrista não encontrado.","httpcode"=>404],404);
             }
-            $enxadrista = Enxadrista::find($id);
+            $enxadrista = Enxadrista::find(Enxadrista::getStaticId($id));
 
             if($enxadrista->estaInscrito($evento->id)){
                 return response()->json(["ok"=>0,"error"=>1,"message"=>"O enxadrista já está inscrito neste evento.","httpcode"=>400],400);
@@ -177,13 +188,13 @@ class PlayerController extends Controller
 
 
             $count = Enxadrista::where([
-                ["id", "=", $id],
+                ["id", "=", Enxadrista::getStaticId($id)],
             ])->count();
 
             if($count == 0){
                 return response()->json(["ok"=>0,"error"=>1,"message"=>"Enxadrista não encontrado.","httpcode"=>404],404);
             }
-            $enxadrista = Enxadrista::find($id);
+            $enxadrista = Enxadrista::find(Enxadrista::getStaticId($id));
 
             $need_update_fields = $this->getNeedUpdateFields($evento,$enxadrista);
             if(count($need_update_fields) == 0){
@@ -361,7 +372,11 @@ class PlayerController extends Controller
                                             ["tipo_documentos_id","=",$tipo_documento_pais->tipo_documento->id],
                                             ["numero","=",$request->documents[$tipo_documento_pais->tipo_documento->id]],
                                             ["enxadrista_id","!=",$enxadrista->id]
-                                        ])->count()){
+                                        ])
+                                        ->whereDoesntHave("configs", function($q1){
+                                            $q1->where([["key","=","united_to"]]);
+                                        })
+                                        ->count()){
                                             return response()->json(["ok"=>0,"error"=>1,"message"=>"O documento '".$tipo_documento_pais->tipo_documento->nome."' informado já está vinculado a outro(a) enxadrista."]);
                                         }
 

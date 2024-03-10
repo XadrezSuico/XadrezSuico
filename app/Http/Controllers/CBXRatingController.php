@@ -10,14 +10,19 @@ class CBXRatingController extends Controller
 
     public function updateRatings()
     {
-        $enxadristas = Enxadrista::where([
-            ["cbx_id", "!=", null],
-            ["cbx_last_update", "<", date("Y-m") . "-01 00:00:00"],
-        ])
-            ->orWhere([
-                ["cbx_id", "!=", null],
-                ["cbx_last_update", "=", null],
-            ])
+        $enxadristas = Enxadrista::where(function($q1){
+                $q1->where([
+                    ["cbx_id", "!=", null],
+                    ["cbx_last_update", "<", date("Y-m") . "-01 00:00:00"],
+                ])
+                ->orWhere([
+                    ["cbx_id", "!=", null],
+                    ["cbx_last_update", "=", null],
+                ]);
+            })
+            ->whereDoesntHave("configs",function($q1){
+                $q1->where([["key","=","united_to"]]);
+            })
             ->limit(5)
             ->get();
         foreach ($enxadristas as $enxadrista) {
@@ -28,7 +33,11 @@ class CBXRatingController extends Controller
     public static function getRating($enxadrista, $show_text = true, $return_enxadrista = false, $save_rating = true){
         $codigo_organizacao = 1;
 
+        if($enxadrista->hasConfig("united_to")){
+            if($show_text) "Enxadrista unido ao cadastro de outro - Não permitido mais a consulta à CBX";
 
+            return;
+        }
 
         if($show_text) echo "Enxadrista #" . $enxadrista->id . " - " . $enxadrista->name;
         // $html = file_get_contents("http://cbx.com.br/jogador/".$enxadrista->cbx_id);

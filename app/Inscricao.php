@@ -441,6 +441,10 @@ class Inscricao extends Model
                         return $registration_config->boolean;
                     case ConfigType::String:
                         return $registration_config->string;
+                    case ConfigType::Date:
+                        return $registration_config->date;
+                    case ConfigType::DateTime:
+                        return $registration_config->datetime;
                 }
             }
 
@@ -490,6 +494,12 @@ class Inscricao extends Model
                 break;
             case ConfigType::String:
                 $registration_config->string = $value;
+                break;
+            case ConfigType::Date:
+                $registration_config->date = $value;
+                break;
+            case ConfigType::DateTime:
+                $registration_config->datetime = $value;
                 break;
         }
 

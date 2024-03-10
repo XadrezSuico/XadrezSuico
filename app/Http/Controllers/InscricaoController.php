@@ -359,19 +359,25 @@ class InscricaoController extends Controller
     {
         $user = Auth::user();
         $evento = Evento::find($id);
-        $enxadristas = Enxadrista::where([
-            ["id", "like", "%" . $request->input("q") . "%"],
-        ])
-        ->orWhere([
-            ["name", "like", "%" . $request->input("q") . "%"],
-        ])
-        ->orWhere(function($q1) use ($request){
-            $q1->whereHas("documentos",function($q2) use ($request){
-                $q2->where([
-                    ["numero","=",$request->input("q")]
-                ]);
+        $enxadristas = Enxadrista::where(function($q0) use ($request){
+            $q0->where([
+                ["id", "like", "%" . $request->input("q") . "%"],
+            ])
+            ->orWhere([
+                ["name", "like", "%" . $request->input("q") . "%"],
+            ])
+            ->orWhere(function($q1) use ($request){
+                $q1->whereHas("documentos",function($q2) use ($request){
+                    $q2->where([
+                        ["numero","=",$request->input("q")]
+                    ]);
+                });
             });
-        })->orderBy("name", "ASC")->limit(30)->get();
+        })
+        ->whereDoesntHave("configs",function($q1){
+            $q1->where([["key","=","united_to"]]);
+        })
+        ->orderBy("name", "ASC")->limit(30)->get();
         $results = array();
         foreach ($enxadristas as $enxadrista) {
             $rating = $enxadrista->ratingParaEvento($evento->id);
@@ -539,7 +545,7 @@ class InscricaoController extends Controller
     public function telav2_conferenciaDados($id,$enxadrista_id)
     {
         $evento = Evento::find($id);
-        $enxadrista = Enxadrista::find($enxadrista_id);
+        $enxadrista = Enxadrista::find(Enxadrista::getStaticId($enxadrista_id));
         if($enxadrista){
             if(
                 !(
@@ -650,8 +656,9 @@ class InscricaoController extends Controller
     public function telav2_buscarDadosEnxadrista($id,$enxadrista_id)
     {
         $evento = Evento::find($id);
-        $enxadrista = Enxadrista::find($enxadrista_id);
-        if($enxadrista){
+        $enxadrista = Enxadrista::find(Enxadrista::getStaticId($enxadrista_id));
+        if($enxadrista) {
+
             $retorno = array();
             $retorno["id"] = $enxadrista->id;
             $retorno["name"] = $enxadrista->name;
@@ -777,7 +784,7 @@ class InscricaoController extends Controller
             return response()->json(["ok" => 0, "error" => 1, "message" => "Você já possui inscrição para este evento!<br/> Categoria: " . $inscricao->categoria->name . "<br/> Caso queira efetuar alguma alteração, favor enviar via email para " . env("EMAIL_ALTERACAO", "circuitoxadrezcascavel@gmail.com") . "."]);
         }
 
-        $enxadrista = Enxadrista::find($request->input("enxadrista_id"));
+        $enxadrista = Enxadrista::find(Enxadrista::getStaticId($request->input("enxadrista_id")));
         $categoria = Categoria::find($request->input("categoria_id"));
         if ($categoria) {
             if ($categoria->idade_minima) {
@@ -1007,6 +1014,9 @@ class InscricaoController extends Controller
                                 ["numero","=",$request->input("tipo_documento_".$tipo_documento_pais->tipo_documento->id)],
                             ]);
                         }
+                    })
+                    ->whereDoesntHave("configs", function ($q1) {
+                        $q1->where([["key", "=", "united_to"]]);
                     })->count();
                     if($temEnxadrista_count > 0){
                         $temEnxadrista = Enxadrista::whereHas("documentos",function($q1) use($request, $tipo_documento_pais){
@@ -1021,7 +1031,11 @@ class InscricaoController extends Controller
                                     ["numero","=",$request->input("tipo_documento_".$tipo_documento_pais->tipo_documento->id)],
                                 ]);
                             }
-                        })->first();
+                        })
+                        ->whereDoesntHave("configs",function($q1){
+                            $q1->where([["key","=","united_to"]]);
+                        })
+                        ->first();
 
                         $array = [
                             "ok"=>0,
@@ -1075,7 +1089,13 @@ class InscricaoController extends Controller
             return response()->json(["ok" => 0, "error" => 1, "message" => "A data de nascimento parece inválida. Por favor, verifique e tente novamente.", "registred" => 0, "ask" => 0]);
         }
 
-        $temEnxadrista = Enxadrista::where([["name", "=", $nome_corrigido], ["born", "=", $enxadrista->born]])->first();
+        $temEnxadrista = Enxadrista::where([
+            ["name", "=", $nome_corrigido],
+            ["born", "=", $enxadrista->born]
+        ])
+        ->whereDoesntHave("configs", function ($q1) {
+            $q1->where([["key", "=", "united_to"]]);
+        })->first();
         if ($temEnxadrista) {
             if ($temEnxadrista->id) {
 
@@ -1232,7 +1252,7 @@ class InscricaoController extends Controller
     {
 
         $evento = Evento::find($evento_id);
-        $enxadrista = Enxadrista::find($enxadrista_id);
+        $enxadrista = Enxadrista::find(Enxadrista::getStaticId($enxadrista_id));
         if(!$enxadrista){
             return response()->json(["ok" => 0, "error" => 1, "message" => "O cadastro do enxadrista não foi encontrado.", "registred" => 0, "ask" => 0]);
         }
@@ -1386,6 +1406,9 @@ class InscricaoController extends Controller
                     ->where([
                         ["id","!=",$enxadrista->id]
                     ])
+                    ->whereDoesntHave("configs", function ($q1) {
+                        $q1->where([["key", "=", "united_to"]]);
+                    })
                     ->count();
                     if($temEnxadrista_count > 0){
                         $temEnxadrista = Enxadrista::whereHas("documentos",function($q1) use($request, $tipo_documento_pais,$documento_valor){
@@ -1404,6 +1427,9 @@ class InscricaoController extends Controller
                         ->where([
                             ["id","!=",$enxadrista->id]
                         ])
+                        ->whereDoesntHave("configs", function ($q1) {
+                            $q1->where([["key", "=", "united_to"]]);
+                        })
                         ->first();
                         $array = [
                             "ok"=>0,
@@ -1464,13 +1490,19 @@ class InscricaoController extends Controller
                 ["name", "=", $nome_corrigido],
                 ["born", "=", $enxadrista->born],
                 ["id","!=",$enxadrista->id]
-            ])->count();
+            ])
+            ->whereDoesntHave("configs", function ($q1) {
+                $q1->where([["key", "=", "united_to"]]);
+            })->count();
             if ($temEnxadrista_count > 0) {
                 $temEnxadrista = Enxadrista::where([
                     ["name", "=", $nome_corrigido],
                     ["born", "=", $enxadrista->born],
                     ["id","!=",$enxadrista->id]
-                ])->first();
+                ])
+                ->whereDoesntHave("configs", function ($q1) {
+                    $q1->where([["key", "=", "united_to"]]);
+                })->first();
 
                 if ($temEnxadrista->estaInscrito($evento->id)) {
                         return response()->json([
@@ -1627,6 +1659,18 @@ class InscricaoController extends Controller
         $inscricao = Inscricao::find($inscricao_id);
         if ($inscricao) {
 
+            if($inscricao->enxadrista->hasConfig("united_to")){
+                $enxadrista = Enxadrista::find(Enxadrista::getStaticId($inscricao->enxadrista->getConfig("united_to",true)));
+                if($enxadrista->estaInscrito($enxadrista->getId())){
+                    return response()->json(["ok"=>0,"error"=>1,"message"=>"Esta inscrição pertence a um cadastro unido e o cadastro correto já se encontra inscrito neste evento. Confirme o cadastro correto."]);
+                }else{
+                    $inscricao->enxadrista_id = $enxadrista->getId();
+                    $inscricao->save();
+
+                    $inscricao = Inscricao::find($inscricao_id);
+                }
+            }
+
             $retorno = array();
             $retorno["id"] = $inscricao->enxadrista->id;
             $retorno["name"] = $inscricao->enxadrista->name;
@@ -1701,6 +1745,13 @@ class InscricaoController extends Controller
                 return response()->json(["ok" => 0, "error" => 1, "message" => "A inscrição já está confirmada!"]);
             }
             $enxadrista = $inscricao->enxadrista;
+            if ($inscricao->enxadrista->hasConfig("united_to")) {
+                $enxadrista = Enxadrista::find(Enxadrista::getStaticId($inscricao->enxadrista->getConfig("united_to", true)));
+                if ($enxadrista->estaInscrito($enxadrista->getId())) {
+                    return response()->json(["ok" => 0, "error" => 1, "message" => "Esta inscrição pertence a um cadastro unido e o cadastro correto já se encontra inscrito neste evento. Confirme o cadastro correto."]);
+                }
+            }
+
             $torneio = null;
             if ($request->input("categoria_id") != $inscricao->categoria_id) {
                 $evento = Evento::find($request->input("evento_id"));

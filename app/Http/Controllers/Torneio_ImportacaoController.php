@@ -96,6 +96,7 @@ class Torneio_ImportacaoController extends Controller
                     return $this->setResults_tipo_exportacao_0($file, $evento_id, $torneio_id);
                     break;
                 case 1:
+                case 7:
                     return $this->setResults_tipo_exportacao_1($file, $evento_id, $torneio_id);
             }
         }
@@ -170,11 +171,11 @@ class Torneio_ImportacaoController extends Controller
                 // print_r($line);echo "<br/>";
                 if (isset($fields["ID"])) {
                     $inscricao = Inscricao::where([
-                        ["enxadrista_id", "=", $line[($fields["ID"])]],
+                        ["enxadrista_id", "=", Enxadrista::getStaticId($line[($fields["ID"])])],
                         ["torneio_id", "=", $torneio->id],
                     ])
                         ->first();
-                    $enxadrista = Enxadrista::find($line[($fields["ID"])]);
+                    $enxadrista = Enxadrista::find(Enxadrista::getStaticId($line[($fields["ID"])]));
                     if ($enxadrista) {
                         $retornos[] = date("d/m/Y H:i:s") . " - Enxadrista de Código #" . $enxadrista->id . " - " . $enxadrista->name;
                     } else {
@@ -469,11 +470,11 @@ class Torneio_ImportacaoController extends Controller
                 // print_r($line);echo "<br/>";
                 if (isset($fields["Fonte"])) {
                     $inscricao = Inscricao::where([
-                        ["enxadrista_id", "=", $line[($fields["Fonte"])]],
+                        ["enxadrista_id", "=", Enxadrista::getStaticId($line[($fields["Fonte"])])],
                         ["torneio_id", "=", $torneio->id],
                     ])
                         ->first();
-                    $enxadrista = Enxadrista::find($line[($fields["Fonte"])]);
+                    $enxadrista = Enxadrista::find(Enxadrista::getStaticId($line[($fields["Fonte"])]));
                     if ($enxadrista) {
                         $retornos[] = date("d/m/Y H:i:s") . " - Enxadrista de Código #" . $enxadrista->id . " - " . $enxadrista->name;
                     } else {
@@ -657,11 +658,11 @@ class Torneio_ImportacaoController extends Controller
                 // print_r($line);echo "<br/>";
                 if (isset($fields["ID"])) {
                     $inscricao = Inscricao::where([
-                        ["enxadrista_id", "=", $line[($fields["ID"])]],
+                        ["enxadrista_id", "=", Enxadrista::getStaticId($line[($fields["ID"])])],
                         ["torneio_id", "=", $torneio->id],
                     ])
                         ->first();
-                    $enxadrista = Enxadrista::find($line[($fields["ID"])]);
+                    $enxadrista = Enxadrista::find(Enxadrista::getStaticId($line[($fields["ID"])]));
                     if ($enxadrista) {
                         $retornos[] = date("d/m/Y H:i:s") . " - Enxadrista de Código #" . $enxadrista->id . " - " . $enxadrista->name;
                     } else {
@@ -991,17 +992,17 @@ class Torneio_ImportacaoController extends Controller
 
                         $all_enxadristas_found = true;
                         // Busca do Enxadrista A
-                        $enxadrista_a_count = Enxadrista::where([["id","=",$line[($fields["ID-B"])]]])->count();
+                        $enxadrista_a_count = Enxadrista::where([["id","=", Enxadrista::getStaticId($line[($fields["ID-B"])])]])->count();
                         if($enxadrista_a_count > 0){
-                            $enxadrista_a = Enxadrista::find($line[($fields["ID-B"])]);
+                            $enxadrista_a = Enxadrista::find(Enxadrista::getStaticId($line[($fields["ID-B"])]));
                         }else{
                             $all_enxadristas_found = false;
                         }
                         if($line[($fields["ID-N"])] > 0){
                             // Busca do Enxadrista B
-                            $enxadrista_b_count = Enxadrista::where([["id","=",$line[($fields["ID-N"])]]])->count();
+                            $enxadrista_b_count = Enxadrista::where([["id","=", Enxadrista::getStaticId($line[($fields["ID-N"])])]])->count();
                             if($enxadrista_b_count > 0){
-                                $enxadrista_b = Enxadrista::find($line[($fields["ID-N"])]);
+                                $enxadrista_b = Enxadrista::find(Enxadrista::getStaticId($line[($fields["ID-N"])]));
                             }else{
                                 $all_enxadristas_found = false;
                             }

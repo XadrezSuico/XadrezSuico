@@ -52,6 +52,7 @@ class EnxadristaController extends Controller
         }
 
         $enx = new Enxadrista;
+
         $enx->setBorn($request->input("born"));
 
         // Algoritmo para eliminar os problemas com espaçamentos duplos ou até triplos.
@@ -238,7 +239,7 @@ class EnxadristaController extends Controller
 
         if(!$enxadrista->lbx_id){
             $client = new Client;
-            $response = $client->get(env("LBX_RATING_SERVER")."//rating/search/byName?search=" . $enxadrista->name);
+            $response = $client->get(env("LBX_RATING_SERVER")."/rating/search/byName?search=" . $enxadrista->name);
             $html = (string) $response->getBody();
             $json_lbx = json_decode($html);
         }else{
@@ -269,6 +270,15 @@ class EnxadristaController extends Controller
         }
 
         $enxadrista = Enxadrista::find($id);
+
+
+        if ($enx->hasConfig("united_to")) {
+            $messageBag = new MessageBag;
+            $messageBag->add("type", "danger");
+            $messageBag->add("alerta", "Este cadastro foi unido a outro cadastro e com isso não é permitida mais a edição.");
+
+            return redirect()->back()->withErrors($messageBag);
+        }
 
         $documentos = array();
 
@@ -495,13 +505,26 @@ class EnxadristaController extends Controller
 
         $enxadrista = Enxadrista::find($id);
 
+
+        if ($enx->hasConfig("united_to")) {
+            $messageBag = new MessageBag;
+            $messageBag->add("type", "danger");
+            $messageBag->add("alerta", "Este cadastro foi unido a outro cadastro e com isso não é permitida a exclusão.");
+
+            return redirect()->back()->withErrors($messageBag);
+        }
+
         if ($enxadrista->isDeletavel()) {
             foreach($enxadrista->documentos->all() as $documento){
                 $documento->delete();
             }
             $enxadrista->delete();
         }
-        return redirect("/enxadrista");
+        $messageBag = new MessageBag;
+        $messageBag->add("type", "success");
+        $messageBag->add("alerta", "Enxadrista removido com sucesso.");
+
+        return redirect("/enxadrista")->withErrors($messageBag);
     }
 
     public function downloadBaseCompleta()
@@ -542,32 +565,41 @@ class EnxadristaController extends Controller
         $enxadristaBorn = new Enxadrista();
 
         $recordsTotal = Enxadrista::count();
-        $enxadristas = Enxadrista::where([["name", "like", "%" . $requisicao["search"]["value"] . "%"]]);
-        $enxadristas->orWhere([["id", "=", $requisicao["search"]["value"]]]);
-        $enxadristas->orWhere(function ($q1) use ($requisicao) {
-            $q1->whereHas("sexo", function ($q2) use ($requisicao) {
-                $q2->where([["name", "like", "%" . $requisicao["search"]["value"] . "%"]]);
-                $q2->orWhere([["abbr", "like", "%" . $requisicao["search"]["value"] . "%"]]);
+        $enxadristas = Enxadrista::where(function($q1) use ($requisicao, $enxadristaBorn){
+            $q1->where([["name", "like", "%" . $requisicao["search"]["value"] . "%"]]);
+            $q1->orWhere([["id", "=", $requisicao["search"]["value"]]]);
+            $q1->orWhere(function ($q1) use ($requisicao) {
+                $q1->whereHas("sexo", function ($q2) use ($requisicao) {
+                    $q2->where([["name", "like", "%" . $requisicao["search"]["value"] . "%"]]);
+                    $q2->orWhere([["abbr", "like", "%" . $requisicao["search"]["value"] . "%"]]);
+                });
             });
-        });
 
-        $enxadristaBorn->setBorn($requisicao["search"]["value"]);
-        if ($enxadristaBorn->getBorn()) {
-            $enxadristas->orWhere([["born", "=", $enxadristaBorn->getBorn()]]);
-        }
+            $enxadristaBorn->setBorn($requisicao["search"]["value"]);
+            if ($enxadristaBorn->getBorn()) {
+                $q1->orWhere([["born", "=", $enxadristaBorn->getBorn()]]);
+            }
 
-        $enxadristas->orWhere([["fide_id", "=", $requisicao["search"]["value"]]]);
-        $enxadristas->orWhere([["cbx_id", "=", $requisicao["search"]["value"]]]);
-        $enxadristas->orWhere([["lbx_id", "=", $requisicao["search"]["value"]]]);
-        $enxadristas->orWhere(function ($q1) use ($requisicao) {
-            $q1->whereHas("cidade", function ($q2) use ($requisicao) {
-                $q2->where([["name", "like", "%" . $requisicao["search"]["value"] . "%"]]);
+            $q1->orWhere([["fide_id", "=", $requisicao["search"]["value"]]]);
+            $q1->orWhere([["cbx_id", "=", $requisicao["search"]["value"]]]);
+            $q1->orWhere([["lbx_id", "=", $requisicao["search"]["value"]]]);
+            $q1->orWhere(function ($q1) use ($requisicao) {
+                $q1->whereHas("cidade", function ($q2) use ($requisicao) {
+                    $q2->where([["name", "like", "%" . $requisicao["search"]["value"] . "%"]]);
+                });
             });
-        });
-        $enxadristas->orWhere(function ($q1) use ($requisicao) {
-            $q1->whereHas("clube", function ($q2) use ($requisicao) {
-                $q2->where([["name", "like", "%" . $requisicao["search"]["value"] . "%"]]);
+            $q1->orWhere(function ($q1) use ($requisicao) {
+                $q1->whereHas("clube", function ($q2) use ($requisicao) {
+                    $q2->where([["name", "like", "%" . $requisicao["search"]["value"] . "%"]]);
+                });
             });
+        })
+        ->where(function($q0) use ($user){
+            if(!$user->hasPermissionGlobal()){
+                $q0->whereDoesntHave("configs", function ($q1) {
+                    $q1->where([["key", "=", "united_to"]]);
+                });
+            }
         });
 
         switch ($requisicao["order"][0]["column"]) {
@@ -601,8 +633,19 @@ class EnxadristaController extends Controller
         $retorno = array("draw" => $requisicao["draw"], "recordsTotal" => $recordsTotal, "recordsFiltered" => $total, "data" => array(), "requisicao" => $requisicao);
         foreach ($enxadristas->get() as $enxadrista) {
             $p = array();
-            $p[0] = $enxadrista->id;
-            $p[1] = $enxadrista->name;
+            if ($enxadrista->hasConfig("united_to")) {
+                $p[0] = "<span style='text-decoration: line-through; color: red;'>".$enxadrista->id."</span>";
+            }else {
+                $p[0] = $enxadrista->id;
+            }
+            if($enxadrista->hasConfig("united_to")) {
+                $p[1] = "<span style='text-decoration: line-through; color: red;'>" . $enxadrista-> name . "</span>";
+                $new_enxadrista = Enxadrista::find($enxadrista->getConfig("united_to",true));
+                $p[1] .= "<br/>Cadastro unido ao cadastro <strong>#{$new_enxadrista->id} - {$new_enxadrista->name}</strong>";
+            }else{
+
+                $p[1] = $enxadrista->name;
+            }
 
             $p[2] = $enxadrista->getBorn();
 
@@ -628,8 +671,10 @@ class EnxadristaController extends Controller
             }
 
             $p[7] = "";
-            if ($permitido_edicao) {
+            if ($permitido_edicao && !$enxadrista->hasConfig("united_to")) {
                 $p[7] .= '<a href="' . url("/enxadrista/edit/" . $enxadrista->id) . '" title="Editar Enxadrista: ' . $enxadrista->id . ' ' . $enxadrista->name . '" class="btn btn-success btn-sm" data-toggle="tooltip" data-original-title="Editar Enxadrista"><i class="fa fa-edit"></i></a>';
+            }elseif($enxadrista->hasConfig("united_to")){
+                $p[7] .= '<a href="' . url("/enxadrista/edit/" . $enxadrista->id) . '" title="Visualizar Cadastro Unido de Enxadrista: ' . $enxadrista->id . ' ' . $enxadrista->name . '" class="btn btn-success btn-sm" data-toggle="tooltip" data-original-title="Visualizar Cadastro Unido de Enxadrista"><i class="fa fa-eye"></i></a>';
             }
 
             if ($enxadrista->isDeletavel() && $permitido_edicao) {

@@ -609,6 +609,17 @@ class InscricaoGerenciarController extends Controller
         usort($inscritos, array("App\Http\Controllers\InscricaoGerenciarController", "cmp_obj"));
 
         foreach ($inscritos as $inscricao) {
+            if($inscricao->enxadrista->hasConfig("united_to")){
+                $enxadrista = Enxadrista::find($inscricao->enxadrista->getId());
+
+                if(!$enxadrista->estaInscrito($inscricao->torneio->evento->id)){
+                    $inscricao->enxadrista_id = $enxadrista->getId();
+                    $inscricao->save();
+
+                    $inscricao = Inscricao::find($inscricao->id);
+                }
+            }
+
             $texto .= $i++ . ";";
             $texto .= $inscricao->enxadrista->name . ";";
             if($evento->calcula_cbx){
@@ -680,6 +691,16 @@ class InscricaoGerenciarController extends Controller
 
         $inscritos = array();
         foreach ($inscricoes as $inscricao) {
+            if ($inscricao->enxadrista->hasConfig("united_to")) {
+                $enxadrista = Enxadrista::find($inscricao->enxadrista->getId());
+
+                if (!$enxadrista->estaInscrito($inscricao->torneio->evento->id)) {
+                    $inscricao->enxadrista_id = $enxadrista->getId();
+                    $inscricao->save();
+
+                    $inscricao = Inscricao::find($inscricao->id);
+                }
+            }
             $inscritos[] = $inscricao;
         }
         usort($inscritos, array("App\Http\Controllers\InscricaoGerenciarController", "cmp_obj"));
@@ -756,6 +777,16 @@ class InscricaoGerenciarController extends Controller
 
         $inscritos = array();
         foreach ($inscricoes as $inscricao) {
+            if ($inscricao->enxadrista->hasConfig("united_to")) {
+                $enxadrista = Enxadrista::find($inscricao->enxadrista->getId());
+
+                if (!$enxadrista->estaInscrito($inscricao->torneio->evento->id)) {
+                    $inscricao->enxadrista_id = $enxadrista->getId();
+                    $inscricao->save();
+
+                    $inscricao = Inscricao::find($inscricao->id);
+                }
+            }
             $inscritos[] = $inscricao;
         }
         usort($inscritos, array("App\Http\Controllers\InscricaoGerenciarController", "cmp_obj"));
@@ -832,6 +863,16 @@ class InscricaoGerenciarController extends Controller
 
         $inscritos = array();
         foreach ($inscricoes as $inscricao) {
+            if ($inscricao->enxadrista->hasConfig("united_to")) {
+                $enxadrista = Enxadrista::find($inscricao->enxadrista->getId());
+
+                if (!$enxadrista->estaInscrito($inscricao->torneio->evento->id)) {
+                    $inscricao->enxadrista_id = $enxadrista->getId();
+                    $inscricao->save();
+
+                    $inscricao = Inscricao::find($inscricao->id);
+                }
+            }
             $inscritos[] = $inscricao;
         }
         usort($inscritos, array("App\Http\Controllers\InscricaoGerenciarController", "cmp_obj"));
@@ -907,6 +948,16 @@ class InscricaoGerenciarController extends Controller
 
         $inscritos = array();
         foreach ($inscricoes as $inscricao) {
+            if ($inscricao->enxadrista->hasConfig("united_to")) {
+                $enxadrista = Enxadrista::find($inscricao->enxadrista->getId());
+
+                if (!$enxadrista->estaInscrito($inscricao->torneio->evento->id)) {
+                    $inscricao->enxadrista_id = $enxadrista->getId();
+                    $inscricao->save();
+
+                    $inscricao = Inscricao::find($inscricao->id);
+                }
+            }
             $inscritos[] = $inscricao;
         }
         usort($inscritos, array("App\Http\Controllers\InscricaoGerenciarController", "cmp_obj"));
@@ -982,6 +1033,16 @@ class InscricaoGerenciarController extends Controller
 
         $inscritos = array();
         foreach ($inscricoes as $inscricao) {
+            if ($inscricao->enxadrista->hasConfig("united_to")) {
+                $enxadrista = Enxadrista::find($inscricao->enxadrista->getId());
+
+                if (!$enxadrista->estaInscrito($inscricao->torneio->evento->id)) {
+                    $inscricao->enxadrista_id = $enxadrista->getId();
+                    $inscricao->save();
+
+                    $inscricao = Inscricao::find($inscricao->id);
+                }
+            }
             $inscritos[] = $inscricao;
         }
         usort($inscritos, array("App\Http\Controllers\InscricaoGerenciarController", "cmp_obj"));
@@ -1071,6 +1132,16 @@ class InscricaoGerenciarController extends Controller
 
         $inscritos = array();
         foreach ($inscricoes as $inscricao) {
+            if ($inscricao->enxadrista->hasConfig("united_to")) {
+                $enxadrista = Enxadrista::find($inscricao->enxadrista->getId());
+
+                if (!$enxadrista->estaInscrito($inscricao->torneio->evento->id)) {
+                    $inscricao->enxadrista_id = $enxadrista->getId();
+                    $inscricao->save();
+
+                    $inscricao = Inscricao::find($inscricao->id);
+                }
+            }
             $inscritos[] = $inscricao;
         }
         usort($inscritos, array("App\Http\Controllers\InscricaoGerenciarController", "cmp_obj"));
@@ -1170,6 +1241,16 @@ class InscricaoGerenciarController extends Controller
 
         $inscritos = array();
         foreach ($inscricoes as $inscricao) {
+            if ($inscricao->enxadrista->hasConfig("united_to")) {
+                $enxadrista = Enxadrista::find($inscricao->enxadrista->getId());
+
+                if (!$enxadrista->estaInscrito($inscricao->torneio->evento->id)) {
+                    $inscricao->enxadrista_id = $enxadrista->getId();
+                    $inscricao->save();
+
+                    $inscricao = Inscricao::find($inscricao->id);
+                }
+            }
             $inscritos[] = $inscricao;
         }
         usort($inscritos, array("App\Http\Controllers\InscricaoGerenciarController", "cmp_obj"));
@@ -1453,6 +1534,8 @@ class InscricaoGerenciarController extends Controller
             return response()->json(["ok" => 0, "error" => 1, "message" => "Um dos campos obrigatórios não está preenchido. Por favor, verifique e envie novamente!<br/><br/><strong>Observação</strong>: TODOS os Campos com <strong>*</strong> SÃO OBRIGATÓRIOS!", "registred" => 0]);
         }
 
+        $enxadrista_id = Enxadrista::getStaticId($request->input("enxadrista_id"));
+
         $inscricao = new Inscricao;
         $torneio = null;
         $evento = Evento::find($request->input("evento_id"));
@@ -1479,18 +1562,18 @@ class InscricaoGerenciarController extends Controller
         if (!$torneio) {
             return response()->json(["ok" => 0, "error" => 1, "message" => "Ocorreu um erro inesperado de pesquisa de Torneio. Por favor, tente novamente mais tarde."]);
         }
-        $temInscricao_count = $evento->torneios()->whereHas("inscricoes", function ($q) use ($request) {
-            $q->where([["enxadrista_id", "=", $request->input("enxadrista_id")]]);
+        $temInscricao_count = $evento->torneios()->whereHas("inscricoes", function ($q) use ($request, $enxadrista_id) {
+            $q->where([["enxadrista_id", "=", $enxadrista_id]]);
         })->count();
         if ($temInscricao_count > 0) {
-            $temInscricao = $evento->torneios()->whereHas("inscricoes", function ($q) use ($request) {
-                $q->where([["enxadrista_id", "=", $request->input("enxadrista_id")]]);
+            $temInscricao = $evento->torneios()->whereHas("inscricoes", function ($q) use ($request, $enxadrista_id) {
+                $q->where([["enxadrista_id", "=", $enxadrista_id]]);
             })->first();
-            $inscricao = Inscricao::where([["enxadrista_id", "=", $request->input("enxadrista_id")], ["torneio_id", "=", $temInscricao->id]])->first();
+            $inscricao = Inscricao::where([["enxadrista_id", "=", $enxadrista_id], ["torneio_id", "=", $temInscricao->id]])->first();
             return response()->json(["ok" => 0, "error" => 1, "message" => "Você já possui inscrição para este evento!<br/> Categoria: " . $inscricao->categoria->name . "<br/> Caso queira efetuar alguma alteração, favor enviar via email para circuitoxadrezcascavel@gmail.com."]);
         }
 
-        $enxadrista = Enxadrista::find($request->input("enxadrista_id"));
+        $enxadrista = Enxadrista::find($enxadrista_id);
         $categoria = Categoria::find($request->input("categoria_id"));
         if ($categoria) {
             if ($categoria->idade_minima) {
@@ -1785,7 +1868,11 @@ class InscricaoGerenciarController extends Controller
 
         $enxadristas = Enxadrista::where([
             ["name", "like", "%" . $request->input("q") . "%"],
-        ])->orderBy("name", "ASC")->get();
+        ])
+        ->whereDoesntHave("configs",function($q1){
+            $q1->where([["key","=","united_to"]]);
+        })
+        ->orderBy("name", "ASC")->get();
         $results = array();
         foreach ($enxadristas as $enxadrista) {
             if ($enxadrista->estaInscrito($request->input("evento_id"))) {
@@ -1810,7 +1897,7 @@ class InscricaoGerenciarController extends Controller
             return response()->json(["ok" => 0, "error" => 1, "message" => "Você não possui permissão para fazer isto.", "registred" => 0]);
         }
 
-        $enxadrista = Enxadrista::find($enxadrista_id);
+        $enxadrista = Enxadrista::find(Enxadrista::getStaticId($enxadrista_id));
         if ($enxadrista) {
             if ($enxadrista->clube) {
                 return response()->json(["ok" => 1, "error" => 0, "cidade" => ["id" => $enxadrista->cidade->id, "name" => $enxadrista->cidade->name], "clube" => ["id" => $enxadrista->clube->id, "name" => $enxadrista->clube->getName()]]);
@@ -1834,7 +1921,7 @@ class InscricaoGerenciarController extends Controller
             return response()->json(["results" => [], "pagination" => true]);
         }
 
-        $enxadrista = Enxadrista::find($request->input("enxadrista_id"));
+        $enxadrista = Enxadrista::find(Enxadrista::getStaticId($request->input("enxadrista_id")));
         $categorias = $evento->categorias()->whereHas("categoria", function ($QUERY) use ($request, $enxadrista) {
             $QUERY->where([
                 ["name", "like", "%" . $request->input("q") . "%"],
@@ -2000,6 +2087,16 @@ class InscricaoGerenciarController extends Controller
 
         $inscricao = Inscricao::find($inscricao_id);
         if ($inscricao) {
+            if ($inscricao->enxadrista->hasConfig("united_to")) {
+                $enxadrista = Enxadrista::find($inscricao->enxadrista->getId());
+
+                if (!$enxadrista->estaInscrito($inscricao->torneio->evento->id)) {
+                    $inscricao->enxadrista_id = $enxadrista->getId();
+                    $inscricao->save();
+
+                    $inscricao = Inscricao::find($inscricao->id);
+                }
+            }
             if ($inscricao->clube) {
                 return response()->json(["ok" => 1, "error" => 0, "enxadrista" => ["id" => $inscricao->enxadrista->id], "cidade" => ["id" => $inscricao->cidade->id, "name" => $inscricao->cidade->name], "categoria" => ["id" => $inscricao->categoria->id, "name" => $inscricao->categoria->name], "clube" => ["id" => $inscricao->clube->id, "name" => $inscricao->clube->getName()]]);
             } else {
@@ -2036,6 +2133,16 @@ class InscricaoGerenciarController extends Controller
         }
 
         $inscricao = Inscricao::find($request->input("inscricao_id"));
+        if ($inscricao->enxadrista->hasConfig("united_to")) {
+            $enxadrista = Enxadrista::find($inscricao->enxadrista->getId());
+
+            if (!$enxadrista->estaInscrito($inscricao->torneio->evento->id)) {
+                $inscricao->enxadrista_id = $enxadrista->getId();
+                $inscricao->save();
+
+                $inscricao = Inscricao::find($inscricao->id);
+            }
+        }
         if (!$inscricao) {
             return response()->json(["ok" => 0, "error" => 1, "message" => "Não existe um inscrição com o código informado!"]);
         }
@@ -2091,7 +2198,7 @@ class InscricaoGerenciarController extends Controller
         $inscricao->save();
 
         if ($request->has("atualizar_cadastro")) {
-            $enxadrista = Enxadrista::find($inscricao->enxadrista_id);
+            $enxadrista = Enxadrista::find($inscricao->enxadrista->getId());
             $enxadrista->cidade_id = $inscricao->cidade_id;
             if ($request->has("clube_id")) {
                 if ($request->input("clube_id") > 0) {

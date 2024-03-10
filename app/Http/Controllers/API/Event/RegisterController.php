@@ -142,7 +142,7 @@ class RegisterController extends Controller
                 return response()->json(["ok" => 0, "error" => 1, "message" => "Você já possui inscrição para este evento!<br/> Categoria: " . $inscricao->categoria->name . "<br/> Caso queira efetuar alguma alteração, favor enviar via email para " . env("EMAIL_ALTERACAO", "circuitoxadrezcascavel@gmail.com") . "."]);
             }
 
-            $enxadrista = Enxadrista::find($request->input("player_id"));
+            $enxadrista = Enxadrista::find(Enxadrista::getStaticId($request->input("player_id")));
             $categoria = Categoria::find($request->input("category_id"));
             if ($categoria) {
                 if ($categoria->idade_minima) {

@@ -385,7 +385,7 @@ class Evento extends Model
     public function getRegraRating($enxadrista_id)
     {
         $evento = $this;
-        $enxadrista = Enxadrista::find($enxadrista_id);
+        $enxadrista = Enxadrista::find(Enxadrista::getStaticId($enxadrista_id));
         return TipoRatingRegras::where([
             ["tipo_ratings_id", "=", $evento->tipo_rating->tipo_ratings_id],
         ])
@@ -468,7 +468,7 @@ class Evento extends Model
         $total = 0;
         $evento = $this;
         $inscricao = Inscricao::where([
-            ["enxadrista_id", "=", $enxadrista_id],
+            ["enxadrista_id", "=", Enxadrista::getStaticId($enxadrista_id)],
         ])
             ->whereHas("torneio", function ($q1) use ($evento) {
                 $q1->where("evento_id", "=", $evento->id);

@@ -25,7 +25,9 @@ class GerenciadorVinculosFederativosController extends Controller
             $user->hasPermissionGlobalbyPerfil([10])
         ) {
             if(env("ENTITY_DOMAIN",NULL) == "fexpar.com.br"){
-                $enxadristas = Enxadrista::all();
+                $enxadristas = Enxadrista::whereDoesntHave("configs",function($q1){
+                    $q1->where([["key","=","united_to"]]);
+                })->get();
 
                 $type = null;
                 if($request->has("type")){
@@ -273,6 +275,14 @@ class GerenciadorVinculosFederativosController extends Controller
                     break;
             }
         }
+        $enxadristas->where(function ($q1) {
+            $q1->whereDoesntHave("configs", function ($q2) {
+                $q2->where([["key", "=", "united_to"]]);
+            });
+            $q1->orWhereHas("vinculos", function ($q2) {
+                $q2->where([["ano", "=", date("Y")]]);
+            });
+        });
 
         switch ($requisicao["order"][0]["column"]) {
             case 1:
@@ -303,8 +313,19 @@ class GerenciadorVinculosFederativosController extends Controller
         $retorno = array("draw" => $requisicao["draw"], "recordsTotal" => $recordsTotal, "recordsFiltered" => $total, "data" => array(), "requisicao" => $requisicao);
         foreach ($enxadristas->get() as $enxadrista) {
             $p = array();
-            $p[0] = $enxadrista->id;
-            $p[1] = $enxadrista->name;
+            if ($enxadrista->hasConfig("united_to")) {
+                $p[0] = "<span style='text-decoration: line-through; color: red;'>" . $enxadrista->id . "</span>";
+            } else {
+                $p[0] = $enxadrista->id;
+            }
+            if ($enxadrista->hasConfig("united_to")) {
+                $p[1] = "<span style='text-decoration: line-through; color: red;'>" . $enxadrista->name . "</span>";
+                $new_enxadrista = Enxadrista::find($enxadrista->getConfig("united_to", true));
+                $p[1] .= "<br/>Cadastro unido ao cadastro <strong>#{$new_enxadrista->id} - {$new_enxadrista->name}</strong>";
+            } else {
+
+                $p[1] = $enxadrista->name;
+            }
 
             $p[2] = $enxadrista->getBorn();
 
