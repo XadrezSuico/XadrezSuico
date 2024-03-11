@@ -3,9 +3,9 @@
 @section("title", "Visualizar Classificados - Evento: ".$evento->name)
 
 @section('content_header')
-  <h1>Visualizar Premiados</h1>
-  <h2>Evento: {{$evento->id}} - {{$evento->name}}</h2>
-  <h2>Classificador: {{$xdzsc_classificador->id}} - Para Evento: {{$xdzsc_classificador->event->id}} - {{$xdzsc_classificador->event->name}}</h2>
+  <h1>Visualizar Classificados</h1>
+  <h4>Evento: {{$evento->id}} - {{$evento->name}}</h4>
+  <h4>Classificador: {{$xdzsc_classificador->id}} - Para Evento: {{$xdzsc_classificador->event->id}} - {{$xdzsc_classificador->event->name}}</h4>
 @stop
 
 
