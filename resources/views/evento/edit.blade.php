@@ -914,7 +914,7 @@
 										<select name="criterio_desempate_id" id="criterio_desempate_id" class="form-control width-100">
 											<option value="">--- Selecione ---</option>
 											@foreach($criterios_desempate as $criterio_desempate)
-												<option value="{{$criterio_desempate->id}}">{{$criterio_desempate->id}} - {{$criterio_desempate->name}}</option>
+												<option value="{{$criterio_desempate->id}}">{{$criterio_desempate->id}} - {{$criterio_desempate->name}} @if($criterio_desempate->sm_code) [{{$criterio_desempate->sm_code}}] @endif</option>
 											@endforeach
 										</select>
 									</div>
