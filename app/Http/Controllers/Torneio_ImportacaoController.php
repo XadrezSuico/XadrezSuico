@@ -222,7 +222,7 @@ class Torneio_ImportacaoController extends Controller
 
                             $categoria = $torneio->categorias()->whereHas("categoria", function ($q1) use ($line, $fields) {
                                 $q1->where([["code", "=", $line[($fields["Gr"])]]]);
-                            })->first();
+                            })->first()->categoria;
 
                             $inscricao->categoria_id = $categoria->id;
                             $inscricao->save();
@@ -241,7 +241,7 @@ class Torneio_ImportacaoController extends Controller
 
                             $categoria = $torneio->categorias()->whereHas("categoria", function ($q1) use ($line, $fields) {
                                 $q1->where([["code", "=", $line[($fields["Gr"])]]]);
-                            })->first();
+                            })->first()->categoria;
 
                             if ($categoria) {
                                 $retornos[] = date("d/m/Y H:i:s") . " - Efetuando inscrição...";
@@ -575,7 +575,7 @@ class Torneio_ImportacaoController extends Controller
 
                             $categoria = $torneio->categorias()->whereHas("categoria", function ($q1) use ($line, $fields) {
                                 $q1->where([["code", "=", $line[($fields["Gr"])]]]);
-                            })->first();
+                            })->first()->categoria;
 
                             $inscricao->categoria_id = $categoria->id;
                             $inscricao->save();
@@ -594,7 +594,7 @@ class Torneio_ImportacaoController extends Controller
 
                             $categoria = $torneio->categorias()->whereHas("categoria", function ($q1) use ($line, $fields) {
                                 $q1->where([["code", "=", $line[($fields["Gr"])]]]);
-                            })->first();
+                            })->first()->categoria;
 
                             if ($categoria) {
                                 $retornos[] = date("d/m/Y H:i:s") . " - Efetuando inscrição...";
@@ -805,7 +805,7 @@ class Torneio_ImportacaoController extends Controller
 
                             $categoria = $torneio->categorias()->whereHas("categoria",function ($q1) use ($line, $fields){
                                 $q1->where([["code", "=", $line[($fields["Gr"])]]]);
-                            })->first();
+                            })->first()->categoria;
 
                             $inscricao->categoria_id = $categoria->id;
                             $inscricao->save();
@@ -824,7 +824,7 @@ class Torneio_ImportacaoController extends Controller
 
                             $categoria = $torneio->categorias()->whereHas("categoria", function ($q1) use ($line, $fields) {
                                 $q1->where([["code", "=", $line[($fields["Gr"])]]]);
-                            })->first();
+                            })->first()->categoria;
                             if ($categoria) {
                                 $retornos[] = date("d/m/Y H:i:s") . " - Efetuando inscrição...";
                                 $inscricao = new Inscricao;
