@@ -62,6 +62,7 @@ Route::group(["prefix"=>"v1"],function(){
     Route::group(["prefix"=>"location"],function(){
         Route::group(["prefix"=>"country"],function(){
             Route::get('/list', 'API\Location\CountryController@list')->name('api.v1.location.country.list');
+            Route::get('/select2', 'API\Location\CountryController@listSelect2')->name('api.v1.location.country.listSelect2');
             Route::get('/get/{id}', 'API\Location\CountryController@get')->name('api.v1.location.country.get');
         });
         Route::group(["prefix"=>"state"],function(){

@@ -32,4 +32,23 @@ class CountryController extends Controller
         }
         return response()->json(["ok"=>0,"error"=>1,"message"=>"País não encontrado."]);
     }
+
+    public function listSelect2(Request $request)
+    {
+        $countries = Pais::where(function($q1) use ($request){
+            $q1->where([["id","=",$request->q]]);
+            $q1->orWhere([["nome", "like", "%".$request->q."%"]]);
+            $q1->orWhere([["codigo_iso", "like", "%" . $request->q . "%"]]);
+        })
+        ->orderBy("nome", "ASC")
+        ->limit(30)
+        ->get();
+
+        $results = array();
+
+        foreach ($countries as $country) {
+            $results[] = array("id" => $country->id, "text" => $country->id . " - " . $country->nome." (".$country->codigo_iso.")");
+        }
+        return response()->json(["results" => $results, "pagination" => true]);
+    }
 }

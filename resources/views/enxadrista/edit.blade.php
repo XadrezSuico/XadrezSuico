@@ -12,6 +12,15 @@
         ){
             $permitido_edicao = true;
         }
+        $permitido_edicao_admin = false;
+        if(
+           ( \Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal()
+           )
+           &&
+           !$enxadrista->hasConfig("united_to")
+        ){
+            $permitido_edicao_admin = true;
+        }
 @endphp
 
 @section("title", "Editar Enxadrista")
@@ -52,7 +61,7 @@
     @endif
 	<div class="box box-primary" id="inscricao">
 		<div class="box-header">
-			<h3 class="box-title">Editar Clube</h3>
+			<h3 class="box-title">Editar Enxadrista</h3>
 		</div>
 			<!-- form start -->
 			@if($permitido_edicao) <form method="post"> @endif
@@ -96,11 +105,7 @@
 					</div>
 					<div class="form-group">
 						<label for="pais_nascimento_id">País de Nascimento *</label>
-						<select id="pais_nascimento_id" name="pais_nascimento_id" class="form-control this_is_select2" @if(!$permitido_edicao) disabled="disabled" @endif>
-							<option value="">--- Selecione um país ---</option>
-							@foreach(\App\Pais::all() as $pais)
-								<option value="{{$pais->id}}">{{$pais->nome}} @if($pais->codigo_iso) ({{$pais->codigo_iso}}) @endif</option>
-							@endforeach
+						<select id="pais_nascimento_id" name="pais_nascimento_id" class="form-control pais_select2" @if(!$permitido_edicao) disabled="disabled" @endif>
 						</select>
 					</div>
 					<hr/>
@@ -123,11 +128,8 @@
 						<div class="col-md-6">
 							<div class="form-group">
 								<label for="pais_celular_id">País do Celular *</label>
-								<select id="pais_celular_id" name="pais_celular_id" class="form-control this_is_select2" @if(!$permitido_edicao) disabled="disabled" @endif>
-									<option value="">--- Selecione um país ---</option>
-									@foreach(\App\Pais::all() as $pais)
-										<option value="{{$pais->id}}">{{$pais->nome}} @if($pais->codigo_iso) ({{$pais->codigo_iso}}) @endif</option>
-									@endforeach
+								<select id="pais_celular_id" name="pais_celular_id" class="form-control pais_select2" @if(!$permitido_edicao) disabled="disabled" @endif>
+
 								</select>
 							</div>
 						</div>
@@ -237,11 +239,8 @@
 					<h4>Vínculo do Enxadrista</h4>
 					<div class="form-group">
 						<label for="pais_id">País do Vínculo *</label>
-						<select id="pais_id" name="pais_id" class="form-control this_is_select2" @if(!$permitido_edicao) disabled="disabled" @endif>
-							<option value="">--- Selecione um País ---</option>
-							@foreach(\App\Pais::all() as $pais)
-								<option value="{{$pais->id}}">{{$pais->nome}} @if($pais->codigo_iso) ({{$pais->codigo_iso}}) @endif</option>
-							@endforeach
+						<select id="pais_id" name="pais_id" class="form-control pais_select2" @if(!$permitido_edicao) disabled="disabled" @endif>
+
 						</select>
 					</div>
 					<div class="form-group">
@@ -277,6 +276,57 @@
 			@endif
 	</div>
 
+    @if($permitido_edicao_admin)
+	<div class="box box-primary" id="inscricao">
+		<div class="box-header">
+			<h3 class="box-title">Unir Enxadrista</h3>
+		</div>
+        <div class="box-body">
+            <div class="alert alert-warning">
+                <strong>IMPORTANTE!</strong><br/>
+                Quando você efetuar a união de um enxadrista não quer dizer que todos os dados deste enxadrista será migrado para o enxadrista que será unido.<br/>
+                Alguns processos dentro do sistema efetuarão a substituição do ID deste cadastro pelo dado unido, mas não é efetuada a migração do seguinte:
+                <ul>
+                    <li>Inscrições já processadas;</li>
+                    <li>Dados de Rating;</li>
+                    <li>Dados já processados sobre o enxadrista.</li>
+                </ul>
+                As inscrições que forem processadas (dados importados) a partir de agora serão processadas no novo cadastro, desde que não haja uma inscrição do outro cadastro do enxadrista dentro do mesmo evento.
+
+                <div class="form-group">
+                    <label for="enxadrista_to_unite_this_register_id">Enxadrista que será unido este cadastro *</label>
+                    <select id="enxadrista_to_unite_this_register_id" name="enxadrista_to_unite_this_register_id" class="form-control this_is_select2" @if(!$permitido_edicao) disabled="disabled" @endif>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <button type="button" class="btn btn-danger"  data-toggle="modal" data-target="#modalUnite">Unir</button>
+                </div>
+                <!-- Modal Exclusão -->
+                <div class="modal fade modal-danger" id="modalUnite" tabindex="-1" role="dialog">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title" id="myModalLabel">Efetuar União</h4>
+                            </div>
+                            <div class="modal-body">
+                                <h2>Você tem certeza que pretende fazer isso?</h2><br>
+                                <h4>De: #{{$enxadrista->id}} - {{$enxadrista->getName()}}</h4>
+                                <h4>Para: #<span id="unite-new-enxadrista"></span></h4>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-success" data-dismiss="modal">Não quero mais</button>
+                                <button type="button" class="btn btn-danger" id="unite_enxadrista_btn">Unir</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+     @endif
+
   </section>
   <!-- /.Left col -->
 </div>
@@ -289,12 +339,27 @@
 <script type="text/javascript" src="{{url("/js/jquery.mask.min.js")}}"></script>
 <script type="text/javascript">
   	$(document).ready(function(){
+		$(".pais_select2").select2({
+            ajax: {
+                url: '{{url("/api/v1/location/country/select2")}}',
+                delay: 250,
+                processResults: function (data) {
+                    return {
+                        results: data.results
+                    };
+                }
+            }
+        });
 		$(".this_is_select2").select2();
 
 		@if($enxadrista->cidade)
 			@if($enxadrista->cidade->estado)
 				@if($enxadrista->cidade->estado->pais)
 					Loading.enable(loading_default_animation, 10000);
+
+                    var newOptionPais = new Option("{{$enxadrista->cidade->estado->pais->nome}} ({{$enxadrista->cidade->estado->pais->codigo_iso}})", "{{$enxadrista->cidade->estado->pais->id}}", false, false);
+                    $('#pais_id').append(newOptionPais).trigger('change');
+
 					$("#pais_id").val({{$enxadrista->cidade->estado->pais->id}}).change();
 					buscaEstados(false,function(){
 						setTimeout(function(){
@@ -311,10 +376,56 @@
 			@endif
 		@endif
 
+        $("#enxadrista_to_unite_this_register_id").select2({
+            ajax: {
+                url: '{{url("/enxadrista/api/searchList/select2")}}?not_id={{$enxadrista->id}}',
+                delay: 250,
+                processResults: function (data) {
+                    return {
+                        results: data.results
+                    };
+                }
+            }
+        });
+        $("#enxadrista_to_unite_this_register_id").on("select2:select",function(){
+            var data = $(this).select2('data');
+
+            $("#unite-new-enxadrista").html(data[0].text);
+        });
+
+        $("#unite_enxadrista_btn").on("click",function(){
+            $("#modalUnite").modal();
+            $.ajax({
+                type: "post",
+                url: "{{url("/enxadrista/unite/".$enxadrista->id)}}",
+                data: "_token={{ csrf_token() }}&new_enxadrista_id=".concat($("#enxadrista_to_unite_this_register_id").val()),
+                dataType: "json",
+                success: function(data){
+                    if(data.ok == 1){
+                        $("#novoClube").modal("hide");
+                        setTimeout(function(){
+                            $("#successMessage").html("Unido com sucesso! Recarregando página...");
+                            $("#success").modal("show");
+                            setTimeout(function(){
+                                location.reload();
+                            },1500)
+                        },600);
+                    }else{
+                        $("#alertsMessage").html(data.message);
+                        $("#alerts").modal();
+                    }
+                }
+            });
+        });
+
 		$("#clube_id").select2().val([{{$enxadrista->clube_id}}]).change();
 		$("#sexos_id").select2().val([{{$enxadrista->sexos_id}}]).change();
-		$("#pais_nascimento_id").select2().val([{{$enxadrista->pais_id}}]).change();
-		$("#pais_celular_id").select2().val([{{$enxadrista->pais_celular_id}}]).change();
+        var newOptionPaisNascimento = new Option("{{$enxadrista->pais_nascimento->nome}} ({{$enxadrista->pais_nascimento->codigo_iso}})", "{{$enxadrista->pais_nascimento->id}}", false, false);
+        $('#pais_nascimento_id').append(newOptionPaisNascimento).trigger('change');
+		$("#pais_nascimento_id").val([{{$enxadrista->pais_id}}]).change();
+		var newOptionPaisCelular = new Option("{{$enxadrista->pais_celular->nome}} ({{$enxadrista->pais_celular->codigo_iso}})", "{{$enxadrista->pais_celular->id}}", false, false);
+        $('#pais_celular_id').append(newOptionPaisCelular).trigger('change');
+		$("#pais_celular_id").val([{{$enxadrista->pais_celular_id}}]).change();
 		Loading.enable(loading_default_animation,10000);
 		buscaTipoDocumentos(function(){
 			Loading.destroy();

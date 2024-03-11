@@ -8,6 +8,7 @@ use App\Enxadrista;
 use App\Sexo;
 use App\TipoDocumentoPais;
 use App\Documento;
+use App\Enum\ConfigType;
 use App\Exports\EnxadristasCompletoFromView;
 use App\Http\Util\Util;
 use Illuminate\Http\Request;
@@ -272,7 +273,7 @@ class EnxadristaController extends Controller
         $enxadrista = Enxadrista::find($id);
 
 
-        if ($enx->hasConfig("united_to")) {
+        if ($enxadrista->hasConfig("united_to")) {
             $messageBag = new MessageBag;
             $messageBag->add("type", "danger");
             $messageBag->add("alerta", "Este cadastro foi unido a outro cadastro e com isso não é permitida mais a edição.");
@@ -707,6 +708,46 @@ class EnxadristaController extends Controller
     }
 
 
+    public function searchEnxadristasSelect2List(Request $request)
+    {
+        $not_ids = array();
+
+        if($request->has("not_id")){
+            if($request->not_id > 0){
+                $not_ids[] = intval(trim($request->not_id));
+            }
+        }elseif($request->has("not_ids")){
+            if(is_array($request->not_ids)){
+                $not_ids = $request->not_ids;
+            }else{
+                $ids = explode(",",$request->not_ids);
+                if(count($ids) > 1){
+                    $not_ids = $ids;
+                }
+            }
+        }
+
+        $enxadristas = Enxadrista::where(function($q1) use ($request){
+            $q1->where([
+                ["name", "like", "%" . $request->input("q") . "%"],
+            ])->orWhere([
+                ["id", "=", intval($request->input("q"))],
+            ]);
+        })
+        ->whereNotIn("id",$not_ids)
+        ->whereDoesntHave("configs",function($q1){
+            $q1->where([["key","=","united_to"]]);
+        })
+        ->limit(30)
+        ->get();
+        $results = array();
+        foreach ($enxadristas as $enxadrista) {
+            $results[] = array("id" => $enxadrista->id, "text" => $enxadrista->id." - ".$enxadrista->getName());
+        }
+        return response()->json(["results" => $results, "pagination" => true]);
+    }
+
+
 
     public function updateAllnames(){
         foreach(Enxadrista::where([
@@ -722,5 +763,33 @@ class EnxadristaController extends Controller
             $enxadrista->save();
         }
         return redirect("/enxadrista");
+    }
+
+    public function unite_post($id, Request $request){
+
+        $user = Auth::user();
+        if (!$user->hasPermissionGlobal()) {
+            return response()->json(["ok"=>0,"error"=>1,"message"=> "Sem permissão para fazer esta ação."]);
+        }
+
+        $enxadrista = Enxadrista::find($id);
+
+
+        if ($enxadrista->hasConfig("united_to")) {
+            return response()->json(["ok"=>0,"error"=>1,"message"=> "Este cadastro foi unido a outro cadastro e com isso não é permitida a união novamente."]);
+        }
+
+        if(Enxadrista::where([["id","=", $request->new_enxadrista_id]])->count() == 0){
+            return response()->json(["ok" => 0, "error" => 1, "message" => "Novo Enxadrista não encontrado."]);
+        }
+
+        $new_enxadrista = Enxadrista::find($request->new_enxadrista_id);
+        if ($new_enxadrista->hasConfig("united_to")) {
+            return response()->json(["ok" => 0, "error" => 1, "message" => "O novo enxadrista já foi unido a outro cadastro e com isso não é permitida a união novamente."]);
+        }
+
+        $enxadrista->setConfig("united_to",ConfigType::Integer, $new_enxadrista->id);
+
+        return response()->json(["ok" => 1, "error" => 0]);
     }
 }
