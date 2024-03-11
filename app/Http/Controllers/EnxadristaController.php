@@ -40,10 +40,9 @@ class EnxadristaController extends Controller
             return redirect("/");
         }
 
-        $cidades = Cidade::all();
         $clubes = Clube::all();
         $sexos = Sexo::all();
-        return view('enxadrista.new', compact("cidades", "clubes", "sexos"));
+        return view('enxadrista.new', compact("clubes", "sexos"));
     }
     public function new_post(Request $request)
     {
@@ -234,7 +233,6 @@ class EnxadristaController extends Controller
         }
 
         $enxadrista = Enxadrista::find($id);
-        $cidades = Cidade::all();
         $clubes = Clube::all();
         $sexos = Sexo::all();
 
@@ -247,7 +245,7 @@ class EnxadristaController extends Controller
             $json_lbx = false;
         }
 
-        return view('enxadrista.edit', compact("enxadrista", "cidades", "clubes", "sexos", "json_lbx"));
+        return view('enxadrista.edit', compact("enxadrista", "clubes", "sexos", "json_lbx"));
     }
     public function edit_post($id, Request $request)
     {

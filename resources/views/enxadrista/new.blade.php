@@ -52,11 +52,8 @@
 					</div>
 					<div class="form-group">
 						<label for="pais_nascimento_id">País de Nascimento *</label>
-						<select id="pais_nascimento_id" name="pais_nascimento_id" class="form-control this_is_select2">
+						<select id="pais_nascimento_id" name="pais_nascimento_id" class="form-control pais_select2">
 							<option value="">--- Selecione um país ---</option>
-							@foreach(\App\Pais::all() as $pais)
-								<option value="{{$pais->id}}">{{$pais->nome}} @if($pais->codigo_iso) ({{$pais->codigo_iso}}) @endif</option>
-							@endforeach
 						</select>
 					</div>
 					<hr/>
@@ -79,11 +76,8 @@
 						<div class="col-md-6">
 							<div class="form-group">
 								<label for="pais_celular_id">País do Celular *</label>
-								<select id="pais_celular_id" name="pais_celular_id" class="form-control this_is_select2">
+								<select id="pais_celular_id" name="pais_celular_id" class="form-control pais_select2">
 									<option value="">--- Selecione um país ---</option>
-									@foreach(\App\Pais::all() as $pais)
-										<option value="{{$pais->id}}">{{$pais->nome}} @if($pais->codigo_iso) ({{$pais->codigo_iso}}) @endif</option>
-									@endforeach
 								</select>
 							</div>
 						</div>
@@ -132,11 +126,8 @@
 					<h4>Vínculo do Enxadrista</h4>
 					<div class="form-group">
 						<label for="pais_id">País do Vínculo *</label>
-						<select id="pais_id" name="pais_id" class="form-control this_is_select2">
+						<select id="pais_id" name="pais_id" class="form-control pais_select2">
 							<option value="">--- Selecione um País ---</option>
-							@foreach(\App\Pais::all() as $pais)
-								<option value="{{$pais->id}}">{{$pais->nome}} @if($pais->codigo_iso) ({{$pais->codigo_iso}}) @endif</option>
-							@endforeach
 						</select>
 					</div>
 					<div class="form-group">
@@ -182,6 +173,17 @@
 <script type="text/javascript" src="{{url("/js/jquery.mask.min.js")}}"></script>
 <script type="text/javascript">
 	$(document).ready(function(){
+		$(".pais_select2").select2({
+            ajax: {
+                url: '{{url("/api/v1/location/country/select2")}}',
+                delay: 250,
+                processResults: function (data) {
+                    return {
+                        results: data.results
+                    };
+                }
+            }
+        });
 	  	$(".this_is_select2").select2();
 		$("#cidade_id").select2();
 		$("#clube_id").select2();
@@ -190,7 +192,17 @@
 		$("#celular").mask("(00) 00000-0000");
 
 		@if(env("PAIS_DEFAULT"))
+            @php($pais = \App\Pais::find(env("PAIS_DEFAULT")))
+            var newOptionPais = new Option("{{$pais->nome}} ({{$pais->codigo_iso}})", "{{$pais->id}}", false, false);
+            $('#pais_nascimento_id').append(newOptionPais).trigger('change');
+            var newOptionPais = new Option("{{$pais->nome}} ({{$pais->codigo_iso}})", "{{$pais->id}}", false, false);
+            $('#pais_celular_id').append(newOptionPais).trigger('change');
+            var newOptionPais = new Option("{{$pais->nome}} ({{$pais->codigo_iso}})", "{{$pais->id}}", false, false);
+            $('#pais_id').append(newOptionPais).trigger('change');
+
+
 			$("#pais_nascimento_id").val({{env("PAIS_DEFAULT")}}).change();
+			$("#pais_celular_id").val({{env("PAIS_DEFAULT")}}).change();
 			$("#pais_id").val({{env("PAIS_DEFAULT")}}).change();
 
 			Loading.enable(loading_default_animation,10000);

@@ -394,7 +394,8 @@
         });
 
         $("#unite_enxadrista_btn").on("click",function(){
-            $("#modalUnite").modal();
+            $("#modalUnite").modal("hide");
+			Loading.enable(loading_default_animation, 10000);
             $.ajax({
                 type: "post",
                 url: "{{url("/enxadrista/unite/".$enxadrista->id)}}",
@@ -409,10 +410,12 @@
                             setTimeout(function(){
                                 location.reload();
                             },1500)
+							Loading.destroy();
                         },600);
                     }else{
                         $("#alertsMessage").html(data.message);
                         $("#alerts").modal();
+						Loading.destroy();
                     }
                 }
             });
