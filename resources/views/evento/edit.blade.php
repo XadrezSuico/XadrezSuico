@@ -1409,6 +1409,14 @@
 													<a class="btn btn-info" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/inscricoes/relatorio/inscricoes/alfabetico")}}" role="button" target="_blank">Imprimir Inscrições (Alfabético)</a><br/>
 													<a class="btn btn-info" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/inscricoes/relatorio/inscricoes/alfabetico/cidade")}}" role="button" target="_blank">Imprimir Inscrições (Alfabético por Cidade/Clube)</a><br/>
 													@if($torneio->isDeletavel()) <a class="btn btn-danger" href="{{url("/evento/".$evento->id."/torneios/delete/".$torneio->id)}}" role="button">Apagar</a> @endif
+                                                    @if(
+														\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal()
+                                                    )
+                                                    @if($evento->torneios()->count() > 1)
+                                                        <a class="btn btn-danger" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/migrate_to_new_event")}}" role="button" target="_blank">Separar em um novo evento (Admin)</a><br/>
+
+                                                        @endif
+                                                    @endif
                                                     @if($torneio->evento->is_lichess_integration)
                                                         <hr/>
                                                         <strong>Opções Lichess.org</strong><br/>

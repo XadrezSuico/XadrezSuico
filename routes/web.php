@@ -225,6 +225,8 @@ Route::group(["prefix"=>"evento"],function(){
 	    Route::post('/{torneio_id}/resultados', 'Torneio_ImportacaoController@sendResultsTxt')->name('evento.torneios.importacao.resultados.post');
 	    Route::get('/{torneio_id}/resultados/file', 'Torneio_ImportacaoController@formResultsFile')->name('evento.torneios.importacao.resultados.file');
 	    Route::post('/{torneio_id}/resultados/file', 'Torneio_ImportacaoController@sendResultsFile')->name('evento.torneios.importacao.resultados.file.post');
+        Route::get('/{torneio_id}/migrate_to_new_event', 'TorneioController@migrate_to_new_event')->name('evento.torneios.union');
+        Route::get('/{torneio_id}/migrate_to_new_event/execute', 'TorneioController@migrate_to_new_event__execute')->name('evento.torneios.union.post');
 
         Route::get('/{torneio_id}/emparceiramentos', 'Torneio_ImportacaoController@formPairingsFile')->name('evento.torneios.importacao.emparceiramentos');
 	    Route::post('/{torneio_id}/emparceiramentos', 'Torneio_ImportacaoController@sendPairingsFile')->name('evento.torneios.importacao.emparceiramentos.post');

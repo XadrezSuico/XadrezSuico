@@ -32,7 +32,7 @@ use App\Http\Controllers\LichessIntegrationController;
 use App\Http\Controllers\CriterioDesempateController;
 
 use App\Imports\ChessComResultsImport;
-
+use App\PerfilUser;
 use Log;
 use Storage;
 use Excel;
@@ -239,6 +239,96 @@ class TorneioController extends Controller
 
                 return redirect("/evento/dashboard/" . $evento->id . "/?tab=torneio");
             }
+        }
+
+        return redirect()->back();
+    }
+    public function migrate_to_new_event($id, $torneio_id)
+    {
+        $evento = Evento::find($id);
+        $user = Auth::user();
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionEventByPerfil($evento->id, [4]) &&
+            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
+        ) {
+            return redirect("/evento/dashboard/" . $evento->id);
+        }
+
+        $torneio = Torneio::find($torneio_id);
+        return view('evento.torneio.migrate_to_new_event', compact("torneio", "evento"));
+    }
+    public function migrate_to_new_event__execute($id, $torneio_id, Request $request)
+    {
+        $evento = Evento::find($id);
+        $user = Auth::user();
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionEventByPerfil($id, [4]) &&
+            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
+        ) {
+            return redirect("/evento/dashboard/" . $id);
+        }
+
+        $torneio = Torneio::find($torneio_id);
+
+
+        $new_event = $evento->replicate();
+        $new_event->name .= " - ".$torneio->name;
+        $new_event->save();
+
+        if ($torneio) {
+            $torneio->evento_id = $new_event->id;
+            $torneio->save();
+
+            foreach($torneio->categorias->all() as $categoria_torneio){
+                if($categoria_torneio->categoria->evento){
+                    $categoria_torneio->categoria->evento_id = $new_event->id;
+                    $categoria_torneio->categoria->save();
+                }
+                $evento_categoria = $evento->categorias()->where([["categoria_id", "=",$categoria_torneio->categoria_id]])->first();
+                $evento_categoria->evento_id = $new_event->id;
+                $evento_categoria->save();
+            }
+
+            foreach ($evento->criterios->all() as $criterio_desempate_evento) {
+                $new_criterio_desempate_evento = $criterio_desempate_evento->replicate();
+                $new_criterio_desempate_evento->evento_id = $new_event->id;
+                $new_criterio_desempate_evento->save();
+            }
+            foreach ($evento->campos_adicionais->all() as $campo_adicional_evento) {
+                $new_campo_adicional_evento = $campo_adicional_evento->replicate();
+                $new_campo_adicional_evento->evento_id = $new_event->id;
+                $new_campo_adicional_evento->save();
+
+                // @todo
+            }
+            foreach ($evento->email_templates->all() as $email_template) {
+                $new_email_template = $email_template->replicate();
+                $new_email_template->evento_id = $new_event->id;
+                $new_email_template->save();
+            }
+            foreach ($evento->timeline_items->all() as $timeline_item) {
+                $new_timeline_item = $timeline_item->replicate();
+                $new_timeline_item->event_id = $new_event->id;
+                $new_timeline_item->save();
+            }
+            foreach ($evento->configs->all() as $config) {
+                $new_config = $config->replicate();
+                $new_config->evento_id = $new_event->id;
+                $new_config->save();
+            }
+            foreach ($evento->event_team_awards->all() as $event_team_award) {
+                // @todo
+            }
+
+            foreach(PerfilUser::where([["evento_id","=",$evento->id]])->get() as $perfil_user){
+                $new_perfil_user = $perfil_user->replicate();
+                $new_perfil_user->evento_id = $new_event->id;
+                $new_perfil_user->save();
+            }
+
+            return redirect("/evento/dashboard/".$new_event->id);
         }
 
         return redirect()->back();
