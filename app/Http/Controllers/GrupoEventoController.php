@@ -86,7 +86,6 @@ class GrupoEventoController extends Controller
         $tipos_torneio = TipoTorneio::all();
         $softwares = Software::all();
         $tipos_rating = TipoRating::all();
-        $cidades = Cidade::all();
         if ($request->has("tab")) {
             $tab = $request->input("tab");
         } else {
@@ -95,7 +94,7 @@ class GrupoEventoController extends Controller
 
         $this->importEmailTemplates($grupo_evento->id);
 
-        return view('grupoevento.edit', compact("grupo_evento", "torneio_templates", "categorias", "criterios_desempate", "tipos_torneio", "softwares", "criterios_desempate_geral", "tipos_rating", "cidades", "tab", "user"));
+        return view('grupoevento.edit', compact("grupo_evento", "torneio_templates", "categorias", "criterios_desempate", "tipos_torneio", "softwares", "criterios_desempate_geral", "tipos_rating", "tab", "user"));
     }
     public function clone($id)
     {

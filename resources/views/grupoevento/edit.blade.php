@@ -153,15 +153,25 @@
 											<label for="evento_data_fim">Data de Fim *</label>
 											<input name="data_fim" id="evento_data_fim" class="form-control" type="text" />
 										</div>
-										<div class="form-group">
-											<label for="evento_cidade_id">Cidade *</label>
-											<select name="cidade_id" id="evento_cidade_id" class="form-control width-100">
-												<option value="">--- Selecione ---</option>
-												@foreach($cidades as $cidade)
-													<option value="{{$cidade->id}}">{{$cidade->id}} - {{$cidade->name}}</option>
-												@endforeach
-											</select>
-										</div>
+
+                                        <div class="form-group">
+                                            <label for="pais_id">País *</label>
+                                            <select id="pais_id" name="pais_id" class="form-control pais_select2" @if(!\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() && !\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4]) && !\Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])) disabled="disabled" @endif>
+                                                <option value="">--- Selecione um país ---</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="estados_id">Estado *</label>
+                                            <select id="estados_id" name="estados_id" class="form-control this_is_select2" @if(!\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() && !\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4]) && !\Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])) disabled="disabled" @endif>
+                                                <option value="">--- Selecione um país antes ---</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="cidade_id">Cidade *</label>
+                                            <select id="cidade_id" name="cidade_id" class="form-control this_is_select2" @if(!\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() && !\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4]) && !\Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])) disabled="disabled" @endif>
+                                                <option value="">--- Selecione um estado antes ---</option>
+                                            </select>
+                                        </div>
 										<div class="form-group">
 											<label for="evento_local">Local *</label>
 											<input name="local" id="evento_local" class="form-control" type="text" />
@@ -880,6 +890,45 @@
 		$("#evento_cidade_id").select2();
 		$("#grupo_evento_classificador_id").select2();
 
+
+		$(".pais_select2").select2({
+            ajax: {
+                url: '{{url("/api/v1/location/country/select2")}}',
+                delay: 250,
+                processResults: function (data) {
+                    return {
+                        results: data.results
+                    };
+                }
+            }
+        });
+
+        $("#estados_id").select2();
+        $("#cidade_id").select2();
+
+
+		@if(env("PAIS_DEFAULT"))
+            @php($pais = \App\Pais::find(env("PAIS_DEFAULT")))
+            var newOptionPais = new Option("{{$pais->nome}} ({{$pais->codigo_iso}})", "{{$pais->id}}", false, false);
+            $('#pais_id').append(newOptionPais).trigger('change');
+
+
+			$("#pais_id").val({{env("PAIS_DEFAULT")}}).change();
+
+			Loading.enable(loading_default_animation,10000);
+			buscaEstados(false,function(){
+				@if(env("ESTADO_DEFAULT"))
+					$("#estados_id").val({{env("ESTADO_DEFAULT")}}).change();
+				@endif
+				buscaCidades(function(){
+					@if(env("CIDADE_DEFAULT"))
+						$("#cidade_id").val({{env("CIDADE_DEFAULT")}}).change();
+					@endif
+					Loading.destroy();
+				});
+			});
+		@endif
+
 		$("#campo_type").select2();
 		$("#campo_validator").select2();
 
@@ -920,5 +969,51 @@
 		$("#evento_data_fim").mask("00/00/0000");
 		$("#evento_data_limite_inscricoes_abertas").mask("00/00/0000 00:00");
   });
+
+	function buscaEstados(buscaCidade,callback){
+		$('#estados_id').html("").trigger('change');
+		$.getJSON("{{url("/estado/search")}}/".concat($("#pais_id").val()),function(data){
+			for (i = 0; i < data.results.length; i++) {
+				var newOptionEstado = new Option("#".concat(data.results[i].id).concat(" - ").concat(data.results[i].text), data.results[i].id, false, false);
+				$('#estados_id').append(newOptionEstado).trigger('change');
+				if(i + 1 == data.results.length){
+					if(callback){
+						callback();
+					}
+					if(buscaCidade){
+						buscaCidades(false);
+					}
+				}
+			}
+			if(data.results.length == 0){
+				if(callback){
+					callback();
+				}
+				if(buscaCidade){
+					buscaCidades(false);
+				}
+			}
+		});
+	}
+
+	function buscaCidades(callback){
+		$('#cidade_id').html("").trigger('change');
+		$.getJSON("{{url("/cidade/search")}}/".concat($("#estados_id").val()),function(data){
+			for (i = 0; i < data.results.length; i++) {
+				var newOptionCidade = new Option("#".concat(data.results[i].id).concat(" - ").concat(data.results[i].text), data.results[i].id, false, false);
+				$('#cidade_id').append(newOptionCidade).trigger('change');
+				if(i + 1 == data.results.length){
+					if(callback){
+						callback();
+					}
+				}
+			}
+			if(data.results.length == 0){
+				if(callback){
+					callback();
+				}
+			}
+		});
+	}
 </script>
 @endsection

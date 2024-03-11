@@ -18,6 +18,11 @@
 	</style>
 @endsection
 
+@php
+
+
+@endphp
+
 @section("content")
 <!-- Main row -->
 <ul class="nav nav-pills">
@@ -624,15 +629,24 @@
 										<option value="6">Padrão XadrezSuíço sem Cidade (Nome no Sobrenome, Sobrenome no Nome sem Cidade) em Torneio por Equipe</option>
 									</select>
 								</div>
-								<div class="form-group">
-									<label for="cidade_id">Cidade *</label>
-									<select name="cidade_id" id="cidade_id" class="form-control width-100" @if(!\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() && !\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4]) && !\Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])) disabled="disabled" @endif>
-										<option value="">--- Selecione ---</option>
-										@foreach($cidades as $cidade)
-											<option value="{{$cidade->id}}">{{$cidade->id}} - {{$cidade->getName()}}</option>
-										@endforeach
-									</select>
-								</div>
+                                <div class="form-group">
+                                    <label for="pais_id">País *</label>
+                                    <select id="pais_id" name="pais_id" class="form-control pais_select2" @if(!\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() && !\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4]) && !\Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])) disabled="disabled" @endif>
+                                        <option value="">--- Selecione um país ---</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="estados_id">Estado *</label>
+                                    <select id="estados_id" name="estados_id" class="form-control this_is_select2" @if(!\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() && !\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4]) && !\Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])) disabled="disabled" @endif>
+                                        <option value="">--- Selecione um país antes ---</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="cidade_id">Cidade *</label>
+                                    <select id="cidade_id" name="cidade_id" class="form-control this_is_select2" @if(!\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() && !\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4]) && !\Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])) disabled="disabled" @endif>
+                                        <option value="">--- Selecione um estado antes ---</option>
+                                    </select>
+                                </div>
 								<div class="form-group">
 									<label for="evento_local">Local *</label>
 									<input name="local" id="evento_local" class="form-control" type="text" value="{{$evento->local}}" @if(!\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() && !\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4]) && !\Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])) disabled="disabled" @endif />
@@ -1778,13 +1792,49 @@
 		$("#tipo_torneio_id").select2();
 		$("#torneio_softwares_id").select2();
 		$("#tipo_ratings_id").select2();
-		$("#cidade_id").select2();
-		$("#cidade_id").val([{{$evento->cidade_id}}]).change();
 		$("#tipo_modalidade").val([{{$evento->tipo_modalidade}}]).change();
 		$("#exportacao_sm_modelo").val([{{$evento->exportacao_sm_modelo}}]).change();
 		$("#layout_version").val([{{$evento->layout_version}}]).change();
 		@if($evento->tipo_rating)
 			$("#tipo_ratings_id").val([{{$evento->tipo_rating->tipo_ratings_id}}]).change();
+		@endif
+
+		$(".pais_select2").select2({
+            ajax: {
+                url: '{{url("/api/v1/location/country/select2")}}',
+                delay: 250,
+                processResults: function (data) {
+                    return {
+                        results: data.results
+                    };
+                }
+            }
+        });
+
+        $("#estados_id").select2();
+        $("#cidade_id").select2();
+        @if($evento->cidade)
+			@if($evento->cidade->estado)
+				@if($evento->cidade->estado->pais)
+					Loading.enable(loading_default_animation, 10000);
+
+                    var newOptionPais = new Option("{{$evento->cidade->estado->pais->nome}} ({{$evento->cidade->estado->pais->codigo_iso}})", "{{$evento->cidade->estado->pais->id}}", false, false);
+                    $('#pais_id').append(newOptionPais).trigger('change');
+
+					$("#pais_id").val({{$evento->cidade->estado->pais->id}}).change();
+					buscaEstados(false,function(){
+						setTimeout(function(){
+							$("#estados_id").val({{$evento->cidade->estado->id}}).change();
+							setTimeout(function(){
+								buscaCidades(function(){
+									$("#cidade_id").val({{$evento->cidade_id}}).change();
+									Loading.destroy();
+								});
+							},200);
+						},200);
+					});
+				@endif
+			@endif
 		@endif
 
         @if($evento->classificador)
@@ -1829,6 +1879,54 @@
 		$("#evento_data_limite_inscricoes_abertas").mask("00/00/0000 00:00");
 		$("#confirmacao_publica_inicio").mask("00/00/0000 00:00");
 		$("#confirmacao_publica_final").mask("00/00/0000 00:00");
+
+
   });
+
+	function buscaEstados(buscaCidade,callback){
+		$('#estados_id').html("").trigger('change');
+		$.getJSON("{{url("/estado/search")}}/".concat($("#pais_id").val()),function(data){
+			for (i = 0; i < data.results.length; i++) {
+				var newOptionEstado = new Option("#".concat(data.results[i].id).concat(" - ").concat(data.results[i].text), data.results[i].id, false, false);
+				$('#estados_id').append(newOptionEstado).trigger('change');
+				if(i + 1 == data.results.length){
+					if(callback){
+						callback();
+					}
+					if(buscaCidade){
+						buscaCidades(false);
+					}
+				}
+			}
+			if(data.results.length == 0){
+				if(callback){
+					callback();
+				}
+				if(buscaCidade){
+					buscaCidades(false);
+				}
+			}
+		});
+	}
+
+	function buscaCidades(callback){
+		$('#cidade_id').html("").trigger('change');
+		$.getJSON("{{url("/cidade/search")}}/".concat($("#estados_id").val()),function(data){
+			for (i = 0; i < data.results.length; i++) {
+				var newOptionCidade = new Option("#".concat(data.results[i].id).concat(" - ").concat(data.results[i].text), data.results[i].id, false, false);
+				$('#cidade_id').append(newOptionCidade).trigger('change');
+				if(i + 1 == data.results.length){
+					if(callback){
+						callback();
+					}
+				}
+			}
+			if(data.results.length == 0){
+				if(callback){
+					callback();
+				}
+			}
+		});
+	}
 </script>
 @endsection

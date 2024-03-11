@@ -75,7 +75,6 @@ class EventoGerenciarController extends Controller
         $tipos_torneio = TipoTorneio::all();
         $softwares = Software::all();
         $tipos_rating = TipoRating::all();
-        $cidades = Cidade::all();
         if ($request->has("tab")) {
             $tab = $request->input("tab");
         } else {
@@ -100,7 +99,6 @@ class EventoGerenciarController extends Controller
                                             "tipos_torneio",
                                             "softwares",
                                             "tipos_rating",
-                                            "cidades",
                                             "tab",
                                             "xadrezsuicopag_controller"
                                     )
