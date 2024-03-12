@@ -548,7 +548,7 @@ class Torneio_ImportacaoController extends Controller
                         $retornos[] = date("d/m/Y H:i:s") . " - Enxadrista com o Código #" . $line[($fields["ID"])] . " não encontrado.";
                     }
                     if (!$inscricao) {
-                        $retornos[] = date("d/m/Y H:i:s") . " - Inscrição do Enxadrista com o Código #" . $line[($fields["ID"])] . " não encontrado neste torneio.";
+                        $retornos[] = date("d/m/Y H:i:s") . " - Inscrição do Enxadrista com o Código #" . $line[($fields["Fonte"])] . " não encontrado neste torneio.";
                         if (Inscricao::whereHas("torneio", function ($q1) use ($torneio) {
                             $q1->where([["evento_id", "=", $torneio->evento_id]]);
                         })
