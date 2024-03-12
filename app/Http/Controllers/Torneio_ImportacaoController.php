@@ -217,6 +217,7 @@ class Torneio_ImportacaoController extends Controller
                             })->count() == 0) {
                                 $retornos[] = date("d/m/Y H:i:s") . " - Categoria não encontrada no torneio - Ignorando.";
                                 $i++;
+                                $retornos[] = "<hr/>";
                                 continue;
                             }
 
@@ -236,6 +237,7 @@ class Torneio_ImportacaoController extends Controller
                             })->count() == 0) {
                                 $retornos[] = date("d/m/Y H:i:s") . " - Categoria não encontrada no torneio - Ignorando.";
                                 $i++;
+                                $retornos[] = "<hr/>";
                                 continue;
                             }
 
@@ -446,7 +448,7 @@ class Torneio_ImportacaoController extends Controller
                     $retornos[] = date("d/m/Y H:i:s") . " - Durante o processamento da inscrição: inscrição sem ID.";
                 }
             }
-            $retornos[] = date("d/m/Y H:i:s") . " - <hr/>";
+            $retornos[] = "<hr/>";
             $i++;
         }
         $retornos[] = date("d/m/Y H:i:s") . " - Fim do Processamento";
@@ -570,6 +572,7 @@ class Torneio_ImportacaoController extends Controller
                             })->count() == 0) {
                                 $retornos[] = date("d/m/Y H:i:s") . " - Categoria não encontrada no torneio - Ignorando.";
                                 $i++;
+                                $retornos[] = "<hr/>";
                                 continue;
                             }
 
@@ -589,6 +592,7 @@ class Torneio_ImportacaoController extends Controller
                             })->count() == 0) {
                                 $retornos[] = date("d/m/Y H:i:s") . " - Categoria não encontrada no torneio - Ignorando.";
                                 $i++;
+                                $retornos[] = "<hr/>";
                                 continue;
                             }
 
@@ -700,7 +704,7 @@ class Torneio_ImportacaoController extends Controller
                     $retornos[] = date("d/m/Y H:i:s") . " - Durante o processamento da inscrição: inscrição sem ID.";
                 }
             }
-            $retornos[] = date("d/m/Y H:i:s") . " - <hr/>";
+            $retornos[] = "<hr/>";
             $i++;
         }
         $retornos[] = date("d/m/Y H:i:s") . " - Fim do Processamento";
@@ -800,6 +804,7 @@ class Torneio_ImportacaoController extends Controller
                             })->count() == 0){
                                 $retornos[] = date("d/m/Y H:i:s") . " - Categoria não encontrada no torneio - Ignorando.";
                                 $i++;
+                                $retornos[] = "<hr/>";
                                 continue;
                             }
 
@@ -819,6 +824,7 @@ class Torneio_ImportacaoController extends Controller
                             })->count() == 0) {
                                 $retornos[] = date("d/m/Y H:i:s") . " - Categoria não encontrada no torneio - Ignorando.";
                                 $i++;
+                                $retornos[] = "<hr/>";
                                 continue;
                             }
 
@@ -984,7 +990,7 @@ class Torneio_ImportacaoController extends Controller
                     $retornos[] = date("d/m/Y H:i:s") . " - Durante o processamento da inscrição: inscrição sem ID.";
                 }
             }
-            $retornos[] = date("d/m/Y H:i:s") . " - <hr/>";
+            $retornos[] = "<hr/>";
             $i++;
         }
         $retornos[] = date("d/m/Y H:i:s") . " - Fim do Processamento";
@@ -1254,7 +1260,7 @@ class Torneio_ImportacaoController extends Controller
                     $retornos[] = date("d/m/Y H:i:s") . " - Durante o processamento do emparceiramento: Enxadrista A e/ou Enxadrista B sem ID.";
                 }
             }
-            $retornos[] = date("d/m/Y H:i:s") . " - <hr/>";
+            $retornos[] = "<hr/>";
             $i++;
         }
         $retornos[] = date("d/m/Y H:i:s") . " - Fim do Processamento";
