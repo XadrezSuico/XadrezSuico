@@ -434,6 +434,14 @@ class Evento extends Model
     {
         return $this->quantosInscritosConfirmados() - $this->quantosInscritosConfirmadosWOs();
     }
+    public function quantosInscritoscomResultados()
+    {
+        $total = 0;
+        foreach ($this->torneios->all() as $torneio) {
+            $total += $torneio->inscricoes()->where([["confirmado", "=", true]])->whereNotNull("pontos")->count();
+        }
+        return $total;
+    }
     public function quantosInscritosConfirmadosLichess()
     {
         $total = 0;
@@ -853,6 +861,34 @@ class Evento extends Model
         return $total;
     }
     public function howManyPresentNotPaid()
+    {
+        $total = 0;
+        $categorias_id = $this->categorias()->whereNotNull("xadrezsuicopag_uuid")->pluck("categoria_id")->toArray();
+        foreach ($this->torneios->all() as $torneio) {
+            $total += $torneio->inscricoes()->where([["paid", "=", false], ["confirmado", "=", true], ["desconsiderar_pontuacao_geral", "=", false]])->whereIn("categoria_id", $categorias_id)->count();
+        }
+        return $total;
+    }
+    public function howManyWithResultsPaid()
+    {
+        $total = 0;
+        foreach ($this->torneios->all() as $torneio) {
+            $total += $torneio->inscricoes()->where([["paid", "=", true], ["confirmado", "=", true], ["desconsiderar_pontuacao_geral", "=", false]])->count();
+        }
+        return $total;
+    }
+    public function howManyWithResultsFree()
+    {
+        $total = 0;
+
+        $categorias_id = $this->categorias()->whereNull("xadrezsuicopag_uuid")->pluck("categoria_id")->toArray();
+
+        foreach ($this->torneios->all() as $torneio) {
+            $total += $torneio->inscricoes()->whereIn("categoria_id", $categorias_id)->where([["confirmado", "=", true], ["desconsiderar_pontuacao_geral", "=", false]])->count();
+        }
+        return $total;
+    }
+    public function howManyWithResultsNotPaid()
     {
         $total = 0;
         $categorias_id = $this->categorias()->whereNotNull("xadrezsuicopag_uuid")->pluck("categoria_id")->toArray();

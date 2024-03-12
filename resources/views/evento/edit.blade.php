@@ -345,7 +345,7 @@
 
                             <div class="row">
                                 <!-- Total de Inscritos -->
-                                <div class="col-sm-6 col-md-4">
+                                <div class="col-sm-12 col-md-4">
                                     <!-- small box -->
                                     <div class="small-box bg-aqua">
                                         <div class="inner">
@@ -360,7 +360,7 @@
                                     </div>
                                 </div>
                                 <!-- Total de Confirmados -->
-                                <div class="col-sm-6 col-md-4">
+                                <div class="col-sm-12 col-md-4">
                                     <!-- small box -->
                                     <div class="small-box bg-aqua">
                                         <div class="inner">
@@ -375,7 +375,7 @@
                                     </div>
                                 </div>
                                 <!-- Total de Presentes -->
-                                <div class="col-sm-6 col-md-4">
+                                <div class="col-sm-12 col-md-4">
                                     <!-- small box -->
                                     <div class="small-box bg-aqua">
                                         <div class="inner">
@@ -389,7 +389,23 @@
                                         <!--<a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>-->
                                     </div>
                                 </div>
+                                <!-- Total de Resultados (Importados) -->
+                                <div class="col-sm-12 col-md-4">
+                                    <!-- small box -->
+                                    <div class="small-box bg-aqua">
+                                        <div class="inner">
+                                        <h3>{{$evento->quantosInscritosComResultados()}}</h3>
 
+                                        <p>Total de Resultados</p>
+                                        </div>
+                                        <div class="icon">
+                                        <i class="fa fa-check-circle"></i>
+                                        </div>
+                                        <!--<a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>-->
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
                                 @if($evento->isPaid())
                                     <!-- Total de Pagos -->
                                     <div class="col-sm-6 col-md-4">
@@ -523,6 +539,52 @@
                                             <h3>{{$evento->howManyPresentNotPaid()}}</h3>
 
                                             <p>Total de Presentes Não Pagos</p>
+                                            </div>
+                                            <div class="icon">
+                                            <i class="fa fa-money"></i>
+                                            </div>
+                                            <!--<a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>-->
+                                        </div>
+                                    </div>
+
+                                    <!-- Total de Resultados Pagos -->
+                                    <div class="col-sm-6 col-md-4">
+                                        <!-- small box -->
+                                        <div class="small-box bg-aqua">
+                                            <div class="inner">
+                                            <h3>{{$evento->howManyWithResultsPaid()}}</h3>
+
+                                            <p>Total de Resultados Pagos</p>
+                                            </div>
+                                            <div class="icon">
+                                            <i class="fa fa-money"></i>
+                                            </div>
+                                            <!--<a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>-->
+                                        </div>
+                                    </div>
+                                    <!-- Total de Resultados Gratuidades -->
+                                    <div class="col-sm-6 col-md-4">
+                                        <!-- small box -->
+                                        <div class="small-box bg-aqua">
+                                            <div class="inner">
+                                            <h3>{{$evento->howManyWithResultsFree()}}</h3>
+
+                                            <p>Total de Resultados Gratuidades</p>
+                                            </div>
+                                            <div class="icon">
+                                            <i class="fa fa-money"></i>
+                                            </div>
+                                            <!--<a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>-->
+                                        </div>
+                                    </div>
+                                    <!-- Total de Resultados Não Pagos -->
+                                    <div class="col-sm-6 col-md-4">
+                                        <!-- small box -->
+                                        <div class="small-box bg-aqua">
+                                            <div class="inner">
+                                            <h3>{{$evento->howManyWithResultsNotPaid()}}</h3>
+
+                                            <p>Total de Resultados Não Pagos</p>
                                             </div>
                                             <div class="icon">
                                             <i class="fa fa-money"></i>
