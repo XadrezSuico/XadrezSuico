@@ -345,7 +345,7 @@
 
                             <div class="row">
                                 <!-- Total de Inscritos -->
-                                <div class="col-sm-12 col-md-4">
+                                <div class="col-sm-12 col-md-6">
                                     <!-- small box -->
                                     <div class="small-box bg-aqua">
                                         <div class="inner">
@@ -360,7 +360,7 @@
                                     </div>
                                 </div>
                                 <!-- Total de Confirmados -->
-                                <div class="col-sm-12 col-md-4">
+                                <div class="col-sm-12 col-md-6">
                                     <!-- small box -->
                                     <div class="small-box bg-aqua">
                                         <div class="inner">
@@ -375,7 +375,7 @@
                                     </div>
                                 </div>
                                 <!-- Total de Presentes -->
-                                <div class="col-sm-12 col-md-4">
+                                <div class="col-sm-12 col-md-6">
                                     <!-- small box -->
                                     <div class="small-box bg-aqua">
                                         <div class="inner">
@@ -390,7 +390,7 @@
                                     </div>
                                 </div>
                                 <!-- Total de Resultados (Importados) -->
-                                <div class="col-sm-12 col-md-4">
+                                <div class="col-sm-12 col-md-6">
                                     <!-- small box -->
                                     <div class="small-box bg-aqua">
                                         <div class="inner">
@@ -1401,7 +1401,7 @@
                                                         \Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])
                                                     )
                                                         Confirmados: {{$torneio->getCountInscritosConfirmados()}}<br/>
-                                                        Presentes: {{$torneio->quantosInscritosPresentes()}}
+                                                        Presentes: {{$torneio->quantosInscritosPresentes()}}<br/>
                                                         Com Resultado: {{$torneio->getCountInscritosResultados()}}
                                                         <hr/>
                                                         @if($evento->xadrezsuicopag_uuid)
