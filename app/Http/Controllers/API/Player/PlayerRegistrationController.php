@@ -123,7 +123,7 @@ class PlayerRegistrationController extends Controller
                             ]);
                         }
                     })
-                    ->whereDoestHave("configs", function ($q1) {
+                    ->whereDoesntHave("configs", function ($q1) {
                         $q1->where([["key", "=", "united_to"]]);
                     })->count();
                     if($enxadrista_count > 0){
@@ -195,7 +195,7 @@ class PlayerRegistrationController extends Controller
             ["name", "=", $nome_corrigido],
             ["born", "=", $enxadrista->born]
         ])
-        ->whereDoestHave("configs", function ($q1) {
+        ->whereDoesntHave("configs", function ($q1) {
             $q1->where([["key", "=", "united_to"]]);
         })->first();
         if ($temEnxadrista) {
@@ -441,13 +441,13 @@ class PlayerRegistrationController extends Controller
             if(Enxadrista::where([
                 ["name","=",$request->name],["born","=",$enxadrista->born]
             ])
-            ->whereDoestHave("configs", function ($q1) {
+            ->whereDoesntHave("configs", function ($q1) {
                 $q1->where([["key", "=", "united_to"]]);
             })->count() > 0){
                 $enxadrista = Enxadrista::where([
                     ["name","=",$request->name],["born","=",$enxadrista->born]
                 ])
-                ->whereDoestHave("configs", function ($q1) {
+                ->whereDoesntHave("configs", function ($q1) {
                     $q1->where([["key", "=", "united_to"]]);
                 })->first();
                 return response()->json([
@@ -480,7 +480,7 @@ class PlayerRegistrationController extends Controller
                         ]);
                     }
                 })
-                ->whereDoestHave("configs", function ($q1) {
+                ->whereDoesntHave("configs", function ($q1) {
                     $q1->where([["key", "=", "united_to"]]);
                 })
                 ->count();
@@ -498,7 +498,7 @@ class PlayerRegistrationController extends Controller
                             ]);
                         }
                     })
-                    ->whereDoestHave("configs", function ($q1) {
+                    ->whereDoesntHave("configs", function ($q1) {
                         $q1->where([["key", "=", "united_to"]]);
                     })
                     ->first();
