@@ -113,6 +113,10 @@ class Torneio extends Model
     {
         return $this->getCountInscritosConfirmados() - $this->getCountInscritosConfirmadosWOs();
     }
+    public function getCountInscritosResultados()
+    {
+        return $this->inscricoes()->where([["confirmado", "=", true]])->whereNotNull("pontos")->count();
+    }
     public function getCountInscritosNaoConfirmados()
     {
         return $this->inscricoes()->where([["confirmado", "=", false]])->count();

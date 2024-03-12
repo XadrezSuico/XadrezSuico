@@ -1402,6 +1402,7 @@
                                                     )
                                                         Confirmados: {{$torneio->getCountInscritosConfirmados()}}<br/>
                                                         Presentes: {{$torneio->quantosInscritosPresentes()}}
+                                                        Com Resultado: {{$torneio->getCountInscritosResultados()}}
                                                         <hr/>
                                                         @if($evento->xadrezsuicopag_uuid)
                                                             <strong>Pagamento:</strong><br/>
