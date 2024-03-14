@@ -214,7 +214,18 @@ class Torneio_ImportacaoController extends Controller
 
                             if ($torneio->categorias()->whereHas("categoria", function ($q1) use ($line, $fields) {
                                 $q1->where([["code", "=", $line[($fields["Gr"])]]]);
-                            })->count() == 0) {
+                            })
+                            ->where(function($q1) use ($evento,$enxadrista) {
+                                $q1->where(function ($q2) use ($evento, $enxadrista) {
+                                    $q2->where([["idade_minima", "<=", $enxadrista->howOldForEvento($evento->id)]]);
+                                    $q2->orWhereNull("idade_minima");
+                                });
+                                $q1->where(function ($q2) use ($evento, $enxadrista) {
+                                    $q2->where([["idade_maxima", ">=", $enxadrista->howOldForEvento($evento->id)]]);
+                                    $q2->orWhereNull("idade_maxima");
+                                });
+                            })
+                            ->count() == 0) {
                                 $retornos[] = date("d/m/Y H:i:s") . " - Categoria não encontrada no torneio - Ignorando.";
                                 $i++;
                                 $retornos[] = "<hr/>";
@@ -223,6 +234,16 @@ class Torneio_ImportacaoController extends Controller
 
                             $categoria = $torneio->categorias()->whereHas("categoria", function ($q1) use ($line, $fields) {
                                 $q1->where([["code", "=", $line[($fields["Gr"])]]]);
+                            })
+                            ->where(function($q1) use ($evento,$enxadrista) {
+                                $q1->where(function ($q2) use ($evento, $enxadrista) {
+                                    $q2->where([["idade_minima", "<=", $enxadrista->howOldForEvento($evento->id)]]);
+                                    $q2->orWhereNull("idade_minima");
+                                });
+                                $q1->where(function ($q2) use ($evento, $enxadrista) {
+                                    $q2->where([["idade_maxima", ">=", $enxadrista->howOldForEvento($evento->id)]]);
+                                    $q2->orWhereNull("idade_maxima");
+                                });
                             })->first()->categoria;
 
                             $inscricao->categoria_id = $categoria->id;
@@ -234,6 +255,16 @@ class Torneio_ImportacaoController extends Controller
                         if ($enxadrista) {
                             if ($torneio->categorias()->whereHas("categoria", function ($q1) use ($line, $fields) {
                                 $q1->where([["code", "=", $line[($fields["Gr"])]]]);
+                            })
+                            ->where(function ($q1) use ($evento, $enxadrista) {
+                                $q1->where(function ($q2) use ($evento, $enxadrista) {
+                                    $q2->where([["idade_minima", "<=", $enxadrista->howOldForEvento($evento->id)]]);
+                                    $q2->orWhereNull("idade_minima");
+                                });
+                                $q1->where(function ($q2) use ($evento, $enxadrista) {
+                                    $q2->where([["idade_maxima", ">=", $enxadrista->howOldForEvento($evento->id)]]);
+                                    $q2->orWhereNull("idade_maxima");
+                                });
                             })->count() == 0) {
                                 $retornos[] = date("d/m/Y H:i:s") . " - Categoria não encontrada no torneio - Ignorando.";
                                 $i++;
@@ -243,7 +274,18 @@ class Torneio_ImportacaoController extends Controller
 
                             $categoria = $torneio->categorias()->whereHas("categoria", function ($q1) use ($line, $fields) {
                                 $q1->where([["code", "=", $line[($fields["Gr"])]]]);
-                            })->first()->categoria;
+                            })
+                            ->where(function($q1) use ($evento,$enxadrista) {
+                                $q1->where(function ($q2) use ($evento, $enxadrista) {
+                                    $q2->where([["idade_minima", "<=", $enxadrista->howOldForEvento($evento->id)]]);
+                                    $q2->orWhereNull("idade_minima");
+                                });
+                                $q1->where(function ($q2) use ($evento, $enxadrista) {
+                                    $q2->where([["idade_maxima", ">=", $enxadrista->howOldForEvento($evento->id)]]);
+                                    $q2->orWhereNull("idade_maxima");
+                                });
+                            })
+                            ->first()->categoria;
 
                             if ($categoria) {
                                 $retornos[] = date("d/m/Y H:i:s") . " - Efetuando inscrição...";
@@ -569,7 +611,18 @@ class Torneio_ImportacaoController extends Controller
 
                             if ($torneio->categorias()->whereHas("categoria", function ($q1) use ($line, $fields) {
                                 $q1->where([["code", "=", $line[($fields["Gr"])]]]);
-                            })->count() == 0) {
+                            })
+                            ->where(function($q1) use ($evento,$enxadrista) {
+                                $q1->where(function ($q2) use ($evento, $enxadrista) {
+                                    $q2->where([["idade_minima", "<=", $enxadrista->howOldForEvento($evento->id)]]);
+                                    $q2->orWhereNull("idade_minima");
+                                });
+                                $q1->where(function ($q2) use ($evento, $enxadrista) {
+                                    $q2->where([["idade_maxima", ">=", $enxadrista->howOldForEvento($evento->id)]]);
+                                    $q2->orWhereNull("idade_maxima");
+                                });
+                            })
+                            ->count() == 0) {
                                 $retornos[] = date("d/m/Y H:i:s") . " - Categoria não encontrada no torneio - Ignorando.";
                                 $i++;
                                 $retornos[] = "<hr/>";
@@ -578,7 +631,18 @@ class Torneio_ImportacaoController extends Controller
 
                             $categoria = $torneio->categorias()->whereHas("categoria", function ($q1) use ($line, $fields) {
                                 $q1->where([["code", "=", $line[($fields["Gr"])]]]);
-                            })->first()->categoria;
+                            })
+                            ->where(function($q1) use ($evento,$enxadrista) {
+                                $q1->where(function ($q2) use ($evento, $enxadrista) {
+                                    $q2->where([["idade_minima", "<=", $enxadrista->howOldForEvento($evento->id)]]);
+                                    $q2->orWhereNull("idade_minima");
+                                });
+                                $q1->where(function ($q2) use ($evento, $enxadrista) {
+                                    $q2->where([["idade_maxima", ">=", $enxadrista->howOldForEvento($evento->id)]]);
+                                    $q2->orWhereNull("idade_maxima");
+                                });
+                            })
+                            ->first()->categoria;
 
                             $inscricao->categoria_id = $categoria->id;
                             $inscricao->save();
@@ -589,7 +653,18 @@ class Torneio_ImportacaoController extends Controller
                         if ($enxadrista) {
                             if ($torneio->categorias()->whereHas("categoria", function ($q1) use ($line, $fields) {
                                 $q1->where([["code", "=", $line[($fields["Gr"])]]]);
-                            })->count() == 0) {
+                            })
+                            ->where(function($q1) use ($evento,$enxadrista) {
+                                $q1->where(function ($q2) use ($evento, $enxadrista) {
+                                    $q2->where([["idade_minima", "<=", $enxadrista->howOldForEvento($evento->id)]]);
+                                    $q2->orWhereNull("idade_minima");
+                                });
+                                $q1->where(function ($q2) use ($evento, $enxadrista) {
+                                    $q2->where([["idade_maxima", ">=", $enxadrista->howOldForEvento($evento->id)]]);
+                                    $q2->orWhereNull("idade_maxima");
+                                });
+                            })
+                            ->count() == 0) {
                                 $retornos[] = date("d/m/Y H:i:s") . " - Categoria não encontrada no torneio - Ignorando.";
                                 $i++;
                                 $retornos[] = "<hr/>";
@@ -598,7 +673,18 @@ class Torneio_ImportacaoController extends Controller
 
                             $categoria = $torneio->categorias()->whereHas("categoria", function ($q1) use ($line, $fields) {
                                 $q1->where([["code", "=", $line[($fields["Gr"])]]]);
-                            })->first()->categoria;
+                            })
+                            ->where(function($q1) use ($evento,$enxadrista) {
+                                $q1->where(function ($q2) use ($evento, $enxadrista) {
+                                    $q2->where([["idade_minima", "<=", $enxadrista->howOldForEvento($evento->id)]]);
+                                    $q2->orWhereNull("idade_minima");
+                                });
+                                $q1->where(function ($q2) use ($evento, $enxadrista) {
+                                    $q2->where([["idade_maxima", ">=", $enxadrista->howOldForEvento($evento->id)]]);
+                                    $q2->orWhereNull("idade_maxima");
+                                });
+                            })
+                            ->first()->categoria;
 
                             if ($categoria) {
                                 $retornos[] = date("d/m/Y H:i:s") . " - Efetuando inscrição...";
@@ -801,7 +887,18 @@ class Torneio_ImportacaoController extends Controller
 
                             if($torneio->categorias()->whereHas("categoria", function ($q1) use ($line, $fields) {
                                 $q1->where([["code", "=", $line[($fields["Gr"])]]]);
-                            })->count() == 0){
+                            })
+                            ->where(function($q1) use ($evento,$enxadrista) {
+                                $q1->where(function ($q2) use ($evento, $enxadrista) {
+                                    $q2->where([["idade_minima", "<=", $enxadrista->howOldForEvento($evento->id)]]);
+                                    $q2->orWhereNull("idade_minima");
+                                });
+                                $q1->where(function ($q2) use ($evento, $enxadrista) {
+                                    $q2->where([["idade_maxima", ">=", $enxadrista->howOldForEvento($evento->id)]]);
+                                    $q2->orWhereNull("idade_maxima");
+                                });
+                            })
+                            ->count() == 0){
                                 $retornos[] = date("d/m/Y H:i:s") . " - Categoria não encontrada no torneio - Ignorando.";
                                 $i++;
                                 $retornos[] = "<hr/>";
@@ -810,7 +907,18 @@ class Torneio_ImportacaoController extends Controller
 
                             $categoria = $torneio->categorias()->whereHas("categoria",function ($q1) use ($line, $fields){
                                 $q1->where([["code", "=", $line[($fields["Gr"])]]]);
-                            })->first()->categoria;
+                            })
+                            ->where(function($q1) use ($evento,$enxadrista) {
+                                $q1->where(function ($q2) use ($evento, $enxadrista) {
+                                    $q2->where([["idade_minima", "<=", $enxadrista->howOldForEvento($evento->id)]]);
+                                    $q2->orWhereNull("idade_minima");
+                                });
+                                $q1->where(function ($q2) use ($evento, $enxadrista) {
+                                    $q2->where([["idade_maxima", ">=", $enxadrista->howOldForEvento($evento->id)]]);
+                                    $q2->orWhereNull("idade_maxima");
+                                });
+                            })
+                            ->first()->categoria;
 
                             $inscricao->categoria_id = $categoria->id;
                             $inscricao->save();
@@ -821,7 +929,18 @@ class Torneio_ImportacaoController extends Controller
                         if ($enxadrista) {
                             if ($torneio->categorias()->whereHas("categoria", function ($q1) use ($line, $fields) {
                                 $q1->where([["code", "=", $line[($fields["Gr"])]]]);
-                            })->count() == 0) {
+                            })
+                            ->where(function($q1) use ($evento,$enxadrista) {
+                                $q1->where(function ($q2) use ($evento, $enxadrista) {
+                                    $q2->where([["idade_minima", "<=", $enxadrista->howOldForEvento($evento->id)]]);
+                                    $q2->orWhereNull("idade_minima");
+                                });
+                                $q1->where(function ($q2) use ($evento, $enxadrista) {
+                                    $q2->where([["idade_maxima", ">=", $enxadrista->howOldForEvento($evento->id)]]);
+                                    $q2->orWhereNull("idade_maxima");
+                                });
+                            })
+                            ->count() == 0) {
                                 $retornos[] = date("d/m/Y H:i:s") . " - Categoria não encontrada no torneio - Ignorando.";
                                 $i++;
                                 $retornos[] = "<hr/>";
@@ -830,7 +949,18 @@ class Torneio_ImportacaoController extends Controller
 
                             $categoria = $torneio->categorias()->whereHas("categoria", function ($q1) use ($line, $fields) {
                                 $q1->where([["code", "=", $line[($fields["Gr"])]]]);
-                            })->first()->categoria;
+                            })
+                            ->where(function($q1) use ($evento,$enxadrista) {
+                                $q1->where(function ($q2) use ($evento, $enxadrista) {
+                                    $q2->where([["idade_minima", "<=", $enxadrista->howOldForEvento($evento->id)]]);
+                                    $q2->orWhereNull("idade_minima");
+                                });
+                                $q1->where(function ($q2) use ($evento, $enxadrista) {
+                                    $q2->where([["idade_maxima", ">=", $enxadrista->howOldForEvento($evento->id)]]);
+                                    $q2->orWhereNull("idade_maxima");
+                                });
+                            })
+                            ->first()->categoria;
                             if ($categoria) {
                                 $retornos[] = date("d/m/Y H:i:s") . " - Efetuando inscrição...";
                                 $inscricao = new Inscricao;
