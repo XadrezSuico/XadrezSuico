@@ -373,9 +373,6 @@ class PlayerController extends Controller
                                             ["numero","=",$request->documents[$tipo_documento_pais->tipo_documento->id]],
                                             ["enxadrista_id","!=",$enxadrista->id]
                                         ])
-                                        ->whereDoesntHave("configs", function($q1){
-                                            $q1->where([["key","=","united_to"]]);
-                                        })
                                         ->count()){
                                             return response()->json(["ok"=>0,"error"=>1,"message"=>"O documento '".$tipo_documento_pais->tipo_documento->nome."' informado já está vinculado a outro(a) enxadrista."]);
                                         }
