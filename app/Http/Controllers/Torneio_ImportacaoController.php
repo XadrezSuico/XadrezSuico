@@ -226,7 +226,7 @@ class Torneio_ImportacaoController extends Controller
                                     });
                             })
                             ->count() == 0) {
-                                $retornos[] = date("d/m/Y H:i:s") . " - Categoria não encontrada no torneio ({$line[($fields["Gr"])]}) - Ignorando.";
+                                $retornos[] = date("d/m/Y H:i:s") . " - Categoria não encontrada no torneio ({$line[($fields["Gr"])]} - {$enxadrista->howOldForEvento($evento->id)}) - Ignorando.";
                                 $i++;
                                 $retornos[] = "<hr/>";
                                 continue;
@@ -268,7 +268,7 @@ class Torneio_ImportacaoController extends Controller
                                     });
                             })
                             ->count() == 0) {
-                                $retornos[] = date("d/m/Y H:i:s") . " - Categoria não encontrada no torneio ({$line[($fields["Gr"])]}) - Ignorando.";
+                                $retornos[] = date("d/m/Y H:i:s") . " - Categoria não encontrada no torneio ({$line[($fields["Gr"])]} - {$enxadrista->howOldForEvento($evento->id)}) - Ignorando.";
                                 $i++;
                                 $retornos[] = "<hr/>";
                                 continue;
@@ -625,7 +625,7 @@ class Torneio_ImportacaoController extends Controller
                                     });
                             })
                             ->count() == 0) {
-                                $retornos[] = date("d/m/Y H:i:s") . " - Categoria não encontrada no torneio ({$line[($fields["Gr"])]}) - Ignorando.";
+                                $retornos[] = date("d/m/Y H:i:s") . " - Categoria não encontrada no torneio ({$line[($fields["Gr"])]} - {$enxadrista->howOldForEvento($evento->id)}) - Ignorando.";
                                 $i++;
                                 $retornos[] = "<hr/>";
                                 continue;
@@ -667,7 +667,7 @@ class Torneio_ImportacaoController extends Controller
                                     });
                             })
                             ->count() == 0) {
-                                $retornos[] = date("d/m/Y H:i:s") . " - Categoria não encontrada no torneio ({$line[($fields["Gr"])]}) - Ignorando.";
+                                $retornos[] = date("d/m/Y H:i:s") . " - Categoria não encontrada no torneio ({$line[($fields["Gr"])]} - {$enxadrista->howOldForEvento($evento->id)}) - Ignorando.";
                                 $i++;
                                 $retornos[] = "<hr/>";
                                 continue;
@@ -901,7 +901,7 @@ class Torneio_ImportacaoController extends Controller
                                     });
                             })
                             ->count() == 0){
-                                $retornos[] = date("d/m/Y H:i:s") . " - Categoria não encontrada no torneio ({$line[($fields["Gr"])]}) - Ignorando.";
+                                $retornos[] = date("d/m/Y H:i:s") . " - Categoria não encontrada no torneio ({$line[($fields["Gr"])]} - {$enxadrista->howOldForEvento($evento->id)}) - Ignorando.";
                                 $i++;
                                 $retornos[] = "<hr/>";
                                 continue;
@@ -943,7 +943,7 @@ class Torneio_ImportacaoController extends Controller
                                     });
                             })
                             ->count() == 0) {
-                                $retornos[] = date("d/m/Y H:i:s") . " - Categoria não encontrada no torneio ({$line[($fields["Gr"])]}) - Ignorando.";
+                                $retornos[] = date("d/m/Y H:i:s") . " - Categoria não encontrada no torneio ({$line[($fields["Gr"])]} - {$enxadrista->howOldForEvento($evento->id)}) - Ignorando.";
                                 $i++;
                                 $retornos[] = "<hr/>";
                                 continue;
