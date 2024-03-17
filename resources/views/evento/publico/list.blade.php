@@ -38,6 +38,17 @@
             <p>A <strong>lista de classificados pode sofrer alterações</strong> devido caso ocorra declínio por parte de algum(a) enxadrista, caso permitido assim pela organização ou pelo regulamento.</p>
         </div>
     @endif
+    @if($evento->event_classificates()->count())
+        <div class="alert alert-success" role="alert">
+            <h3 style="margin-top: 0;">Importante!</h3>
+            <p>Este evento classifica para os seguintes eventos:</p>
+            <ul>
+                @foreach($evento->event_classificates->all() as $event_classificates)
+                    <li>{{$event_classificates->event->name}}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
 
     <div class="box">
         <div class="box-body">
@@ -50,6 +61,12 @@
                         <th>Data de Nascimento</th>
                         <th>Cidade</th>
                         <th>Clube</th>
+                        @foreach($evento->event_classificates->all() as $event_classificates)
+                            <th>
+                                Classificado?
+                                {{$event_classificates->event->name}}
+                            </th>
+                        @endforeach
                         @if($torneio->tipo_torneio->usaPontuacao()) <th>Pontuação</th> @endif
                         @foreach($criterios as $criterio)
                             <th>D-{{$criterio->prioridade}}</th>
@@ -114,6 +131,44 @@
                             <td>{{$inscricao->enxadrista->getNascimentoPublico()}}</td>
                             <td>{{$inscricao->getCidade()}}</td>
                             <td>@if($inscricao->clube) {{$inscricao->clube->getName()}} @else Sem Clube @endif</td>
+                            @foreach($evento->event_classificates->all() as $event_classificates)
+                                <td>
+                                    @if($inscricao->enxadrista->estaInscrito($event_classificates->event->id))
+                                        @php($inscricao_classificated = $inscricao->enxadrista->getInscricao($event_classificates->event->id))
+
+                                        @if($inscricao_classificated->hasConfig("event_classificator_id"))
+                                            @if($inscricao_classificated->getConfig("event_classificator_id",true) == $evento->id)
+                                                @if($inscricao_classificated->hasConfig("event_classificator_rule_id"))
+                                                    <strong>Inscrito</strong><br>
+                                                    @php($rule_that_classificated = \App\Classification\EventClassificateRule::where([["id", "=", $inscricao_classificated->getConfig("event_classificator_rule_id",true)]])->first())
+
+                                                    @php($classified_event_rule = \App\Enum\ClassificationTypeRule::get($rule_that_classificated->type)["name"])
+
+                                                    @if ($rule_that_classificated->value)
+                                                        {{$classified_event_rule}} - Valor: {{$rule_that_classificated->value}}
+                                                    @endif
+                                                    @if ($rule_that_classificated->event)
+                                                        {{$classified_event_rule}} - Evento: {{$rule_that_classificated->event->name}}
+                                                    @endif
+                                                @else
+                                                    <strong>Inscrito</strong><br>
+                                                    Classificado por Este Evento
+                                                @endif
+                                            @else
+                                                <strong>Inscrito</strong><br>
+                                                Classificado por <strong>OUTRO</strong> Evento.<br/>
+                                                Evento: {{$evento->where([["id","=",$inscricao_classificated->getConfig("event_classificator_id",true)]])->first()->name}}
+                                            @endif
+                                        @else
+                                            <strong>Inscrito</strong><br>
+                                            Não Classificado
+                                        @endif
+                                    @else
+                                        Não Inscrito<br>
+                                        Não Classificado
+                                    @endif
+                                </td>
+                            @endforeach
                             @if($torneio->tipo_torneio->usaPontuacao()) <td>@if($inscricao->posicao) {{$inscricao->pontos}} @else - @endif</td> @endif
                             @foreach($criterios as $criterio)
                                 <th>@if($criterio->criterio->valor_criterio_visualizacao($inscricao->id)) {{$criterio->criterio->valor_criterio_visualizacao($inscricao->id)}} @else - @endif</th>
