@@ -326,7 +326,7 @@ class Torneio_ImportacaoController extends Controller
                         foreach ($torneio->getCriteriosNaoManuais() as $criterio) {
                             if ($criterio->softwares_id && $j <= $total_des) {
                                 if (isset($line[($fields["Des" . $j])])) {
-                                    if ($line[($fields["Des" . $j])] != NULL && $line[($fields["Des" . $j])] != "" && is_numeric($line[($fields["Des" . $j])])) {
+                                    if ($line[($fields["Des" . $j])] != NULL && $line[($fields["Des" . $j])] != "") {
                                         // echo "Inserindo critério de desempate '".$criterio->criterio->name."' <br/>";
                                         $retornos[] = date("d/m/Y H:i:s") . " - Inserindo critério de desempate '" . $criterio->criterio->name . "' - Valor: " . $line[($fields["Des" . $j])];
                                         $exp_meio = explode("½", $line[($fields["Des" . $j])]);
@@ -730,7 +730,7 @@ class Torneio_ImportacaoController extends Controller
                         foreach ($torneio->getCriteriosNaoManuais() as $criterio) {
                             if ($criterio->softwares_id && $j <= $total_des) {
                                 if(isset($line[($fields["Des" . $j])])) {
-                                    if ($line[($fields["Des" . $j])] != NULL && $line[($fields["Des" . $j])] != "" && is_numeric($line[($fields["Des" . $j])])) {
+                                    if ($line[($fields["Des" . $j])] != NULL && $line[($fields["Des" . $j])] != "") {
                                         // echo "Inserindo critério de desempate '".$criterio->criterio->name."' <br/>";
                                         $retornos[] = date("d/m/Y H:i:s") . " - Inserindo critério de desempate '" . $criterio->criterio->name . "' - Valor: " . $line[($fields["Des" . $j])];
                                         $exp_meio = explode("½", $line[($fields["Des" . $j])]);
@@ -1009,7 +1009,7 @@ class Torneio_ImportacaoController extends Controller
                         foreach ($torneio->getCriteriosNaoManuais() as $criterio) {
                             if ($criterio->softwares_id && $j <= $total_des) {
                                 if (isset($line[($fields["Des" . $j])])) {
-                                    if ($line[($fields["Des" . $j])] != NULL && $line[($fields["Des" . $j])] != "" && is_numeric($line[($fields["Des" . $j])])) {
+                                    if ($line[($fields["Des" . $j])] != NULL && $line[($fields["Des" . $j])] != "") {
                                         // echo "Inserindo critério de desempate '".$criterio->criterio->name."' <br/>";
                                         $retornos[] = date("d/m/Y H:i:s") . " - Inserindo critério de desempate '" . $criterio->criterio->name . "' - Valor: " . $line[($fields["Des" . $j])];
                                         $exp_meio = explode("½", $line[($fields["Des" . $j])]);
