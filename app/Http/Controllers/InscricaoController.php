@@ -309,7 +309,7 @@ class InscricaoController extends Controller
 
             $inscricao->save();
 
-            foreach ($inscricao->torneio->evento->campos() as $campo) {
+            foreach ($inscricao->torneio->evento->campos([false,$is_admin]) as $campo) {
                 if ($request->has("campo_personalizado_" . $campo->id)) {
                     if ($request->input("campo_personalizado_" . $campo->id) != "") {
                         if ($request->input("campo_personalizado_" . $campo->id) != null) {
@@ -694,6 +694,15 @@ class InscricaoController extends Controller
 
         $evento = Evento::find($evento_id);
 
+        $is_admin = false;
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionEventByPerfil($evento->id, [3, 4, 5]) &&
+            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [6, 7])
+        ) {
+            $is_admin = true;
+        }
+
         if (
             !$request->has("regulamento_aceito")
         ) {
@@ -749,7 +758,7 @@ class InscricaoController extends Controller
                 return response()->json(["ok" => 0, "error" => 1, "message" => "A inscrição para este evento deve ser feita com o link de inscrições enviado (Inscrições Privadas)."]);
             }
         }
-        foreach ($evento->campos_obrigatorios() as $campo) {
+        foreach ($evento->campos_obrigatorios([false,$is_admin]) as $campo) {
             if (
                 !$request->has("campo_personalizado_" . $campo->id)
             ) {
@@ -830,7 +839,7 @@ class InscricaoController extends Controller
         }
         $inscricao->save();
 
-        foreach ($evento->campos() as $campo) {
+        foreach ($evento->campos([false,$is_admin]) as $campo) {
             if ($request->has("campo_personalizado_" . $campo->id)) {
                 if ($request->input("campo_personalizado_" . $campo->id) != "") {
                     if ($request->input("campo_personalizado_" . $campo->id) != NULL) {

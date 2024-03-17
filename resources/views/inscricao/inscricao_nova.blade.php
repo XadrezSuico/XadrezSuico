@@ -179,12 +179,14 @@
 </div>
 <!-- Main row -->
 <ul class="nav nav-pills">
+  @php($is_admin = false)
   @if(\Illuminate\Support\Facades\Auth::check())
   	@if(
 		\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
 		\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[3,4]) ||
 		\Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[6])
 	)
+        @php($is_admin = true)
 		<li role="presentation"><a href="/evento/dashboard/{{$evento->id}}"><strong>Gerenciar Evento (ADMIN)</strong></a></li>
 	@endif
   @endif
@@ -596,7 +598,7 @@
 					</select>
                     <button id="clubeNaoCadastradoInscricao" onclick="chamaCadastroClube(1)" class="btn btn-success">O meu clube/instituição/escola não está cadastrado</button>
 				</div>
-				@foreach($evento->campos() as $campo)
+				@foreach($evento->campos([false,$is_admin]) as $campo)
 					<div class="form-group">
 						<label for="campo_personalizado_{{$campo->id}}" @if($campo->is_required) class="field-required" @endif>{{$campo->question}} @if($campo->is_required) * @endif </label>
 						<select id="campo_personalizado_{{$campo->id}}" class="campo_personalizado form-control this_is_select2">
@@ -1690,7 +1692,7 @@
         if($("#inscricao_categoria_conferida").is(":checked")){
             data = data.concat("&categoria_conferida=true");
         }
-		@foreach($evento->campos() as $campo)
+		@foreach($evento->campos([false,$is_admin]) as $campo)
 			data = data.concat("&campo_personalizado_{{$campo->id}}=").concat($("#campo_personalizado_{{$campo->id}}").val());
 		@endforeach
 			@if(isset($token))

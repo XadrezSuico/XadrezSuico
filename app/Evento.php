@@ -157,26 +157,35 @@ class Evento extends Model
         return $this->hasMany("App\EventTimelineItem", "event_id", "id");
     }
 
-    public function campos()
+    public function campos($private = [false])
     {
         // if($this->hasMany("App\CampoPersonalizadoEvento","evento_id","id")->count() > 0){
         //     return $this->hasMany("App\CampoPersonalizadoEvento","evento_id","id");
         // }
         // return $this->grupo_evento->campos();
-        return CampoPersonalizado::where([["grupo_evento_id", "=", $this->grupo_evento->id]])
-            ->orWhere([["evento_id", "=", $this->id]])
+        $evento = $this;
+        return CampoPersonalizado::where(function($q1) use ($evento){
+                $q1->where([["grupo_evento_id", "=", $evento->grupo_evento->id]])
+                ->orWhere([["evento_id", "=", $evento->id]]);
+            })
+            ->whereIn("is_private", $private)
             ->get();
     }
 
-    public function campos_obrigatorios()
+    public function campos_obrigatorios($private = [false])
     {
         // if($this->hasMany("App\CampoPersonalizadoEvento","evento_id","id")->count() > 0){
         //     return $this->hasMany("App\CampoPersonalizadoEvento","evento_id","id");
         // }
         // return $this->grupo_evento->campos();
-        return CampoPersonalizado::where([["grupo_evento_id", "=", $this->grupo_evento->id], ["is_required", "=", true]])
-            ->orWhere([["evento_id", "=", $this->id], ["is_required", "=", true]])
-            ->get();
+        $evento = $this;
+        return CampoPersonalizado::where(function($q1) use ($evento){
+            $q1->where([["grupo_evento_id", "=", $evento->grupo_evento->id]])
+            ->orWhere([["evento_id", "=", $evento->id]]);
+        })
+        ->where([["is_required","=",true]])
+        ->whereIn("is_private",$private)
+        ->get();
     }
 
 
