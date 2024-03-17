@@ -333,6 +333,7 @@ class Torneio_ImportacaoController extends Controller
 
                                     $desempate = new InscricaoCriterioDesempate;
                                     $desempate->inscricao_id = $inscricao->id;
+                                    $desempate->prioridade = $criterio->prioridade;
                                     $desempate->criterio_desempate_id = $criterio->criterio->id;
                                     $desempate->valor = (count($exp_meio) > 1) ? $exp_meio[0] . ".5" : ((count($exp_virgula) > 1) ? $exp_virgula[0] . "." . $exp_virgula[1] : $exp_virgula[0]);
                                     // echo $desempate->valor."\n";
@@ -732,6 +733,7 @@ class Torneio_ImportacaoController extends Controller
 
                                     $desempate = new InscricaoCriterioDesempate;
                                     $desempate->inscricao_id = $inscricao->id;
+                                    $desempate->prioridade = $criterio->prioridade;
                                     $desempate->criterio_desempate_id = $criterio->criterio->id;
                                     $desempate->valor = (count($exp_meio) > 1) ? $exp_meio[0] . ".5" : ((count($exp_virgula) > 1) ? $exp_virgula[0] . "." . $exp_virgula[1] : $exp_virgula[0]);
                                     // echo $desempate->valor."\n";
@@ -1006,6 +1008,7 @@ class Torneio_ImportacaoController extends Controller
 
                                 $desempate = new InscricaoCriterioDesempate;
                                 $desempate->inscricao_id = $inscricao->id;
+                                $desempate->prioridade = $criterio->prioridade;
                                 $desempate->criterio_desempate_id = $criterio->criterio->id;
                                 $desempate->valor = (count($exp_meio) > 1) ? $exp_meio[0] . ".5" : ((count($exp_virgula) > 1) ? $exp_virgula[0] . "." . $exp_virgula[1] : $exp_virgula[0]);
                                 // echo $desempate->valor."\n";
