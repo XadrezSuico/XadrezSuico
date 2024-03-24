@@ -67,6 +67,7 @@
                         <th>Presente?</th>
                         <th>Inscrição Inicial</th>
                         <th>Posição</th>
+                        <th>Dados Inscrição Inicial</th>
                         @if ($evento->event_classificators()->count() > 0)
                             <th>Classificado pelo Evento</th>
                         @endif
@@ -123,6 +124,13 @@
                             </th>
                             <td>@if($inscricao->from) {{$inscricao->from->id}} @else - @endif</td>
                             <td>@if($inscricao->from) @if($inscricao->from->posicao) {{$inscricao->from->posicao}} @else - @endif @else - @endif</td>
+                            <td>
+                                @if($inscricao->from)
+                                    Evento: {{$inscricao->from->torneio->evento->id}} - {{$inscricao->from->torneio->evento->name}}<br/>
+                                    Torneio: {{$inscricao->from->torneio->id}} - {{$inscricao->from->torneio->name}}<br/>
+                                    Categoria: {{$inscricao->from->categoria->id}} - {{$inscricao->from->categoria->name}}<br/>
+                                @endif
+                            </td>
                             @if ($evento->event_classificators()->count() > 0)
                                 <td>
                                     @if($inscricao->hasConfig("event_classificator_id"))
