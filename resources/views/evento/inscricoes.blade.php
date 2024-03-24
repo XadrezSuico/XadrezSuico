@@ -52,6 +52,7 @@
                         <th>Código Enxadrista</th>
                         <th>Nome do Enxadrista</th>
                         <th>Data de Nascimento</th>
+                        <th>Sexo</th>
                         <th>Categoria Inscrição</th>
                         <th>Cidade</th>
                         <th>Clube</th>
@@ -93,6 +94,7 @@
                                 {{$inscricao->enxadrista->getNomePrivado()}}
                             </td>
                             <td>{{$inscricao->enxadrista->getNascimentoPrivado()}}</td>
+                            <td>{{$inscricao->enxadrista->sexo->id}} - {{$inscricao->enxadrista->sexo->name}}</td>
                             <td>{{$inscricao->categoria->id}} - {{$inscricao->categoria->name}}</td>
                             <td>{{$inscricao->getCidade()}}</td>
                             <td>@if($inscricao->clube) {{$inscricao->clube->getName()}} @else - @endif</td>
