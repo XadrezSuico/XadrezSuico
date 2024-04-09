@@ -54,15 +54,15 @@
                                                 <div class="modal-content">
                                                     <div class="modal-header">
                                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                                                    <h4 class="modal-title" id="myModalLabel">Copiar Grupo de Evento #{{$grupo_evento->id}}: {{$grupo_evento->name}}</h4>
+                                                        <h4 class="modal-title" id="myModalLabel">Copiar Grupo de Evento #{{$grupo_evento->id}}: {{$grupo_evento->name}}</h4>
                                                     </div>
                                                     <div class="modal-body">
-                                                    <h2>Você tem certeza que pretende fazer isso?</h2><br>
-                                                    <h4>Você deseja efetuar a cópia?</h4>
+                                                        <h2>Você tem certeza que pretende fazer isso?</h2><br>
+                                                        <h4>Você deseja efetuar a cópia?</h4>
                                                     </div>
                                                     <div class="modal-footer">
-                                                    <button type="button" class="btn btn-success" data-dismiss="modal">Não quero mais</button>
-                                                    <a class="btn btn-danger" href="{{url("/grupoevento/clone/".$grupo_evento->id)}}">Copiar Grupo de Evento</a>
+                                                        <button type="button" class="btn btn-success" data-dismiss="modal">Não quero mais</button>
+                                                        <a class="btn btn-danger" href="{{url("/grupoevento/clone/".$grupo_evento->id)}}">Copiar Grupo de Evento</a>
                                                     </div>
                                                 </div>
                                             </div>
