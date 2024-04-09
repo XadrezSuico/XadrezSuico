@@ -47,7 +47,26 @@
                                     )
                                         <br/>
                                         <br/>
-                                        <a class="btn btn-danger" href="{{url("/grupoevento/clone/".$grupo_evento->id)}}" role="button">Clonar Grupo de Evento</a>
+                                        <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" title="Copiar Grupo de Evento: {{$grupo_evento->id}} {{$grupo_evento->name}}" data-target="#modalCopy_{{$grupo_evento->id}}">Copiar Grupo de Evento</button>
+                                        <!-- Modal Copiar -->
+                                        <div class="modal fade modal-danger" id="modalCopy_{{$grupo_evento->id}}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                                            <div class="modal-dialog" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                                    <h4 class="modal-title" id="myModalLabel">Copiar Grupo de Evento #{{$grupo_evento->id}}: {{$grupo_evento->name}}</h4>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                    <h2>Você tem certeza que pretende fazer isso?</h2><br>
+                                                    <h4>Você deseja efetuar a cópia?</h4>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                    <button type="button" class="btn btn-success" data-dismiss="modal">Não quero mais</button>
+                                                    <a class="btn btn-danger" href="{{url("/grupoevento/clone/".$grupo_evento->id)}}">Copiar Grupo de Evento</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     @endif
                                 </td>
                             </tr>
