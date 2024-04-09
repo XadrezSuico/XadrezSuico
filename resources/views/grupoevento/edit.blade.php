@@ -156,19 +156,19 @@
 
                                         <div class="form-group">
                                             <label for="pais_id">País *</label>
-                                            <select id="pais_id" name="pais_id" class="form-control pais_select2" @if(!\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() && !\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4]) && !\Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])) disabled="disabled" @endif>
+                                            <select id="pais_id" name="pais_id" class="form-control pais_select2" >
                                                 <option value="">--- Selecione um país ---</option>
                                             </select>
                                         </div>
                                         <div class="form-group">
                                             <label for="estados_id">Estado *</label>
-                                            <select id="estados_id" name="estados_id" class="form-control this_is_select2" @if(!\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() && !\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4]) && !\Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])) disabled="disabled" @endif>
+                                            <select id="estados_id" name="estados_id" class="form-control this_is_select2" >
                                                 <option value="">--- Selecione um país antes ---</option>
                                             </select>
                                         </div>
                                         <div class="form-group">
                                             <label for="cidade_id">Cidade *</label>
-                                            <select id="cidade_id" name="cidade_id" class="form-control this_is_select2" @if(!\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() && !\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4]) && !\Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])) disabled="disabled" @endif>
+                                            <select id="cidade_id" name="cidade_id" class="form-control this_is_select2">
                                                 <option value="">--- Selecione um estado antes ---</option>
                                             </select>
                                         </div>
