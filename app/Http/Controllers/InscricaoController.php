@@ -14,6 +14,7 @@ use App\Evento;
 use App\Inscricao;
 use App\Sexo;
 use App\Documento;
+use App\Enum\ConfigType;
 use App\TipoDocumento;
 use App\TipoDocumentoPais;
 use App\Rating;
@@ -309,6 +310,7 @@ class InscricaoController extends Controller
 
             $inscricao->save();
 
+            $is_indication = false;
             foreach ($inscricao->torneio->evento->campos([false,$is_admin]) as $campo) {
                 if ($request->has("campo_personalizado_" . $campo->id)) {
                     if ($request->input("campo_personalizado_" . $campo->id) != "") {
@@ -329,9 +331,24 @@ class InscricaoController extends Controller
                                 }
                                 $opcao_inscricao->opcaos_id = $request->input("campo_personalizado_" . $campo->id);
                                 $opcao_inscricao->save();
+
+                                if($campo->is_indication){
+                                    $is_indication = true;
+                                }
                             }
                         }
                     }
+                }
+            }
+
+
+            if($is_indication) {
+                if (!$inscricao->hasConfig("classificated_manually")) {
+                    $inscricao->setConfig("classificated_manually", ConfigType::Boolean, true);
+                }
+            } else {
+                if ($inscricao->hasConfig("classificated_manually")) {
+                    $inscricao->removeConfig("classificated_manually");
                 }
             }
 
@@ -839,6 +856,7 @@ class InscricaoController extends Controller
         }
         $inscricao->save();
 
+        $is_indication = false;
         foreach ($evento->campos([false,$is_admin]) as $campo) {
             if ($request->has("campo_personalizado_" . $campo->id)) {
                 if ($request->input("campo_personalizado_" . $campo->id) != "") {
@@ -849,9 +867,22 @@ class InscricaoController extends Controller
                             $opcao_inscricao->opcaos_id = $request->input("campo_personalizado_" . $campo->id);
                             $opcao_inscricao->campo_personalizados_id = $campo->id;
                             $opcao_inscricao->save();
+
+                            if($campo->is_indication){
+                                $is_indication = true;
+                            }
                         }
                     }
                 }
+            }
+        }
+        if ($is_indication) {
+            if (!$inscricao->hasConfig("classificated_manually")) {
+                $inscricao->setConfig("classificated_manually", ConfigType::Boolean, true);
+            }
+        } else {
+            if ($inscricao->hasConfig("classificated_manually")) {
+                $inscricao->removeConfig("classificated_manually");
             }
         }
 

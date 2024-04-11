@@ -142,6 +142,7 @@ class InscricaoGerenciarController extends Controller
                 $inscricao->enxadrista->save();
             }
 
+            $is_indication = false;
             foreach ($evento->campos() as $campo) {
                 if ($request->has("campo_personalizado_" . $campo->id)) {
                     if ($request->input("campo_personalizado_" . $campo->id) != "") {
@@ -153,7 +154,22 @@ class InscricaoGerenciarController extends Controller
                         }
                         $opcao_inscricao->opcaos_id = $request->input("campo_personalizado_" . $campo->id);
                         $opcao_inscricao->save();
+
+                        if($campo->is_indication){
+                            $is_indication = true;
+                        }
                     }
+                }
+            }
+
+
+            if ($is_indication) {
+                if (!$inscricao->hasConfig("classificated_manually")) {
+                    $inscricao->setConfig("classificated_manually", ConfigType::Boolean, true);
+                }
+            } else {
+                if ($inscricao->hasConfig("classificated_manually")) {
+                    $inscricao->removeConfig("classificated_manually");
                 }
             }
 
