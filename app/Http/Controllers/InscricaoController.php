@@ -229,9 +229,9 @@ class InscricaoController extends Controller
         $evento = Evento::find($id);
         if ($evento) {
             echo 0;
-            if ($evento->campos([true],[["is_indication","=",true],["id","=",$campos_id]])->count() > 0){
+            if ($evento->campos([false],[["is_indication","=",true],["id","=",$campos_id]])->count() > 0){
                 echo 1;
-                $campo = $evento->campos([true], [["is_indication", "=", true], ["id", "=", $campos_id]])->first();
+                $campo = $evento->campos([false], [["is_indication", "=", true], ["id", "=", $campos_id]])->first();
 
                 if($campo->opcoes()->where([["id","=",$opcaos_id]])->count() > 0){
                     echo 2;
