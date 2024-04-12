@@ -236,7 +236,11 @@ class InscricaoController extends Controller
 
                     $inscricoes = Inscricao::whereHas("opcoes",function($q1) use ($opcao){
                         $q1->where([["opcaos_id","=",$opcao->id]]);
-                    })->get();
+                    })
+                    ->whereHas("torneio",function($q1) use ($evento){
+                        $q1->where([["evento_id","=",$evento->id]]);
+                    })
+                    ->get();
 
                     return view("inscricao.indicados", compact("evento", "opcao", "inscricoes"));
                 }
