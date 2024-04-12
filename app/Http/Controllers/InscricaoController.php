@@ -245,7 +245,7 @@ class InscricaoController extends Controller
                 }
             }
         }
-        return abort(404);
+        // return abort(404);
     }
 
     public function editar_inscricao($uuid)
