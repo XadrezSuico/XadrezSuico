@@ -228,13 +228,10 @@ class InscricaoController extends Controller
     {
         $evento = Evento::find($id);
         if ($evento) {
-            echo 0;
             if ($evento->campos([false],[["is_indication","=",true],["id","=",$campos_id]])->count() > 0){
-                echo 1;
                 $campo = $evento->campos([false], [["is_indication", "=", true], ["id", "=", $campos_id]])->first();
 
                 if($campo->opcoes()->where([["id","=",$opcaos_id]])->count() > 0){
-                    echo 2;
                     $opcao = $campo->opcoes()->where([["id", "=", $opcaos_id]])->first();
 
                     $inscricoes = Inscricao::whereHas("opcoes",function($q1) use ($opcao){
@@ -245,7 +242,7 @@ class InscricaoController extends Controller
                 }
             }
         }
-        // return abort(404);
+        return abort(404);
     }
 
     public function editar_inscricao($uuid)
