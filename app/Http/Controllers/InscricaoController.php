@@ -228,10 +228,13 @@ class InscricaoController extends Controller
     {
         $evento = Evento::find($id);
         if ($evento) {
-            if($evento->campos([true],[["is_indication","=",true],["id","=",$campos_id]])->count() > 0){
+            echo 0;
+            if ($evento->campos([true],[["is_indication","=",true],["id","=",$campos_id]])->count() > 0){
+                echo 1;
                 $campo = $evento->campos([true], [["is_indication", "=", true], ["id", "=", $campos_id]])->first();
 
                 if($campo->opcoes()->where([["id","=",$opcaos_id]])->count() > 0){
+                    echo 2;
                     $opcao = $campo->opcoes()->where([["id", "=", $opcaos_id]])->first();
 
                     $inscricoes = Inscricao::whereHas("opcoes",function($q1) use ($opcao){
