@@ -157,7 +157,7 @@ class Evento extends Model
         return $this->hasMany("App\EventTimelineItem", "event_id", "id");
     }
 
-    public function campos($private = [false])
+    public function campos($private = [false], $where = [])
     {
         // if($this->hasMany("App\CampoPersonalizadoEvento","evento_id","id")->count() > 0){
         //     return $this->hasMany("App\CampoPersonalizadoEvento","evento_id","id");
@@ -168,11 +168,18 @@ class Evento extends Model
                 $q1->where([["grupo_evento_id", "=", $evento->grupo_evento->id]])
                 ->orWhere([["evento_id", "=", $evento->id]]);
             })
+            ->where(function($q1) use ($where){
+                if(is_array($where)){
+                    if(count($where) > 0){
+                        $q1->where($where);
+                    }
+                }
+            })
             ->whereIn("is_private", $private)
             ->get();
     }
 
-    public function campos_obrigatorios($private = [false])
+    public function campos_obrigatorios($private = [false], $where = [])
     {
         // if($this->hasMany("App\CampoPersonalizadoEvento","evento_id","id")->count() > 0){
         //     return $this->hasMany("App\CampoPersonalizadoEvento","evento_id","id");
@@ -185,6 +192,13 @@ class Evento extends Model
         })
         ->where([["is_required","=",true]])
         ->whereIn("is_private",$private)
+        ->where(function ($q1) use ($where) {
+            if (is_array($where)) {
+                if (count($where) > 0) {
+                    $q1->where($where);
+                }
+            }
+        })
         ->get();
     }
 

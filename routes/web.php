@@ -64,6 +64,7 @@ Route::group(["prefix"=>"inscricao"],function(){
     Route::get('/visualizar/{id}', 'InscricaoController@visualizar_inscricoes')->name('inscricao.visualizar.inscricao');
     Route::get('/premiados/{id}', 'InscricaoController@visualizar_premiados')->name('inscricao.visualizar.premiados');
     Route::get('/classificados/{id}/{classificator_id}', 'InscricaoController@visualizar_classificados')->name('inscricao.visualizar.classificados');
+    Route::get('/indicados/{id}/{campo_id}/{opcao_id}', 'InscricaoController@visualizar_indicados')->name('inscricao.visualizar.indicados');
     Route::group(["prefix"=>"v2"],function(){
         Route::get('/{id}/busca/enxadrista', 'InscricaoController@telav2_buscaEnxadrista')->name('inscricao.v2.busca.enxadrista');
         Route::get('/{id}/busca/enxadrista/confirmacao', 'InscricaoController@telav2_buscaEnxadrista_ConfirmacaoPublica')->name('inscricao.v2.busca.enxadrista.confirmacao');

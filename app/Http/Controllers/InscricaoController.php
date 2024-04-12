@@ -224,6 +224,26 @@ class InscricaoController extends Controller
         }
         return abort(404);
     }
+    public function visualizar_indicados($id, $campos_id, $opcaos_id)
+    {
+        $evento = Evento::find($id);
+        if ($evento) {
+            if($evento->campos([true],[["is_indication","=",true],["id","=",$campos_id]])->count() > 0){
+                $campo = $evento->campos([true], [["is_indication", "=", true], ["id", "=", $campos_id]])->first();
+
+                if($campo->opcoes()->where([["id","=",$opcaos_id]])->count() > 0){
+                    $opcao = $campo->opcoes()->where([["id", "=", $opcaos_id]])->first();
+
+                    $inscricoes = Inscricao::whereHas("opcoes",function($q1) use ($opcao){
+                        $q1->where([["opcaos_id","=",$opcao->id]]);
+                    })->get();
+
+                    return view("inscricao.indicados", compact("evento", "opcao", "inscricoes"));
+                }
+            }
+        }
+        return abort(404);
+    }
 
     public function editar_inscricao($uuid)
     {
