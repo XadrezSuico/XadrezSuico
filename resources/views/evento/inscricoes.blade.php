@@ -209,7 +209,7 @@
 
                                 )
                                     <br/>
-                                    <a class="btn btn-default" href="{{url("/enxadrista/edit/".$inscricao->enxadrista->id)}}" role="button" target="_blank">Editar</a>
+                                    <a class="btn btn-warning btn-sm" href="{{url("/enxadrista/edit/".$inscricao->enxadrista->id)}}" role="button" target="_blank">Editar Enxadrista</a>
                                 @endif
                             </td>
                         </tr>
