@@ -201,6 +201,16 @@
                                         @endif
                                     @endif
                                 @endif
+
+
+                                @if(
+                                    \Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
+                                    \Illuminate\Support\Facades\Auth::user()->hasPermissionGlobalbyPerfil([9]) ||
+
+                                )
+                                    <br/>
+                                    <a class="btn btn-default" href="{{url("/enxadrista/edit/".$inscricao->enxadrista->id)}}" role="button" target="_blank">Editar</a>
+                                @endif
                             </td>
                         </tr>
                     @endforeach
