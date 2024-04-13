@@ -205,7 +205,7 @@
 
                                 @if(
                                     \Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
-                                    \Illuminate\Support\Facades\Auth::user()->hasPermissionGlobalbyPerfil([9]) ||
+                                    \Illuminate\Support\Facades\Auth::user()->hasPermissionGlobalbyPerfil([9])
 
                                 )
                                     <br/>
