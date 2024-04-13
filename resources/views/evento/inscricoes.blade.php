@@ -56,6 +56,14 @@
                         <th>Categoria Inscrição</th>
                         <th>Cidade</th>
                         <th>Clube</th>
+                        @if($evento->usa_cbx)
+                            <th>ID CBX</th>
+                            <th>Rating CBX</th>
+                        @endif
+                        @if($evento->usa_fide)
+                            <th>ID FIDE</th>
+                            <th>Rating FIDE</th>
+                        @endif
                         @if($evento->tipo_rating)
                             <th>Rating</th>
                             <th>Possui rating?</th>
@@ -99,6 +107,14 @@
                             <td>{{$inscricao->categoria->id}} - {{$inscricao->categoria->name}}</td>
                             <td>{{$inscricao->getCidade()}}</td>
                             <td>@if($inscricao->clube) {{$inscricao->clube->getName()}} @else - @endif</td>
+                            @if($evento->usa_cbx)
+                                <th>{{$inscricao->enxadrista->cbx_id}}</th>
+                                <th>{{$inscricao->enxadrista->showRating(1, $evento->tipo_modalidade)}}</th>
+                            @endif
+                            @if($evento->usa_fide)
+                                <th>{{$inscricao->enxadrista->fide_id}}</th>
+                                <th>{{$inscricao->enxadrista->showRating(0, $evento->tipo_modalidade, $evento->getConfig("fide_sequence"))}}</th>
+                            @endif
                             @if($evento->tipo_rating)
                                 <td>{{$inscricao->enxadrista->ratingParaEvento($evento->id,true)}}</td>
                                 <td>@if($inscricao->enxadrista->hasRatingParaEvento($evento->id)) Sim @endif</td>
