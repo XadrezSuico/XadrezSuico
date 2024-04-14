@@ -174,6 +174,18 @@ class Torneio_ImportacaoController extends Controller
                     $retornos[] = date("d/m/Y H:i:s") . " - ALERTA! Grupo de Evento/Evento não possui critérios de desempate vinculados!!!";
                 }
                 $retornos[] = "<hr/>";
+                $retornos[] = date("d/m/Y H:i:s") . " - Removendo resultados que porventura já tenham sido importados:";
+                foreach ($torneio->inscricoes->all() as $inscricao) {
+                    $inscricao->pontos = 0;
+                    $inscricao->save();
+                    $retornos[] = date("d/m/Y H:i:s") . " - Removendo resultados da Inscrição #{$inscricao->id}";
+
+                    foreach ($inscricao->criterios_desempate->all() as $inscricao_criterio_desempate) {
+                        $inscricao_criterio_desempate->delete();
+                        $retornos[] = date("d/m/Y H:i:s") . " - Removendo critério de desempate da Inscrição #{$inscricao->id}";
+                    }
+                }
+                $retornos[] = date("d/m/Y H:i:s") . " - Remoção concluída";
                 $retornos[] = date("d/m/Y H:i:s") . " - Início do Processamento dos Resultados:";
             } else {
                 $line = explode(";", $line);
@@ -580,6 +592,20 @@ class Torneio_ImportacaoController extends Controller
                     $j++;
                 }
                 $retornos[] = "<hr/>";
+                $retornos[] = date("d/m/Y H:i:s") . " - Removendo resultados que porventura já tenham sido importados:";
+                foreach($torneio->inscricoes->all() as $inscricao){
+                    $inscricao->pontos = 0;
+                    $inscricao->save();
+                    $retornos[] = date("d/m/Y H:i:s") . " - Removendo resultados da Inscrição #{$inscricao->id}";
+
+                    foreach($inscricao->criterios_desempate->all() as $inscricao_criterio_desempate){
+                        $inscricao_criterio_desempate->delete();
+                        $retornos[] = date("d/m/Y H:i:s") . " - Removendo critério de desempate da Inscrição #{$inscricao->id}";
+                    }
+
+
+                }
+                $retornos[] = date("d/m/Y H:i:s") . " - Remoção concluída";
                 $retornos[] = date("d/m/Y H:i:s") . " - Início do Processamento dos Resultados:";
             } else {
                 $line = explode(";", $line);
@@ -863,6 +889,18 @@ class Torneio_ImportacaoController extends Controller
                     $j++;
                 }
                 $retornos[] = "<hr/>";
+                $retornos[] = date("d/m/Y H:i:s") . " - Removendo resultados que porventura já tenham sido importados:";
+                foreach ($torneio->inscricoes->all() as $inscricao) {
+                    $inscricao->pontos = 0;
+                    $inscricao->save();
+                    $retornos[] = date("d/m/Y H:i:s") . " - Removendo resultados da Inscrição #{$inscricao->id}";
+
+                    foreach ($inscricao->criterios_desempate->all() as $inscricao_criterio_desempate) {
+                        $inscricao_criterio_desempate->delete();
+                        $retornos[] = date("d/m/Y H:i:s") . " - Removendo critério de desempate da Inscrição #{$inscricao->id}";
+                    }
+                }
+                $retornos[] = date("d/m/Y H:i:s") . " - Remoção concluída";
                 $retornos[] = date("d/m/Y H:i:s") . " - Início do Processamento dos Resultados:";
             } else {
                 $line = explode(";", $line);
