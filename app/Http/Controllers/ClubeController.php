@@ -53,8 +53,8 @@ class ClubeController extends Controller
                     return redirect()->back()->withErrors($validator->errors());
                 }
 
-                if (Clube::where([["abbr", "=", $request->input("abbr")]])->count() > 0) {
-                    $clube_abbr = Clube::where([["abbr", "=", $request->input("abbr")]])->first();
+                if (Clube::where([["abbr", "=", mb_strtoupper($request->input("abbr"))]])->count() > 0) {
+                    $clube_abbr = Clube::where([["abbr", "=", mb_strtoupper($request->input("abbr"))]])->first();
                     $messageBag = new MessageBag;
                     $messageBag->add("type", "danger");
                     $messageBag->add("alerta", "Já há outro clube com essa mesma abreviação: {$clube_abbr->id} - " . $clube_abbr->getName());
@@ -96,8 +96,8 @@ class ClubeController extends Controller
         $clube->name = $request->input("name");
         if($request->has("abbr")){
             if ($request->input("abbr") != null && $request->input("abbr") != ""){
-                if(Clube::where([["id","!=",$clube->id],["abbr","=", $request->input("abbr")]])->count() > 0) {
-                    $clube_abbr = Clube::where([["id", "!=", $clube->id], ["abbr", "=", $request->input("abbr")]])->first();
+                if(Clube::where([["id","!=",$clube->id],["abbr","=", mb_strtoupper($request->input("abbr"))]])->count() > 0) {
+                    $clube_abbr = Clube::where([["id", "!=", $clube->id], ["abbr", "=", mb_strtoupper($request->input("abbr"))]])->first();
                     $messageBag = new MessageBag;
                     $messageBag->add("type", "danger");
                     $messageBag->add("alerta", "Já há outro clube com essa mesma abreviação: {$clube_abbr->id} - ". $clube_abbr->getName());
