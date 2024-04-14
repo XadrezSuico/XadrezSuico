@@ -117,7 +117,7 @@ class Enxadrista extends Model
             })->first();
         }
 
-        return null
+        return null;
     }
 
     public function isDeletavel()
