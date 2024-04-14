@@ -53,7 +53,9 @@ Route::group(["prefix"=>"v1"],function(){
             Route::post('/register', 'API\Player\PlayerRegistrationController@register')->name('api.v1.player.registration.register');
         });
     });
-
+    Route::group(["prefix" => "title"], function () {
+        Route::get('/select2', 'API\Player\TitleController@list_select2')->name('api.v1.titles.select2');
+    });
 
     Route::group(["prefix"=>"sexes"],function(){
         Route::get('/list', 'API\Sex\SexController@list')->name('api.v1.sex.sex.list');

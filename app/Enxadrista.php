@@ -72,6 +72,10 @@ class Enxadrista extends Model
     {
         return $this->hasMany("App\Vinculo", "enxadrista_id", "id");
     }
+    public function titles()
+    {
+        return $this->hasMany("App\PlayerTitle", "players_id", "id");
+    }
 
     public function configs()
     {

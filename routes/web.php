@@ -391,6 +391,11 @@ Route::group(["prefix"=>"enxadrista"],function(){
     Route::group(["prefix"=>"{id}/documentos"],function(){
 	    Route::get('/getDocumento/{tipo_documento_id}', 'DocumentoController@getDocumento')->name('enxadrista.documentos.getDocumento');
     });
+    Route::group(["prefix" => "{id}/titles"], function () {
+	    Route::get('/list', 'Player\TitleController@list')->name('enxadrista.titles.list');
+	    Route::post('/add', 'Player\TitleController@add')->name('enxadrista.titles.add');
+	    Route::get('/delete/{player_titles_id}', 'Player\TitleController@delete')->name('enxadrista.titles.delete');
+    });
 });
 
 Route::group(["prefix"=>"sexo"],function(){
