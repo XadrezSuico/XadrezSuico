@@ -176,7 +176,7 @@ class Torneio_ImportacaoController extends Controller
                 $retornos[] = "<hr/>";
                 $retornos[] = date("d/m/Y H:i:s") . " - Removendo resultados que porventura já tenham sido importados:";
                 foreach ($torneio->inscricoes->all() as $inscricao) {
-                    $inscricao->pontos = 0;
+                    $inscricao->pontos = null;
                     $inscricao->save();
                     $retornos[] = date("d/m/Y H:i:s") . " - Removendo resultados da Inscrição #{$inscricao->id}";
 
@@ -594,7 +594,7 @@ class Torneio_ImportacaoController extends Controller
                 $retornos[] = "<hr/>";
                 $retornos[] = date("d/m/Y H:i:s") . " - Removendo resultados que porventura já tenham sido importados:";
                 foreach($torneio->inscricoes->all() as $inscricao){
-                    $inscricao->pontos = 0;
+                    $inscricao->pontos = null;
                     $inscricao->save();
                     $retornos[] = date("d/m/Y H:i:s") . " - Removendo resultados da Inscrição #{$inscricao->id}";
 
@@ -891,7 +891,7 @@ class Torneio_ImportacaoController extends Controller
                 $retornos[] = "<hr/>";
                 $retornos[] = date("d/m/Y H:i:s") . " - Removendo resultados que porventura já tenham sido importados:";
                 foreach ($torneio->inscricoes->all() as $inscricao) {
-                    $inscricao->pontos = 0;
+                    $inscricao->pontos = null;
                     $inscricao->save();
                     $retornos[] = date("d/m/Y H:i:s") . " - Removendo resultados da Inscrição #{$inscricao->id}";
 
