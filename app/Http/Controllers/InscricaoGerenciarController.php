@@ -594,7 +594,7 @@ class InscricaoGerenciarController extends Controller
     }
 
     private function generateTxt_0($inscricoes, $evento, $torneio){
-        $texto = "No;Nome Completo;ID;FED;";
+        $texto = "No;Nome Completo;Título;ID;FED;";
         if ($evento->tipo_rating) {
             if ($evento->usa_fide) {
                 $texto .= "FIDE;";
@@ -638,6 +638,11 @@ class InscricaoGerenciarController extends Controller
 
             $texto .= $i++ . ";";
             $texto .= $inscricao->enxadrista->name . ";";
+            if ($inscricao->enxadrista->titles()->count() > 0) {
+                $title = $inscricao->enxadrista->getTitle();
+                $texto .= $title->title->abbr;
+            }
+            $texto .= ";";
             if($evento->calcula_cbx){
                 $texto .= $inscricao->enxadrista->cbx_id . ";";
             }else{
@@ -686,7 +691,7 @@ class InscricaoGerenciarController extends Controller
         return $texto;
     }
     private function generateTxt_3($inscricoes, $evento, $torneio){
-        $texto = "No;Nome Completo;ID;FED;";
+        $texto = "No;Nome Completo;Título;ID;FED;";
         if ($evento->tipo_rating) {
             if ($evento->usa_fide) {
                 $texto .= "FIDE;";
@@ -728,6 +733,11 @@ class InscricaoGerenciarController extends Controller
         foreach ($inscritos as $inscricao) {
             $texto .= $i++ . ";";
             $texto .= $inscricao->enxadrista->name . ";";
+            if ($inscricao->enxadrista->titles()->count() > 0) {
+                $title = $inscricao->enxadrista->getTitle();
+                $texto .= $title->title->abbr;
+            }
+            $texto .= ";";
             if($evento->calcula_cbx){
                 $texto .= $inscricao->enxadrista->cbx_id . ";";
             }else{
@@ -776,7 +786,7 @@ class InscricaoGerenciarController extends Controller
         return $texto;
     }
     private function generateTxt_4($inscricoes, $evento, $torneio){
-        $texto = "No;Nome Completo;ID;FED;";
+        $texto = "No;Nome Completo;Título;ID;FED;";
         if ($evento->tipo_rating) {
             if ($evento->usa_fide) {
                 $texto .= "FIDE;";
@@ -818,6 +828,11 @@ class InscricaoGerenciarController extends Controller
         foreach ($inscritos as $inscricao) {
             $texto .= $i++ . ";";
             $texto .= $inscricao->enxadrista->name . " [".$inscricao->enxadrista->chess_com_username."];";
+            if ($inscricao->enxadrista->titles()->count() > 0) {
+                $title = $inscricao->enxadrista->getTitle();
+                $texto .= $title->title->abbr;
+            }
+            $texto .= ";";
             if($evento->calcula_cbx){
                 $texto .= $inscricao->enxadrista->cbx_id . ";";
             }else{
@@ -866,7 +881,7 @@ class InscricaoGerenciarController extends Controller
         return $texto;
     }
     private function generateTxt_5($inscricoes, $evento, $torneio){
-        $texto = "No;Nome Completo;ID;FED;";
+        $texto = "No;Nome Completo;Título;ID;FED;";
         if ($evento->tipo_rating) {
             if ($evento->usa_fide) {
                 $texto .= "FIDE;";
@@ -908,6 +923,11 @@ class InscricaoGerenciarController extends Controller
         foreach ($inscritos as $inscricao) {
             $texto .= $i++ . ";";
             $texto .= $inscricao->enxadrista->name.";";
+            if ($inscricao->enxadrista->titles()->count() > 0) {
+                $title = $inscricao->enxadrista->getTitle();
+                $texto .= $title->title->abbr;
+            }
+            $texto .= ";";
             if($evento->calcula_cbx){
                 $texto .= $inscricao->enxadrista->cbx_id . ";";
             }else{
@@ -951,7 +971,7 @@ class InscricaoGerenciarController extends Controller
         return $texto;
     }
     private function generateTxt_6($inscricoes, $evento, $torneio){
-        $texto = "No;Nome Completo;ID;FED;";
+        $texto = "No;Nome Completo;Título;ID;FED;";
         if ($evento->tipo_rating) {
             if ($evento->usa_fide) {
                 $texto .= "FIDE;";
@@ -1000,6 +1020,11 @@ class InscricaoGerenciarController extends Controller
         foreach ($inscritos as $inscricao) {
             $texto .= $i++ . ";";
             $texto .= $inscricao->enxadrista->name.";";
+            if ($inscricao->enxadrista->titles()->count() > 0) {
+                $title = $inscricao->enxadrista->getTitle();
+                $texto .= $title->title->abbr;
+            }
+            $texto .= ";";
             if($evento->calcula_cbx){
                 $texto .= $inscricao->enxadrista->cbx_id . ";";
             }else{
@@ -1051,7 +1076,7 @@ class InscricaoGerenciarController extends Controller
     }
 
     private function generateTxt_1($inscricoes, $evento, $torneio){
-        $texto = "No;Nome Completo;ID;FED;FIDE;id FIDE;";
+        $texto = "No;Nome Completo;Título;ID;FED;FIDE;id FIDE;";
         if ($evento->usa_cbx) {
             $texto .= "Elonac;";
         }
@@ -1080,6 +1105,11 @@ class InscricaoGerenciarController extends Controller
 
             $texto .= $i++ . ";";
             $texto .= $inscricao->enxadrista->name . ";";
+            if ($inscricao->enxadrista->titles()->count() > 0) {
+                $title = $inscricao->enxadrista->getTitle();
+                $texto .= $title->title->abbr;
+            }
+            $texto .= ";";
             $texto .= $inscricao->enxadrista->cbx_id . ";";
             if($evento->hasConfig("fed_use_club")){
                 $texto .= (($inscricao->clube) ? $inscricao->clube->abbr : "") . ";";
@@ -1154,7 +1184,7 @@ class InscricaoGerenciarController extends Controller
 
 
     private function generateTxt_7($inscricoes, $evento, $torneio){
-        $texto = "No;Nome Completo;ID;FED;FIDE;id FIDE;";
+        $texto = "No;Nome Completo;Título;ID;FED;FIDE;id FIDE;";
         if ($evento->usa_cbx) {
             $texto .= "Elonac;";
         }
@@ -1183,6 +1213,11 @@ class InscricaoGerenciarController extends Controller
 
             $texto .= $i++ . ";";
             $texto .= $inscricao->enxadrista->name . ";";
+            if ($inscricao->enxadrista->titles()->count() > 0) {
+                $title = $inscricao->enxadrista->getTitle();
+                $texto .= $title->title->abbr;
+            }
+            $texto .= ";";
             $texto .= $inscricao->enxadrista->cbx_id . ";";
             if ($evento->hasConfig("fed_use_club")) {
                 $texto .= (($inscricao->clube) ? $inscricao->clube->abbr : "") . ";";
@@ -1256,7 +1291,7 @@ class InscricaoGerenciarController extends Controller
     }
 
     private function generateTxt_2($inscricoes, $evento, $torneio){
-        $texto = "No;Nome Completo;ID;FED;";
+        $texto = "No;Nome Completo;Título;ID;FED;";
         if ($evento->tipo_rating) {
             $texto .= "FIDE;";
         } else {
@@ -1294,6 +1329,11 @@ class InscricaoGerenciarController extends Controller
         foreach ($inscritos as $inscricao) {
             $texto .= $i++ . ";";
             $texto .= $inscricao->enxadrista->name . ";";
+            if ($inscricao->enxadrista->titles()->count() > 0) {
+                $title = $inscricao->enxadrista->getTitle();
+                $texto .= $title->title->abbr;
+            }
+            $texto .= ";";
             if($evento->calcula_cbx){
                 $texto .= $inscricao->enxadrista->cbx_id . ";";
             }else{
