@@ -643,7 +643,11 @@ class InscricaoGerenciarController extends Controller
             }else{
                 $texto .= $inscricao->enxadrista->id . ";";
             }
-            $texto .= $inscricao->enxadrista->pais_nascimento->codigo_iso.";";
+            if ($evento->hasConfig("fed_use_club")) {
+                $texto .= (($inscricao->clube) ? $inscricao->clube->abbr : "") . ";";
+            } else {
+                $texto .= $inscricao->enxadrista->pais_nascimento->codigo_iso . ";";
+            }
 
             if ($evento->tipo_rating) {
                 if ($evento->usa_fide) {
@@ -729,7 +733,11 @@ class InscricaoGerenciarController extends Controller
             }else{
                 $texto .= $inscricao->enxadrista->id . ";";
             }
-            $texto .= (($inscricao->enxadrista->pais_nascimento) ? $inscricao->enxadrista->pais_nascimento->codigo_iso : "").";";
+            if ($evento->hasConfig("fed_use_club")) {
+                $texto .= (($inscricao->clube) ? $inscricao->clube->abbr : "") . ";";
+            } else {
+                $texto .= (($inscricao->enxadrista->pais_nascimento) ? $inscricao->enxadrista->pais_nascimento->codigo_iso : "") . ";";
+            }
 
             if ($evento->tipo_rating) {
                 if ($evento->usa_fide) {
@@ -815,7 +823,11 @@ class InscricaoGerenciarController extends Controller
             }else{
                 $texto .= $inscricao->enxadrista->id . ";";
             }
-            $texto .= $inscricao->enxadrista->pais_nascimento->codigo_iso.";";
+            if ($evento->hasConfig("fed_use_club")) {
+                $texto .= (($inscricao->clube) ? $inscricao->clube->abbr : "") . ";";
+            } else {
+                $texto .= $inscricao->enxadrista->pais_nascimento->codigo_iso . ";";
+            }
 
             if ($evento->tipo_rating) {
                 if ($evento->usa_fide) {
@@ -1069,7 +1081,11 @@ class InscricaoGerenciarController extends Controller
             $texto .= $i++ . ";";
             $texto .= $inscricao->enxadrista->name . ";";
             $texto .= $inscricao->enxadrista->cbx_id . ";";
-            $texto .= $inscricao->enxadrista->pais_nascimento->codigo_iso.";";
+            if($evento->hasConfig("fed_use_club")){
+                $texto .= (($inscricao->clube) ? $inscricao->clube->abbr : "") . ";";
+            }else{
+                $texto .= $inscricao->enxadrista->pais_nascimento->codigo_iso . ";";
+            }
 
             if ($evento->tipo_rating) {
                 if ($inscricao->enxadrista->showRatingInterno($evento->tipo_rating->id)) {
@@ -1168,7 +1184,11 @@ class InscricaoGerenciarController extends Controller
             $texto .= $i++ . ";";
             $texto .= $inscricao->enxadrista->name . ";";
             $texto .= $inscricao->enxadrista->cbx_id . ";";
-            $texto .= $inscricao->enxadrista->pais_nascimento->codigo_iso.";";
+            if ($evento->hasConfig("fed_use_club")) {
+                $texto .= (($inscricao->clube) ? $inscricao->clube->abbr : "") . ";";
+            } else {
+                $texto .= $inscricao->enxadrista->pais_nascimento->codigo_iso . ";";
+            }
 
             if ($evento->tipo_rating) {
                 if ($inscricao->enxadrista->showRatingInterno($evento->tipo_rating->id)) {
@@ -1279,7 +1299,11 @@ class InscricaoGerenciarController extends Controller
             }else{
                 $texto .= $inscricao->enxadrista->id . ";";
             }
-            $texto .= $inscricao->enxadrista->pais_nascimento->codigo_iso.";";
+            if ($evento->hasConfig("fed_use_club")) {
+                $texto .= (($inscricao->clube) ? $inscricao->clube->abbr : "") . ";";
+            } else {
+                $texto .= $inscricao->enxadrista->pais_nascimento->codigo_iso . ";";
+            }
 
             if ($evento->tipo_rating) {
                 if ($inscricao->enxadrista->showRatingInterno($evento->tipo_rating->id)) {
