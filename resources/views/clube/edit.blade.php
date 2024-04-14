@@ -36,6 +36,10 @@
 						<input name="name" id="name" class="form-control" type="text" value="{{$clube->getName()}}" />
 					</div>
 					<div class="form-group">
+						<label for="abbr">Abreviação</label>
+						<input name="abbr" id="abbr" class="form-control" type="text" maxlength="3" value="{{$clube->abbr}}" />
+					</div>
+					<div class="form-group">
 						<label for="cidade_id">Cidade</label>
 						<select id="cidade_id" name="cidade_id" class="form-control">
 							<option value="">--- Selecione uma cidade ---</option>

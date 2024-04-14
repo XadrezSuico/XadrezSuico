@@ -6,6 +6,8 @@ use App\Cidade;
 use App\Clube;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\MessageBag;
 
 class ClubeController extends Controller
 {
@@ -39,8 +41,29 @@ class ClubeController extends Controller
             return redirect("/");
         }
 
+
         $clube = new Clube;
         $clube->name = $request->input("name");
+        if($request->has("abbr")){
+            if($request->input("abbr") != null && $request->input("abbr") != ""){
+                $validator = Validator::make($request->all(), [
+                    'abbr' => 'required|string|max:3',
+                ]);
+                if ($validator->fails()) {
+                    return redirect()->back()->withErrors($validator->errors());
+                }
+
+                if (Clube::where([["abbr", "=", $request->input("abbr")]])->count() > 0) {
+                    $clube_abbr = Clube::where([["abbr", "=", $request->input("abbr")]])->first();
+                    $messageBag = new MessageBag;
+                    $messageBag->add("type", "danger");
+                    $messageBag->add("alerta", "Já há outro clube com essa mesma abreviação: {$clube_abbr->id} - " . $clube_abbr->getName());
+
+                    return redirect()->back()->withErrors($messageBag);
+                }
+                $clube->abbr = mb_strtoupper($request->input("abbr"));
+            }
+        }
         $clube->cidade_id = $request->input("cidade_id");
 
         if(env("ENTITY_DOMAIN",null) == "fexpar.com.br"){
@@ -71,6 +94,23 @@ class ClubeController extends Controller
 
         $clube = Clube::find($id);
         $clube->name = $request->input("name");
+        if($request->has("abbr")){
+            if ($request->input("abbr") != null && $request->input("abbr") != ""){
+                if(Clube::where([["id","!=",$clube->id],["abbr","=", $request->input("abbr")]])->count() > 0) {
+                    $clube_abbr = Clube::where([["id", "!=", $clube->id], ["abbr", "=", $request->input("abbr")]])->first();
+                    $messageBag = new MessageBag;
+                    $messageBag->add("type", "danger");
+                    $messageBag->add("alerta", "Já há outro clube com essa mesma abreviação: {$clube_abbr->id} - ". $clube_abbr->getName());
+
+                    return redirect()->back()->withErrors($messageBag);
+                }
+                $clube->abbr = mb_strtoupper($request->input("abbr"));
+            }else{
+                $clube->abbr = null;
+            }
+        }else{
+            $clube->abbr = null;
+        }
         $clube->cidade_id = $request->input("cidade_id");
 
         if(env("ENTITY_DOMAIN",null) == "fexpar.com.br"){
@@ -173,7 +213,9 @@ class ClubeController extends Controller
                             ["name", "like", "%" . $request->input("q") . "%"],
                         ]);
                     });
-                });
+                })->orWhere([
+                    ["abbr","like", "%" . $request->input("q") . "%"]
+                ]);
             })
             ->limit(30)
             ->get();
@@ -186,7 +228,9 @@ class ClubeController extends Controller
                         ["name", "like", "%" . $request->input("q") . "%"],
                     ]);
                 });
-            })
+            })->orWhere([
+                ["abbr", "like", "%" . $request->input("q") . "%"]
+            ])
             ->limit(30)
             ->get();
         }
