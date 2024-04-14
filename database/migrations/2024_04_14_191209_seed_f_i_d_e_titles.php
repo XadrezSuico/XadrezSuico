@@ -37,7 +37,6 @@ class SeedFIDETitles extends Migration
             $title->name = $tit[2];
             $title->is_for_women = $tit[3];
             $title->is_online = $tit[4];
-            $title->is_used = true;
             $title->save();
         }
     }
