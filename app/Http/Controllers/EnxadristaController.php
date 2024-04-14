@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\MessageBag;
 use GuzzleHttp\Client;
+use Illuminate\Support\Facades\Validator;
 
 class EnxadristaController extends Controller
 {
@@ -70,7 +71,7 @@ class EnxadristaController extends Controller
         }
         $nome_corrigido = trim($nome_corrigido);
 
-        $validator = \Validator::make($request->all(), [
+        $validator = Validator::make($request->all(), [
             'name' => 'required|string',
             'email' => 'required|string|email|max:255',
             'born' => 'required|string',
@@ -184,6 +185,19 @@ class EnxadristaController extends Controller
 
             if ($request->has("cbx_id")) {
                 if ($request->input("cbx_id")) {
+
+                    $validator = Validator::make($request->all(), [
+                        'cbx_id' => 'required|integer',
+                    ]);
+                    if ($validator->fails()) {
+                        return redirect()->back()->withErrors($validator->errors());
+                    }
+
+                    if ($enxadrista->cbx_id) {
+                        if ($enxadrista->cbx_id != $request->input("cbx_id")) {
+                            $enxadrista->cbx_last_update = null;
+                        }
+                    }
                     $enxadrista->cbx_id = $request->input("cbx_id");
                 }
             }

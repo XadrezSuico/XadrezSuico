@@ -34,8 +34,17 @@ class CBXRatingController extends Controller
         $codigo_organizacao = 1;
 
         if($enxadrista->hasConfig("united_to")){
-            if($show_text) "Enxadrista unido ao cadastro de outro - Não permitido mais a consulta à CBX";
+            if($show_text) echo "Enxadrista unido ao cadastro de outro - Não permitido mais a consulta à CBX";
 
+            return;
+        }
+
+        if(!is_int($enxadrista->cbx_id)){
+            if ($show_text) echo "Enxadrista possui ID CBX que não atende às especificações.";
+            if ($save_rating){
+                $enxadrista->cbx_last_update = date("Y-m-d H:i:s");
+                $enxadrista->save();
+            }
             return;
         }
 
