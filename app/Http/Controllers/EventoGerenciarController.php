@@ -183,6 +183,18 @@ class EventoGerenciarController extends Controller
         } else {
             $evento->e_inscricao_apenas_com_link = false;
         }
+
+        if ($request->has("fed_use_club")) {
+            if($evento->hasConfig("fed_use_club")){
+                $config_fed = $evento->getConfig("fed_use_club");
+                if($config_fed["config"]->value_type != ConfigType::Boolean){
+                    $evento->removeConfig("fed_use_club");
+                }
+            }
+            $evento->setConfig("fed_use_club",ConfigType::Boolean,true);
+        } else {
+            $evento->removeConfig("fed_use_club");
+        }
         if ($request->has("orientacao_pos_inscricao")) {
             if ($request->input("orientacao_pos_inscricao") != "") {
                 $evento->orientacao_pos_inscricao = $request->input("orientacao_pos_inscricao");
