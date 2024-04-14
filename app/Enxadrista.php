@@ -99,6 +99,27 @@ class Enxadrista extends Model
         return 0;
     }
 
+    public function getTitle(){
+        // FIDE
+        if ($this->titles()->whereHas("title", function ($q1) {
+            $q1->where([["entities_id", "=", 1]]);
+        })->count()) {
+            return $this->titles()->whereHas("title", function ($q1) {
+                $q1->where([["entities_id", "=", 1]]);
+            })->first();
+        }
+        // CBX
+        if ($this->titles()->whereHas("title", function ($q1) {
+            $q1->where([["entities_id", "=", 2]]);
+        })->count()) {
+            return $this->titles()->whereHas("title", function ($q1) {
+                $q1->where([["entities_id", "=", 2]]);
+            })->first();
+        }
+
+        return null
+    }
+
     public function isDeletavel()
     {
         if ($this->id != null) {

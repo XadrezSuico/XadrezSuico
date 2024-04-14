@@ -288,6 +288,11 @@ class RegisterController extends Controller
                     "birthday" => $inscricao->enxadrista->getNascimentoPublico(),
                     "city_name" => $inscricao->enxadrista->cidade->getName()
                 ];
+
+                if ($inscricao->enxadrista->titles()->count() > 0) {
+                    $title = $inscricao->enxadrista->getTitle();
+                    $item["player"]["name"] = "[{$title->title->abbr}] ". $inscricao->enxadrista->name;
+                }
                 $item["category"] = [
                     "id" => $inscricao->categoria->id,
                     "name" => $inscricao->categoria->name,

@@ -34,6 +34,10 @@ class PlayerController extends Controller
             $item = array();
             $item["id"] = $enxadrista->id;
             $item["name"] = $enxadrista->name;
+            if ($enxadrista->titles()->count() > 0) {
+                $title = $enxadrista->getTitle();
+                $item["name"] = "[{$title->title->abbr}] ".$enxadrista->name;
+            }
             $item["birthday"] = $enxadrista->getNascimentoPublico();
             $item["fide_id"] = ($enxadrista->fide_id) ? intval($enxadrista->fide_id) : null;
             $item["cbx_id"] = ($enxadrista->cbx_id) ? intval($enxadrista->cbx_id) : null;
