@@ -1478,9 +1478,28 @@
                                                     @if(
 														\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal()
                                                     )
-                                                    @if($evento->torneios()->count() > 1)
-                                                        <a class="btn btn-danger" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/migrate_to_new_event")}}" role="button" target="_blank">Separar em um novo evento (Admin)</a><br/>
-
+                                                        @if($evento->torneios()->count() > 1)
+                                                            <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" title="Separar em um novo evento: {{$torneio->id}} {{$torneio->name}}" data-target="#modalSeparate_{{$torneio->id}}">Separar em um novo evento (Admin)</button><br/>
+                                                            <!-- Modal Copiar -->
+                                                            <div class="modal fade modal-danger" id="modalSeparate_{{$torneio->id}}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                                                                <div class="modal-dialog" role="document">
+                                                                    <div class="modal-content">
+                                                                        <div class="modal-header">
+                                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                                                            <h4 class="modal-title" id="myModalLabel">Separar em um novo evento #{{$torneio->id}}: {{$torneio->name}}</h4>
+                                                                        </div>
+                                                                        <div class="modal-body">
+                                                                            <h2>Você tem certeza que pretende fazer isso?</h2><br>
+                                                                            <h4>Assim que efetuar <strong>NÃO SERÁ POSSÍVEL</strong> retornar a configuração anterior.</h4>
+                                                                            <h4>Você deseja efetuar a separação?</h4>
+                                                                        </div>
+                                                                        <div class="modal-footer">
+                                                                            <button type="button" class="btn btn-success" data-dismiss="modal">Não quero mais</button>
+                                                                            <a class="btn btn-danger" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/migrate_to_new_event")}}">Sim, quero separar em um novo evento (Admin)</a>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
                                                         @endif
                                                     @endif
                                                     @if($torneio->evento->is_lichess_integration)
