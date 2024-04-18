@@ -16,8 +16,9 @@ use App\Http\Util\Util;
 
 use App\Enxadrista;
 use App\Documento;
+use App\TipoDocumento;
 use App\TipoDocumentoPais;
-
+use Illuminate\Support\Facades\Validator;
 use Log;
 
 class PlayerRegistrationController extends Controller
@@ -375,6 +376,24 @@ class PlayerRegistrationController extends Controller
             return ["ok" => 0, "error" => 1, "message" => "O documento informado é inválido."];
         }
 
+        if(TipoDocumento::where([["id","=",$tipo_documento_id]])->count() == 0){
+            return ["ok" => 0, "error" => 1, "message" => "O documento informado é inválido."];
+        }
+
+        $tipo_documento = TipoDocumento::where([["id","=",$tipo_documento_id]])->first();
+
+        if($tipo_documento->validacao){
+            $campo = ["field"=> $documento];
+
+            $validator = Validator::make($campo, [
+                'field' => "required|{$tipo_documento->validacao}",
+            ]);
+
+            if ($validator->fails()) {
+                return ["ok" => 0, "error" => 1, "message" => "O documento informado é inválido."];
+            }
+        }
+
         return ["ok"=>1,"error"=>0];
     }
 
@@ -467,25 +486,8 @@ class PlayerRegistrationController extends Controller
             }
         }else if($request->has("documents")){
             foreach($request->documents as $key => $document){
-                $enxadrista_count = Enxadrista::whereHas("documentos",function($q1) use($key, $document){
-                    if($key == 1){
-                        $q1->where([
-                            ["tipo_documentos_id","=",$key],
-                            ["numero","=",Util::numeros($document)],
-                        ]);
-                    }else{
-                        $q1->where([
-                            ["tipo_documentos_id","=",$key],
-                            ["numero","=",$document],
-                        ]);
-                    }
-                })
-                ->whereDoesntHave("configs", function ($q1) {
-                    $q1->where([["key", "=", "united_to"]]);
-                })
-                ->count();
-                if($enxadrista_count > 0){
-                    $enxadrista = Enxadrista::whereHas("documentos",function($q1) use($key, $document){
+                if($document){
+                    $enxadrista_count = Enxadrista::whereHas("documentos",function($q1) use($key, $document){
                         if($key == 1){
                             $q1->where([
                                 ["tipo_documentos_id","=",$key],
@@ -501,21 +503,45 @@ class PlayerRegistrationController extends Controller
                     ->whereDoesntHave("configs", function ($q1) {
                         $q1->where([["key", "=", "united_to"]]);
                     })
-                    ->first();
+                    ->count();
+                    if($enxadrista_count > 0){
+                        $enxadrista = Enxadrista::whereHas("documentos",function($q1) use($key, $document){
+                            if($key == 1){
+                                $q1->where([
+                                    ["tipo_documentos_id","=",$key],
+                                    ["numero","=",Util::numeros($document)],
+                                ]);
+                            }else{
+                                $q1->where([
+                                    ["tipo_documentos_id","=",$key],
+                                    ["numero","=",$document],
+                                ]);
+                            }
+                        })
+                        ->whereDoesntHave("configs", function ($q1) {
+                            $q1->where([["key", "=", "united_to"]]);
+                        })
+                        ->first();
 
-                    $array = [
-                        "ok"=>1,
-                        "error"=>0,
-                        "message" => "Já há um cadastro de Enxadrista com o Documento informado.",
-                        "result" => true,
-                        "player" => [
-                            "id" => $enxadrista->id,
-                            "name" => $enxadrista->name,
-                            "birthday" => $enxadrista->getNascimentoPublico(),
-                            "city_name" => $enxadrista->cidade->getName(),
-                        ]
-                    ];
-                    return response()->json($array);
+                        $array = [
+                            "ok"=>1,
+                            "error"=>0,
+                            "message" => "Já há um cadastro de Enxadrista com o Documento informado.",
+                            "result" => true,
+                            "player" => [
+                                "id" => $enxadrista->id,
+                                "name" => $enxadrista->name,
+                                "birthday" => $enxadrista->getNascimentoPublico(),
+                                "city_name" => $enxadrista->cidade->getName(),
+                            ]
+                        ];
+                        return response()->json($array);
+                    }
+
+                    $return_check = $this->documento_validaDocumento($document,$key);
+                    if($return_check["ok"] != 1){
+                        return response()->json(["ok" => 0, "error" => 1, "message"=> $return_check["message"]]);
+                    }
                 }
             }
         }
