@@ -2091,7 +2091,21 @@ class InscricaoGerenciarController extends Controller
                     ["name", "like", "%" . $request->input("q") . "%"],
                 ]);
             });
-        })->get();
+        })->orWhere(function ($q) use ($request) {
+            if (count(explode("#", $request->q)) == 2) {
+                $id = explode("#", $request->q)[1];
+
+                $q->where([["id", "=", $id]]);
+            }
+        })->orWhere(function ($q) use ($request) {
+            if (count(explode("#", $request->q)) == 2) {
+                $id = explode("#", $request->q)[1];
+
+                $q->where([["id", "=", $id]]);
+            }
+        })->orWhere([
+            ["abbr", "like", "%" . $request->input("q") . "%"]
+        ])->get();
         $results = array(array("id" => -1, "text" => "Sem Clube"));
         foreach ($clubes as $clube) {
             $results[] = array("id" => $clube->id, "text" => $clube->getFullName());
