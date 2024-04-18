@@ -573,7 +573,15 @@ class InscricaoController extends Controller
                     ["name", "like", "%" . $request->input("q") . "%"],
                 ]);
             });
-        })
+        })->orWhere(function ($q) use ($request) {
+            if (count(explode("#", $request->q)) == 2) {
+                $id = explode("#", $request->q)[1];
+
+                $q->where([["id", "=", $id]]);
+            }
+        })->orWhere([
+            ["abbr", "like", "%" . $request->input("q") . "%"]
+        ])
         ->limit(30)
         ->get();
         $results = array(array("id" => -1, "text" => "Sem Clube"));
