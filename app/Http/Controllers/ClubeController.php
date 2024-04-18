@@ -213,6 +213,12 @@ class ClubeController extends Controller
                             ["name", "like", "%" . $request->input("q") . "%"],
                         ]);
                     });
+                })->orWhere(function ($q) use ($request) {
+                    if (count(explode("#", $request->q)) == 2) {
+                        $id = explode("#", $request->q)[1];
+
+                        $q->where([["id", "=", $id]]);
+                    }
                 })->orWhere([
                     ["abbr","like", "%" . $request->input("q") . "%"]
                 ]);
@@ -228,6 +234,12 @@ class ClubeController extends Controller
                         ["name", "like", "%" . $request->input("q") . "%"],
                     ]);
                 });
+            })->orWhere(function ($q) use ($request) {
+                if(count(explode("#",$request->q)) == 2){
+                    $id = explode("#", $request->q)[1];
+
+                    $q->where([["id","=",$id]]);
+                }
             })->orWhere([
                 ["abbr", "like", "%" . $request->input("q") . "%"]
             ])
