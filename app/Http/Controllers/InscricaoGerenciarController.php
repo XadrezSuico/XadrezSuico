@@ -2105,7 +2105,9 @@ class InscricaoGerenciarController extends Controller
             }
         })->orWhere([
             ["abbr", "like", "%" . $request->input("q") . "%"]
-        ])->get();
+        ])
+        ->limit(30)
+        ->get();
         $results = array(array("id" => -1, "text" => "Sem Clube"));
         foreach ($clubes as $clube) {
             $results[] = array("id" => $clube->id, "text" => $clube->getFullName());
