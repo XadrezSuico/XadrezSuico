@@ -499,7 +499,7 @@ class Evento extends Model
         $total = 0;
         $evento = $this;
         $inscricao = Inscricao::where([
-            ["enxadrista_id", "=", Enxadrista::getStaticId($enxadrista_id)],
+            ["enxadrista_id", "=", $enxadrista_id],
         ])
             ->whereHas("torneio", function ($q1) use ($evento) {
                 $q1->where("evento_id", "=", $evento->id);
