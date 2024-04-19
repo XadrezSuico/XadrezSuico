@@ -66,8 +66,11 @@ class Inscricao extends Model
 
             $model->needToReplicateInfo();
 
-            if(Cache::has($model->torneio->evento->getCacheKey("registration_public_list"))){
-                Cache::forget($model->torneio->evento->getCacheKey("registration_public_list"));
+            if (Cache::has($model->torneio->evento->getCacheKey("api_registration_public_list"))) {
+                Cache::forget($model->torneio->evento->getCacheKey("api_registration_public_list"));
+            }
+            if ($model->hasCache("v1_public_list")) {
+                $model->forgetCache("v1_public_list");
             }
         });
 
@@ -86,6 +89,9 @@ class Inscricao extends Model
         self::updated(function($model) {
             if (Cache::has($model->torneio->evento->getCacheKey("registration_public_list"))) {
                 Cache::forget($model->torneio->evento->getCacheKey("registration_public_list"));
+            }
+            if ($model->hasCache("v1_public_list")) {
+                $model->forgetCache("v1_public_list");
             }
         });
 
@@ -120,6 +126,9 @@ class Inscricao extends Model
         self::deleted(function($model) {
             if (Cache::has($model->torneio->evento->getCacheKey("registration_public_list"))) {
                 Cache::forget($model->torneio->evento->getCacheKey("registration_public_list"));
+            }
+            if ($model->hasCache("v1_public_list")) {
+                $model->forgetCache("v1_public_list");
             }
         });
     }
@@ -535,5 +544,24 @@ class Inscricao extends Model
                 }
             }
         }
+    }
+
+    public function getCacheKey($key){
+        return "registration__".$key;
+    }
+    public function hasCache($key = "v1_public_list"){
+        return Cache::has($this->getCacheKey($key));
+    }
+    public function getCache($key = "v1_public_list")
+    {
+        return json_decode(Cache::get($this->getCacheKey($key)));
+    }
+    public function setCache($key = "v1_public_list", $obj)
+    {
+        return Cache::set($this->getCacheKey($key), json_encode($obj));
+    }
+    public function forgetCache($key = "v1_public_list", $obj)
+    {
+        return Cache::forget($this->getCacheKey($key));
     }
 }

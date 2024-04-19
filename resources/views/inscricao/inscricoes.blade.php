@@ -122,36 +122,38 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($evento->getInscricoes() as $inscricao)
+                    @foreach($evento->getInscricoesCacheadas("v1_public_list") as $inscricao)
                         <tr>
                             <td>{{$inscricao->enxadrista->id}}</td>
-                            <td>{{$inscricao->enxadrista->getNomePublico()}}</td>
-                            @if($evento->data_inicio <= date("Y-m-d")) <td> @if($inscricao->confirmado) Sim @endif </td> @endif
-                            <td>{{$inscricao->enxadrista->getNascimentoPublico()}}</td>
+                            <td>{{$inscricao->enxadrista->name}}</td>
+                            @if($evento->data_inicio <= date("Y-m-d"))
+                                <td> {{$inscricao->confirmado}} </td>
+                            @endif
+                            <td>{{$inscricao->enxadrista->nascimento}}</td>
                             @if($evento->is_lichess_integration)
-                                <td>@if($inscricao->lichess_username) {{$inscricao->lichess_username}} @else - @endif</td>
-                                <td>@if($inscricao->is_lichess_found) Sim @else <strong><span style="color:red">Não</span></strong>@endif</td>
-                                <td>@if($inscricao->lichess_rating) {{$inscricao->lichess_rating}} @else - @endif</td>
-                                <td>@if($inscricao->start_position) {{$inscricao->start_position}} @else - @endif</td>
+                                <td>{{$inscricao->lichess->username}}</td>
+                                <td>@if($inscricao->lichess->found) Sim @else <strong><span style="color:red">Não</span></strong>@endif</td>
+                                <td>{{$inscricao->lichess->rating}}</td>
+                                <td>{{$inscricao->lichess->start_position}}</td>
                             @endif
                             @if($evento->is_chess_com)
-                                <td>@if($inscricao->chess_com_username) {{$inscricao->chess_com_username}} @else - @endif</td>
+                                <td>{{$inscricao->chess_com->username}}</td>
                             @endif
                             @if($evento->tipo_rating)
-                                <td>{{$inscricao->enxadrista->ratingParaEvento($evento->id,true)}}</td>
+                                <td>{{$inscricao->ratings->xadrezsuico}}</td>
                             @endif
                             @if($evento->usa_fide)
-                                <td>{{$inscricao->enxadrista->showRating(0, $evento->tipo_modalidade, $evento->getConfig("fide_sequence"))}}</td>
+                                <td>{{$inscricao->rating->fide}}</td>
                             @endif
                             @if($evento->usa_lbx)
-                                <td>{{$inscricao->enxadrista->showRating(2, $evento->tipo_modalidade)}}</td>
+                                <td>{{$inscricao->rating->lbx}}</td>
                             @endif
                             @if($evento->usa_cbx)
-                                <td>{{$inscricao->enxadrista->showRating(1, $evento->tipo_modalidade)}}</td>
+                                <td>{{$inscricao->rating->cbx}}</td>
                             @endif
                             <td>{{$inscricao->categoria->name}}</td>
-                            <td>{{$inscricao->getCidade()}}</td>
-                            <td>@if($inscricao->clube) {{$inscricao->clube->getName()}} @else - @endif</td>
+                            <td>{{$inscricao->cidade->name}}</td>
+                            <td>@if($inscricao->clube) {{$inscricao->clube->name}} @else - @endif</td>
                         </tr>
                     @endforeach
                 </tbody>

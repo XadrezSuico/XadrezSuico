@@ -24,8 +24,9 @@ use App\Http\Util\Util;
 use Illuminate\Http\Request;
 
 use App\Enum\EmailType;
-
+use Illuminate\Support\Facades\Cache;
 use Log;
+use stdClass;
 
 class InscricaoController extends Controller
 {
@@ -191,6 +192,67 @@ class InscricaoController extends Controller
         $evento = Evento::find($id);
         if ($evento) {
             if ($evento->e_permite_visualizar_lista_inscritos_publica) {
+                foreach($evento->getInscricoes() as $inscricao){
+                    if(!$inscricao->hasCache("v1_public_list")){
+                        $item = new stdClass;
+                        $item->enxadrista = new stdClass;
+                        $item->enxadrista->id = $inscricao->enxadrista->id;
+                        $item->enxadrista->name = $inscricao->enxadrista->getNomePublico();
+                        $item->enxadrista->nascimento = $inscricao->enxadrista->getNascimentoPublico();
+
+                        if ($evento->is_lichess_integration) {
+                            $item->lichess = new stdClass;
+                            $item->lichess->username = "-";
+                            $item->lichess->rating = "-";
+                            $item->lichess->start_position = "-";
+                            $item->lichess->found = $inscricao->is_lichess_found;
+                            $item->lichess->rating = $inscricao->is_lichess_found;
+                            if ($inscricao->lichess_username) $item->lichess->username = $inscricao->lichess_username;
+                            if ($inscricao->lichess_rating) $item->lichess->rating = $inscricao->lichess_rating;
+                            if ($inscricao->start_position) $item->lichess->start_position = $inscricao->start_position;
+                        }
+
+                        if ($evento->is_chess_com) {
+                            $item->chess_com = new stdClass;
+                            $item->chess_com->username = "-";
+                            if ($inscricao->chess_com_username) $item->chess_com->username = $inscricao->chess_com_username;
+                        }
+
+                        $item->ratings = new stdClass;
+
+                        if ($evento->tipo_rating) {
+                            $item->ratings->xadrezsuico = $inscricao->enxadrista->ratingParaEvento($evento->id, true);
+                        }
+
+                        if ($evento->usa_fide) {
+                            $item->rating->fide = $inscricao->enxadrista->showRating(0, $evento->tipo_modalidade, $evento->getConfig("fide_sequence"));
+                        }
+                        if ($evento->usa_lbx) {
+                            $item->rating->lbx = $inscricao->enxadrista->showRating(2, $evento->tipo_modalidade);
+                        }
+                        if ($evento->usa_cbx) {
+                            $item->rating->cbx = $inscricao->enxadrista->showRating(1, $evento->tipo_modalidade);
+                        }
+                        $item->cidade = new stdClass;
+                        $item->cidade->id = $inscricao->cidade->id;
+                        $item->cidade->name = $inscricao->cidade->getFullName();
+
+                        $item->clube = null;
+                        if ($inscricao->clube) {
+                            $item->clube = new stdClass;
+                            $item->clube->id = $inscricao->clube->id;
+                            $item->clube->name = $inscricao->clube->getFullName();
+                        }
+
+                        if ($evento->data_inicio <= date("Y-m-d")) {
+                            $item->confirmado = "";
+                            if ($inscricao->confirmado) $item->confirmado = "Sim";
+                        }
+
+                        $inscricao->setCache("v1_public_list",$item,3600);
+
+                    }
+                }
                 return view("inscricao.inscricoes", compact("evento"));
             }
         }

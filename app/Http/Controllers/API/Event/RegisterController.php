@@ -278,7 +278,7 @@ class RegisterController extends Controller
                 return response()->json(["ok"=>0,"error"=>1,"message"=>"O evento não permite exibir a lista de inscritos.","httpcode"=>401],401);
             }
 
-            $cache_key = $evento->getCacheKey("registration_public_list");
+            $cache_key = $evento->getCacheKey("api_registration_public_list");
             if(Cache::has($cache_key)){
                 return response()->json(["ok"=>1,"error"=>0,"cached"=>1, "registrations" => json_decode(Cache::get($cache_key))]);
             }

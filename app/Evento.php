@@ -556,6 +556,16 @@ class Evento extends Model
         return Inscricao::whereIn("id",$inscricoes_id)->orderByRaw(DB::raw("FIELD(id, ".implode(",",$inscricoes_id->toArray()).")"))->get();
     }
 
+    public function getInscricoesCacheadas($key){
+        $list = array();
+
+        foreach($this->getInscricoes() as $inscricao){
+            $list[] = $inscricao->getCache($key);
+        }
+
+        return $list;
+    }
+
     public function gerarToken()
     {
         if ($this->token == null) {
