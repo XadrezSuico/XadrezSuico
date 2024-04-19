@@ -239,7 +239,7 @@ class InscricaoController extends Controller
                         }
                         $item->cidade = new stdClass;
                         $item->cidade->id = $inscricao->cidade->id;
-                        $item->cidade->name = $inscricao->cidade->getFullName();
+                        $item->cidade->name = $inscricao->cidade->getName();
 
                         $item->clube = null;
                         if ($inscricao->clube) {
