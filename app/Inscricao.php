@@ -66,8 +66,8 @@ class Inscricao extends Model
 
             $model->needToReplicateInfo();
 
-            if(Cache::has($model->evento->getCacheKey("registration_public_list"))){
-                Cache::forget($model->evento->getCacheKey("registration_public_list"));
+            if(Cache::has($model->torneio->evento->getCacheKey("registration_public_list"))){
+                Cache::forget($model->torneio->evento->getCacheKey("registration_public_list"));
             }
         });
 
@@ -84,8 +84,8 @@ class Inscricao extends Model
         });
 
         self::updated(function($model) {
-            if (Cache::has($model->evento->getCacheKey("registration_public_list"))) {
-                Cache::forget($model->evento->getCacheKey("registration_public_list"));
+            if (Cache::has($model->torneio->evento->getCacheKey("registration_public_list"))) {
+                Cache::forget($model->torneio->evento->getCacheKey("registration_public_list"));
             }
         });
 
@@ -118,8 +118,8 @@ class Inscricao extends Model
         });
 
         self::deleted(function($model) {
-            if (Cache::has($model->evento->getCacheKey("registration_public_list"))) {
-                Cache::forget($model->evento->getCacheKey("registration_public_list"));
+            if (Cache::has($model->torneio->evento->getCacheKey("registration_public_list"))) {
+                Cache::forget($model->torneio->evento->getCacheKey("registration_public_list"));
             }
         });
     }
