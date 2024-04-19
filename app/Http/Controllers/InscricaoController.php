@@ -225,17 +225,17 @@ class InscricaoController extends Controller
                         }
 
                         if ($evento->usa_fide) {
-                            $item->rating->fide = $inscricao->enxadrista->showRating(
+                            $item->ratings->fide = $inscricao->enxadrista->showRating(
                                 0,
                                 $inscricao->torneio->evento->tipo_modalidade,
                                 $inscricao->torneio->evento->getConfig("fide_sequence")
                             );
                         }
                         if ($evento->usa_lbx) {
-                            $item->rating->lbx = $inscricao->enxadrista->showRating(2, $inscricao->torneio->evento->tipo_modalidade);
+                            $item->ratings->lbx = $inscricao->enxadrista->showRating(2, $inscricao->torneio->evento->tipo_modalidade);
                         }
                         if ($evento->usa_cbx) {
-                            $item->rating->cbx = $inscricao->enxadrista->showRating(1, $inscricao->torneio->evento->tipo_modalidade);
+                            $item->ratings->cbx = $inscricao->enxadrista->showRating(1, $inscricao->torneio->evento->tipo_modalidade);
                         }
                         $item->cidade = new stdClass;
                         $item->cidade->id = $inscricao->cidade->id;
@@ -254,7 +254,6 @@ class InscricaoController extends Controller
                         }
 
                         $inscricao->setCache("v1_public_list",$item,3600);
-
                     }
                 }
                 return view("inscricao.inscricoes", compact("evento"));
