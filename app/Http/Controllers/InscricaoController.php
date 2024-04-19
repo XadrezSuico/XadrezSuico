@@ -225,7 +225,11 @@ class InscricaoController extends Controller
                         }
 
                         if ($evento->usa_fide) {
-                            $item->rating->fide = $inscricao->enxadrista->showRating(0, $inscricao->torneio->evento->tipo_modalidade, $inscricao->torneio->evento->getConfig("fide_sequence"));
+                            $item->rating->fide = $inscricao->enxadrista->showRating(
+                                0,
+                                $inscricao->torneio->evento->tipo_modalidade,
+                                $inscricao->torneio->evento->getConfig("fide_sequence")
+                            );
                         }
                         if ($evento->usa_lbx) {
                             $item->rating->lbx = $inscricao->enxadrista->showRating(2, $inscricao->torneio->evento->tipo_modalidade);
