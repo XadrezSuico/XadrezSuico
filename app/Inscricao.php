@@ -11,6 +11,7 @@ use Illuminate\Support\Str;
 
 use App\Enum\ConfigType;
 use App\Helper\SingletonValueHelper;
+use Illuminate\Support\Facades\Cache;
 use Log;
 
 
@@ -64,6 +65,10 @@ class Inscricao extends Model
             }
 
             $model->needToReplicateInfo();
+
+            if(Cache::has($model->getCacheKey("registration_public_list"))){
+                Cache::forget($model->getCacheKey("registration_public_list"));
+            }
         });
 
         self::updating(function($model){
@@ -78,9 +83,11 @@ class Inscricao extends Model
             $model->needToReplicateInfo();
         });
 
-        // self::updated(function($model){
-        //     // ... code here
-        // });
+        self::updated(function($model) {
+            if (Cache::has($model->getCacheKey("registration_public_list"))) {
+                Cache::forget($model->getCacheKey("registration_public_list"));
+            }
+        });
 
         self::deleting(function($model){
             if(!$model->isFree()){
@@ -110,9 +117,11 @@ class Inscricao extends Model
             }
         });
 
-        // self::deleted(function($model){
-        //     // ... code here
-        // });
+        self::deleted(function($model) {
+            if (Cache::has($model->getCacheKey("registration_public_list"))) {
+                Cache::forget($model->getCacheKey("registration_public_list"));
+            }
+        });
     }
 
     public function enxadrista()

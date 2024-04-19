@@ -1177,6 +1177,10 @@ class Evento extends Model
         return ["ok"=>1,"error"=>0];
     }
 
+    public function getCacheKey($type = "registration_public_list"){
+        return "event_" . ($this->uuid ? $this->uuid : $this->id) . "_".$type;
+    }
+
 
     public function toAPIObject(){
         return [

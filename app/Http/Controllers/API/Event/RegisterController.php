@@ -17,11 +17,12 @@ use App\Classification\EventClassificateRule;
 use App\Enum\ClassificationTypeRule;
 use App\Rating;
 use App\MovimentacaoRating;
-
+use Illuminate\Support\Facades\Cache;
 use Log;
 
 class RegisterController extends Controller
 {
+    private $time_cache = 3600;
     public function register($uuid,Request $request)
     {
         Log::debug(json_encode($request->all()));
@@ -277,6 +278,11 @@ class RegisterController extends Controller
                 return response()->json(["ok"=>0,"error"=>1,"message"=>"O evento não permite exibir a lista de inscritos.","httpcode"=>401],401);
             }
 
+            $cache_key = $evento->getCacheKey("registration_public_list");
+            if(Cache::has($cache_key)){
+                return response()->json(["ok"=>1,"error"=>0,"cached"=>1, "registrations" => json_decode(Cache::get($cache_key))]);
+            }
+
             $list = array();
             foreach($evento->getInscricoes() as $inscricao){
                 $item = array();
@@ -401,6 +407,10 @@ class RegisterController extends Controller
 
                 $list[] = $item;
             }
+
+
+            Cache::put($cache_key, json_encode($list), $this->time_cache);
+
             return response()->json(["ok"=>1,"error"=>0,"registrations"=>$list]);
         }
         return response()->json(["ok"=>0,"error"=>1,"message"=>"Evento não encontrado.","httpcode"=>404],404);
