@@ -221,17 +221,17 @@ class InscricaoController extends Controller
                         $item->ratings = new stdClass;
 
                         if ($evento->tipo_rating) {
-                            $item->ratings->xadrezsuico = $inscricao->enxadrista->ratingParaEvento($evento->id, true);
+                            $item->ratings->xadrezsuico = $inscricao->enxadrista->ratingParaEvento($inscricao->torneio->evento->id, true);
                         }
 
                         if ($evento->usa_fide) {
-                            $item->rating->fide = $inscricao->enxadrista->showRating(0, $evento->tipo_modalidade, $evento->getConfig("fide_sequence"));
+                            $item->rating->fide = $inscricao->enxadrista->showRating(0, $inscricao->torneio->evento->tipo_modalidade, $inscricao->torneio->evento->getConfig("fide_sequence"));
                         }
                         if ($evento->usa_lbx) {
-                            $item->rating->lbx = $inscricao->enxadrista->showRating(2, $evento->tipo_modalidade);
+                            $item->rating->lbx = $inscricao->enxadrista->showRating(2, $inscricao->torneio->evento->tipo_modalidade);
                         }
                         if ($evento->usa_cbx) {
-                            $item->rating->cbx = $inscricao->enxadrista->showRating(1, $evento->tipo_modalidade);
+                            $item->rating->cbx = $inscricao->enxadrista->showRating(1, $inscricao->torneio->evento->tipo_modalidade);
                         }
                         $item->cidade = new stdClass;
                         $item->cidade->id = $inscricao->cidade->id;
