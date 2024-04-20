@@ -48,9 +48,13 @@ class Evento extends Model
             }
         });
 
-        // self::updated(function($model){
-        //     // ... code here
-        // });
+        self::updated(function($model){
+            foreach($model->torneios->all() as $torneio){
+                foreach($torneio->inscricoes->all() as $inscricao){
+                    if($inscricao->hasCache("v1_public_list")) $inscricao->revokeCache("v1_public_list");
+                }
+            }
+        });
 
         // self::deleting(function($model){
         //     // ... code here
