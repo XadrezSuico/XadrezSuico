@@ -143,13 +143,13 @@
                                 <td>{{$inscricao->ratings->xadrezsuico}}</td>
                             @endif
                             @if($evento->usa_fide)
-                                <td>{{$inscricao->rating->fide}}</td>
+                                <td>{{$inscricao->ratings->fide}}</td>
                             @endif
                             @if($evento->usa_lbx)
-                                <td>{{$inscricao->rating->lbx}}</td>
+                                <td>{{$inscricao->ratings->lbx}}</td>
                             @endif
                             @if($evento->usa_cbx)
-                                <td>{{$inscricao->rating->cbx}}</td>
+                                <td>{{$inscricao->ratings->cbx}}</td>
                             @endif
                             <td>{{$inscricao->categoria->name}}</td>
                             <td>{{$inscricao->cidade->name}}</td>
