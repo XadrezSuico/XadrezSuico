@@ -41,7 +41,7 @@
                     <td>{{ $inscricao->enxadrista->getNameToSM() }}</td>
                     <td>@if($inscricao->clube) {{ mb_strtoupper($inscricao->clube->abbr) }} @endif</td>
                     <td>{{ $inscricao->cidade->id }}</td>
-                    <td>{{ $inscricao->cidade->getName() }} @if($inscricao->clube) - {{$inscricao->clube->getName()}} @endif</td>
+                    <td>{{ $inscricao->cidade->getName(true,false) }} @if($inscricao->clube) - {{$inscricao->clube->getName()}} @endif</td>
                     <td>{{ $inscricao->enxadrista->getBornToSM() }}</td>
                     <td>
                         @if($evento->usa_cbx && !$evento->tipo_rating)

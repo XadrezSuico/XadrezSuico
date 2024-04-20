@@ -96,29 +96,29 @@ class Cidade extends Model
         }
     }
 
-    public function getName()
+    public function getName($state = true, $country = true)
     {
-        if($this->estado){
+        $name = mb_strtoupper(trim($this->name);
+        if($this->estado && $state){
             $estado = "";
             if($this->estado->abbr){
                  $estado = trim($this->estado->abbr);
             }else{
                  $estado = trim($this->estado->nome);
             }
-            if($this->estado->pais){
+            $name .= "/".$estado;
+            if($this->estado->pais && $country){
                 $pais = "";
                 if($this->estado->pais->codigo_iso){
                     $pais = trim($this->estado->pais->codigo_iso);
                 }else{
                     $pais = trim($this->estado->pais->nome);
                 }
-                return mb_strtoupper(trim($this->name) . "/" . $estado." - ".$pais);
-            }else{
-                return mb_strtoupper(trim($this->name) . "/" . $estado);
+                $name .= " - " . $pais;
             }
-        }else{
-            return mb_strtoupper(trim($this->name));
         }
+
+        return $name;
     }
 
     public function export($type){
