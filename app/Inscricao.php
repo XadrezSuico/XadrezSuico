@@ -560,7 +560,7 @@ class Inscricao extends Model
     {
         return Cache::set($this->getCacheKey($key), json_encode($obj));
     }
-    public function forgetCache($key = "v1_public_list", $obj)
+    public function forgetCache($key = "v1_public_list")
     {
         return Cache::forget($this->getCacheKey($key));
     }
