@@ -547,7 +547,7 @@ class Inscricao extends Model
     }
 
     public function getCacheKey($key){
-        return "registration__".$key;
+        return "registration_".($this->uuid ? $this->uuid : $this->id)."_".$key;
     }
     public function hasCache($key = "v1_public_list"){
         return Cache::has($this->getCacheKey($key));
