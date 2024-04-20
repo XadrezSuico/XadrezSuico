@@ -98,7 +98,7 @@ class Cidade extends Model
 
     public function getName($state = true, $country = true)
     {
-        $name = mb_strtoupper(trim($this->name);
+        $name = mb_strtoupper(trim($this->name));
         if($this->estado && $state){
             $estado = "";
             if($this->estado->abbr){
