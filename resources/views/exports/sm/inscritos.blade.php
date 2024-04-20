@@ -18,7 +18,7 @@
                 <tr>
                     <td>@if($evento->usa_cbx && !$evento->tipo_rating)
                             @if($inscricao->enxadrista->cbx_id)
-                                @if(is_int($inscricao->enxadrista->cbx_id))
+                                @if(is_int(trim($inscricao->enxadrista->cbx_id)))
                                     {{ $inscricao->enxadrista->cbx_id }}
                                 @else
                                     XZ{{ $inscricao->enxadrista->id }}
@@ -32,10 +32,10 @@
                     </td>
                     <td>
                         @if($evento->usa_lbx)
-                            {{ $inscricao->enxadrista->lbx_id }}
+                            {{ intval($inscricao->enxadrista->lbx_id) }}
                         @endif
                         @if($evento->usa_fide)
-                            {{ $inscricao->enxadrista->fide_id }}
+                            {{ intval($inscricao->enxadrista->fide_id) }}
                         @endif
                     </td>
                     <td>{{ $inscricao->enxadrista->getNameToSM() }}</td>
