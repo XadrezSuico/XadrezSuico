@@ -10,6 +10,7 @@
         <th>Birthday</th>
         <th>Rtg_Nat</th>
         <th>Rtg_Int</th>
+        <th>Title</th>
     </tr>
     </thead>
     <tbody>
@@ -59,6 +60,11 @@
                             {{ $inscricao->enxadrista->showRating(0,$evento->tipo_modalidade, $evento->getConfig("fide_sequence")) }}
                         @elseif($evento->usa_lbx)
                             {{ $inscricao->enxadrista->showRating(2,$evento->tipo_modalidade) }}
+                        @endif
+                    </td>
+                    <td>
+                        @if ($inscricao->enxadrista->titles()->count() > 0)
+                            {{$inscricao->enxadrista->getTitle()->title->abbr}}
                         @endif
                     </td>
                 </tr>
