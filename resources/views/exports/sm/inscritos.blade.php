@@ -18,7 +18,7 @@
                 <tr>
                     <td>@if($evento->usa_cbx && !$evento->tipo_rating)
                             @if($inscricao->enxadrista->cbx_id)
-                                @if(is_int(trim($inscricao->enxadrista->cbx_id)))
+                                @if(intval($inscricao->enxadrista->cbx_id) > 0)
                                     {{ $inscricao->enxadrista->cbx_id }}
                                 @else
                                     XZ{{ $inscricao->enxadrista->id }}
