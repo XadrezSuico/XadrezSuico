@@ -237,6 +237,10 @@ class InscricaoController extends Controller
                         if ($evento->usa_cbx) {
                             $item->ratings->cbx = $inscricao->enxadrista->showRating(1, $inscricao->torneio->evento->tipo_modalidade);
                         }
+                        $item->categoria = new stdClass;
+                        $item->categoria->id = $inscricao->categoria->id;
+                        $item->categoria->name = $inscricao->categoria->name;
+
                         $item->cidade = new stdClass;
                         $item->cidade->id = $inscricao->cidade->id;
                         $item->cidade->name = $inscricao->cidade->getName();
