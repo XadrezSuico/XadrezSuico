@@ -17,13 +17,13 @@
             @foreach($torneio->inscricoes->all() as $inscricao)
                 <tr>
                     <td>@if($evento->usa_cbx && !$evento->tipo_rating)
-                            @if($inscricao->cbx_id)
-                                {{ $inscricao->cbx_id }}
+                            @if($inscricao->enxadrista->cbx_id)
+                                {{ $inscricao->enxadrista->cbx_id }}
                             @else
-                                XZ{{ $inscricao->id }}
+                                XZ{{ $inscricao->enxadrista->id }}
                             @endif
                         @else
-                            XZ{{ $inscricao->id }}
+                            XZ{{ $inscricao->enxadrista->id }}
                         @endif
                     </td>
                     <td>
