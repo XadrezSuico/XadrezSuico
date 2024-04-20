@@ -13,7 +13,7 @@
     </tr>
     </thead>
     <tbody>
-        @foreach($evento->torneio->all() as $torneio)
+        @foreach($evento->torneios->all() as $torneio)
             @foreach($torneio->inscricoes->all() as $inscricao)
                 <tr>
                     <td>@if($evento->usa_cbx && !$evento->tipo_rating)
