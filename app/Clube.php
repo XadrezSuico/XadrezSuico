@@ -101,6 +101,9 @@ class Clube extends Model
     }
     public function getName()
     {
+        if($this->abbr){
+            return mb_strtoupper($this->name." [{$this->abbr}]");
+        }
         return mb_strtoupper($this->name);
     }
 

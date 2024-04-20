@@ -153,7 +153,7 @@
                             @endif
                             <td>{{$inscricao->categoria->name}}</td>
                             <td>{{$inscricao->cidade->name}}</td>
-                            <td>@if($inscricao->clube) {{$inscricao->clube->name}} @else - @endif</td>
+                            <td>@if($inscricao->clube) {{$inscricao->clube->getName()}} @else - @endif</td>
                         </tr>
                     @endforeach
                 </tbody>

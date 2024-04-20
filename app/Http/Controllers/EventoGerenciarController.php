@@ -28,6 +28,7 @@ use Maatwebsite\Excel\Facades\Excel;
 
 use App\Enum\EmailType;
 use App\Enum\ConfigType;
+use App\Exports\EnxadristasInscritosFromView;
 use App\Helper\SingletonValueHelper;
 use Log;
 
@@ -982,6 +983,23 @@ class EventoGerenciarController extends Controller
         $enxadristasView = new EnxadristasFromView();
         $enxadristasView->setEvento($id);
         return Excel::download($enxadristasView, 'xadrezSuico_evento_' . $id . '_lista_enxadristas_' . date('d-m-Y--H-i-s') . '.xlsx');
+    }
+
+    public function downloadListaManagerInscritosParaEvento($id)
+    {
+        $user = Auth::user();
+        $evento = Evento::find($id);
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionEventByPerfil($evento->id, [4]) &&
+            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
+        ) {
+            return redirect("/evento/dashboard/" . $evento->id);
+        }
+
+        $enxadristasView = new EnxadristasInscritosFromView();
+        $enxadristasView->setEvento($id);
+        return Excel::download($enxadristasView, 'xadrezSuico_evento_' . $id . '_lista_enxadristas_inscritos_' . date('d-m-Y--H-i-s') . '.xlsx');
     }
 
     public function criterio_desempate_add($id, Request $request)

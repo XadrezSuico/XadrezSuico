@@ -148,6 +148,7 @@ Route::group(["prefix"=>"evento"],function(){
     Route::get('/{id}/resultados/{categoria_id}/interno', 'EventoGerenciarController@resultados')->name('evento.resultados.interno');
 	Route::get('/{id}/inscricoes/list', 'EventoGerenciarController@visualizar_inscricoes')->name('evento.inscricoes.list');
 	Route::get('/{id}/enxadristas/sm', 'EventoGerenciarController@downloadListaManagerParaEvento')->name('evento.enxadristas.sm');
+	Route::get('/{id}/enxadristas/sm/inscritos', 'EventoGerenciarController@downloadListaManagerInscritosParaEvento')->name('evento.enxadristas.sm.inscritos');
     Route::group(["prefix"=>"{id}/rating"],function(){
         Route::get('/calculate', 'EventoGerenciarController@calcular_rating')->name('evento.rating.calculate');
     });
