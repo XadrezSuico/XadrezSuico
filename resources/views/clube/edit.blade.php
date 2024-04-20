@@ -33,7 +33,7 @@
 				<div class="box-body">
 					<div class="form-group">
 						<label for="name">Nome</label>
-						<input name="name" id="name" class="form-control" type="text" value="{{$clube->getName()}}" />
+						<input name="name" id="name" class="form-control" type="text" value="{{$clube->getName(false)}}" />
 					</div>
 					<div class="form-group">
 						<label for="abbr">Abreviação</label>

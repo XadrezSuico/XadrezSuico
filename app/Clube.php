@@ -99,9 +99,9 @@ class Clube extends Model
     {
         return $this->getPlace()." - ".$this->getName() ." (ID: ".$this->id.")";
     }
-    public function getName()
+    public function getName($with_abbr = true)
     {
-        if($this->abbr){
+        if($this->abbr && $with_abbr){
             return mb_strtoupper($this->name." [{$this->abbr}]");
         }
         return mb_strtoupper($this->name);
