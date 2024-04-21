@@ -76,7 +76,7 @@
     premiacoes_time = [];
     erro = false;
     @php($j = 0)
-    @foreach($evento->event_team_awards->all() as $premiacao_time)
+    @foreach($evento->event_team_awards()->where([["is_can_calculate","=",true]])->get() as $premiacao_time)
         @if(!$premiacao_time->hasConfig("no_classificate"))
             premiacoes_time[{{$j++}}] = {{$premiacao_time->id}};
         @endif

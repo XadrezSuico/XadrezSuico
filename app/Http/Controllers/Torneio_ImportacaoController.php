@@ -748,6 +748,7 @@ class Torneio_ImportacaoController extends Controller
 
                         if(!($inscricao->id > 0)){
                             $retornos[] = date("d/m/Y H:i:s") . " - Inscrição não efetuada. Ignorando.";
+                            $retornos[] = "<hr/>";
                             continue;
                         }
 
