@@ -28,7 +28,7 @@ class TeamAwardController extends Controller
         }
 
 
-        return view("evento.publico.team_award.standings", compact("event"));
+        return view("evento.publico.team_award.standings", compact("event","team_awards"));
     }
     public function list($events_id, $team_awards_id)
     {

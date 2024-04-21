@@ -23,7 +23,7 @@
                 <label for="team_awards_id">Premiações</label>
                 <select id="team_awards_id" name="team_awards_id" class="form-control">
                     <option value=""> -- Selecione uma Premiação antes de acessar a Lista de Resultados --</option>
-                    @foreach($event->event_team_awards->all() as $event_team_award)
+                    @foreach($team_awards as $event_team_award)
                         <option value="{{$event_team_award->id}}">{{$event_team_award->name}}</option>
                     @endforeach
                 </select>
