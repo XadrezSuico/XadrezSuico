@@ -18,7 +18,7 @@ use App\MovimentacaoRating;
 
 
 use Auth;
-
+use Illuminate\Support\Facades\Log;
 
 class Torneio_ImportacaoController extends Controller
 {
@@ -762,6 +762,7 @@ class Torneio_ImportacaoController extends Controller
                                         $exp_meio = explode("½", $line[($fields["Des" . $j])]);
                                         $exp_virgula = explode(",", $line[($fields["Des" . $j])]);
 
+                                        Log::debug("retornos: ".json_encode($retornos));
                                         $desempate = new InscricaoCriterioDesempate;
                                         $desempate->inscricao_id = $inscricao->id;
                                         $desempate->prioridade = $criterio->prioridade;
