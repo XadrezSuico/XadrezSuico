@@ -24,7 +24,7 @@ class TeamAwardController extends Controller
         }
 
         if(!isset($team_awards)){
-            $team_awards = $event->event_team_awards()->where([["is_public", "=", true]])->all();
+            $team_awards = $event->event_team_awards()->where([["is_public", "=", true]])->get();
         }
 
 
