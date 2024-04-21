@@ -746,6 +746,11 @@ class Torneio_ImportacaoController extends Controller
                         $inscricao->pontos = (count($exp_meio) > 1) ? $exp_meio[0] . ".5" : ((count($exp_virgula) > 1) ? $exp_virgula[0] . "." . $exp_virgula[1] : $exp_virgula[0]);
                         $inscricao->save();
 
+                        if(!($inscricao->id > 0)){
+                            $retornos[] = date("d/m/Y H:i:s") . " - Inscrição não efetuada. Ignorando.";
+                            continue;
+                        }
+
                         $j = 1;
                         $desempates = InscricaoCriterioDesempate::where([["inscricao_id", "=", $inscricao->id]])->get();
                         foreach ($desempates as $desempate) {
