@@ -48,7 +48,7 @@
     <div class="box">
         <div class="box-body">
             <ul>
-                @foreach($evento->event_team_awards->all() as $premiacao_time)
+                @foreach($evento->event_team_awards()->where([["is_can_calculate","=",true]])->get() as $premiacao_time)
                     @if(!$premiacao_time->hasConfig("no_classificate"))
                         <li>
                             <h3>Premiação: {{$premiacao_time->name}} <i id="time_award_{{$premiacao_time->id}}_icon" style="display:none;" class="fa fa-spinner"></i></h3>

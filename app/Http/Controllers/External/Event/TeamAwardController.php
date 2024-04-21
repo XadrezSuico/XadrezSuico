@@ -7,24 +7,59 @@ use Illuminate\Http\Request;
 
 use App\Evento;
 use App\Clube;
+use Illuminate\Support\Facades\Auth;
 
 class TeamAwardController extends Controller
 {
     public function standings($events_id)
     {
         $event = Evento::find($events_id);
+
+        if(Auth::check()){
+            $user = Auth::user();
+
+            if ($user->hasPermissionGlobal() || $user->hasPermissionEventByPerfil($event->id,[7])) {
+                $team_awards = $event->event_team_awards->all();
+            }
+        }
+
+        if(!isset($team_awards)){
+            $team_awards = $event->event_team_awards()->where([["is_public", "=", true]])->all();
+        }
+
+
         return view("evento.publico.team_award.standings", compact("event"));
     }
     public function list($events_id, $team_awards_id)
     {
         $event = Evento::find($events_id);
-        $team_award = $event->event_team_awards()->where([["id","=",$team_awards_id]])->first();
+        if (Auth::check()) {
+            $user = Auth::user();
+
+            if ($user->hasPermissionGlobal() || $user->hasPermissionEventByPerfil($event->id, [7])) {
+                $team_award = $event->event_team_awards()->where([["id", "=", $team_awards_id]])->first();
+            }
+        }
+
+        if (!isset($team_awards)) {
+            $team_award = $event->event_team_awards()->where([["id", "=", $team_awards_id], ["is_public", "=", true]])->first();
+        }
         return view("evento.publico.team_award.list", compact("event", "team_award"));
     }
     public function see_team_score($events_id, $team_awards_id, $clubs_id)
     {
         $event = Evento::find($events_id);
-        $team_award = $event->event_team_awards()->where([["id","=",$team_awards_id]])->first();
+        if (Auth::check()) {
+            $user = Auth::user();
+
+            if ($user->hasPermissionGlobal() || $user->hasPermissionEventByPerfil($event->id, [7])) {
+                $team_award = $event->event_team_awards()->where([["id", "=", $team_awards_id]])->first();
+            }
+        }
+
+        if (!isset($team_awards)) {
+            $team_award = $event->event_team_awards()->where([["id", "=", $team_awards_id], ["is_public", "=", true]])->first();
+        }
         $team_score = $team_award->team_scores()->where([["clubs_id","=",$clubs_id]])->first();
         $team = Clube::find($clubs_id);
 
