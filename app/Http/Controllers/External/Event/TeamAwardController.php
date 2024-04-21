@@ -41,7 +41,7 @@ class TeamAwardController extends Controller
             }
         }
 
-        if (!isset($team_awards)) {
+        if (!isset($team_award)) {
             $team_award = $event->event_team_awards()->where([["id", "=", $team_awards_id], ["is_public", "=", true]])->first();
         }
         return view("evento.publico.team_award.list", compact("event", "team_award"));
@@ -57,7 +57,7 @@ class TeamAwardController extends Controller
             }
         }
 
-        if (!isset($team_awards)) {
+        if (!isset($team_award)) {
             $team_award = $event->event_team_awards()->where([["id", "=", $team_awards_id], ["is_public", "=", true]])->first();
         }
         $team_score = $team_award->team_scores()->where([["clubs_id","=",$clubs_id]])->first();
