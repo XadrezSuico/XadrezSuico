@@ -18,29 +18,56 @@ use App\Documento;
 use App\Cidade;
 use App\Clube;
 use App\Categoria;
+use App\Enum\ConfigType;
 use App\Inscricao;
 use App\Evento;
 use App\Sexo;
 
 use App\Http\Util\Util;
 
-use Log;
 use DateTime;
+use Illuminate\Support\Facades\Log;
 
 class SportAppIngaDigitalImport implements OnEachRow, WithHeadingRow
 {
     private $event_id;
     private $event;
     private $datetime;
+
+    private $modalidades = [];
     public function __construct($event_id){
         $this->event_id = $event_id;
         $this->event = Evento::find($event_id);
+
+        if($this->event->tipo_modalidade == 0){
+            $this->modalidades[] = mb_strtoupper("Convencional");
+        }else {
+            $this->modalidades[] = mb_strtoupper("Relâmpago");
+            $this->modalidades[] = mb_strtoupper("Rápido");
+        }
+
+        Log::debug("SportAppIngaDigitalImport - Início");
     }
     public function onRow(Row $Row)
     {
         $row = $Row->toArray();
 
-        Log::debug("Row: ".json_encode($row));
+        Log::debug("Row: " . json_encode($row));
+
+        if (!isset($row["categoria_de_modalidade"])) {
+            Log::debug("Linha desconsiderada: FALTA CATEGORIA DE MODALIDADE");
+            return null;
+        }
+        if (!isset($row["modalidade"])) {
+            Log::debug("Linha desconsiderada: FALTA MODALIDADE");
+            return null;
+        }
+
+        if(!in_array(mb_strtoupper($row["modalidade"]),$this->modalidades)) {
+            Log::debug("Linha desconsiderada: MODALIDADE NÃO ATENDE ESTE TORNEIO - ". mb_strtoupper($row["modalidade"])." (".implode(",",$this->modalidades).")");
+            return null;
+        }
+
         $club_name = trim($row["delegacaoequipe"]);
         $sex_name = trim($row["naipe"]);
         $age_category = trim($row["categoria"]);
@@ -130,7 +157,58 @@ class SportAppIngaDigitalImport implements OnEachRow, WithHeadingRow
                             $inscricao->xadrezsuico_aceito = false;
                             $inscricao->is_aceito_imagem = 0;
 
-                            $inscricao->save();
+                            $inscricao->confirmado = 0;
+                        }else{
+                            $inscricao = $this->event->enxadristaInscrito($enxadrista->id);
+                        }
+
+                        switch ($this->event->tipo_modalidade) {
+                            case 0:
+                                // Convencional
+                                Log::debug(mb_strtoupper($row["modalidade"]) . " == CONVENCIONAL");
+
+                                if (mb_strtoupper($row["modalidade"]) == "CONVENCIONAL") {
+                                    $inscricao->confirmado = 1;
+                                }
+
+                                break;
+
+                            case 1:
+                                // Rápido
+                                Log::debug(mb_strtoupper($row["modalidade"]) . " == RÁPIDO");
+                                if (mb_strtoupper($row["modalidade"]) == "RÁPIDO") {
+                                    $inscricao->confirmado = 1;
+                                }
+                                break;
+
+                            case 2:
+                                // Relâmpago
+                                Log::debug(mb_strtoupper($row["modalidade"]) . " == RELÂMPAGO");
+                                if (mb_strtoupper($row["modalidade"]) == "RELÂMPAGO") {
+                                    $inscricao->confirmado = 1;
+                                }
+                        }
+
+                        $inscricao->save();
+
+                        if(mb_strtoupper($row["modalidade"]) == "CONVENCIONAL" && $this->event->tipo_modalidade == 0){
+                            switch(mb_strtoupper($row["escalacao"])) {
+                                case mb_strtoupper("1º Tabuleiro"):
+                                    $inscricao->setConfig("team_order", ConfigType::Integer, 1);
+                                    break;
+                                case mb_strtoupper("2º Tabuleiro"):
+                                    $inscricao->setConfig("team_order", ConfigType::Integer, 2);
+                                    break;
+                                case mb_strtoupper("3º Tabuleiro"):
+                                    $inscricao->setConfig("team_order", ConfigType::Integer, 3);
+                                    break;
+                                default:
+                                    if(strlen(mb_strtoupper($row["escalacao"])) > 0) {
+                                        $inscricao->setConfig("team_order", ConfigType::Integer, 4);
+                                    }else{
+                                        $inscricao->setConfig("team_order", ConfigType::Integer, 0);
+                                    }
+                            }
                         }
                     }else{
                         $data = "event_id=".$this->event_id."&enxadrista_id=".$enxadrista->id."&sex_name=".$sex_name."&age_category=".$age_category."&category_id=".$category->id;
@@ -330,20 +408,16 @@ class SportAppIngaDigitalImport implements OnEachRow, WithHeadingRow
         if(Enxadrista::where([
             ["name","=",$this->parseName($name)],["born","=",$this->datetime->format("Y-m-d")]
         ])
-        ->whereHas("enxadrista", function ($q1) {
-            $q1->whereDoesntHave("configs", function ($q2) {
-                $q2->where([["key", "=", "united_to"]]);
-            });
+        ->whereDoesntHave("configs", function ($q2) {
+            $q2->where([["key", "=", "united_to"]]);
         })
         ->count() > 0){
             Log::debug("hasEnxadrista-name-born-found");
             $enxadrista = Enxadrista::where([
                 ["name","=",$this->parseName($name)],["born","=",$this->datetime->format("Y-m-d")]
             ])
-            ->whereHas("enxadrista", function ($q1) {
-                $q1->whereDoesntHave("configs", function ($q2) {
-                    $q2->where([["key", "=", "united_to"]]);
-                });
+            ->whereDoesntHave("configs", function ($q2) {
+                $q2->where([["key", "=", "united_to"]]);
             })
             ->first();
             if($cpf){

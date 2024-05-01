@@ -11,7 +11,7 @@ use App\Imports\SportAppIngaDigitalImport;
 
 use App\Evento;
 use Auth;
-use Excel;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ImportController extends Controller
 {
@@ -63,7 +63,7 @@ class ImportController extends Controller
 
                 $messageBag = new MessageBag;
                 $messageBag->add("type","success");
-                $messageBag->add("alerta","Importação SportApp - Realizada.<br/>Favor conferir na lista de inscritos se as informações estão corretas.");
+                $messageBag->add("alerta","Importação SportApp - Realizada. Favor conferir na lista de inscritos se as informações estão corretas.");
 
 
                 return redirect("/evento/dashboard/".$evento->id)->withErrors($messageBag);
@@ -74,7 +74,7 @@ class ImportController extends Controller
 
         $messageBag = new MessageBag;
         $messageBag->add("type","danger");
-        $messageBag->add("alerta","Importação SportApp - Houve um erro.<br/>Confire se o arquivo foi enviado corretamente.");
+        $messageBag->add("alerta","Importação SportApp - Houve um erro. Confire se o arquivo foi enviado corretamente.");
 
 
         return redirect()->back()->withErrors($messageBag);

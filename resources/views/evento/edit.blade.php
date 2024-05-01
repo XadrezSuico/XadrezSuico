@@ -324,6 +324,27 @@
                                     @endif
                                 @endif
                             @endif
+
+
+                            @if($evento->grupo_evento->hasConfig("e_pr_esporte"))
+                                <hr/>
+                                <h4>Opções Paraná Esporte:</h4>
+                                <a href="{{url("/evento/".$evento->id."/imports/ingadigital/file")}}" class="btn btn-app">
+                                    <i class="fa fa-file"></i>
+                                    Importar Arquivo
+                                </a>
+                                @if($evento->tipo_modalidade == 0)
+                                    <a href="{{url("/evento/".$evento->id."/exports/presporte/team")}}" class="btn btn-app">
+                                        <i class="fa fa-download"></i>
+                                        Baixar Fichas de Confirmação (por Equipes)
+                                    </a>
+                                @else
+                                    <a href="{{url("/evento/".$evento->id."/exports/presporte/single")}}" class="btn btn-app">
+                                        <i class="fa fa-download"></i>
+                                        Baixar Fichas de Confirmação (por Individual)
+                                    </a>
+                                @endif
+                            @endif
                             <br/><br/>
                             <hr/>
                             <h4>Relatórios:</h4>
@@ -1527,6 +1548,11 @@
                                                             <strong>Erro!</strong> O torneio ainda não possui a configuração do slug do torneio no Chess.com configurada. Edite este torneio e a configure para ser possível prosseguir.
                                                         @endif
 													@endif
+
+                                                    @if($evento->grupo_evento->hasConfig("e_pr_esporte"))
+                                                        <hr/>
+                                                        <strong>Opções Paraná Esporte</strong><br/>
+                                                    @endif
 												</td>
 											</tr>
 										@endforeach
