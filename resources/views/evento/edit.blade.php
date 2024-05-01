@@ -326,7 +326,7 @@
                             @endif
 
 
-                            @if($evento->grupo_evento->hasConfig("e_pr_esporte",true))
+                            @if($evento->grupo_evento->hasConfig("is_pr_esporte",true))
                                 <hr/>
                                 <h4>Opções Paraná Esporte:</h4>
                                 <a href="{{url("/evento/".$evento->id."/imports/ingadigital/file")}}" class="btn btn-app">
@@ -1549,7 +1549,7 @@
                                                         @endif
 													@endif
 
-                                                    @if($evento->grupo_evento->hasConfig("e_pr_esporte",true))
+                                                    @if($evento->grupo_evento->hasConfig("is_pr_esporte",true))
                                                         <hr/>
                                                         <strong>Opções Paraná Esporte</strong><br/>
                                                     @endif
