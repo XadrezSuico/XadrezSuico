@@ -121,6 +121,10 @@ class Inscricao extends Model
                 }
                 Log::debug("Deletando Inscricao - #{$model->id} - Excluída");
             }
+
+            foreach($model->configs->all() as $config){
+                $config->delete();
+            }
         });
 
         self::deleted(function($model) {
