@@ -515,18 +515,52 @@ class Evento extends Model
 
         return false;
     }
-    public function inscritosPorClube($clube_id)
+    public function inscritosPorClube($clube_id, $is_team = false)
     {
         $list = [];
-        foreach($this->torneios->all() as $torneio){
-            foreach($torneio->inscricoes->all() as $inscricao){
-                if($inscricao->clube->id == $clube_id){
+
+        foreach ($this->torneios->all() as $torneio) {
+            foreach ($torneio->inscricoes->all() as $inscricao) {
+                if ($inscricao->clube->id == $clube_id) {
                     $list[($inscricao->categoria->id)][] = $inscricao;
                 }
             }
         }
 
+        if($is_team){
+            foreach($list as $key => $list_categoria){
+                usort($list_categoria, array("\App\Evento", "sort_team_lineup"));
+
+                $list[$key] = $list_categoria;
+            }
+        }
+
         return $list;
+    }
+
+    public static function sort_team_lineup($ia,$ib)
+    {
+        if ($ia->hasConfig("team_order") && !$ib->hasConfig("team_order")) {
+            return 1;
+        }
+        if (!$ia->hasConfig("team_order") && $ib->hasConfig("team_order")) {
+            return -1;
+        }
+        if ($ia->hasConfig("team_order") && $ib->hasConfig("team_order")) {
+            if ($ia->getConfig("team_order", true) == 0 && $ib->getConfig("team_order", true) > 0) {
+                return -1;
+            }
+            if ($ia->getConfig("team_order", true) > 0 && $ib->getConfig("team_order", true) == 0) {
+                return 1;
+            }
+            if ($ia->getConfig("team_order", true) > $ib->getConfig("team_order", true)) {
+                return 1;
+            }
+            if ($ia->getConfig("team_order", true) < $ib->getConfig("team_order", true)) {
+                return -1;
+            }
+        }
+        return 1;
     }
 
     public function clubesInscritos(){

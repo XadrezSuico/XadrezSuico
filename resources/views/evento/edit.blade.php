@@ -336,12 +336,20 @@
                                 @if($evento->tipo_modalidade == 0)
                                     <a href="{{url("/evento/".$evento->id."/exports/presporte/team")}}" class="btn btn-app">
                                         <i class="fa fa-download"></i>
-                                        Baixar Fichas de Confirmação (por Equipes)
+                                        Baixar Fichas de Confirmação (por Equipes) - .xlsx
+                                    </a>
+                                    <a href="{{url("/evento/".$evento->id."/exports/presporte/team/pdf")}}" class="btn btn-app">
+                                        <i class="fa fa-download"></i>
+                                        Baixar Fichas de Confirmação (por Equipes) - .pdf
                                     </a>
                                 @else
                                     <a href="{{url("/evento/".$evento->id."/exports/presporte/single")}}" class="btn btn-app">
                                         <i class="fa fa-download"></i>
-                                        Baixar Fichas de Confirmação (por Individual)
+                                        Baixar Fichas de Confirmação (por Individual) - .xlsx
+                                    </a>
+                                    <a href="{{url("/evento/".$evento->id."/exports/presporte/single/pdf")}}" class="btn btn-app">
+                                        <i class="fa fa-download"></i>
+                                        Baixar Fichas de Confirmação (por Individual) - .pdf
                                     </a>
                                 @endif
                             @endif

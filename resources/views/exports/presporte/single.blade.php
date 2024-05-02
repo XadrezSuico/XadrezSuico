@@ -60,14 +60,11 @@
                 </tr>
             @endforeach
         @endforeach
-
+        <tr></tr>
+        <tr></tr>
+        <tr></tr>
         <tr>
-            <td colspan="12">
-                <hr style="margin-top: 3rem;">
-            </td>
-        </tr>
-        <tr>
-            <td colspan="12">
+            <td colspan="12" style="border: 1px solid: #000 !important; text-align: center">
                 <p style="text-align: center">ASSINATURA DO PROFESSOR</p>
             </td>
         </tr>

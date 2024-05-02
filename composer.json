@@ -25,7 +25,10 @@
         "nategood/httpful": "^0.2.20",
         "simplesoftwareio/simple-qrcode": "^2.0",
         "spatie/laravel-activitylog": "^3.2",
-        "twilio/sdk": "^6.28"
+        "twilio/sdk": "^6.28",
+        "dompdf/dompdf": "^2.0",
+        "mpdf/mpdf": "^8.1",
+        "tecnick.com/tcpdf": "^6.6"
     },
     "require-dev": {
         "beyondcode/laravel-dump-server": "^1.0",

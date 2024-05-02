@@ -159,7 +159,9 @@ Route::group(["prefix"=>"evento"],function(){
         Route::get('/xadrezsuicoemparceirador', 'Exports\XadrezSuicoEmparceiradorController@export')->name('evento.exports.xadrezsuicoemparceirador');
         Route::get('/xadrezsuicoemparceirador/data', 'Exports\XadrezSuicoEmparceiradorController@export_data')->name('evento.exports.xadrezsuicoemparceirador.data');
         Route::get('/presporte/single', 'Event\ExportController@export_presporte_single')->name('evento.exports.presporte.single');
+        Route::get('/presporte/single/pdf', 'Event\ExportController@export_presporte_single_pdf')->name('evento.exports.presporte.single.pdf');
         Route::get('/presporte/team', 'Event\ExportController@export_presporte_team')->name('evento.exports.presporte.team');
+        Route::get('/presporte/team/pdf', 'Event\ExportController@export_presporte_team_pdf')->name('evento.exports.presporte.team.pdf');
     });
     Route::group(["prefix" => "premiacao_time"], function () {
         Route::get('/classificar/{evento_id}', 'Event\TeamAwardController@classificar_page')->name('evento.premiacao_time.classificar');
