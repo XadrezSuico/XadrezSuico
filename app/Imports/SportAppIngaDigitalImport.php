@@ -622,10 +622,8 @@ class SportAppIngaDigitalImport implements OnEachRow, WithHeadingRow
             if (Enxadrista::where([
                 ["name", "=", $this->parseName($name)], ["born", "=", $this->datetime->format("Y-m-d")]
             ])
-                ->whereHas("enxadrista", function ($q1) {
-                    $q1->whereDoesntHave("configs", function ($q2) {
-                        $q2->where([["key", "=", "united_to"]]);
-                    });
+                ->whereDoesntHave("configs", function ($q2) {
+                    $q2->where([["key", "=", "united_to"]]);
                 })->count() > 0
             ) {
                 Log::debug("getEnxadrista-name-born");
@@ -633,10 +631,8 @@ class SportAppIngaDigitalImport implements OnEachRow, WithHeadingRow
                 $enxadrista = Enxadrista::where([
                     ["name", "=", $this->parseName($name)], ["born", "=", $this->datetime->format("Y-m-d")]
                 ])
-                    ->whereHas("enxadrista", function ($q1) {
-                        $q1->whereDoesntHave("configs", function ($q2) {
+                    ->whereDoesntHave("configs", function ($q2) {
                             $q2->where([["key", "=", "united_to"]]);
-                        });
                     })->first();
 
                 if ($cpf) {
