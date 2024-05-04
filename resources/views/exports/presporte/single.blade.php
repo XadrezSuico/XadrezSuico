@@ -52,10 +52,10 @@
                         {{$inscricao->enxadrista->name}}
                     </td>
                     <td colspan="2" style="TEXT-ALIGN: CENTER">
-
+                        @if($evento->tipo_modalidade == 2 && $fill_blanks) @if($inscricao->confirmado) X @endif @endif
                     </td>
                     <td colspan="2" style="TEXT-ALIGN: CENTER">
-
+                        @if($evento->tipo_modalidade == 1 && $fill_blanks) @if($inscricao->confirmado) X @endif @endif
                     </td>
                 </tr>
             @endforeach

@@ -333,6 +333,7 @@
                                     <i class="fa fa-file"></i>
                                     Importar Arquivo
                                 </a>
+                                <br/>
                                 @if($evento->tipo_modalidade == 0)
                                     <a href="{{url("/evento/".$evento->id."/exports/presporte/team")}}" class="btn btn-app">
                                         <i class="fa fa-download"></i>
@@ -341,15 +342,31 @@
                                     <a href="{{url("/evento/".$evento->id."/exports/presporte/team/pdf")}}" class="btn btn-app">
                                         <i class="fa fa-download"></i>
                                         Baixar Fichas de Confirmação (por Equipes) - .pdf
+                                    </a><br/>
+                                    <a href="{{url("/evento/".$evento->id."/exports/presporte/team")}}?fill_blanks" class="btn btn-app">
+                                        <i class="fa fa-chevron-circle-down"></i>
+                                        Baixar Fichas de Confirmação (por Equipes - Preenchidas Conforme Confirmações no XadrezSuíço) - .xlsx
+                                    </a>
+                                    <a href="{{url("/evento/".$evento->id."/exports/presporte/team/pdf")}}?fill_blanks" class="btn btn-app">
+                                        <i class="fa fa-chevron-circle-down"></i>
+                                        Baixar Fichas de Confirmação (por Equipes - Preenchidas Conforme Confirmações no XadrezSuíço) - .pdf
                                     </a>
                                 @else
                                     <a href="{{url("/evento/".$evento->id."/exports/presporte/single")}}" class="btn btn-app">
                                         <i class="fa fa-download"></i>
-                                        Baixar Fichas de Confirmação (por Individual) - .xlsx
+                                        Baixar Fichas de Confirmação (Individual) - .xlsx
                                     </a>
                                     <a href="{{url("/evento/".$evento->id."/exports/presporte/single/pdf")}}" class="btn btn-app">
                                         <i class="fa fa-download"></i>
-                                        Baixar Fichas de Confirmação (por Individual) - .pdf
+                                        Baixar Fichas de Confirmação (Individual) - .pdf
+                                    </a><br/>
+                                    <a href="{{url("/evento/".$evento->id."/exports/presporte/single")}}?fill_blanks" class="btn btn-app">
+                                        <i class="fa fa-chevron-circle-down"></i>
+                                        Baixar Fichas de Confirmação (Individual - Preenchidas Conforme Confirmações no XadrezSuíço) - .xlsx
+                                    </a>
+                                    <a href="{{url("/evento/".$evento->id."/exports/presporte/single/pdf")}}?fill_blanks" class="btn btn-app">
+                                        <i class="fa fa-chevron-circle-down"></i>
+                                        Baixar Fichas de Confirmação (Individual - Preenchidas Conforme Confirmações no XadrezSuíço) - .pdf
                                     </a>
                                 @endif
                             @endif

@@ -14,8 +14,8 @@ use App\Exports\PREsporteTeamExport;
 
 use App\Evento;
 use App\Clube;
-use Auth;
-use Excel;
+use Illuminate\Support\Facades\Auth;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ExportController extends Controller
 {
@@ -26,7 +26,7 @@ class ExportController extends Controller
      */
 
 
-    public function export_presporte_single($id)
+    public function export_presporte_single($id, Request $request)
     {
         $evento = Evento::find($id);
         $user = Auth::user();
@@ -38,7 +38,12 @@ class ExportController extends Controller
             return redirect("/evento/dashboard/" . $evento->id);
         }
 
-        return Excel::download(new PREsporteSingleTeamExport($evento->id), 'single.xlsx');
+        $fill_blanks = false;
+        if($request->has("fill_blanks")){
+            $fill_blanks = true;
+        }
+
+        return Excel::download(new PREsporteSingleTeamExport($evento->id, $fill_blanks), 'single.xlsx');
     }
     /*
      *
@@ -47,7 +52,7 @@ class ExportController extends Controller
      */
 
 
-    public function export_presporte_team($id)
+    public function export_presporte_team($id, Request $request)
     {
         $evento = Evento::find($id);
         $user = Auth::user();
@@ -59,9 +64,12 @@ class ExportController extends Controller
             return redirect("/evento/dashboard/" . $evento->id);
         }
 
-        $clube = Clube::find(1193);
+        $fill_blanks = false;
+        if ($request->has("fill_blanks")) {
+            $fill_blanks = true;
+        }
 
-        return Excel::download(new PREsporteTeamExport($evento->id), 'teams.xlsx');
+        return Excel::download(new PREsporteTeamExport($evento->id, $fill_blanks), 'teams.xlsx');
     }
 
 
@@ -72,7 +80,7 @@ class ExportController extends Controller
      */
 
 
-    public function export_presporte_single_pdf($id)
+    public function export_presporte_single_pdf($id, Request $request)
     {
         $evento = Evento::find($id);
         $user = Auth::user();
@@ -84,7 +92,12 @@ class ExportController extends Controller
             return redirect("/evento/dashboard/" . $evento->id);
         }
 
-        return Excel::download(new PREsporteSingleTeamExport($evento->id),'single.xlsx', \Maatwebsite\Excel\Excel::MPDF);
+        $fill_blanks = false;
+        if ($request->has("fill_blanks")) {
+            $fill_blanks = true;
+        }
+
+        return Excel::download(new PREsporteSingleTeamExport($evento->id, $fill_blanks),'single.xlsx', \Maatwebsite\Excel\Excel::MPDF);
     }
     /*
      *
@@ -93,7 +106,7 @@ class ExportController extends Controller
      */
 
 
-    public function export_presporte_team_pdf($id)
+    public function export_presporte_team_pdf($id, Request $request)
     {
         $evento = Evento::find($id);
         $user = Auth::user();
@@ -105,8 +118,11 @@ class ExportController extends Controller
             return redirect("/evento/dashboard/" . $evento->id);
         }
 
-        $clube = Clube::find(1193);
+        $fill_blanks = false;
+        if ($request->has("fill_blanks")) {
+            $fill_blanks = true;
+        }
 
-        return Excel::download(new PREsporteTeamExport($evento->id),'teams.xlsx', \Maatwebsite\Excel\Excel::MPDF);
+        return Excel::download(new PREsporteTeamExport($evento->id, $fill_blanks),'teams.xlsx', \Maatwebsite\Excel\Excel::MPDF);
     }
 }

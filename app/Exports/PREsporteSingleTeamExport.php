@@ -14,8 +14,11 @@ class PREsporteSingleTeamExport implements WithMultipleSheets
     use Exportable;
 
     private $event;
-    public function __construct($event_id){
+    private $fill_blanks;
+    public function __construct($event_id, $fill_blanks = false){
         $this->event = Evento::find($event_id);
+
+        $this->fill_blanks = $fill_blanks;
     }
 
 
@@ -24,7 +27,7 @@ class PREsporteSingleTeamExport implements WithMultipleSheets
         $sheets = [];
 
         foreach($this->event->clubesInscritos() as $clube) {
-            $sheets[] = new PREsporteSingleTeamItemExport($this->event->id, $clube->id);
+            $sheets[] = new PREsporteSingleTeamItemExport($this->event->id, $clube->id, $this->fill_blanks);
         }
 
         return $sheets;

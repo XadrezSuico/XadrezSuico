@@ -21,16 +21,19 @@ class PREsporteSingleTeamItemExport implements FromView, WithStyles, WithColumnW
 {
     private $event;
     private $club;
-    public function __construct($event_id,$club_id){
+    private $fill_blanks;
+    public function __construct($event_id,$club_id,$fill_blanks = false){
         $this->event = Evento::find($event_id);
         $this->club = Clube::find($club_id);
+        $this->fill_blanks = $fill_blanks;
     }
 
     public function view(): View
     {
         return view('exports.presporte.single', [
             'evento' => $this->event,
-            'clube' => $this->club
+            'clube' => $this->club,
+            'fill_blanks' => $this->fill_blanks
         ]);
     }
 
