@@ -168,7 +168,10 @@ class SportAppIngaDigitalImport implements OnEachRow, WithHeadingRow
                                 Log::debug(mb_strtoupper($row["modalidade"]) . " == CONVENCIONAL");
 
                                 if (mb_strtoupper($row["modalidade"]) == "CONVENCIONAL") {
+                                    Log::debug("RESULTADO: CONFIRMADO");
                                     $inscricao->confirmado = 1;
+                                }else{
+                                    Log::debug("RESULTADO: NÃO confirmado por esta linha");
                                 }
 
                                 break;
@@ -177,7 +180,10 @@ class SportAppIngaDigitalImport implements OnEachRow, WithHeadingRow
                                 // Rápido
                                 Log::debug(mb_strtoupper($row["modalidade"]) . " == RÁPIDO");
                                 if (mb_strtoupper($row["modalidade"]) == "RÁPIDO") {
+                                    Log::debug("RESULTADO: CONFIRMADO");
                                     $inscricao->confirmado = 1;
+                                }else{
+                                    Log::debug("RESULTADO: NÃO confirmado por esta linha");
                                 }
                                 break;
 
@@ -185,7 +191,10 @@ class SportAppIngaDigitalImport implements OnEachRow, WithHeadingRow
                                 // Relâmpago
                                 Log::debug(mb_strtoupper($row["modalidade"]) . " == RELÂMPAGO");
                                 if (mb_strtoupper($row["modalidade"]) == "RELÂMPAGO") {
+                                    Log::debug("RESULTADO: CONFIRMADO");
                                     $inscricao->confirmado = 1;
+                                }else{
+                                    Log::debug("RESULTADO: NÃO confirmado por esta linha");
                                 }
                         }
 
@@ -194,18 +203,23 @@ class SportAppIngaDigitalImport implements OnEachRow, WithHeadingRow
                         if(mb_strtoupper($row["modalidade"]) == "CONVENCIONAL" && $this->event->tipo_modalidade == 0){
                             switch(mb_strtoupper($row["escalacao"])) {
                                 case mb_strtoupper("1º Tabuleiro"):
+                                    Log::debug("ESCALAÇÃO: T1");
                                     $inscricao->setConfig("team_order", ConfigType::Integer, 1);
                                     break;
+                                    Log::debug("ESCALAÇÃO: T2");
                                 case mb_strtoupper("2º Tabuleiro"):
                                     $inscricao->setConfig("team_order", ConfigType::Integer, 2);
                                     break;
+                                    Log::debug("ESCALAÇÃO: T3");
                                 case mb_strtoupper("3º Tabuleiro"):
                                     $inscricao->setConfig("team_order", ConfigType::Integer, 3);
                                     break;
                                 default:
                                     if(strlen(mb_strtoupper($row["escalacao"])) > 0) {
+                                        Log::debug("ESCALAÇÃO: R (ou T4)");
                                         $inscricao->setConfig("team_order", ConfigType::Integer, 4);
                                     }else{
+                                        Log::debug("ESCALAÇÃO: SEM escalação");
                                         $inscricao->setConfig("team_order", ConfigType::Integer, 0);
                                     }
                             }
