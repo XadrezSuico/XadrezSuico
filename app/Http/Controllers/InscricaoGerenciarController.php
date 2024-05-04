@@ -1064,7 +1064,7 @@ class InscricaoGerenciarController extends Controller
             $texto .= $inscricao->enxadrista->firstname . ";";
             $texto .= $inscricao->enxadrista->lastname . ";";
             $texto .= $inscricao->enxadrista->id.";";
-            $texto .= (($inscricao->hasConfig("team_order")) ? $inscricao->getConfig("team_order", true) : 0).";";
+            $texto .= (($inscricao->hasConfig("team_order")) ? ($inscricao->getConfig("team_order", true) > 0 ? $inscricao->getConfig("team_order", true) : 10) : 10).";";
             foreach($clubs as $key => $club){
                 if($inscricao->clube->id == $club->id){
                     $texto .= $key+1;

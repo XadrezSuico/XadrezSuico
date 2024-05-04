@@ -541,26 +541,26 @@ class Evento extends Model
     public static function sort_team_lineup($ia,$ib)
     {
         if ($ia->hasConfig("team_order") && !$ib->hasConfig("team_order")) {
-            return 1;
+            return -1;
         }
         if (!$ia->hasConfig("team_order") && $ib->hasConfig("team_order")) {
-            return -1;
+            return 1;
         }
         if ($ia->hasConfig("team_order") && $ib->hasConfig("team_order")) {
             if ($ia->getConfig("team_order", true) == 0 && $ib->getConfig("team_order", true) > 0) {
-                return -1;
+                return 1;
             }
             if ($ia->getConfig("team_order", true) > 0 && $ib->getConfig("team_order", true) == 0) {
-                return 1;
-            }
-            if ($ia->getConfig("team_order", true) > $ib->getConfig("team_order", true)) {
-                return 1;
-            }
-            if ($ia->getConfig("team_order", true) < $ib->getConfig("team_order", true)) {
                 return -1;
             }
+            if ($ia->getConfig("team_order", true) > $ib->getConfig("team_order", true)) {
+                return -1;
+            }
+            if ($ia->getConfig("team_order", true) < $ib->getConfig("team_order", true)) {
+                return 1;
+            }
         }
-        return 1;
+        return -1;
     }
 
     public function clubesInscritos(){
