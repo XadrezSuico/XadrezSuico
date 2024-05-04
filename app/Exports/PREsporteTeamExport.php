@@ -16,7 +16,7 @@ class PREsporteTeamExport implements WithMultipleSheets
     private $fill_blanks;
     public function __construct($event_id, $fill_blanks = false){
         $this->event = Evento::find($event_id);
-        $this->fill_blanks = $this->fill_blanks;
+        $this->fill_blanks = $fill_blanks;
     }
 
 
