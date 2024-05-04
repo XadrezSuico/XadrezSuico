@@ -97,7 +97,7 @@ class ExportController extends Controller
             $fill_blanks = true;
         }
 
-        return Excel::download(new PREsporteSingleTeamExport($evento->id, $fill_blanks),'single.xlsx', \Maatwebsite\Excel\Excel::MPDF);
+        return Excel::download(new PREsporteSingleTeamExport($evento->id, $fill_blanks),'single.pdf', \Maatwebsite\Excel\Excel::MPDF);
     }
     /*
      *
@@ -123,6 +123,6 @@ class ExportController extends Controller
             $fill_blanks = true;
         }
 
-        return Excel::download(new PREsporteTeamExport($evento->id, $fill_blanks),'teams.xlsx', \Maatwebsite\Excel\Excel::MPDF);
+        return Excel::download(new PREsporteTeamExport($evento->id, $fill_blanks),'teams.pdf', \Maatwebsite\Excel\Excel::MPDF);
     }
 }
