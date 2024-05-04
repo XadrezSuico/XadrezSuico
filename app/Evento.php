@@ -554,10 +554,10 @@ class Evento extends Model
                 return -1;
             }
             if ($ia->getConfig("team_order", true) > $ib->getConfig("team_order", true)) {
-                return -1;
+                return 1;
             }
             if ($ia->getConfig("team_order", true) < $ib->getConfig("team_order", true)) {
-                return 1;
+                return -1;
             }
         }
         return -1;
