@@ -13,6 +13,7 @@ use App\MovimentacaoRating;
 
 
 use Log;
+use PDO;
 
 class Enxadrista extends Model
 {
@@ -155,7 +156,10 @@ class Enxadrista extends Model
         return mb_strtoupper($str);
     }
 
-    public function hasDocument($document_types_id,$document){
+    public function hasDocument($document_types_id, $document = null){
+        if($document == null){
+            return $this->documentos()->where([["tipo_documentos_id", "=", $document_types_id]])->count() > 0;
+        }
         if($document_types_id == 1){
             $document = Util::numeros($document);
         }

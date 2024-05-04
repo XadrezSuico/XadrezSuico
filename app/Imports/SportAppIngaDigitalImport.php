@@ -128,6 +128,7 @@ class SportAppIngaDigitalImport implements OnEachRow, WithHeadingRow
 
         if($this->hasEnxadrista($name,$bornday,($is_cpf) ? $cpf_or_ext : null,(!$is_cpf) ? $cpf_or_ext : null,$rg)){
             $enxadrista = $this->getEnxadrista($name,$bornday,($is_cpf) ? $cpf_or_ext : null,(!$is_cpf) ? $cpf_or_ext : null,$rg);
+            Log::debug("Enxadrista: {$enxadrista->id} - {$enxadrista->name}");
             if($enxadrista){
                 if(!$enxadrista->sexo){
                     if(Sexo::where([["sex_from_import","=",$sex_name]])->count() > 0){
@@ -333,6 +334,7 @@ class SportAppIngaDigitalImport implements OnEachRow, WithHeadingRow
                 })->first();
 
                 $enxadrista = Enxadrista::find($documento->enxadrista_id);
+                Log::debug("enxadristaHasFoundByCpf");
                 if($rg){
                     if(!$enxadrista->hasDocument(2,$rg)){
                         $document = new Documento;
@@ -344,79 +346,98 @@ class SportAppIngaDigitalImport implements OnEachRow, WithHeadingRow
                 }
                 return true;
             }
-        }
-        if($ext_document){
-            Log::debug("hasEnxadrista-ext_document");
-            if(Documento::where([
-                ["tipo_documentos_id","=",4],["numero","=",$ext_document]
-            ])
-            ->whereHas("enxadrista",function($q1){
-                $q1->whereDoesntHave("configs",function($q2){
-                    $q2->where([["key","=","united_to"]]);
-                });
-            })->count() > 0){
-                Log::debug("hasEnxadrista-ext_document-found");
-                $documento = Documento::where([
+        }else{
+            if($ext_document){
+                Log::debug("hasEnxadrista-ext_document");
+                if(Documento::where([
                     ["tipo_documentos_id","=",4],["numero","=",$ext_document]
                 ])
-                ->whereHas("enxadrista", function ($q1) {
-                    $q1->whereDoesntHave("configs", function ($q2) {
-                        $q2->where([["key", "=", "united_to"]]);
+                ->whereHas("enxadrista",function($q1){
+                    $q1->whereDoesntHave("configs",function($q2){
+                        $q2->where([["key","=","united_to"]]);
                     });
-                })->first();
-                $enxadrista = Enxadrista::find($documento->enxadrista_id);
-                if($rg){
-                    if(!$enxadrista->hasDocument(2,$rg)){
-                        $document = new Documento;
-                        $document->tipo_documentos_id = 2;
-                        $document->enxadrista_id = $enxadrista->id;
-                        $document->numero = $rg;
-                        $document->save();
+                })->count() > 0){
+                    Log::debug("hasEnxadrista-ext_document-found");
+                    $documento = Documento::where([
+                        ["tipo_documentos_id","=",4],["numero","=",$ext_document]
+                    ])
+                    ->whereHas("enxadrista", function ($q1) {
+                        $q1->whereDoesntHave("configs", function ($q2) {
+                            $q2->where([["key", "=", "united_to"]]);
+                        });
+                    })->first();
+                    $enxadrista = Enxadrista::find($documento->enxadrista_id);
+                    Log::debug("enxadristaHasFoundByExtDoc");
+                    if($rg){
+                        if(!$enxadrista->hasDocument(2,$rg)){
+                            $document = new Documento;
+                            $document->tipo_documentos_id = 2;
+                            $document->enxadrista_id = $enxadrista->id;
+                            $document->numero = $rg;
+                            $document->save();
+                        }
                     }
+                    return true;
                 }
-                return true;
             }
-        }
-        if($rg){
-            Log::debug("hasEnxadrista-rg");
-            if(Documento::where([
-                ["tipo_documentos_id","=",2],["numero","=",$rg]
-            ])
-            ->whereHas("enxadrista", function ($q1) {
-                $q1->whereDoesntHave("configs", function ($q2) {
-                    $q2->where([["key", "=", "united_to"]]);
-                });
-            })->count() > 0){
-                Log::debug("hasEnxadrista-rg-found");
-                $documento = Documento::where([
-                    ["tipo_documentos_id","=",2],["numero","=",$rg]
-                ])
-                ->whereHas("enxadrista", function ($q1) {
-                    $q1->whereDoesntHave("configs", function ($q2) {
-                        $q2->where([["key", "=", "united_to"]]);
-                    });
-                })->first();
-                $enxadrista = Enxadrista::find($documento->enxadrista_id);
-                if($cpf){
-                    if(!$enxadrista->hasDocument(1,$cpf)){
-                        $document = new Documento;
-                        $document->tipo_documentos_id = 1;
-                        $document->enxadrista_id = $enxadrista->id;
-                        $document->numero = Util::numeros($cpf);
-                        $document->save();
-                    }
-                }
-                if($ext_document){
-                    if(!$enxadrista->hasDocument(4,$ext_document)){
-                        $document = new Documento;
-                        $document->tipo_documentos_id = 4;
-                        $document->enxadrista_id = $enxadrista->id;
-                        $document->numero = $ext_document;
-                        $document->save();
-                    }
-                }
-                return true;
-            }
+            // if($rg){
+            //     Log::debug("hasEnxadrista-rg");
+            //     if(Documento::where([
+            //         ["tipo_documentos_id","=",2],["numero","=",$rg]
+            //     ])
+            //     ->whereHas("enxadrista", function ($q1) {
+            //         $q1->whereDoesntHave("configs", function ($q2) {
+            //             $q2->where([["key", "=", "united_to"]]);
+            //         });
+            //     })->count() > 0){
+            //         Log::debug("hasEnxadrista-rg-found");
+            //         $documento = Documento::where([
+            //             ["tipo_documentos_id","=",2],["numero","=",$rg]
+            //         ])
+            //         ->whereHas("enxadrista", function ($q1) {
+            //             $q1->whereDoesntHave("configs", function ($q2) {
+            //                 $q2->where([["key", "=", "united_to"]]);
+            //             });
+            //         })->first();
+            //         $enxadrista = Enxadrista::find($documento->enxadrista_id);
+            //         $ignore = false;
+            //         if($cpf){
+            //             if(!$enxadrista->hasDocument(1)){
+            //                 if(!$enxadrista->hasDocument(1,$cpf)){
+            //                     $document = new Documento;
+            //                     $document->tipo_documentos_id = 1;
+            //                     $document->enxadrista_id = $enxadrista->id;
+            //                     $document->numero = Util::numeros($cpf);
+            //                     $document->save();
+            //                 }
+            //             }else {
+            //                 if (!$enxadrista->hasDocument(1, $cpf)) {
+            //                     $ignore = true;
+            //                 }
+            //             }
+            //         }
+            //         if($ext_document && !$ignore) {
+            //             if (!$enxadrista->hasDocument(4)) {
+            //                 if(!$enxadrista->hasDocument(4,$ext_document)){
+            //                     $document = new Documento;
+            //                     $document->tipo_documentos_id = 4;
+            //                     $document->enxadrista_id = $enxadrista->id;
+            //                     $document->numero = $ext_document;
+            //                     $document->save();
+            //                 }
+            //             } else {
+            //                 if (!$enxadrista->hasDocument(4, $ext_document)) {
+            //                     $ignore = true;
+            //                 }
+            //             }
+            //         }
+            //         $check_name_different = false;
+            //         // if (mb_strtoupper($enxadrista->name) != mb_strtoupper($name) && !$ignore) {
+            //         //     $check_name_different = true;
+            //         // }
+            //         if(!$check_name_different && !$ignore) return true;
+            //     }
+            // }
         }
         Log::debug("hasEnxadrista-name-born");
         if(Enxadrista::where([
@@ -434,6 +455,7 @@ class SportAppIngaDigitalImport implements OnEachRow, WithHeadingRow
                 $q2->where([["key", "=", "united_to"]]);
             })
             ->first();
+            Log::debug("enxadristaHasFoundByNameBorn");
             if($cpf){
                 if(!$enxadrista->hasDocument(1,$cpf)){
                     $document = new Documento;
@@ -491,6 +513,7 @@ class SportAppIngaDigitalImport implements OnEachRow, WithHeadingRow
                         });
                     })->first();
                     $enxadrista = Enxadrista::find($documento->enxadrista_id);
+                    Log::debug("enxadristaFoundByCpf");
                     if($rg){
                         if(!$enxadrista->hasDocument(2,$rg)){
                             $document = new Documento;
@@ -502,100 +525,122 @@ class SportAppIngaDigitalImport implements OnEachRow, WithHeadingRow
                     }
                     return $enxadrista;
                 }
-            }
-            if($ext_document){
-                Log::debug("getEnxadrista-ext_document");
-                if(Documento::where([
-                    ["tipo_documentos_id","=",4],["numero","=",$ext_document]
-                ])
-                ->whereHas("enxadrista", function ($q1) {
-                    $q1->whereDoesntHave("configs", function ($q2) {
-                        $q2->where([["key", "=", "united_to"]]);
-                    });
-                })
-                ->count() > 0){
-                    $documento = Documento::where([
+            }else{
+                if($ext_document){
+                    Log::debug("getEnxadrista-ext_document");
+                    if(Documento::where([
                         ["tipo_documentos_id","=",4],["numero","=",$ext_document]
                     ])
                     ->whereHas("enxadrista", function ($q1) {
                         $q1->whereDoesntHave("configs", function ($q2) {
                             $q2->where([["key", "=", "united_to"]]);
                         });
-                    })->first();
-                    $enxadrista = Enxadrista::find($documento->enxadrista_id);
-                    if($rg){
-                        if(!$enxadrista->hasDocument(2,$rg)){
-                            $document = new Documento;
-                            $document->tipo_documentos_id = 2;
-                            $document->enxadrista_id = $enxadrista->id;
-                            $document->numero = $rg;
-                            $document->save();
+                    })
+                    ->count() > 0){
+                        $documento = Documento::where([
+                            ["tipo_documentos_id","=",4],["numero","=",$ext_document]
+                        ])
+                        ->whereHas("enxadrista", function ($q1) {
+                            $q1->whereDoesntHave("configs", function ($q2) {
+                                $q2->where([["key", "=", "united_to"]]);
+                            });
+                        })->first();
+                        Log::debug("enxadristaFoundByExtDoc");
+                        $enxadrista = Enxadrista::find($documento->enxadrista_id);
+                        if($rg){
+                            if(!$enxadrista->hasDocument(2,$rg)){
+                                $document = new Documento;
+                                $document->tipo_documentos_id = 2;
+                                $document->enxadrista_id = $enxadrista->id;
+                                $document->numero = $rg;
+                                $document->save();
+                            }
                         }
+                        return $enxadrista;
                     }
-                    return $enxadrista;
                 }
+                // if($rg){
+                //     Log::debug("getEnxadrista-rg");
+                //     if(Documento::where([
+                //         ["tipo_documentos_id","=",2],["numero","=",$rg]
+                //     ])
+                //     ->whereHas("enxadrista", function ($q1) {
+                //         $q1->whereDoesntHave("configs", function ($q2) {
+                //             $q2->where([["key", "=", "united_to"]]);
+                //         });
+                //     })
+                //     ->count() > 0){
+                //         $documento = Documento::where([
+                //             ["tipo_documentos_id","=",2],["numero","=",$rg]
+                //         ])
+                //         ->whereHas("enxadrista", function ($q1) {
+                //             $q1->whereDoesntHave("configs", function ($q2) {
+                //                 $q2->where([["key", "=", "united_to"]]);
+                //             });
+                //         })->first();
+                //         $enxadrista = Enxadrista::find($documento->enxadrista_id);
+                //         $ignore = false;
+                //         if ($cpf) {
+                //             if (!$enxadrista->hasDocument(1)) {
+                //                 if (!$enxadrista->hasDocument(1, $cpf)) {
+                //                     $document = new Documento;
+                //                     $document->tipo_documentos_id = 1;
+                //                     $document->enxadrista_id = $enxadrista->id;
+                //                     $document->numero = Util::numeros($cpf);
+                //                     $document->save();
+                //                 }
+                //             } else {
+                //                 if (!$enxadrista->hasDocument(1, $cpf)) {
+                //                     $ignore = true;
+                //                 }
+                //             }
+                //         }
+                //         if ($ext_document && !$ignore) {
+                //             if (!$enxadrista->hasDocument(4)) {
+                //                 if (!$enxadrista->hasDocument(4, $ext_document)) {
+                //                     $document = new Documento;
+                //                     $document->tipo_documentos_id = 4;
+                //                     $document->enxadrista_id = $enxadrista->id;
+                //                     $document->numero = $ext_document;
+                //                     $document->save();
+                //                 }
+                //             } else {
+                //                 if (!$enxadrista->hasDocument(4, $ext_document)) {
+                //                     $ignore = true;
+                //                 }
+                //             }
+                //         }
+                //         $check_name_different = false;
+                //         // if (mb_strtoupper($enxadrista->name) != mb_strtoupper($name) && !$ignore) {
+                //         //     $check_name_different = true;
+                //         // }
+                //         if (!$check_name_different && !$ignore) return $enxadrista;
+                //     }
+                // }
             }
-            if($rg){
-                Log::debug("getEnxadrista-rg");
-                if(Documento::where([
-                    ["tipo_documentos_id","=",2],["numero","=",$rg]
-                ])
+
+            if (Enxadrista::where([
+                ["name", "=", $this->parseName($name)], ["born", "=", $this->datetime->format("Y-m-d")]
+            ])
                 ->whereHas("enxadrista", function ($q1) {
                     $q1->whereDoesntHave("configs", function ($q2) {
                         $q2->where([["key", "=", "united_to"]]);
                     });
-                })
-                ->count() > 0){
-                    $documento = Documento::where([
-                        ["tipo_documentos_id","=",2],["numero","=",$rg]
-                    ])
+                })->count() > 0
+            ) {
+                Log::debug("getEnxadrista-name-born");
+                Log::debug("enxadristaFoundByNameBorn");
+                $enxadrista = Enxadrista::where([
+                    ["name", "=", $this->parseName($name)], ["born", "=", $this->datetime->format("Y-m-d")]
+                ])
                     ->whereHas("enxadrista", function ($q1) {
                         $q1->whereDoesntHave("configs", function ($q2) {
                             $q2->where([["key", "=", "united_to"]]);
                         });
                     })->first();
-                    $enxadrista = Enxadrista::find($documento->enxadrista_id);
-                    if($cpf){
-                        if(!$enxadrista->hasDocument(1,$cpf)){
-                            $document = new Documento;
-                            $document->tipo_documentos_id = 1;
-                            $document->enxadrista_id = $enxadrista->id;
-                            $document->numero = Util::numeros($cpf);
-                            $document->save();
-                        }
-                    }
-                    if($ext_document){
-                        if(!$enxadrista->hasDocument(4,$ext_document)){
-                            $document = new Documento;
-                            $document->tipo_documentos_id = 4;
-                            $document->enxadrista_id = $enxadrista->id;
-                            $document->numero = $ext_document;
-                            $document->save();
-                        }
-                    }
-                    return $enxadrista;
-                }
-            }
-            if(Enxadrista::where([
-                ["name","=",$this->parseName($name)],["born","=",$this->datetime->format("Y-m-d")]
-            ])
-            ->whereHas("enxadrista", function ($q1) {
-                $q1->whereDoesntHave("configs", function ($q2) {
-                    $q2->where([["key", "=", "united_to"]]);
-                });
-            })->count() > 0){
-                Log::debug("getEnxadrista-name-born");
-                $enxadrista = Enxadrista::where([
-                    ["name","=",$this->parseName($name)],["born","=",$this->datetime->format("Y-m-d")]
-                ])
-                ->whereHas("enxadrista", function ($q1) {
-                    $q1->whereDoesntHave("configs", function ($q2) {
-                        $q2->where([["key", "=", "united_to"]]);
-                    });
-                })->first();
 
-                if($cpf){
-                    if(!$enxadrista->hasDocument(1,$cpf)){
+                if ($cpf) {
+                    if (!$enxadrista->hasDocument(1, $cpf)) {
                         $document = new Documento;
                         $document->tipo_documentos_id = 1;
                         $document->enxadrista_id = $enxadrista->id;
@@ -603,8 +648,8 @@ class SportAppIngaDigitalImport implements OnEachRow, WithHeadingRow
                         $document->save();
                     }
                 }
-                if($rg){
-                    if(!$enxadrista->hasDocument(2,$rg)){
+                if ($rg) {
+                    if (!$enxadrista->hasDocument(2, $rg)) {
                         $document = new Documento;
                         $document->tipo_documentos_id = 2;
                         $document->enxadrista_id = $enxadrista->id;
@@ -612,8 +657,8 @@ class SportAppIngaDigitalImport implements OnEachRow, WithHeadingRow
                         $document->save();
                     }
                 }
-                if($ext_document){
-                    if(!$enxadrista->hasDocument(4,$ext_document)){
+                if ($ext_document) {
+                    if (!$enxadrista->hasDocument(4, $ext_document)) {
                         $document = new Documento;
                         $document->tipo_documentos_id = 4;
                         $document->enxadrista_id = $enxadrista->id;
