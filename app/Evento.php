@@ -540,6 +540,15 @@ class Evento extends Model
 
     public static function sort_team_lineup($ia,$ib)
     {
+        if (!$ia->confirmado && !$ib->confirmado) {
+            return 0;
+        }
+        if ($ia->confirmado && !$ib->confirmado) {
+            return -1;
+        }
+        if (!$ia->confirmado && $ib->confirmado) {
+            return 1;
+        }
         if ($ia->hasConfig("team_order") && !$ib->hasConfig("team_order")) {
             return -1;
         }
