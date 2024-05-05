@@ -49,7 +49,7 @@
                         {{$inscricao->enxadrista->name}}
                     </td>
                     <td colspan="2" style="TEXT-ALIGN: CENTER">
-                        @if($fill_blanks) @if($inscricao->hasConfig("team_order")) {{ $inscricao->getConfig("team_order",true) > 0 ? $inscricao->getConfig("team_order",true) : null}} @endif @endif
+                        @if($fill_blanks) @if($inscricao->confirmado) @if($inscricao->hasConfig("team_order")) {{ $inscricao->getConfig("team_order",true) > 0 ? $inscricao->getConfig("team_order",true) : null}} @endif @endif @endif
                     </td>
                 </tr>
             @endforeach
