@@ -568,7 +568,7 @@ class EnxadristaController extends Controller
         $permitido_edicao = false;
         if (
             $user->hasPermissionGlobal() ||
-            $user->hasPermissionEventsByPerfil([4])
+            $user->hasPermissionGlobalbyPerfil([9])
         ) {
             $permitido_edicao = true;
         }
