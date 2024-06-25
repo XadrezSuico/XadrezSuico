@@ -241,6 +241,9 @@ class PlayerRegistrationController extends Controller
         $enxadrista->pais_celular_id = $request->input("cellphone_country_id");
         $enxadrista->celular = $request->input("cellphone");
         $enxadrista->cidade_id = $request->input("city_id");
+        $enxadrista->encontrado_cbx = false;
+        $enxadrista->encontrado_fide = false;
+        $enxadrista->encontrado_lbx = false;
         if ($request->has("club_id")) {
             if ($request->input("club_id") > 0) {
                 $enxadrista->clube_id = $request->input("club_id");
