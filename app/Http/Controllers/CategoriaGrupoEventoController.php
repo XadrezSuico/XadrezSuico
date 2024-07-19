@@ -226,7 +226,7 @@ class CategoriaGrupoEventoController extends Controller
             $messageBag = new MessageBag;
             $messageBag->add("type", "danger");
             $messageBag->add("alerta", "A categoria já está relacionada à um Template de Torneio, então não é possível criar um template a partir dela!");
-            return redirect("/grupoevento/dashboard/" . $grupo_evento->id . "/?tab=categoria")->with($messageBag);
+            return redirect("/grupoevento/dashboard/" . $grupo_evento->id . "/?tab=categoria")->withErrors($messageBag);
         }
 
         $torneio_template = new TorneioTemplate;
@@ -243,6 +243,6 @@ class CategoriaGrupoEventoController extends Controller
         $messageBag->add("type", "success");
         $messageBag->add("alerta", "Template de Torneio criado a partir de uma Categoria com sucesso!" );
 
-        return redirect("/grupoevento/" . $grupo_evento->id . "/torneiotemplates/dashboard/" . $torneio_template->id)->with($messageBag);
+        return redirect("/grupoevento/" . $grupo_evento->id . "/torneiotemplates/dashboard/" . $torneio_template->id)->withErrors($messageBag);
     }
 }
