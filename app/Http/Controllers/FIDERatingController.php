@@ -245,9 +245,7 @@ class FIDERatingController extends Controller
 
         $url = "https://ratings.fide.com/profile/" . $enxadrista->fide_id;
 
-        if ($show_text) {
-            echo "{$url} <br/>";
-        }
+        echo "{$url} <br/>";
 
         try {
             $crawler = $browser->request('GET', $url);
@@ -262,59 +260,76 @@ class FIDERatingController extends Controller
                     $enxadrista->encontrado_fide = false;
                     $enxadrista->save();
                 }
-                if ($show_text) {
-                    echo 'Erro ao acessar a página: código de status ' . $statusCode;
-                }
-                return; // Encerrar a função em caso de erro
-            }
-
-            if ($show_text) {
-                echo 'Carregamento OK (200 OK) <br/>';
+                if ($show_text) echo 'Erro ao acessar a página: código de status ' . $statusCode;
+                return; // Early return to stop further processing
+            } else {
+                if ($show_text) echo 'Carregamento OK (200 OK) <br/> ';
             }
 
             // Obtém o HTML da resposta
             $htmlContent = $browser->getInternalResponse()->getContent();
-            if ($show_text) {
-                echo "<h3>HTML Obtido:</h3>";
-                echo "<pre>" . htmlspecialchars($htmlContent) . "</pre>"; // Limita a visualização do HTML para 2000 caracteres
-            }
+            echo "<h3>HTML Obtido:</h3>";
+            echo "<pre>" . htmlspecialchars($htmlContent) . "</pre>";
 
-            $players = [];
+            // Extrai o nome do enxadrista
+            $name = $crawler->filter('.profile-top-title')->first()->text();
+            if ($show_text) echo "Nome do enxadrista: " . $name . "<br/>";
 
-            // Processa o conteúdo
-            $crawler->filter('.profile-top-rating-data')->each(function (Crawler $node) use ($save_rating, &$enxadrista, $codigo_organizacao, $show_text) {
-                $ratingType = $node->filter('.profile-top-rating-dataDesc')->text();
-                $ratingValue = trim($node->text());
+            // Extrai os ratings
+            $ratings = [];
+            $crawler->filter('.profile-top-rating-dataCont .profile-top-rating-data')->each(function (Crawler $node) use (&$ratings) {
+                $desc = $node->filter('.profile-top-rating-dataDesc')->text();
+                $ratingText = trim($node->text());
 
-                // Mapear os tipos de rating
-                $ratingMap = [
-                    'std' => 0,
-                    'rapid' => 1,
-                    'blitz' => 2
-                ];
+                // Tratar "Not rated" como rating não existente
+                if ($ratingText === 'Not rated') {
+                    $ratingValue = null;
+                } else {
+                    $ratingValue = intval($ratingText);
+                }
 
-                if (isset($ratingMap[$ratingType])) {
-                    $index = $ratingMap[$ratingType];
-                    if ($ratingValue !== 'Not rated') {
-                        $ratingValue = intval($ratingValue);
-                        if ($show_text) {
-                            echo ucfirst($ratingType) . ": " . $ratingValue . "<br>";
-                        }
-                        if ($save_rating) {
-                            $enxadrista->setRating($codigo_organizacao, $index, $ratingValue);
-                        }
-                    } else {
-                        if ($show_text) {
-                            echo ucfirst($ratingType) . ": Not rated<br>";
-                        }
-                        if ($save_rating) {
-                            $enxadrista->setRating($codigo_organizacao, $index,
-                                0
-                            );
-                        }
-                    }
+                // Mapear rating para o tipo correspondente
+                switch ($desc) {
+                    case 'std':
+                        $ratings['standard'] = $ratingValue;
+                        break;
+                    case 'rapid':
+                        $ratings['rapid'] = $ratingValue;
+                        break;
+                    case 'blitz':
+                        $ratings['blitz'] = $ratingValue;
+                        break;
                 }
             });
+
+            if ($show_text) {
+                echo "Ratings:<br/>";
+                echo "STD: " . ($ratings['standard'] ?? 'Not Found') . "<br/>";
+                echo "RPD: " . ($ratings['rapid'] ?? 'Not Found') . "<br/>";
+                echo "BTZ: " . ($ratings['blitz'] ?? 'Not Found') . "<br/>";
+            }
+
+            // Atualiza o enxadrista com os ratings
+            $enxadrista->encontrado_fide = true;
+            $enxadrista->fide_name = $name;
+
+            if ($ratings['standard'] !== null) {
+                if ($save_rating) $enxadrista->setRating($codigo_organizacao, 0, $ratings['standard']);
+            } else {
+                if ($save_rating) $enxadrista->deleteRating($codigo_organizacao, 0);
+            }
+
+            if ($ratings['rapid'] !== null) {
+                if ($save_rating) $enxadrista->setRating($codigo_organizacao, 1, $ratings['rapid']);
+            } else {
+                if ($save_rating) $enxadrista->deleteRating($codigo_organizacao, 1);
+            }
+
+            if ($ratings['blitz'] !== null) {
+                if ($save_rating) $enxadrista->setRating($codigo_organizacao, 2, $ratings['blitz']);
+            } else {
+                if ($save_rating) $enxadrista->deleteRating($codigo_organizacao, 2);
+            }
 
             if ($save_rating) {
                 $enxadrista->fide_last_update = date("Y-m-d H:i:s");
@@ -325,16 +340,13 @@ class FIDERatingController extends Controller
                 return $enxadrista;
             }
         } catch (\Exception $e) {
-            if ($show_text) {
-                echo 'Erro ao acessar a página: ' . $e->getMessage();
-            }
+            echo 'Erro ao acessar a página: ' . $e->getMessage();
         }
 
-        if ($show_text) {
-            echo "Enxadrista #" . $enxadrista->id . " - " . $enxadrista->name . " (" . $enxadrista->fide_id . ")";
-            echo "<hr/>";
-        }
+        if ($show_text) echo "Enxadrista #" . $enxadrista->id . " - " . $enxadrista->name . " (" . $enxadrista->fide_id . ")<br/>";
+        if ($show_text) echo "<hr/>";
     }
+
 
     private static function getName($html){
         $explode = explode("<td bgcolor=#efefef width=230 height=20>",$html);
