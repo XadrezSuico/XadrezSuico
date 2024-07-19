@@ -282,6 +282,7 @@ class FIDERatingController extends Controller
                     if ($show_text) echo "BTZ: " . ($ratings[2] ?? 'Not Found');
                     if ($save_rating) $enxadrista->setRating($codigo_organizacao, 2, intval($ratings[2] ?? 0));
                 } else {
+                    if ($show_text) echo "PLAYER NOT FOUND BY NAME";
                     if ($save_rating) {
                         $enxadrista->deleteRating($codigo_organizacao, 0);
                         $enxadrista->deleteRating($codigo_organizacao, 1);
