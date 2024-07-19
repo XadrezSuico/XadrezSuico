@@ -275,37 +275,46 @@ class FIDERatingController extends Controller
             $name = $crawler->filter('.profile-top-title')->first()->text();
             if ($show_text) echo "Nome do enxadrista: " . $name . "<br/>";
 
-            // Inicializa os ratings
-            $ratings = [
-                'standard' => null,
-                'rapid' => null,
-                'blitz' => null
-            ];
-
             // Extrai os ratings
-            $crawler->filter('.profile-top-ratingData')->each(function (Crawler $node) use (&$ratings) {
-                $text = $node->text();
-                $parts = explode(' ', trim($text), 2);
+            $ratings = [];
+            $crawler->filter('.profile-top-rating-dataCont .profile-top-rating-data')->each(function (Crawler $node) use (&$ratings) {
+                $desc = $node->filter('.profile-top-rating-dataDesc')->text();
+                $ratingText = trim($node->text());
+
+
+                $parts = explode(' ', trim($ratingText), 2);
+
 
                 if (count($parts) === 2) {
-                    $desc = $parts[0];
-                    $ratingText = $parts[1];
 
                     // Tratar "Not rated" como rating não existente
-                    $ratingValue = ($ratingText === 'Not rated') ? null : intval($ratingText);
-
-                    // Mapear rating para o tipo correspondente
-                    switch ($desc) {
-                        case 'std':
-                            $ratings['standard'] = $ratingValue;
-                            break;
-                        case 'rapid':
-                            $ratings['rapid'] = $ratingValue;
-                            break;
-                        case 'blitz':
-                            $ratings['blitz'] = $ratingValue;
-                            break;
+                    if ($parts[0] === 'Not rated') {
+                        $ratingValue = null;
+                    } else {
+                        $ratingValue = intval($parts[1]);
                     }
+                }else{
+                    $ratingValue = null;
+                }
+
+                echo $desc."<br/>";
+                echo "<pre>{$ratingText}</pre><br/>";
+                echo $ratingValue . "<br/>";
+                echo "<br/>";
+                echo "<br/>";
+                echo "<br/>";
+
+                // Mapear rating para o tipo correspondente
+                switch ($desc) {
+                    case 'std':
+                        $ratings['standard'] = $ratingValue;
+                        break;
+                    case 'rapid':
+                        $ratings['rapid'] = $ratingValue;
+                        break;
+                    case 'blitz':
+                        $ratings['blitz'] = $ratingValue;
+                        break;
                 }
             });
 
@@ -353,7 +362,6 @@ class FIDERatingController extends Controller
         if ($show_text) echo "Enxadrista #" . $enxadrista->id . " - " . $enxadrista->name . " (" . $enxadrista->fide_id . ")<br/>";
         if ($show_text) echo "<hr/>";
     }
-
 
 
     private static function getName($html){
