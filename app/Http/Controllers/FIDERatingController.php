@@ -240,29 +240,25 @@ class FIDERatingController extends Controller
     {
         $codigo_organizacao = 0;
 
-
         $client = HttpClient::create();
         $browser = new HttpBrowser($client);
 
-        $url = "https://ratings.fide.com/profile/".$enxadrista->fide_id;
-
+        $url = "https://ratings.fide.com/profile/" . $enxadrista->fide_id;
 
         try {
             $crawler = $browser->request('GET', $url);
             $statusCode = $browser->getInternalResponse()->getStatusCode();
 
             if ($statusCode !== 200) {
-                return view('chess.error', ['error' => 'Erro ao acessar a página: código de status ' . $statusCode]);
-
-
-                if ($save_rating) $enxadrista->deleteRating($codigo_organizacao, 0);
-                if ($save_rating) $enxadrista->deleteRating($codigo_organizacao, 1);
-                if ($save_rating) $enxadrista->deleteRating($codigo_organizacao, 2);
-
-
-                if ($save_rating) $enxadrista->fide_last_update = date("Y-m-d H:i:s");
-
-                $enxadrista->encontrado_fide = false;
+                if ($save_rating) {
+                    $enxadrista->deleteRating($codigo_organizacao, 0);
+                    $enxadrista->deleteRating($codigo_organizacao, 1);
+                    $enxadrista->deleteRating($codigo_organizacao, 2);
+                    $enxadrista->fide_last_update = date("Y-m-d H:i:s");
+                    $enxadrista->encontrado_fide = false;
+                    $enxadrista->save();
+                }
+                if ($show_text) echo 'Erro ao acessar a página: código de status ' . $statusCode;
             }
 
             $players = [];
@@ -273,39 +269,25 @@ class FIDERatingController extends Controller
                     return $ratingNode->text();
                 });
 
-                if($name) {
+                if ($name) {
                     $enxadrista->encontrado_fide = true;
                     $enxadrista->fide_name = $name;
-                    if ($ratings[0]) {
-                        if ($show_text) echo "STD:" . $ratings[0];
-                        if ($save_rating) $enxadrista->setRating($codigo_organizacao, 0, intval($ratings[0]));
-                    }else{
-                        if ($show_text) echo "STD: Not Found";
-                        if ($save_rating) $enxadrista->deleteRating($codigo_organizacao, 0);
-                    }
-                    if ($ratings[1]) {
-                        if ($show_text) echo "RPD:" . $ratings[1];
-                        if ($save_rating) $enxadrista->setRating($codigo_organizacao, 1, intval($ratings[1]));
-                    } else {
-                        if ($show_text) echo "RPD: Not Found";
-                        if ($save_rating) $enxadrista->deleteRating($codigo_organizacao, 1);
-                    }
-                    if ($ratings[2]) {
-                        if ($show_text) echo "BTZ:" . $ratings[2];
-                        if ($save_rating) $enxadrista->setRating($codigo_organizacao, 2, intval($ratings[2]));
-                    } else {
-                        if ($show_text) echo "BTZ: Not Found";
-                        if ($save_rating) $enxadrista->deleteRating($codigo_organizacao, 2);
-                    }
-                }else{
-                    if ($save_rating) $enxadrista->deleteRating($codigo_organizacao, 0);
-                    if ($save_rating) $enxadrista->deleteRating($codigo_organizacao, 1);
-                    if ($save_rating) $enxadrista->deleteRating($codigo_organizacao, 2);
 
+                    if ($show_text) echo "STD: " . ($ratings[0] ?? 'Not Found');
+                    if ($save_rating) $enxadrista->setRating($codigo_organizacao, 0, intval($ratings[0] ?? 0));
 
-                    if ($save_rating) $enxadrista->fide_last_update = date("Y-m-d H:i:s");
+                    if ($show_text) echo "RPD: " . ($ratings[1] ?? 'Not Found');
+                    if ($save_rating) $enxadrista->setRating($codigo_organizacao, 1, intval($ratings[1] ?? 0));
+
+                    if ($show_text) echo "BTZ: " . ($ratings[2] ?? 'Not Found');
+                    if ($save_rating) $enxadrista->setRating($codigo_organizacao, 2, intval($ratings[2] ?? 0));
+                } else {
+                    if ($save_rating) {
+                        $enxadrista->deleteRating($codigo_organizacao, 0);
+                        $enxadrista->deleteRating($codigo_organizacao, 1);
+                        $enxadrista->deleteRating($codigo_organizacao, 2);
+                    }
                     $enxadrista->encontrado_fide = false;
-
                 }
 
                 $players[] = [
@@ -314,28 +296,21 @@ class FIDERatingController extends Controller
                     'rapid' => $ratings[1] ?? 'N/A',
                     'blitz' => $ratings[2] ?? 'N/A'
                 ];
-
             });
 
-
-
-
-            if ($save_rating) $enxadrista->fide_last_update = date("Y-m-d H:i:s");
-            if ($return_enxadrista) {
-                return $enxadrista;
-            } else {
+            if ($save_rating) {
+                $enxadrista->fide_last_update = date("Y-m-d H:i:s");
                 $enxadrista->save();
             }
 
-
-            if ($save_rating) $enxadrista->fide_last_update = date("Y-m-d H:i:s");
-        } catch (TransportExceptionInterface | ClientExceptionInterface | ServerExceptionInterface | RedirectionExceptionInterface $e) {
+            if ($return_enxadrista) {
+                return $enxadrista;
+            }
+        } catch (\Exception $e) {
             return view('chess.error', ['error' => 'Erro ao acessar a página: ' . $e->getMessage()]);
         }
 
-
         if ($show_text) echo "Enxadrista #" . $enxadrista->id . " - " . $enxadrista->name . "(" . $enxadrista->fide_id . ")";
-
 
         if ($show_text) echo "<hr/>";
     }
