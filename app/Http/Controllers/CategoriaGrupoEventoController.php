@@ -10,6 +10,7 @@ use App\Sexo;
 use App\TorneioTemplate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\MessageBag;
 
 class CategoriaGrupoEventoController extends Controller
 {
