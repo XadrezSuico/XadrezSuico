@@ -289,6 +289,7 @@ class FIDERatingController extends Controller
                 }
 
                 echo $desc."<br/>";
+                echo "<pre>{$ratingText}</pre><br/>";
                 echo $ratingValue . "<br/>";
                 echo "<br/>";
                 echo "<br/>";
