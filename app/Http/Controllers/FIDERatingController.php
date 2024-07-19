@@ -261,6 +261,9 @@ class FIDERatingController extends Controller
                     $enxadrista->save();
                 }
                 if ($show_text) echo 'Erro ao acessar a página: código de status ' . $statusCode;
+            }else{
+
+                if ($show_text) echo 'Carregamento OK (200 OK) <br/> ' . $statusCode;
             }
 
             $players = [];
