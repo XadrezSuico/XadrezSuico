@@ -250,6 +250,14 @@ class FIDERatingController extends Controller
                 return view('chess.error', ['error' => 'Erro ao acessar a página: código de status ' . $statusCode]);
 
 
+                if ($save_rating) $enxadrista->deleteRating($codigo_organizacao, 0);
+                if ($save_rating) $enxadrista->deleteRating($codigo_organizacao, 1);
+                if ($save_rating) $enxadrista->deleteRating($codigo_organizacao, 2);
+
+
+                if ($save_rating) $enxadrista->fide_last_update = date("Y-m-d H:i:s");
+
+                $enxadrista->encontrado_fide = false;
             }
 
             $players = [];
@@ -261,6 +269,7 @@ class FIDERatingController extends Controller
                 });
 
                 if($name) {
+                    $enxadrista->encontrado_fide = true;
                     $enxadrista->fide_name = $name;
                     if ($ratings[0]) {
                         if ($show_text) echo "STD:" . $ratings[0];
@@ -290,6 +299,8 @@ class FIDERatingController extends Controller
 
 
                     if ($save_rating) $enxadrista->fide_last_update = date("Y-m-d H:i:s");
+                    $enxadrista->encontrado_fide = false;
+
                 }
 
                 $players[] = [
