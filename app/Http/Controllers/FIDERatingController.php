@@ -263,8 +263,14 @@ class FIDERatingController extends Controller
                 if ($show_text) echo 'Erro ao acessar a página: código de status ' . $statusCode;
             }else{
 
-                if ($show_text) echo 'Carregamento OK (200 OK) <br/> ' . $statusCode;
+                if ($show_text) echo 'Carregamento OK (200 OK) <br/> ';
             }
+
+
+            // Obtém o HTML da resposta
+            $htmlContent = $browser->getInternalResponse()->getContent();
+            echo "<h3>HTML Obtido:</h3>";
+            echo "<pre>" . htmlspecialchars($htmlContent) . "</pre>";
 
             $players = [];
 
