@@ -276,7 +276,7 @@ class FIDERatingController extends Controller
             $htmlContent = $browser->getInternalResponse()->getContent();
             if ($show_text) {
                 echo "<h3>HTML Obtido:</h3>";
-                echo "<pre>" . htmlspecialchars(substr($htmlContent, 0, 2000)) . "</pre>"; // Limita a visualização do HTML para 2000 caracteres
+                echo "<pre>" . htmlspecialchars($htmlContent) . "</pre>"; // Limita a visualização do HTML para 2000 caracteres
             }
 
             $players = [];
