@@ -30,7 +30,12 @@ class FIDERatingController extends Controller
             ->limit(5)
             ->get();
         foreach ($enxadristas as $enxadrista) {
-            $this->getRating($enxadrista);
+            if($enxadrista->fide_id  > 0){
+                $this->getRating($enxadrista);
+            }else{
+                $enxadrista->fide_id = null;
+                $enxadrista->save();
+            }
         }
     }
 
