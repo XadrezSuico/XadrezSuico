@@ -308,7 +308,7 @@ class FIDERatingController extends Controller
                 return $enxadrista;
             }
         } catch (\Exception $e) {
-            return view('chess.error', ['error' => 'Erro ao acessar a página: ' . $e->getMessage()]);
+            echo 'Erro ao acessar a página: ' . $e->getMessage();
         }
 
         if ($show_text) echo "Enxadrista #" . $enxadrista->id . " - " . $enxadrista->name . "(" . $enxadrista->fide_id . ")";
