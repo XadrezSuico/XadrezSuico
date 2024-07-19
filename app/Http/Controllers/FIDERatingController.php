@@ -267,9 +267,9 @@ class FIDERatingController extends Controller
             }
 
             // Obtém o HTML da resposta
-            $htmlContent = $browser->getInternalResponse()->getContent();
-            echo "<h3>HTML Obtido:</h3>";
-            echo "<pre>" . htmlspecialchars($htmlContent) . "</pre>";
+            // $htmlContent = $browser->getInternalResponse()->getContent();
+            // echo "<h3>HTML Obtido:</h3>";
+            // echo "<pre>" . htmlspecialchars($htmlContent) . "</pre>";
 
             // Extrai o nome do enxadrista
             $name = $crawler->filter('.profile-top-title')->first()->text();
@@ -297,12 +297,12 @@ class FIDERatingController extends Controller
                     $ratingValue = null;
                 }
 
-                echo $desc."<br/>";
-                echo "<pre>{$ratingText}</pre><br/>";
-                echo $ratingValue . "<br/>";
-                echo "<br/>";
-                echo "<br/>";
-                echo "<br/>";
+                // echo $desc."<br/>";
+                // echo "<pre>{$ratingText}</pre><br/>";
+                // echo $ratingValue . "<br/>";
+                // echo "<br/>";
+                // echo "<br/>";
+                // echo "<br/>";
 
                 // Mapear rating para o tipo correspondente
                 switch ($desc) {
