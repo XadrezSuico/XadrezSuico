@@ -245,7 +245,9 @@ class FIDERatingController extends Controller
 
         $url = "https://ratings.fide.com/profile/" . $enxadrista->fide_id;
 
-        echo "{$url} <br/>";
+        if ($show_text) {
+            echo "{$url} <br/>";
+        }
 
         try {
             $crawler = $browser->request('GET', $url);
@@ -260,54 +262,58 @@ class FIDERatingController extends Controller
                     $enxadrista->encontrado_fide = false;
                     $enxadrista->save();
                 }
-                if ($show_text) echo 'Erro ao acessar a página: código de status ' . $statusCode;
-            }else{
-
-                if ($show_text) echo 'Carregamento OK (200 OK) <br/> ';
+                if ($show_text) {
+                    echo 'Erro ao acessar a página: código de status ' . $statusCode;
+                }
+                return; // Encerrar a função em caso de erro
             }
 
+            if ($show_text) {
+                echo 'Carregamento OK (200 OK) <br/>';
+            }
 
             // Obtém o HTML da resposta
             $htmlContent = $browser->getInternalResponse()->getContent();
-            echo "<h3>HTML Obtido:</h3>";
-            echo "<pre>" . htmlspecialchars($htmlContent) . "</pre>";
+            if ($show_text) {
+                echo "<h3>HTML Obtido:</h3>";
+                echo "<pre>" . htmlspecialchars(substr($htmlContent, 0, 2000)) . "</pre>"; // Limita a visualização do HTML para 2000 caracteres
+            }
 
             $players = [];
 
-            $crawler->filter('.contentpaneopen')->each(function (Crawler $node) use ($save_rating, &$enxadrista, $codigo_organizacao, $show_text) {
-                $name = $node->filter('td[align="left"] a')->text();
-                $ratings = $node->filter('td[align="center"]')->each(function (Crawler $ratingNode) {
-                    return $ratingNode->text();
-                });
+            // Processa o conteúdo
+            $crawler->filter('.profile-top-rating-data')->each(function (Crawler $node) use ($save_rating, &$enxadrista, $codigo_organizacao, $show_text) {
+                $ratingType = $node->filter('.profile-top-rating-dataDesc')->text();
+                $ratingValue = trim($node->text());
 
-                if ($name) {
-                    $enxadrista->encontrado_fide = true;
-                    $enxadrista->fide_name = $name;
-
-                    if ($show_text) echo "STD: " . ($ratings[0] ?? 'Not Found');
-                    if ($save_rating) $enxadrista->setRating($codigo_organizacao, 0, intval($ratings[0] ?? 0));
-
-                    if ($show_text) echo "RPD: " . ($ratings[1] ?? 'Not Found');
-                    if ($save_rating) $enxadrista->setRating($codigo_organizacao, 1, intval($ratings[1] ?? 0));
-
-                    if ($show_text) echo "BTZ: " . ($ratings[2] ?? 'Not Found');
-                    if ($save_rating) $enxadrista->setRating($codigo_organizacao, 2, intval($ratings[2] ?? 0));
-                } else {
-                    if ($show_text) echo "PLAYER NOT FOUND BY NAME";
-                    if ($save_rating) {
-                        $enxadrista->deleteRating($codigo_organizacao, 0);
-                        $enxadrista->deleteRating($codigo_organizacao, 1);
-                        $enxadrista->deleteRating($codigo_organizacao, 2);
-                    }
-                    $enxadrista->encontrado_fide = false;
-                }
-
-                $players[] = [
-                    'name' => $name,
-                    'standard' => $ratings[0] ?? 'N/A',
-                    'rapid' => $ratings[1] ?? 'N/A',
-                    'blitz' => $ratings[2] ?? 'N/A'
+                // Mapear os tipos de rating
+                $ratingMap = [
+                    'std' => 0,
+                    'rapid' => 1,
+                    'blitz' => 2
                 ];
+
+                if (isset($ratingMap[$ratingType])) {
+                    $index = $ratingMap[$ratingType];
+                    if ($ratingValue !== 'Not rated') {
+                        $ratingValue = intval($ratingValue);
+                        if ($show_text) {
+                            echo ucfirst($ratingType) . ": " . $ratingValue . "<br>";
+                        }
+                        if ($save_rating) {
+                            $enxadrista->setRating($codigo_organizacao, $index, $ratingValue);
+                        }
+                    } else {
+                        if ($show_text) {
+                            echo ucfirst($ratingType) . ": Not rated<br>";
+                        }
+                        if ($save_rating) {
+                            $enxadrista->setRating($codigo_organizacao, $index,
+                                0
+                            );
+                        }
+                    }
+                }
             });
 
             if ($save_rating) {
@@ -319,12 +325,15 @@ class FIDERatingController extends Controller
                 return $enxadrista;
             }
         } catch (\Exception $e) {
-            echo 'Erro ao acessar a página: ' . $e->getMessage();
+            if ($show_text) {
+                echo 'Erro ao acessar a página: ' . $e->getMessage();
+            }
         }
 
-        if ($show_text) echo "Enxadrista #" . $enxadrista->id . " - " . $enxadrista->name . "(" . $enxadrista->fide_id . ")";
-
-        if ($show_text) echo "<hr/>";
+        if ($show_text) {
+            echo "Enxadrista #" . $enxadrista->id . " - " . $enxadrista->name . " (" . $enxadrista->fide_id . ")";
+            echo "<hr/>";
+        }
     }
 
     private static function getName($html){
