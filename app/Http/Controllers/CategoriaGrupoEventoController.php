@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Categoria;
 use App\CategoriaSexo;
+use App\CategoriaTorneioTemplate;
 use App\GrupoEvento;
 use App\Sexo;
+use App\TorneioTemplate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -200,5 +202,65 @@ class CategoriaGrupoEventoController extends Controller
         $categoria_sexo = CategoriaSexo::find($categoria_sexo_id);
         $categoria_sexo->delete();
         return redirect("/grupoevento/" . $grupo_evento->id . "/categorias/dashboard/" . $categoria->id);
+    }
+
+
+
+    public function create_template($grupo_evento_id, $id, Request $request)
+    {
+        $grupo_evento = GrupoEvento::find($grupo_evento_id);
+        $user = Auth::user();
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionGroupEventByPerfil($grupo_evento->id, [7])
+        ) {
+            return redirect("/grupoevento/dashboard/" . $grupo_evento->id);
+        }
+
+
+
+        $categoria = Categoria::find($id);
+
+        if($categoria->torneios_template()->count() > 0) {
+            $messageBag = new MessageBag;
+            $messageBag->add("type", "danger");
+            $messageBag->add("alerta", "A categoria já está relacionada à um Template de Torneio, então não é possível criar um template a partir dela!");
+            return redirect("/grupoevento/dashboard/" . $grupo_evento->id . "/?tab=categoria")->with($messageBag);
+        }
+
+        $torneio_template = new TorneioTemplate;
+        $torneio_template->grupo_evento_id = $grupo_evento->id;
+        $torneio_template->name = $categoria->name;
+        $torneio_template->save();
+
+        $categoria_torneio_template = new CategoriaTorneioTemplate;
+        $categoria_torneio_template->categoria_id = $categoria->id;
+        $categoria_torneio_template->grupo_evento_id = $grupo_evento->id;
+        $categoria_torneio_template->save();
+
+        $messageBag = new MessageBag;
+        $messageBag->add("type", "success");
+        $messageBag->add("alerta", "Template de Torneio criado a partir de uma Categoria com sucesso!" );
+
+        return redirect("/grupoevento/" . $grupo_evento->id . "/torneiotemplates/dashboard/" . $torneio_template->id)->with($messageBag);
+    }
+    public function delete($grupo_evento_id, $id)
+    {
+        $grupo_evento = GrupoEvento::find($grupo_evento_id);
+        $user = Auth::user();
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionGroupEventByPerfil($grupo_evento->id, [7])
+        ) {
+            return redirect("/grupoevento/dashboard/" . $grupo_evento->id);
+        }
+
+
+        $categoria = Categoria::find($id);
+
+        if ($categoria->isDeletavel()) {
+            $categoria->delete();
+        }
+        return redirect("/grupoevento/dashboard/" . $grupo_evento->id . "?tab=categoria");
     }
 }

@@ -446,6 +446,7 @@ Route::group(["prefix"=>"grupoevento"],function(){
             Route::post('/add', 'CategoriaGrupoEventoController@sexo_add')->name('grupoevento.categorias.sexo.add');
             Route::get('/remove/{categoria_sexo_id}', 'CategoriaGrupoEventoController@sexo_remove')->name('grupoevento.categorias.sexo.remove');
         });
+        Route::get('/createTemplate/{id}', 'CategoriaGrupoEventoController@create_template')->name('grupoevento.categorias.create_template');
     });
     Route::group(["prefix"=>"{grupo_evento_id}/campos"],function(){
         Route::post('/new', 'CampoPersonalizadoGrupoEventoController@new_post')->name('grupoevento.campos.new.post');

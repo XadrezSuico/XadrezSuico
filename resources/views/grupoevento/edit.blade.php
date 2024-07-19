@@ -618,7 +618,10 @@
 													<td>@if(!$categoria->nao_classificar) Sim @else Não @endif</td>
 													<td>
 														<a class="btn btn-success" href="{{url("/grupoevento/".$grupo_evento->id."/categorias/dashboard/".$categoria->id)}}" role="button"><i class="fa fa-dashboard"></i></a>
-														@if($categoria->isDeletavel()) <a class="btn btn-danger" href="{{url("/grupoevento/".$grupo_evento->id."/categorias/delete/".$categoria->id)}}" role="button"><i class="fa fa-times"></i></a> @endif
+														@if($categoria->torneios_template()->count() == 0)
+														    <a class="btn btn-warning" href="{{url("/grupoevento/".$grupo_evento->id."/categorias/createTemplate/".$categoria->id)}}" role="button"><i class="fa fa-plus"></i></a>
+                                                        @endif
+                                                        @if($categoria->isDeletavel()) <a class="btn btn-danger" href="{{url("/grupoevento/".$grupo_evento->id."/categorias/delete/".$categoria->id)}}" role="button"><i class="fa fa-times"></i></a> @endif
 													</td>
 												</tr>
 											@endforeach
