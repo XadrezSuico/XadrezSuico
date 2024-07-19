@@ -244,23 +244,4 @@ class CategoriaGrupoEventoController extends Controller
 
         return redirect("/grupoevento/" . $grupo_evento->id . "/torneiotemplates/dashboard/" . $torneio_template->id)->with($messageBag);
     }
-    public function delete($grupo_evento_id, $id)
-    {
-        $grupo_evento = GrupoEvento::find($grupo_evento_id);
-        $user = Auth::user();
-        if (
-            !$user->hasPermissionGlobal() &&
-            !$user->hasPermissionGroupEventByPerfil($grupo_evento->id, [7])
-        ) {
-            return redirect("/grupoevento/dashboard/" . $grupo_evento->id);
-        }
-
-
-        $categoria = Categoria::find($id);
-
-        if ($categoria->isDeletavel()) {
-            $categoria->delete();
-        }
-        return redirect("/grupoevento/dashboard/" . $grupo_evento->id . "?tab=categoria");
-    }
 }
