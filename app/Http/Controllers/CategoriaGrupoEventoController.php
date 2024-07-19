@@ -235,7 +235,7 @@ class CategoriaGrupoEventoController extends Controller
 
         $categoria_torneio_template = new CategoriaTorneioTemplate;
         $categoria_torneio_template->categoria_id = $categoria->id;
-        $categoria_torneio_template->grupo_evento_id = $grupo_evento->id;
+        $categoria_torneio_template->torneio_template_id = $torneio_template->id;
         $categoria_torneio_template->save();
 
         $messageBag = new MessageBag;
