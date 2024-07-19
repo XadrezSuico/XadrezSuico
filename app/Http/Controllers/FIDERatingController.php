@@ -288,6 +288,12 @@ class FIDERatingController extends Controller
                     $ratingValue = intval($ratingText);
                 }
 
+                echo $desc."<br/>";
+                echo $ratingValue . "<br/>";
+                echo "<br/>";
+                echo "<br/>";
+                echo "<br/>";
+
                 // Mapear rating para o tipo correspondente
                 switch ($desc) {
                     case 'std':
