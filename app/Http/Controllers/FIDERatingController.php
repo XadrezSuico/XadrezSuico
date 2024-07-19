@@ -245,6 +245,8 @@ class FIDERatingController extends Controller
 
         $url = "https://ratings.fide.com/profile/" . $enxadrista->fide_id;
 
+        echo "{$url} <br/>";
+
         try {
             $crawler = $browser->request('GET', $url);
             $statusCode = $browser->getInternalResponse()->getStatusCode();
