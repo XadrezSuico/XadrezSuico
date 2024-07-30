@@ -19,6 +19,7 @@ class GrupoEventoPublicoController extends Controller
         $grupo_evento = GrupoEvento::find($grupo_evento_id);
         $eventos = $grupo_evento->getEventosClassificacaoGeralPublica();
         $categoria = Categoria::find($categoria_id);
+        if($categoria->nao_classificar) return abort(404);
         $pontuacoes = PontuacaoEnxadrista::where([
             ["grupo_evento_id", "=", $grupo_evento->id],
             ["categoria_id", "=", $categoria->id],
