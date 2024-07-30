@@ -137,7 +137,7 @@ class TeamAwardCalculatorController extends Controller
                         Log::debug("Pontos: Limite ultrapasado.");
                     }
                 } else {
-                    Log::debug("Pontos: {$points}");
+                    Log::debug("Pontos ({$inscricao->clube->id}): {$points}");
                     $pontos_time->score += $points;
 
                 }
