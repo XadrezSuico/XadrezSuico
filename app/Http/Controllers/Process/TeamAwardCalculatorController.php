@@ -128,7 +128,7 @@ class TeamAwardCalculatorController extends Controller
 
                     $quantidade = $pontos_time->getConfig("registrations_processed_category_".$inscricao->categoria->id,true);
                     if ($time_award->getConfig("limit_places",true) > $quantidade) {
-                        Log::debug("Pontos: {$points}");
+                        Log::debug("Pontos ({$time_award->id},{$inscricao->clube->id}): {$points}");
                         $pontos_time->score += $points;
 
                         $quantidade++;
