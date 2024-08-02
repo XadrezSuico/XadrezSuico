@@ -7,6 +7,7 @@ class ClassificationTypeRuleConfig
     const REGISTRATIONS_MAX =
     "registration-max";
     const DEFAULT = "default";
+    const DEFAULT_NOT_CLASSIFICATED = "default-not-classificated";
 
     static $types = array(
         "registration-min" => array(
@@ -22,6 +23,11 @@ class ClassificationTypeRuleConfig
         "default" => array(
             "name" => "Regra Padrão",
             "description" => "Indica se essa regra é a padrão e será aplicada para todos os que não atenderem as outras regras.",
+            "type" => "boolean"
+        ),
+        "default-not-classificated" => array(
+            "name" => "Regra Padrão para Não Classificados",
+            "description" => "Indica se essa regra é a padrão e será aplicada para todos os que não atenderem as outras regras e que não estão classificados.",
             "type" => "boolean"
         ),
     );
