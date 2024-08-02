@@ -88,6 +88,11 @@ class Evento extends Model
         return $this->belongsTo("App\GrupoEvento", "grupo_evento_id", "id");
     }
 
+    public function parent_event()
+    {
+        return $this->belongsTo("App\Evento", "parent_evento_id", "id");
+    }
+
     public function cidade()
     {
         return $this->belongsTo("App\Cidade", "cidade_id", "id");
@@ -140,6 +145,11 @@ class Evento extends Model
     public function event_classificate_rules()
     {
         return $this->hasMany("App\Classification\EventClassificateRule", "event_id", "id");
+    }
+
+    public function event_children()
+    {
+        return $this->hasMany("App\Evento", "parent_evento_id", "id");
     }
 
     public function tipo_rating()

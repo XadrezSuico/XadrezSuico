@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Classification;
 
 use App\Classification\EventClassificateRule;
 use App\Enum\ClassificationTypeRule;
+use App\Enum\ClassificationTypeRuleConfig;
 use App\Evento;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -74,6 +75,14 @@ class ClassificateEventRuleController extends Controller
             $event_classificate_rule->event_id = $request->event_id;
         }
         $event_classificate_rule->save();
+
+        foreach(ClassificationTypeRuleConfig::list() as $key => $type){
+            if($request->has("config_{$key}")){
+                if($request->input("config_{$key}") != ""){
+                    $event_classificate_rule->setConfig($key, $type["type"], $request->input("config_{$key}"));
+                }
+            }
+        }
 
         return redirect("/evento/" . $evento->id . "/classificator/".$event_classificates->id."/rule/edit/" . $event_classificate_rule->id);
     }
@@ -146,6 +155,22 @@ class ClassificateEventRuleController extends Controller
             $event_classificate_rule->event_id = $request->event_id;
         }
         $event_classificate_rule->save();
+
+        foreach (ClassificationTypeRuleConfig::list() as $key => $type) {
+            if ($request->has("config_{$key}")) {
+                if ($request->input("config_{$key}") != "") {
+                    $event_classificate_rule->setConfig($key, $type["type"], $request->input("config_{$key}"));
+                }else{
+                    if($event_classificate_rule->hasConfig($key)){
+                        $event_classificate_rule->removeConfig($key);
+                    }
+                }
+            } else {
+                if ($event_classificate_rule->hasConfig($key)) {
+                    $event_classificate_rule->removeConfig($key);
+                }
+            }
+        }
 
         return redirect("/evento/" . $evento->id . "/classificator/".$event_classificates->id."/rule/edit/" . $event_classificate_rule->id);
     }

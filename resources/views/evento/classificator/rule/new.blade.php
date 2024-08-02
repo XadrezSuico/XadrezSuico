@@ -52,6 +52,24 @@
                             @endforeach
                         </select>
                     </div>
+                    <hr/>
+                    <label>Regras para Funcionamento da Regra:</label>
+                    <div class="row">
+                        @foreach(ClassificationTypeRuleConfig::list() as $key => $type_config)
+					        <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="config_{{$key}}">{{$type_config["name"]}}</label>
+                                    @switch($type_config["type"])
+                                        @case("text")
+                                        @case("integer")
+                                            <input type="text" id="config_{{$key}}" name="config_{{$key}}" class="form-control"/>
+                                        @break
+                                    @endswitch
+                                    <small>{{$type_config["description"]}}</small>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
 				</div>
 				<!-- /.box-body -->
 
@@ -88,6 +106,7 @@
         case "position":
         case "position-absolute":
         case "place-by-quantity":
+        case "classificate-by-start-position":
             $("#value_block").show("fast");
             $("#event_block").hide("fast");
 

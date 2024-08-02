@@ -301,7 +301,7 @@ class GrupoEvento extends Model
             $config = $this->configs()->where([["key", "=", $key]])->first();
 
             if ($config->value_type != $type) {
-                return ["ok" => 0, "error" => 1, "message" => "O tipo do campo é diferente - " . $registration_config->value_type . " != " . $type];
+                return ["ok" => 0, "error" => 1, "message" => "O tipo do campo é diferente - " . $config->value_type . " != " . $type];
             }
         } else {
             $config = new EventGroupConfig;

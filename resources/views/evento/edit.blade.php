@@ -3,7 +3,10 @@
 @section("title", "Dashboard de Evento")
 
 @section('content_header')
-  <h1>Dashboard de Evento: {{$evento->name}}</h1>
+    @if($evento->parent_event)
+    <h5>Filho do Evento: {{$evento->parent_event->name}}</h5>
+    @endif
+    <h1>Dashboard de Evento: {{$evento->name}}</h1>
 @stop
 
 
@@ -26,7 +29,11 @@
 @section("content")
 <!-- Main row -->
 <ul class="nav nav-pills">
+@if($evento->parent_event)
+  <li role="presentation"><a href="/evento/dashboard/{{$evento->parent_event->id}}?tab=evento_filho">Voltar a Dashboard do Evento Pai</a></li>
+@else
   <li role="presentation"><a href="/grupoevento/dashboard/{{$evento->grupo_evento->id}}">Voltar a Dashboard de Grupo de Evento</a></li>
+@endif
 </ul>
 <div class="row">
   <!-- Left col -->
@@ -40,10 +47,11 @@
 			<li role="presentation"><a id="tab_criterio_desempate" href="#criterio_desempate" aria-controls="criterio_desempate" role="tab" data-toggle="tab">Critério de Desempate</a></li>
 			<li role="presentation"><a id="tab_categoria" href="#categoria" aria-controls="categoria" role="tab" data-toggle="tab">Categoria: Cadastro</a></li>
 			<li role="presentation"><a id="tab_categorias_relacionadas" href="#categorias_relacionadas" aria-controls="categorias_relacionadas" role="tab" data-toggle="tab">Categorias Relacionadas</a></li>
+			@if($evento->event_children()->count() > 0) <li role="presentation"><a id="tab_evento_filho" href="#evento_filho" aria-controls="torneio" role="tab" data-toggle="tab">Eventos Filhos</a></li> @endif
 			<li role="presentation"><a id="tab_torneio" href="#torneio" aria-controls="torneio" role="tab" data-toggle="tab">Torneios</a></li>
 			<li role="presentation"><a id="tab_campo_personalizado" href="#campo_personalizado" aria-controls="campo_personalizado" role="tab" data-toggle="tab">Campos Personalizados Adicionais</a></li>
             <li role="presentation"><a id="tab_email_template" href="#email_template" aria-controls="email_template" role="tab" data-toggle="tab">Templates de E-mail</a></li>
-			<?php if(\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal()){ ?><li role="presentation"><a id="tab_classificator" href="#classificator" aria-controls="classificator" role="tab" data-toggle="tab">XadrezSuíço Classificador</a></li><?php } ?>
+			@if(\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal()) <li role="presentation"><a id="tab_classificator" href="#classificator" aria-controls="classificator" role="tab" data-toggle="tab">XadrezSuíço Classificador</a></li> @endif
         </ul>
 
 		<!-- Tab panes -->
@@ -1588,6 +1596,132 @@
 					</div>
 				</section>
 			</div>
+			<div role="tabpanel" class="tab-pane" id="evento_filho">
+				<br/>
+				<section class="col-lg-12 connectedSortable">
+					<div class="box box-primary">
+						<div class="box-header">
+							<h3 class="box-title">Eventos Filhos</h3>
+						</div>
+						<!-- form start -->
+                        <div class="box-body">
+
+                            <table id="tabela_evento" class="table-responsive table-condensed table-striped" style="width: 100%">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Nome</th>
+                                        <th>Período</th>
+                                        @if(
+                                            \Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
+                                            \Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfilByGroupEvent($grupo_evento->id,[4,5]) ||
+                                            \Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($grupo_evento->id,[7])
+                                        )
+                                            <th>Status</th>
+                                        @endif
+                                        <th>Local</th>
+                                        <th>Inscritos</th>
+                                        <th width="20%">Opções</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($evento->event_children->all() as $evento_filho)
+                                        @if(
+                                            \Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
+                                            \Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento_filho->id,[3,4,5]) ||
+                                            \Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento_filho->grupo_evento->id,[6,7])
+                                        )
+                                            <tr>
+                                                <td>{{$evento_filho->id}}</td>
+                                                <td>{{$evento_filho->name}}</td>
+                                                <td data-order="{{$evento_filho->data_inicio}}">
+                                                    @if($evento_filho->getDataInicio() == $evento_filho->getDataFim())
+                                                        {{$evento_filho->getDataInicio()}}
+                                                    @else
+                                                        {{$evento_filho->getDataInicio()}}<br/>{{$evento_filho->getDataFim()}}
+                                                    @endif
+                                                </td>
+                                                @if(
+                                                    \Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
+                                                    \Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento_filho->id,[4,5]) ||
+                                                    \Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento_filho->grupo_evento->id,[7])
+                                                )
+                                                    <td>
+                                                        @if(!$evento_filho->inscricoes_encerradas())
+                                                            <strong>Recebendo</strong> Inscrições
+                                                        @else
+                                                            Inscrições Encerradas e/ou Bloqueadas
+                                                        @endif
+                                                        <hr/>
+
+                                                        @if($evento_filho->classificavel)
+                                                            @if($evento_filho->consegueCalcularClassificacaoGeral())
+                                                                <strong>Apto</strong> para Classificação Geral
+                                                            @else
+                                                                Não Liberado para Classificação Geral - Há Torneios não importados.
+                                                            @endif
+                                                        @else
+                                                            Não Liberado para Classificação Geral - Não está liberado para cálculo da classificação geral.
+                                                        @endif
+                                                        <hr/>
+
+                                                        @if($evento_filho->tipo_rating)
+                                                            @if($evento_filho->consegueCalcularRating())
+                                                                <strong>Apto</strong> para Cálculo de Rating
+                                                            @else
+                                                                Inapto para Cálculo de Rating - Falta importar emparceiramentos
+                                                            @endif
+                                                            <hr/>
+                                                        @endif
+                                                    </td>
+                                                @endif
+                                                <td>{{$evento_filho->cidade->getName()}} <br/> {{$evento_filho->local}}</td>
+                                                <td>
+                                                    Total de Inscritos: {{$evento_filho->quantosInscritos()}}<br/>
+                                                    @if(
+                                                        \Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
+                                                        \Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento_filho->id,[4,5]) ||
+                                                        \Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento_filho->grupo_evento->id,[7])
+                                                    )
+                                                        Confirmados: {{$evento_filho->quantosInscritosConfirmados()}}<br/>
+                                                        Presentes: {{$evento_filho->quantosInscritosPresentes()}}
+                                                        <hr/>
+                                                        @if($evento_filho->is_lichess_integration)
+                                                            <strong>Torneio Lichess.org</strong><br/>
+                                                            Inscritos: <strong>{{$evento_filho->quantosInscritosConfirmadosLichess()}}</strong><br/>
+                                                            Não Inscritos: <strong>{{$evento_filho->quantosInscritosFaltamLichess()}}</strong>
+                                                        @endif
+                                                    @endif
+                                                </td>
+                                                <td>
+                                                    @if(
+                                                        \Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
+                                                        \Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento_filho->id,[3,4]) ||
+                                                        \Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento_filho->grupo_evento->id,[6,7])
+                                                    )
+                                                        <a class="btn btn-default" href="{{url("/evento/dashboard/".$evento_filho->id)}}" role="button">Dashboard</a>
+                                                    @endif
+                                                    <a class="btn btn-success" href="{{$evento_filho->getEventPublicLink()}}" target="_blank" role="button">Link de Divulgação</a>
+                                                    @if(
+                                                        \Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
+                                                        \Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento_filho->id,[4,5]) ||
+                                                        \Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento_filho->grupo_evento->id,[7])
+                                                    )
+                                                        <a class="btn btn-success" href="{{url("/inscricao/".$evento_filho->id)}}" target="_blank" role="button">Nova Inscrição</a>
+                                                    @endif
+
+                                                    @if($evento_filho->isDeletavel() && (\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() || \Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento_filho->grupo_evento->id,[7]) )) <a class="btn btn-danger" href="{{url("/evento/delete/".$evento_filho->id)}}" role="button">Apagar</a> @endif
+                                                </td>
+                                            </tr>
+                                        @endif
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- /.box-body -->
+					</div>
+				</section>
+			</div>
 
 			<div role="tabpanel" class="tab-pane" id="campo_personalizado">
 				<br/>
@@ -1788,7 +1922,19 @@
                                                                     Vagas a Cada: {{$rule->value}} (ou fração).
                                                                 @endif
                                                             @break
+                                                            @case(\App\Enum\ClassificationTypeRule::CLASSIFICATE_BY_START_POSITION)
+                                                                Posição na Classificação Inicial: {{$rule->value}}
+                                                            @break
                                                         @endswitch
+                                                        @if($rule->configs()->count() > 0)
+                                                            <hr/>
+                                                            <label>Regras adicionais:</label>
+                                                            @foreach(ClassificationTypeRuleConfig::list() as $key => $type_config)
+                                                                @if($rule->hasConfig($key))
+                                                                    <br/> {{$type_config["name"]}}: {{$rule->getConfig($key,true)}}
+                                                                @endif
+                                                            @endforeach
+                                                        @endif
                                                     </td>
                                                     @if($total_classified > 0)
                                                         <td>{{$rule->howMuchClassificated()}}</td>

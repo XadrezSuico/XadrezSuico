@@ -228,7 +228,7 @@
 										</tr>
 									</thead>
 									<tbody>
-										@foreach($grupo_evento->eventos->all() as $evento)
+										@foreach($grupo_evento->eventos()->whereNull("parent_evento_id")->get() as $evento)
 											@if(
 												\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
 												\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[3,4,5]) ||
@@ -908,6 +908,19 @@
 
         $("#estados_id").select2();
         $("#cidade_id").select2();
+
+		$("#pais_id").on("select2:select",function(){
+			Loading.enable(loading_default_animation,10000);
+            buscaEstados(false,()=>{
+				Loading.destroy();
+            });
+        });
+		$("#estados_id").on("select2:select",function(){
+			Loading.enable(loading_default_animation,10000);
+            buscaCidades(()=>{
+				Loading.destroy();
+            });
+        });
 
 
 		@if(env("PAIS_DEFAULT"))

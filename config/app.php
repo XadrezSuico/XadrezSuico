@@ -243,6 +243,9 @@ return [
 
         'Excel' => Maatwebsite\Excel\Facades\Excel::class,
 	    'QrCode' => SimpleSoftwareIO\QrCode\Facades\QrCode::class,
+
+
+        'ClassificationTypeRuleConfig' => App\Enum\ClassificationTypeRuleConfig::class,
     ],
 
 ];
