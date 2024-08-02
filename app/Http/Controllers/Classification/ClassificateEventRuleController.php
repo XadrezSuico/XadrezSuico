@@ -78,9 +78,13 @@ class ClassificateEventRuleController extends Controller
         $event_classificate_rule->save();
 
         foreach(ClassificationTypeRuleConfig::list() as $key => $type){
-            if($request->has("config_{$key}")){
-                if($request->input("config_{$key}") != ""){
-                    $event_classificate_rule->setConfig($key, $type["type"], $request->input("config_{$key}"));
+            if($request->has("config_{$key}")) {
+                if ($type["type"] == "boolean") {
+                    $event_classificate_rule->setConfig($key, $type["type"], $request->has("config_{$key}"));
+                } else {
+                    if($request->input("config_{$key}") != ""){
+                        $event_classificate_rule->setConfig($key, $type["type"], $request->input("config_{$key}"));
+                    }
                 }
             }
         }
@@ -159,11 +163,15 @@ class ClassificateEventRuleController extends Controller
 
         foreach (ClassificationTypeRuleConfig::list() as $key => $type) {
             if ($request->has("config_{$key}")) {
-                if ($request->input("config_{$key}") != "") {
-                    $event_classificate_rule->setConfig($key, $type["type"], $request->input("config_{$key}"));
-                }else{
-                    if($event_classificate_rule->hasConfig($key)){
-                        $event_classificate_rule->removeConfig($key);
+                if ($type["type"] == "boolean") {
+                    $event_classificate_rule->setConfig($key, $type["type"], $request->has("config_{$key}"));
+                } else {
+                    if ($request->input("config_{$key}") != "") {
+                        $event_classificate_rule->setConfig($key, $type["type"], $request->input("config_{$key}"));
+                    } else {
+                        if ($event_classificate_rule->hasConfig($key)) {
+                            $event_classificate_rule->removeConfig($key);
+                        }
                     }
                 }
             } else {

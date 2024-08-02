@@ -1931,7 +1931,7 @@
                                                             <label>Regras adicionais:</label>
                                                             @foreach(ClassificationTypeRuleConfig::list() as $key => $type_config)
                                                                 @if($rule->hasConfig($key))
-                                                                    <br/> {{$type_config["name"]}}: {{$rule->getConfig($key,true)}}
+                                                                    <br/> {{$type_config["name"]}}: {{$type_config["type"] == "boolean" ? "Sim" : $rule->getConfig($key,true)}}
                                                                 @endif
                                                             @endforeach
                                                         @endif

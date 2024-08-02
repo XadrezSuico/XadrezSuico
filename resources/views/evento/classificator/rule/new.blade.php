@@ -58,11 +58,19 @@
                         @foreach(ClassificationTypeRuleConfig::list() as $key => $type_config)
 					        <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="config_{{$key}}">{{$type_config["name"]}}</label>
+                                    @switch($type_config["type"])
+                                        @case("text")
+                                        @case("integer")
+                                            <label for="config_{{$key}}">{{$type_config["name"]}}</label>
+                                        @break
+                                    @endswitch
                                     @switch($type_config["type"])
                                         @case("text")
                                         @case("integer")
                                             <input type="text" id="config_{{$key}}" name="config_{{$key}}" class="form-control"/>
+                                        @break
+                                        @case("boolean")
+                                            <label><input type="checkbox" id="config_{{$key}}" name="config_{{$key}}" autocomplete="off"/> {{$type_config["name"]}}</label><br/>
                                         @break
                                     @endswitch
                                     <small>{{$type_config["description"]}}</small>
