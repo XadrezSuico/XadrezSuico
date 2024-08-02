@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Classification;
 
 use App\Classification\EventClassificateRule;
+use App\Enum\ClassificationType;
 use App\Enum\ClassificationTypeRule;
 use App\Enum\ClassificationTypeRuleConfig;
 use App\Evento;
@@ -68,7 +69,7 @@ class ClassificateEventRuleController extends Controller
         $event_classificate_rule->type = $request->type;
 
         if(
-            in_array($request->type,[ClassificationTypeRule::POSITION, ClassificationTypeRule::POSITION_ABSOLUTE, ClassificationTypeRule::PLACE_BY_QUANTITY])
+            in_array($request->type,[ClassificationTypeRule::POSITION, ClassificationTypeRule::POSITION_ABSOLUTE, ClassificationTypeRule::PLACE_BY_QUANTITY, ClassificationTypeRule::CLASSIFICATE_BY_START_POSITION])
         ){
             $event_classificate_rule->value = $request->value;
         }else{
@@ -148,7 +149,7 @@ class ClassificateEventRuleController extends Controller
         $event_classificate_rule->type = $request->type;
 
         if (
-            in_array($request->type, [ClassificationTypeRule::POSITION, ClassificationTypeRule::POSITION_ABSOLUTE, ClassificationTypeRule::PLACE_BY_QUANTITY])
+            in_array($request->type, [ClassificationTypeRule::POSITION, ClassificationTypeRule::POSITION_ABSOLUTE, ClassificationTypeRule::PLACE_BY_QUANTITY, ClassificationTypeRule::CLASSIFICATE_BY_START_POSITION])
         ) {
             $event_classificate_rule->value = $request->value;
         } else {
