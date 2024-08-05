@@ -53,7 +53,7 @@
             <li role="presentation"><a id="tab_email_template" href="#email_template" aria-controls="email_template" role="tab" data-toggle="tab">Templates de E-mail</a></li>
 			@if(
                 \Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
-				\Illuminate\Support\Facades\Auth::user()->hasPermissionEventsByPerfil([14,15,16]) ||
+				\Illuminate\Support\Facades\Auth::user()->hasPermissionEventsByPerfil([14,15,16])
             ) <li role="presentation"><a id="tab_classificator" href="#classificator" aria-controls="classificator" role="tab" data-toggle="tab">XadrezSuíço Classificador</a></li> @endif
         </ul>
 
