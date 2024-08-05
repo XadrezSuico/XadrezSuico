@@ -51,7 +51,10 @@
 			<li role="presentation"><a id="tab_torneio" href="#torneio" aria-controls="torneio" role="tab" data-toggle="tab">Torneios</a></li>
 			<li role="presentation"><a id="tab_campo_personalizado" href="#campo_personalizado" aria-controls="campo_personalizado" role="tab" data-toggle="tab">Campos Personalizados Adicionais</a></li>
             <li role="presentation"><a id="tab_email_template" href="#email_template" aria-controls="email_template" role="tab" data-toggle="tab">Templates de E-mail</a></li>
-			@if(\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal()) <li role="presentation"><a id="tab_classificator" href="#classificator" aria-controls="classificator" role="tab" data-toggle="tab">XadrezSuíço Classificador</a></li> @endif
+			@if(
+                \Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
+				\Illuminate\Support\Facades\Auth::user()->hasPermissionEventsByPerfil([14,15,16]) ||
+            ) <li role="presentation"><a id="tab_classificator" href="#classificator" aria-controls="classificator" role="tab" data-toggle="tab">XadrezSuíço Classificador</a></li> @endif
         </ul>
 
 		<!-- Tab panes -->
