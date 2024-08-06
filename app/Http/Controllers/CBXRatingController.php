@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Enxadrista;
 use GuzzleHttp\Client;
+use Illuminate\Support\Facades\Log;
 
 class CBXRatingController extends Controller
 {
@@ -33,13 +34,16 @@ class CBXRatingController extends Controller
     public static function getRating($enxadrista, $show_text = true, $return_enxadrista = false, $save_rating = true){
         $codigo_organizacao = 1;
 
+        Log::debug("CBXRatingController::getRating - ".$enxadrista->cbx_id);
+
         if($enxadrista->hasConfig("united_to")){
             if($show_text) echo "Enxadrista unido ao cadastro de outro - Não permitido mais a consulta à CBX";
 
             return;
         }
 
-        if(!is_int($enxadrista->cbx_id)){
+        if(!is_int($enxadrista->cbx_id)) {
+            Log::debug("CBXRatingController::getRating - " . $enxadrista->cbx_id. " - ERROR: Enxadrista possui ID CBX que não atende às especificações.");
             if ($show_text) echo "Enxadrista possui ID CBX que não atende às especificações.";
             if ($save_rating){
                 $enxadrista->cbx_last_update = date("Y-m-d H:i:s");
@@ -65,6 +69,7 @@ class CBXRatingController extends Controller
 
         $nome = CBXRatingController::getName($html);
         if($nome){
+            Log::debug("CBXRatingController::getRating - " . $enxadrista->cbx_id. " - Nome Encontrado");
             $enxadrista->encontrado_cbx = true;
             $enxadrista->cbx_name = $nome;
 
@@ -153,6 +158,7 @@ class CBXRatingController extends Controller
                 $not_found = true;
             }
         } else {
+            Log::debug("CBXRatingController::getRating - " . $enxadrista->cbx_id. " - ERROR: Nome não encontrado.");
             if($show_text) echo "Erro name";
             $enxadrista->cbx_name = null;
             $enxadrista->encontrado_cbx = false;
