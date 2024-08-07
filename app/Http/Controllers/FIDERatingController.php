@@ -261,6 +261,11 @@ class FIDERatingController extends Controller
                     $enxadrista->save();
                 }
                 if ($show_text) echo 'Erro ao acessar a página: código de status ' . $statusCode;
+
+                if($return_enxadrista){
+                    return $enxadrista;
+                }
+
                 return; // Early return to stop further processing
             } else {
                 if ($show_text) echo 'Carregamento OK (200 OK) <br/> ';
