@@ -495,6 +495,28 @@ class Evento extends Model
         }
         return $total - $this->quantosInscritosConfirmadosLichess();
     }
+    public function quantosEmparceiramentos()
+    {
+        $total = 0;
+        foreach ($this->torneios->all() as $torneio) {
+            foreach ($torneio->rodadas->all() as $rodada) {
+                $total += $rodada->emparceiramentos()->where([["is_wo_a", "=", false], ["is_wo_b", "=", false]])->count();
+            }
+        }
+        return $total;
+    }
+    public function quantosClubes()
+    {
+        $equipes = array();
+        foreach ($this->torneios->all() as $torneio) {
+            foreach($torneio->inscricoes()->where([["confirmado", "=", true], ["desconsiderar_pontuacao_geral", "=", false]])->get() as $inscricao){
+                if(!in_array($inscricao->clube_id,$equipes) && $inscricao->clube_id != null){
+                    $equipes[] = $inscricao->clube_id;
+                }
+            }
+        }
+        return count($equipes);
+    }
     public function estaLotado()
     {
         if ($this->maximo_inscricoes_evento) {
