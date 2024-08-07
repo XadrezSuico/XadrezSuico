@@ -37,6 +37,7 @@ class CBXRatingController extends Controller
         Log::debug("CBXRatingController::getRating - ".$enxadrista->cbx_id);
 
         if($enxadrista->hasConfig("united_to")){
+            Log::debug("CBXRatingController::getRating - '" . $enxadrista->cbx_id. "' - ERROR: Enxadrista unido ao cadastro de outro - Não permitido mais a consulta à CBX.");
             if($show_text) echo "Enxadrista unido ao cadastro de outro - Não permitido mais a consulta à CBX";
 
             if ($return_enxadrista) {
@@ -46,7 +47,7 @@ class CBXRatingController extends Controller
         }
 
         if(!is_int(trim($enxadrista->cbx_id))) {
-            Log::debug("CBXRatingController::getRating - " . $enxadrista->cbx_id. " - ERROR: Enxadrista possui ID CBX que não atende às especificações.");
+            Log::debug("CBXRatingController::getRating - '" . $enxadrista->cbx_id. "' - ERROR: Enxadrista possui ID CBX que não atende às especificações.");
             if ($show_text) echo "Enxadrista possui ID CBX que não atende às especificações.";
             if ($save_rating){
                 $enxadrista->cbx_last_update = date("Y-m-d H:i:s");
@@ -77,7 +78,7 @@ class CBXRatingController extends Controller
 
         $nome = CBXRatingController::getName($html);
         if($nome){
-            Log::debug("CBXRatingController::getRating - " . $enxadrista->cbx_id. " - Nome Encontrado");
+            Log::debug("CBXRatingController::getRating - '" . $enxadrista->cbx_id. "' - Nome Encontrado");
             $enxadrista->encontrado_cbx = true;
             $enxadrista->cbx_name = $nome;
 
@@ -166,7 +167,7 @@ class CBXRatingController extends Controller
                 $not_found = true;
             }
         } else {
-            Log::debug("CBXRatingController::getRating - " . $enxadrista->cbx_id. " - ERROR: Nome não encontrado.");
+            Log::debug("CBXRatingController::getRating - '" . $enxadrista->cbx_id. "' - ERROR: Nome não encontrado.");
             if($show_text) echo "Erro name";
             $enxadrista->cbx_name = null;
             $enxadrista->encontrado_cbx = false;
