@@ -46,7 +46,7 @@ class CBXRatingController extends Controller
             return;
         }
 
-        if(!is_int(trim($enxadrista->cbx_id))) {
+        if($enxadrista->cbx_id > 0) {
             Log::debug("CBXRatingController::getRating - '" . $enxadrista->cbx_id. "' - ERROR: Enxadrista possui ID CBX que não atende às especificações.");
             if ($show_text) echo "Enxadrista possui ID CBX que não atende às especificações.";
             if ($save_rating){
