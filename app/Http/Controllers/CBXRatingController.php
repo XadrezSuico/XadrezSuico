@@ -34,7 +34,7 @@ class CBXRatingController extends Controller
     public static function getRating($enxadrista, $show_text = true, $return_enxadrista = false, $save_rating = true){
         $codigo_organizacao = 1;
 
-        Log::debug("CBXRatingController::getRating - ".$enxadrista->cbx_id);
+        Log::debug("CBXRatingController::getRating - '".$enxadrista->cbx_id."'");
 
         if($enxadrista->hasConfig("united_to")){
             Log::debug("CBXRatingController::getRating - '" . $enxadrista->cbx_id. "' - ERROR: Enxadrista unido ao cadastro de outro - Não permitido mais a consulta à CBX.");
