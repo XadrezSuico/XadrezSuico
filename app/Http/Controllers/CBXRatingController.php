@@ -39,6 +39,9 @@ class CBXRatingController extends Controller
         if($enxadrista->hasConfig("united_to")){
             if($show_text) echo "Enxadrista unido ao cadastro de outro - Não permitido mais a consulta à CBX";
 
+            if ($return_enxadrista) {
+                return $enxadrista;
+            }
             return;
         }
 
@@ -48,6 +51,9 @@ class CBXRatingController extends Controller
             if ($save_rating){
                 $enxadrista->cbx_last_update = date("Y-m-d H:i:s");
                 $enxadrista->save();
+            }
+            if($return_enxadrista){
+                return $enxadrista;
             }
             return;
         }else{
