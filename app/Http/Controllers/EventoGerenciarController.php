@@ -930,7 +930,9 @@ class EventoGerenciarController extends Controller
                 ->get();
         }
         $criterios = $torneio->getCriteriosTotal();
-        return view("evento.publico.list", compact("evento", "torneio", "categoria", "inscricoes", "criterios"));
+
+        $is_internal = true;
+        return view("evento.publico.list", compact("evento", "torneio", "categoria", "inscricoes", "criterios", "is_internal"));
     }
 
     public function visualizar_inscricoes($id)

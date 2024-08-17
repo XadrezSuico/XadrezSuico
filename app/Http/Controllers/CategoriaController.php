@@ -55,8 +55,12 @@ class CategoriaController extends Controller
         ->get();
         echo $inscricoes_count;
         foreach ($inscricoes as $inscricao) {
+            $inscricao->is_draw = false;
+
             if ($inscricao->pontos != null && $inscricao->confirmado) {
                 $inscritos[] = $inscricao;
+            }else{
+                $inscricao->save();
             }
         }
         usort($inscritos, array("\App\Http\Controllers\CategoriaController", "sort_classificacao_etapa"));
@@ -112,6 +116,12 @@ class CategoriaController extends Controller
                     return $desempate;
                 }
             }
+
+            $inscrito_a->is_draw = true;
+            $inscrito_a->save();
+            $inscrito_b->is_draw = true;
+            $inscrito_b->save();
+
             return strnatcmp($inscrito_a->enxadrista->getName(), $inscrito_b->enxadrista->getName());
         }
     }
