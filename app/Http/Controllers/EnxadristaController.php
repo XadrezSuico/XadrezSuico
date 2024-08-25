@@ -125,7 +125,11 @@ class EnxadristaController extends Controller
                                 ["numero","=",$request->input("tipo_documento_".$tipo_documento_pais->tipo_documento->id)],
                             ]);
                         }
-                    })->count();
+                    })
+                    ->whereDoesntHave("configs", function ($q1) {
+                        $q1->where([["key", "=", "united_to"]]);
+                    })
+                    ->count();
                     if($temEnxadrista_count > 0){
                         $messageBag = new MessageBag;
                         $messageBag->add("type","danger");
