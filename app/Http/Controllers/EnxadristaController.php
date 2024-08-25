@@ -131,9 +131,27 @@ class EnxadristaController extends Controller
                     })
                     ->count();
                     if($temEnxadrista_count > 0){
+                        $temEnxadrista = Enxadrista::whereHas("documentos", function ($q1) use ($request, $tipo_documento_pais) {
+                            if ($tipo_documento_pais->tipo_documento->id == 1) {
+                                $q1->where([
+                                    ["tipo_documentos_id", "=", $tipo_documento_pais->tipo_documento->id],
+                                    ["numero", "=", Util::numeros($request->input("tipo_documento_" . $tipo_documento_pais->tipo_documento->id))],
+                                ]);
+                            } else {
+                                $q1->where([
+                                    ["tipo_documentos_id", "=", $tipo_documento_pais->tipo_documento->id],
+                                    ["numero", "=", $request->input("tipo_documento_" . $tipo_documento_pais->tipo_documento->id)],
+                                ]);
+                            }
+                        })
+                        ->whereDoesntHave("configs", function ($q1) {
+                            $q1->where([["key", "=", "united_to"]]);
+                        })
+                        ->first();
+
                         $messageBag = new MessageBag;
                         $messageBag->add("type","danger");
-                        $messageBag->add("alerta","Já há um cadastro de Enxadrista com o Documento informado.");
+                        $messageBag->add("alerta","Já há um cadastro de Enxadrista com o Documento informado. (ID: {$temEnxadrista->id})");
 
                         return redirect()->back()->withErrors($messageBag);
                     }
@@ -340,12 +358,37 @@ class EnxadristaController extends Controller
                                 ["numero","=",$request->input("tipo_documento_".$tipo_documento_pais->tipo_documento->id)],
                             ]);
                         }
-                    })->count();
+                    })
+                    ->whereDoesntHave("configs", function ($q1) {
+                        $q1->where([["key", "=", "united_to"]]);
+                    })
+                    ->count();
 
                     if($temEnxadrista_count > 0){
+                        $temEnxadrista_count = Enxadrista::where([
+                            ["id","!=",$enxadrista->id]
+                        ])
+                        ->whereHas("documentos",function($q1) use($request, $tipo_documento_pais){
+                            if($tipo_documento_pais->tipo_documento->id == 1){
+                                $q1->where([
+                                    ["tipo_documentos_id","=",$tipo_documento_pais->tipo_documento->id],
+                                    ["numero","=",Util::numeros($request->input("tipo_documento_".$tipo_documento_pais->tipo_documento->id))],
+                                ]);
+                            }else{
+                                $q1->where([
+                                    ["tipo_documentos_id","=",$tipo_documento_pais->tipo_documento->id],
+                                    ["numero","=",$request->input("tipo_documento_".$tipo_documento_pais->tipo_documento->id)],
+                                ]);
+                            }
+                        })
+                        ->whereDoesntHave("configs", function ($q1) {
+                            $q1->where([["key", "=", "united_to"]]);
+                        })
+                        ->first();
+
                         $messageBag = new MessageBag;
                         $messageBag->add("type","danger");
-                        $messageBag->add("alerta","Já há um cadastro de Enxadrista com o Documento informado.");
+                        $messageBag->add("alerta","Já há um cadastro de Enxadrista com o Documento informado.  (ID: {$temEnxadrista->id})");
 
                         return redirect()->back()->withErrors($messageBag);
                     }
