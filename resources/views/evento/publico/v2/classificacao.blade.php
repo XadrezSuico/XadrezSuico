@@ -6,18 +6,6 @@
     <h1>Evento #{{$evento->id}} ({{$evento->name}}) - Resultados</h1>
 @stop
 
-
-@section("css")
-
-<style>
-    .is_draw{
-        background: orange !important;
-        font-weight: bolder !important;
-    }
-</style>
-
-@endsection
-
 @section('content')
 	@if (session('status'))
 		<div class="alert alert-success">
@@ -97,6 +85,11 @@
     .box h4{
         padding: 0 0 1.5rem 0;
         margin: 0;
+    }
+
+    .is_draw{
+        background: orange !important;
+        font-weight: bolder !important;
     }
 </style>
 @endsection
