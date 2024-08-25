@@ -131,10 +131,11 @@ Route::group(["prefix"=>"evento"],function(){
 	Route::post('/{id}/pagina', 'EventoGerenciarController@edit_pagina_post')->name('evento.dashboard.pagina.post');
     Route::get('/delete/{id}', 'EventoGerenciarController@delete')->name('evento.delete');
     Route::get('/classificar/{id}', 'EventoGerenciarController@classificar')->name('evento.classificar');
-    Route::get('/classificacao/{id}', 'EventoController@classificacao')->name('evento.classificacao');
+    Route::get('/classificacao/{id}', 'EventoController@classificacao_v2')->name('evento.classificacao');
     Route::get('/premiados/{id}', 'InscricaoController@visualizar_premiados')->name('evento.visualizar.premiados');
     Route::get('/acompanhar/{id}', 'EventoController@acompanhar')->name('evento.acompanhar');
     Route::get('/{id}/resultados/{categoria_id}', 'EventoController@resultados')->name('evento.resultados');
+    Route::get('/{id}/api/resultados/{categoria_id}', 'EventoController@resultados_v2')->name('evento.resultados.v2');
     Route::get('/{id}/toggleinscricoes', 'EventoGerenciarController@toggleInscricoes')->name('evento.toggleInscricoes');
     Route::get('/{id}/toggleresultados', 'EventoGerenciarController@toggleMostrarClassificacao')->name('evento.toggleMostrarClassificacao');
     Route::get('/{id}/toggleclassificavel', 'EventoGerenciarController@toggleEventoClassificavel')->name('evento.toggleEventoClassificavel');
@@ -144,7 +145,7 @@ Route::group(["prefix"=>"evento"],function(){
     Route::get('/{id}/toggleregistrationpaidconfirmed', 'EventoGerenciarController@toggleRegistrationPaidConfirmed')->name('evento.toggleRegistrationPaidConfirmed');
     Route::get('/{id}/confirmAllRegistrations', 'EventoGerenciarController@confirmAllRegistrations')->name('evento.toggleInscricoes');
     Route::get('/{id}/unconfirmAllRegistrations', 'EventoGerenciarController@unconfirmAllRegistrations')->name('evento.toggleInscricoes');
-    Route::get('/classificacao/{id}/interno', 'EventoGerenciarController@classificacao')->name('evento.classificacao.interno');
+    Route::get('/classificacao/{id}/interno', 'EventoGerenciarController@classificacao_v2')->name('evento.classificacao.interno');
     Route::get('/{id}/resultados/{categoria_id}/interno', 'EventoGerenciarController@resultados')->name('evento.resultados.interno');
 	Route::get('/{id}/inscricoes/list', 'EventoGerenciarController@visualizar_inscricoes')->name('evento.inscricoes.list');
 	Route::get('/{id}/enxadristas/sm', 'EventoGerenciarController@downloadListaManagerParaEvento')->name('evento.enxadristas.sm');

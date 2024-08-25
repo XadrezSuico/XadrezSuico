@@ -883,10 +883,10 @@ class EventoGerenciarController extends Controller
         $evento = Evento::find($evento_id);
         if (
             !$user->hasPermissionGlobal() &&
-            !$user->hasPermissionEventByPerfil($evento->id,[3, 4, 5]) &&
-            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[6,7])
+            !$user->hasPermissionEventByPerfil($evento->id, [3, 4, 5]) &&
+            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [6, 7])
         ) {
-            return redirect("/evento/dashboard/".$evento->id);
+            return redirect("/evento/dashboard/" . $evento->id);
         }
         return view("evento.publico.classificacao", compact("evento"));
     }
@@ -904,7 +904,7 @@ class EventoGerenciarController extends Controller
 
         $categoria = Categoria::find($categoria_id);
         $torneio = $categoria->getTorneioByEvento($evento);
-        if($evento->is_lichess_integration){
+        if ($evento->is_lichess_integration) {
             $inscricoes = Inscricao::where([
                 ["categoria_id", "=", $categoria->id],
             ])
@@ -916,7 +916,75 @@ class EventoGerenciarController extends Controller
                 ->orderBy("confirmado", "DESC")
                 ->orderBy("posicao", "ASC")
                 ->get();
-        }else{
+        } else {
+            $inscricoes = Inscricao::where([
+                ["categoria_id", "=", $categoria->id],
+                ["confirmado", "=", true],
+            ])
+                ->whereHas("torneio", function ($q1) use ($evento) {
+                    $q1->where([
+                        ["evento_id", "=", $evento->id],
+                    ]);
+                })
+                ->orderBy("posicao", "ASC")
+                ->get();
+        }
+        $criterios = $torneio->getCriteriosTotal();
+
+        $is_internal = true;
+        return view("evento.publico.list", compact("evento", "torneio", "categoria", "inscricoes", "criterios", "is_internal"));
+    }
+
+    public function classificacao_v2($evento_id)
+    {
+        $user = Auth::user();
+        $evento = Evento::find($evento_id);
+
+        if (!$evento) {
+            return abort(404);
+        }
+
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionEventByPerfil($evento->id, [3, 4, 5]) &&
+            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [6, 7])
+        ) {
+            return redirect("/evento/dashboard/" . $evento->id);
+        }
+        return view("evento.publico.v2.classificacao", compact("evento"));
+    }
+    public function resultados_v2($evento_id, $categoria_id)
+    {
+        $user = Auth::user();
+        $evento = Evento::find($evento_id);
+
+        if (!$evento) {
+            return abort(404);
+        }
+
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionEventByPerfil($evento->id, [4]) &&
+            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
+        ) {
+            return redirect("/evento/dashboard/" . $evento->id);
+        }
+
+        $categoria = Categoria::find($categoria_id);
+        $torneio = $categoria->getTorneioByEvento($evento);
+        if ($evento->is_lichess_integration) {
+            $inscricoes = Inscricao::where([
+                ["categoria_id", "=", $categoria->id],
+            ])
+                ->whereHas("torneio", function ($q1) use ($evento) {
+                    $q1->where([
+                        ["evento_id", "=", $evento->id],
+                    ]);
+                })
+                ->orderBy("confirmado", "DESC")
+                ->orderBy("posicao", "ASC")
+                ->get();
+        } else {
             $inscricoes = Inscricao::where([
                 ["categoria_id", "=", $categoria->id],
                 ["confirmado", "=", true],
