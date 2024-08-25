@@ -62,6 +62,7 @@
                     <div role="tabpanel" class="tab-pane @if($i++ == 0) active @endif" id="categoria_{{$categoria->categoria->id}}">
                         <div class="icon-loading">
                             <i class="fa fa-refresh fa-spin fa-5x" aria-hidden="true"></i>
+                            <h5>Carregando resultados...</h5>
                         </div>
                         <div class="data" style="display:none">
                         </div>
@@ -76,6 +77,13 @@
     .icon-loading{
         text-align: center;
         padding: 2rem;
+    }
+
+    .icon-loading h5{
+        padding-top: 0.5rem;
+
+        font-size: 2rem;
+        font-weight: bold;
     }
 
     .tab-content{
