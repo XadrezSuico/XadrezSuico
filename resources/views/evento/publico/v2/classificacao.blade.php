@@ -47,7 +47,7 @@
     @endif
     <div class="box">
         <div class="box-body">
-
+            <h4><strong>Categorias:</strong></h4>
             <ul class="nav nav-tabs" role="tablist">
                 @php($i = 0)
                 @foreach($evento->categorias->all() as $categoria)
@@ -80,6 +80,11 @@
 
     .tab-content{
         padding: 1rem;
+    }
+
+    .box h4{
+        padding: 0 0 1.5rem 0;
+        margin: 0;
     }
 </style>
 @endsection
