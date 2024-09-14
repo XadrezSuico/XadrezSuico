@@ -47,11 +47,13 @@
     @endif
     <div class="box">
         <div class="box-body">
+            <input type="hidden" id="evento_id" value="{{$evento->id}}" />
+            <input type="hidden" id="evento_name" value="{{$evento->name}}" />
             <h4><strong>Categorias:</strong></h4>
             <ul class="nav nav-tabs" role="tablist">
                 @php($i = 0)
                 @foreach($evento->categorias->all() as $categoria)
-                    <li role="presentation" class=" @if($i++ == 0) active @endif"><a id="tab_categoria_{{$categoria->categoria->id}}" href="#categoria_{{$categoria->categoria->id}}" aria-controls="categoria_{{$categoria->categoria->id}}" role="tab" data-toggle="tab" data-id="{{$categoria->categoria->id}}" class="tab-category-item">{{$categoria->categoria->name}}</a></li>
+                    <li role="presentation" class=" @if($i++ == 0) active @endif" data-tournament-name="{{$categoria->categoria->name}}"><a id="tab_categoria_{{$categoria->categoria->id}}" href="#categoria_{{$categoria->categoria->id}}" aria-controls="categoria_{{$categoria->categoria->id}}" role="tab" data-toggle="tab" data-id="{{$categoria->categoria->id}}" class="tab-category-item">{{$categoria->categoria->name}}</a></li>
                 @endforeach
             </ul>
 
@@ -59,7 +61,7 @@
             <div class="tab-content">
                 @php($i = 0)
                 @foreach($evento->categorias->all() as $categoria)
-                    <div role="tabpanel" class="tab-pane @if($i++ == 0) active @endif" id="categoria_{{$categoria->categoria->id}}">
+                    <div role="tabpanel" class="tab-pane @if($i++ == 0) active @endif" id="categoria_{{$categoria->categoria->id}}"  data-tournament-name="{{$categoria->categoria->name}}">
                         <div class="icon-loading">
                             <i class="fa fa-refresh fa-spin fa-5x" aria-hidden="true"></i>
                             <h5>Carregando resultados...</h5>
@@ -132,6 +134,8 @@
 
         $("#categoria_".concat(id).concat(" .icon-loading")).css("display","block");
         $("#categoria_".concat(id).concat(" .data")).css("display","none");
+
+        document.title = "Evento ".concat($("#evento_id").val()).concat(" - ").concat($("#evento_name").val()).concat(" - Resultados - Categoria: ").concat($("#categoria_".concat(id)).data("tournament-name"));
 
         if($("#categoria_".concat(id).concat(" .data")).html().trim().length > 0){
             $("#categoria_".concat(id).concat(" .icon-loading")).css("display","none");
