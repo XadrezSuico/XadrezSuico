@@ -135,7 +135,7 @@
         $("#categoria_".concat(id).concat(" .icon-loading")).css("display","block");
         $("#categoria_".concat(id).concat(" .data")).css("display","none");
 
-        document.title = "Evento ".concat($("#evento_id").val()).concat(" - ").concat($("#evento_name").val()).concat(" - Resultados - Categoria: ").concat($("#categoria_".concat(id)).data("tournament-name"));
+        document.title = "Evento #".concat($("#evento_id").val()).concat(" - ").concat($("#evento_name").val()).concat(" - Resultados - Categoria: ").concat($("#categoria_".concat(id)).data("tournament-name"));
 
         if($("#categoria_".concat(id).concat(" .data")).html().trim().length > 0){
             $("#categoria_".concat(id).concat(" .icon-loading")).css("display","none");
