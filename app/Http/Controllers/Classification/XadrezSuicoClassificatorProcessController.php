@@ -1944,7 +1944,7 @@ class XadrezSuicoClassificatorProcessController extends Controller
                 foreach ($category_classificator->getStartingRank($xzsuic_classificator->event_classificator->id) as $item) {
                     Log::debug(json_encode($item));
                     $classificacao = $item["registration"];
-                    if ($rule->value != $item["position"] && !$is_default && !$is_default_not_classificated && !$is_default_confirmed && ($is_default_confirmed && !$classificacao->confirmado)) {
+                    if ($rule->value != $item["position"] && !$is_default && !$is_default_not_classificated && !$is_default_confirmed && ($is_default_confirmed && !$item["registration"]->confirmado)) {
                         $this->log[] = date("d/m/Y H:i:s") . " - Posição: #{$item["position"]}/{$rule->value} - Não atendido para esta regra - Enxadrista #{$classificacao->enxadrista->id} - {$classificacao->enxadrista->name}.";
                         continue;
                     } else {
