@@ -438,7 +438,7 @@ class XadrezSuicoClassificatorProcessController extends Controller
                                                 }
                                             }
 
-                                            if ($inscricao_nova->enxadrista->email) {
+                                            if ($inscricao_nova->enxadrista->email && !$xzsuic_classificator->event->hasConfig("classificator_not_send_email")) {
                                                 if ($xzsuic_classificator->event->isPaid() && $inscricao_nova->getPaymentInfo("link")) {
                                                     EmailController::schedule(
                                                         $inscricao_nova->enxadrista->email,
@@ -775,7 +775,7 @@ class XadrezSuicoClassificatorProcessController extends Controller
                                                 }
                                             }
 
-                                            if ($inscricao_nova->enxadrista->email) {
+                                            if ($inscricao_nova->enxadrista->email && !$xzsuic_classificator->event->hasConfig("classificator_not_send_email")) {
                                                 if ($xzsuic_classificator->event->isPaid() && $inscricao_nova->getPaymentInfo("link")) {
                                                     EmailController::schedule(
                                                         $inscricao_nova->enxadrista->email,
@@ -1127,7 +1127,7 @@ class XadrezSuicoClassificatorProcessController extends Controller
                                                         }
                                                     }
 
-                                                    if ($inscricao_nova->enxadrista->email) {
+                                                    if ($inscricao_nova->enxadrista->email && !$xzsuic_classificator->event->hasConfig("classificator_not_send_email")) {
                                                         if ($xzsuic_classificator->event->isPaid() && $inscricao_nova->getPaymentInfo("link")) {
                                                             EmailController::schedule(
                                                                 $inscricao_nova->enxadrista->email,
@@ -1433,7 +1433,7 @@ class XadrezSuicoClassificatorProcessController extends Controller
                                                     }
                                                 }
 
-                                                if ($inscricao_nova->enxadrista->email) {
+                                                if ($inscricao_nova->enxadrista->email && !$xzsuic_classificator->event->hasConfig("classificator_not_send_email")) {
                                                     if ($xzsuic_classificator->event->isPaid() && $inscricao_nova->getPaymentInfo("link")) {
                                                         EmailController::schedule(
                                                             $inscricao_nova->enxadrista->email,
@@ -1802,7 +1802,7 @@ class XadrezSuicoClassificatorProcessController extends Controller
                                                 }
                                             }
 
-                                            if ($inscricao_nova->enxadrista->email) {
+                                            if ($inscricao_nova->enxadrista->email && !$xzsuic_classificator->event->hasConfig("classificator_not_send_email")) {
                                                 if ($xzsuic_classificator->event->isPaid() && $inscricao_nova->getPaymentInfo("link")) {
                                                     EmailController::schedule(
                                                         $inscricao_nova->enxadrista->email,
@@ -2178,7 +2178,7 @@ class XadrezSuicoClassificatorProcessController extends Controller
                                                 }
                                             }
 
-                                            if ($inscricao_nova->enxadrista->email) {
+                                            if ($inscricao_nova->enxadrista->email && !$xzsuic_classificator->event->hasConfig("classificator_not_send_email")) {
                                                 if ($xzsuic_classificator->event->isPaid() && $inscricao_nova->getPaymentInfo("link")) {
                                                     EmailController::schedule(
                                                         $inscricao_nova->enxadrista->email,
