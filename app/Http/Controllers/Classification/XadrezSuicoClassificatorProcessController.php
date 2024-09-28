@@ -1947,7 +1947,7 @@ class XadrezSuicoClassificatorProcessController extends Controller
                     if ($rule->value != $item["position"] && !$is_default && !$is_default_not_classificated && !$is_default_confirmed) {
                         $this->log[] = date("d/m/Y H:i:s") . " - Posição: #{$item["position"]}/{$rule->value} - Não atendido para esta regra - Enxadrista #{$classificacao->enxadrista->id} - {$classificacao->enxadrista->name}.";
                         continue;
-                    } elseif($is_default_confirmed && $item["registration"]->confirmado == 0) {
+                    } elseif ($is_default_confirmed && !$item["registration"]->confirmado) {
                         $this->log[] = date("d/m/Y H:i:s") . " - Posição: #{$item["position"]}/{$rule->value} - Não atendido para esta regra (PADRÃO PARA CONFIRMADOS - NÃO CONFIRMADO) - Enxadrista #{$classificacao->enxadrista->id} - {$classificacao->enxadrista->name}.";
                         continue;
                     } else {
