@@ -1950,7 +1950,7 @@ class XadrezSuicoClassificatorProcessController extends Controller
                     } else {
                         $this->log[] = date("d/m/Y H:i:s") . " - Posição: #{$item["position"]}/{$rule->value} - ATENDE A REGRA - Enxadrista #{$classificacao->enxadrista->id} - {$classificacao->enxadrista->name}.";
                     }
-                    if (!$classification_found || $is_default || !$is_default_not_classificated || $is_default_confirmed) {
+                    if (!$classification_found || $is_default || !$is_default_not_classificated || ($is_default_confirmed && $classificacao->confirmado)) {
                         $this->log[] = date("d/m/Y H:i:s") . " - Posição: #{$item["position"]} - Enxadrista #{$classificacao->enxadrista->id} - {$classificacao->enxadrista->name}.";
                         if($is_default_not_classificated){
                             if(!$this->checkIfNotClassificatedByAllEventRules($event, $classificacao)){
