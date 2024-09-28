@@ -1949,6 +1949,9 @@ class XadrezSuicoClassificatorProcessController extends Controller
                         continue;
                     } else {
                         $this->log[] = date("d/m/Y H:i:s") . " - Posição: #{$item["position"]}/{$rule->value} - ATENDE A REGRA - Enxadrista #{$classificacao->enxadrista->id} - {$classificacao->enxadrista->name}.";
+                        if($is_default_confirmed){
+                            $this->log[] = date("d/m/Y H:i:s") . " - Confirmado: {$item["registration"]->confirmado}.";
+                        }
                     }
                     if (!$classification_found || $is_default || !$is_default_not_classificated || ($is_default_confirmed && $classificacao->confirmado)) {
                         $this->log[] = date("d/m/Y H:i:s") . " - Posição: #{$item["position"]} - Enxadrista #{$classificacao->enxadrista->id} - {$classificacao->enxadrista->name}.";
@@ -2293,7 +2296,7 @@ class XadrezSuicoClassificatorProcessController extends Controller
                         $this->process_place_by_quantity($event, $xzsuic_classificator, $rule, false, false, true);
                         break;
                     case ClassificationTypeRule::CLASSIFICATE_BY_START_POSITION:
-                        $this->process_classificate_by_start_position($event, $xzsuic_classificator, $rule, false, false, true);
+                        $this->process_classificate_by_start_position($event, $xzsuic_classificator, $rule, false, false,true);
                         break;
                 }
             }
