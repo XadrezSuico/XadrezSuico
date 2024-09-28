@@ -1944,8 +1944,11 @@ class XadrezSuicoClassificatorProcessController extends Controller
                 foreach ($category_classificator->getStartingRank($xzsuic_classificator->event_classificator->id) as $item) {
                     Log::debug(json_encode($item));
                     $classificacao = $item["registration"];
-                    if ($rule->value != $item["position"] && !$is_default && !$is_default_not_classificated && !$is_default_confirmed && ($is_default_confirmed && $item["registration"]->confirmado == 0)) {
+                    if ($rule->value != $item["position"] && !$is_default && !$is_default_not_classificated && !$is_default_confirmed) {
                         $this->log[] = date("d/m/Y H:i:s") . " - Posição: #{$item["position"]}/{$rule->value} - Não atendido para esta regra - Enxadrista #{$classificacao->enxadrista->id} - {$classificacao->enxadrista->name}.";
+                        continue;
+                    } elseif($is_default_confirmed && $item["registration"]->confirmado == 0) {
+                        $this->log[] = date("d/m/Y H:i:s") . " - Posição: #{$item["position"]}/{$rule->value} - Não atendido para esta regra (PADRÃO PARA CONFIRMADOS - NÃO CONFIRMADO) - Enxadrista #{$classificacao->enxadrista->id} - {$classificacao->enxadrista->name}.";
                         continue;
                     } else {
                         $this->log[] = date("d/m/Y H:i:s") . " - Posição: #{$item["position"]}/{$rule->value} - ATENDE A REGRA - Enxadrista #{$classificacao->enxadrista->id} - {$classificacao->enxadrista->name}.";
