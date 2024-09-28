@@ -601,13 +601,13 @@ class GrupoEventoController extends Controller
             // IMPORTAÇÃO DAS CATEGORIAS DO TORNEIO
             foreach ($torneio->categorias->all() as $categoria) {
                 $categoria_torneio = $categoria->replicate();
-                $categoria_torneio->torneio_id = $torneio->id;
+                $categoria_torneio->torneio_id = $novo_torneio->id;
                 $categoria_torneio->save();
             }
             // IMPORTAÇÃO DAS CONFIGURAÇÕES DO TORNEIO
             foreach ($torneio->configs->all() as $config) {
                 $config_torneio = $config->replicate();
-                $config_torneio->torneio_id = $torneio->id;
+                $config_torneio->torneio_id = $novo_torneio->id;
                 $config_torneio->save();
             }
             TorneioController::generateRodadasDefault($novo_torneio->id);
