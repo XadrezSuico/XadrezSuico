@@ -1899,7 +1899,7 @@ class XadrezSuicoClassificatorProcessController extends Controller
 
 
             if ($rule->value == 0 && !$is_default && !$is_default_not_classificated && !$is_default_confirmed) {
-                $this->log[] = date("d/m/Y H:i:s") . " - Regra #{$rule->id} - Valor 0 - Ignorando regra (apenas é atendida se Padrão ou Padrão para Não Classificados).";
+                $this->log[] = date("d/m/Y H:i:s") . " - Regra #{$rule->id} - Valor 0 - Ignorando regra (apenas é atendida se Padrão, Padrão para Confirmados ou Padrão para Não Classificados).";
 
                 return;
             }
@@ -2276,9 +2276,9 @@ class XadrezSuicoClassificatorProcessController extends Controller
     }
     public function process_default_confirmed_rules($event, $xzsuic_classificator)
     {
-        $this->log[] = date("d/m/Y H:i:s") . " - Início do Processo - Regras PADRÃO";
+        $this->log[] = date("d/m/Y H:i:s") . " - Início do Processo - Regras PADRÃO PARA CONFIRMADOS";
         foreach ($xzsuic_classificator->rules->all() as $rule) {
-            if ($rule->hasConfig(ClassificationTypeRuleConfig::DEFAULT)) {
+            if ($rule->hasConfig(ClassificationTypeRuleConfig::DEFAULT_CONFIRMED)) {
                 switch ($rule->type) {
                     case ClassificationTypeRule::POSITION:
                         $this->process_position($event, $xzsuic_classificator, $rule, false, false, true);
@@ -2298,7 +2298,7 @@ class XadrezSuicoClassificatorProcessController extends Controller
                 }
             }
         }
-        $this->log[] = date("d/m/Y H:i:s") . " - Fim do Processo - Regras PADRÃO";
+        $this->log[] = date("d/m/Y H:i:s") . " - Fim do Processo - Regras PADRÃO PARA CONFIRMADOS";
     }
     public function process_default_not_classificated_rules($event, $xzsuic_classificator)
     {
