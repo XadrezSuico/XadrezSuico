@@ -61,6 +61,7 @@
                 <li role="presentation" @if($type == 1) class="active" @endif><a href="{{url("/fexpar/vinculos")}}?type=1" class="nav-link">Apenas Vínculados</a></li>
                 <li role="presentation" @if($type == 2) class="active" @endif><a href="{{url("/fexpar/vinculos")}}?type=2" class="nav-link">Apenas Vínculados Automaticamente</a></li>
                 <li role="presentation" @if($type == 3) class="active" @endif><a href="{{url("/fexpar/vinculos")}}?type=3" class="nav-link disabled">Apenas Vínculados Manualmente</a></li>
+                <li role="presentation" @if($type == 4) class="active" @endif><a href="{{url("/fexpar/vinculos")}}?type=4" class="nav-link disabled">Apenas Pré-vinculados</a></li>
             </ul>
             <table id="tabela" class="table-responsive table-condensed table-striped" style="width: 100%">
                 <thead>

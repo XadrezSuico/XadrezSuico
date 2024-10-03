@@ -267,10 +267,16 @@ class GerenciadorVinculosFederativosController extends Controller
                         $q1->where([["is_confirmed_system","=",true],["ano","=",date("Y")]]);
                     });
                     break;
-                // apenas manual
+                    // apenas manual
                 case 3:
-                    $enxadristas->whereHas("vinculos",function($q1) use ($request){
-                        $q1->where([["is_confirmed_manually","=",true],["ano","=",date("Y")]]);
+                    $enxadristas->whereHas("vinculos", function ($q1) use ($request) {
+                        $q1->where([["is_confirmed_manually", "=", true], ["ano", "=", date("Y")]]);
+                    });
+                    break;
+                    // apenas pré-vinculados
+                case 4:
+                    $enxadristas->whereHas("vinculos", function ($q1) use ($request) {
+                        $q1->where([["is_confirmed_system", "=", false],["is_confirmed_manually", "=", false], ["ano", "=", date("Y")]]);
                     });
                     break;
             }
