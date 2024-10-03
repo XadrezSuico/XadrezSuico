@@ -35,12 +35,10 @@ class VinculoFederativoController extends Controller
     public function vinculo($uuid){
         if(env("ENTITY_DOMAIN",NULL) == "fexpar.com.br"){
             if(Vinculo::where([
-                ["ano","=",date("Y")],
                 ["uuid","=",$uuid],
             ])
             ->count() > 0){
                 $vinculo = Vinculo::where([
-                    ["ano","=",date("Y")],
                     ["uuid","=",$uuid],
                 ])
                 ->first();
