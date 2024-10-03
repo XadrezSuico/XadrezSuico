@@ -46,7 +46,7 @@ class ImportVinculosFromLastYear extends Command
             $vinculo_old->is_efective = true;
             $vinculo_old->save();
         }
-        foreach(Vinculo::where([["ano","=",date("Y")-1]])->get() as $vinculo_old){
+        foreach(Vinculo::where([["ano","=",date("Y")-1],["is_efetive","=",true]])->get() as $vinculo_old){
             if(Vinculo::where([["ano", "=", date("Y")],["enxadrista_id","=",$vinculo_old->enxadrista_id]])->count() == 0){
                 $vinculo = $vinculo_old->replicate();
                 $vinculo->uuid = Str::uuid();
