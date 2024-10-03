@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands\FEXPAR\Vinculos;
 
+use App\Enxadrista;
 use App\Vinculo;
 use Illuminate\Console\Command;
 use Str;
@@ -47,8 +48,9 @@ class ImportVinculosFromLastYear extends Command
             $vinculo_old->save();
         }
         foreach(Vinculo::where([["ano","=",date("Y")-1],["is_efective","=",true]])->get() as $vinculo_old){
-            if(Vinculo::where([["ano", "=", date("Y")],["enxadrista_id","=",$vinculo_old->enxadrista_id]])->count() == 0){
+            if(Vinculo::where([["ano", "=", date("Y")],["enxadrista_id","=", Enxadrista::getStaticId($vinculo_old->enxadrista_id)]])->count() == 0){
                 $vinculo = $vinculo_old->replicate();
+                $vinculo->enxadrista_id = Enxadrista::getStaticId($vinculo_old->enxadrista_id);
                 $vinculo->uuid = Str::uuid();
                 $vinculo->ano = date("Y");
                 $vinculo->is_confirmed_system = false;
