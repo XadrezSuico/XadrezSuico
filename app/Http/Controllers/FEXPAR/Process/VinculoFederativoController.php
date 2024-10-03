@@ -129,6 +129,7 @@ class VinculoFederativoController extends Controller
                     $vinculo->is_confirmed_system = true;
                     $vinculo->system_inscricoes_in_this_club_confirmed = $count;
                     $vinculo->vinculated_at = date("Y-m-d H:i:s");
+                    $vinculo->is_efective = true;
                     $vinculo->save();
                     activity()
                     ->performedOn($vinculo)
