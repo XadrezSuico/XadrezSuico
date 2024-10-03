@@ -40,9 +40,13 @@ class GerenciadorVinculosFederativosController extends Controller
                         case 2:
                             $type = 2;
                             break;
-                        // apenas manual
+                            // apenas manual
                         case 3:
                             $type = 3;
+                            break;
+                            // apenas pré-vinculados
+                        case 4:
+                            $type = 4;
                             break;
                     }
                 }
