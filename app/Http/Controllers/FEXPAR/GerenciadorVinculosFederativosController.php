@@ -378,6 +378,10 @@ class GerenciadorVinculosFederativosController extends Controller
             }elseif($enxadrista->vinculos()->where([["ano","=",date("Y")],["is_confirmed_system","=",false],["is_confirmed_manually","=",false]])->count() > 0){
                 $pre_vinculo = $enxadrista->vinculos()->where([["ano","=",date("Y")],["is_confirmed_system","=",false],["is_confirmed_manually","=",false]])->first();
                 $p[7] = "<strong>Pré-vinculado</strong>";
+                if($pre_vinculo->is_efective){
+                    $p[7] .= "<br/>";
+                    $p[7] .= "Pré-vinculo a partir de vínculo confirmado de período anterior.";
+                }
                 $p[5] .= "<hr/>Pré-Vínculo por: <strong>#".$pre_vinculo->cidade->id." - ".$pre_vinculo->cidade->name."</strong>";
                 $p[6] .= "<hr/>Pré-Vínculo por: <strong>#".$pre_vinculo->clube->id." - ".$pre_vinculo->clube->getName()."</strong>";
             }else{
