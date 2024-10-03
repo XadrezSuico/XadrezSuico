@@ -15,19 +15,20 @@ use Auth;
 
 class VinculoFederativoController extends Controller
 {
-    public function vinculos(){
+    public function vinculos($year = null){
+        if($year == null) $year = date("Y");
         if(env("ENTITY_DOMAIN",NULL) == "fexpar.com.br"){
             $vinculos = Vinculo::where([
-                ["ano","=",date("Y")],
+                ["ano","=", $year],
                 ["is_confirmed_system","=",true],
             ])
             ->orWhere([
-                ["ano","=",date("Y")],
+                ["ano","=", $year],
                 ["is_confirmed_manually","=",true],
             ])
             ->get();
 
-            return view("paginas_especiais.fexpar.vinculos",compact("vinculos"));
+            return view("paginas_especiais.fexpar.vinculos",compact("vinculos","year"));
         }
         return abort(404);
     }

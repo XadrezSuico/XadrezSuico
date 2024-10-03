@@ -580,6 +580,7 @@ Route::group(["prefix" => "especiais"], function () {
     Route::group(["prefix" => "fexpar"], function () {
         Route::group(["prefix" => "vinculos"], function () {
             Route::get('/', 'FEXPAR\VinculoFederativoController@vinculos')->name('especiais.fexpar.vinculos');
+            Route::get('/{year}', 'FEXPAR\VinculoFederativoController@vinculos')->name('especiais.fexpar.vinculos')->where('year', '[0-9]{4}');
             Route::get('/consulta', 'FEXPAR\VinculoFederativoController@consulta_form')->name('especiais.fexpar.consulta');
             Route::get('/validacao', 'FEXPAR\VinculoFederativoController@consulta_form')->name('especiais.fexpar.consulta');
             Route::get('/{uuid}', 'FEXPAR\VinculoFederativoController@vinculo')->name('especiais.fexpar.vinculo'); // uuid do vinculo
