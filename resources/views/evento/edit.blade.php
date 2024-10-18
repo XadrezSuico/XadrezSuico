@@ -1057,7 +1057,10 @@
                                                 @endif
 												<td>
 													<a class="btn btn-success" href="{{url("/evento/".$evento->id."/categoria/edit/".$categoria->id)}}" role="button"><i class="fa fa-edit"></i></a>
-													@if(
+                                                    @if($evento->torneios()->whereHas("categorias",function ($q) use ($categoria){ $q->where([["categoria_id","=",$categoria->categoria_id]]) })->count() == 0)
+                                                        <a class="btn btn-warning" href="{{url("/evento/".$evento->id."/categorias/createTournament/".$categoria->categoria_id)}}" role="button"><i class="fa fa-plus"></i></a>
+                                                    @endif
+                                                    @if(
 														\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
 														\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4]) ||
 														\Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])
