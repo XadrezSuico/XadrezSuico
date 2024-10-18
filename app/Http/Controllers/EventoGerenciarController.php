@@ -594,7 +594,7 @@ class EventoGerenciarController extends Controller
 
         if($evento->torneios()->whereHas("categorias", function ($q) use ($categoria) {
             $q->where([["categoria_id", "=", $categoria->categoria_id]]);
-        })->count() > 0){
+        })->count() == 0){
             $torneio = new Torneio;
             $torneio->evento_id = $evento->id;
             $torneio->name = "Torneio Categoria - ".$categoria->categoria->name;
