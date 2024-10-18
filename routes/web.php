@@ -305,6 +305,7 @@ Route::group(["prefix"=>"evento"],function(){
         Route::get('/remove/{categoria_evento_id}', 'EventoGerenciarController@categoria_remove')->name('evento.categoria.remove');
         Route::get('/edit/{categoria_evento_id}', 'EventoGerenciarController@categoria_edit')->name('evento.categoria.edit');
         Route::post('/edit/{categoria_evento_id}', 'EventoGerenciarController@categoria_edit_post')->name('evento.categoria.edit/post');
+        Route::get('/createTournament/{categoria_evento_id}', 'EventoGerenciarController@categoria_createTournament')->name('evento.categoria.createTournament');
     });
 
     Route::group(["prefix"=>"{evento_id}/categorias"],function(){

@@ -8,6 +8,7 @@ use App\Http\Controllers\External\XadrezSuicoPagController;
 
 use App\Categoria;
 use App\CategoriaEvento;
+use App\CategoriaTorneio;
 use App\Cidade;
 use App\CriterioDesempate;
 use App\CriterioDesempateEvento;
@@ -30,6 +31,7 @@ use App\Enum\EmailType;
 use App\Enum\ConfigType;
 use App\Exports\EnxadristasInscritosFromView;
 use App\Helper\SingletonValueHelper;
+use App\Torneio;
 use Log;
 
 class EventoGerenciarController extends Controller
@@ -574,6 +576,47 @@ class EventoGerenciarController extends Controller
 
         $categoria_evento->save();
         return redirect("/evento/dashboard/" . $evento_id . "?tab=categorias_relacionadas");
+    }
+    public function categoria_createTournament($evento_id, $id)
+    {
+        $evento = Evento::find($evento_id);
+        $user = Auth::user();
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionEventByPerfil($evento->id, [4]) &&
+            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
+        ) {
+            return redirect("/evento/dashboard/" . $evento->id);
+        }
+        $categoria = CategoriaEvento::find($id);
+
+        $messageBag = new MessageBag;
+
+        if($evento->torneios()->whereHas("categorias", function ($q) use ($categoria) {
+            $q->where([["categoria_id", "=", $categoria->categoria_id]]);
+        })->count() > 0){
+            $torneio = new Torneio;
+            $torneio->evento_id = $evento->id;
+            $torneio->name = "Torneio Categoria - ".$categoria->categoria->name;
+            $torneio->tipo_torneio_id = 1;
+            $torneio->softwares_id = 1;
+            $torneio->save();
+
+            $torneio_categoria = new CategoriaTorneio;
+            $torneio_categoria->torneio_id = $torneio->id;
+            $torneio_categoria->categoria_id = $categoria->categoria->id;
+            $torneio_categoria->save();
+
+            $messageBag->add("alerta", "O torneio foi criado para a categoria com sucesso!");
+            $messageBag->add("type", "success");
+
+            return redirect("/evento/dashboard/" . $evento_id . "?tab=categorias_relacionadas")->withErrors($messageBag);
+        }
+
+
+        $messageBag->add("alerta", "A categoria já está vinculada a um torneio e não é possível fazer este processo.");
+        $messageBag->add("type", "danger");
+        return redirect("/evento/dashboard/" . $evento_id . "?tab=categorias_relacionadas")->withErrors($messageBag);
     }
     public function categoria_remove($id, $categoria_evento_id)
     {
