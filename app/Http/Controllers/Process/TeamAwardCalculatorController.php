@@ -11,8 +11,7 @@ use App\EventTeamScore;
 use App\EventTeamAwardScore;
 use App\TiebreakTeamAwardValue;
 use App\Inscricao;
-
-use Log;
+use Illuminate\Support\Facades\Log;
 
 class TeamAwardCalculatorController extends Controller
 {
@@ -120,6 +119,12 @@ class TeamAwardCalculatorController extends Controller
                     $pontos_time->save();
                 }
 
+
+                $total_registrations_processed = 0;
+                if (!$pontos_time->hasConfig("total_registrations_processed")) {
+                    $pontos_time->setConfig("total_registrations_processed", ConfigType::Integer, 0);
+                }
+
                 if ($time_award->hasConfig("limit_places")) {
 
                     if(!$pontos_time->hasConfig("registrations_processed_category_".$inscricao->categoria->id)){
@@ -132,15 +137,26 @@ class TeamAwardCalculatorController extends Controller
                         $pontos_time->score += $points;
 
                         $quantidade++;
+                        $total_registrations_processed++;
                         $pontos_time->setConfig("registrations_processed_category_".$inscricao->categoria->id,ConfigType::Integer,$quantidade);
                     }else{
+                        Log::debug("Pontos: Limite ultrapasado.");
+                    }
+                }elseif($time_award->hasConfig("limit_total_places")){
+                    if ($time_award->getConfig("limit_total_places", true) > $total_registrations_processed) {
+                        Log::debug("Pontos ({$time_award->id},{$inscricao->clube->id}): {$points}");
+                        $pontos_time->score += $points;
+
+                        $total_registrations_processed++;
+                    } else {
                         Log::debug("Pontos: Limite ultrapasado.");
                     }
                 } else {
                     Log::debug("Pontos ({$time_award->id},{$inscricao->clube->id}): {$points}");
                     $pontos_time->score += $points;
-
                 }
+                $pontos_time->setConfig("total_registrations_processed", ConfigType::Integer, $total_registrations_processed);
+
                 $pontos_time->save();
                 $retornos[] = "<hr/>";
             }
