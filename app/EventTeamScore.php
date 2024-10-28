@@ -110,4 +110,17 @@ class EventTeamScore extends Model
         }
         return "-";
     }
+
+
+    public function addRegistration($id){
+        if($this->registrations_id == null){
+            $this->registrations_id = json_encode([]);
+        }
+
+        $registrations_id = json_decode($this->registrations_id);
+        $registrations_id[] = $id;
+        sort($registrations_id);
+
+        $this->registrations_id = json_encode($registrations_id);
+    }
 }

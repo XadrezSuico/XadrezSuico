@@ -139,6 +139,8 @@ class TeamAwardCalculatorController extends Controller
                         Log::debug("Pontos ({$time_award->id},{$inscricao->clube->id}): {$points}");
                         $pontos_time->score += $points;
 
+                        $score->addRegistration($inscricao->id);
+
                         $quantidade++;
                         $total_registrations_processed++;
                         $pontos_time->setConfig("registrations_processed_category_".$inscricao->categoria->id,ConfigType::Integer,$quantidade);
