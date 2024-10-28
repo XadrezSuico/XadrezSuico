@@ -120,9 +120,12 @@ class TeamAwardCalculatorController extends Controller
                 }
 
 
-                $total_registrations_processed = 0;
+
                 if (!$pontos_time->hasConfig("total_registrations_processed")) {
                     $pontos_time->setConfig("total_registrations_processed", ConfigType::Integer, 0);
+                    $total_registrations_processed = 0;
+                } else {
+                    $total_registrations_processed = $pontos_time->getConfig("total_registrations_processed",true);
                 }
 
                 if ($time_award->hasConfig("limit_places")) {
