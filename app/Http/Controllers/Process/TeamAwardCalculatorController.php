@@ -152,6 +152,8 @@ class TeamAwardCalculatorController extends Controller
                         Log::debug("Pontos ({$time_award->id},{$inscricao->clube->id}): {$points}");
                         $pontos_time->score += $points;
 
+                        $score->addRegistration($inscricao->id);
+
                         $total_registrations_processed++;
                     } else {
                         Log::debug("Pontos: Limite ultrapasado.");
@@ -159,6 +161,8 @@ class TeamAwardCalculatorController extends Controller
                 } else {
                     Log::debug("Pontos ({$time_award->id},{$inscricao->clube->id}): {$points}");
                     $pontos_time->score += $points;
+
+                    $score->addRegistration($inscricao->id);
                 }
                 $pontos_time->setConfig("total_registrations_processed", ConfigType::Integer, $total_registrations_processed);
 
