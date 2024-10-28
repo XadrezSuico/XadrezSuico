@@ -139,7 +139,7 @@ class TeamAwardCalculatorController extends Controller
                         Log::debug("Pontos ({$time_award->id},{$inscricao->clube->id}): {$points}");
                         $pontos_time->score += $points;
 
-                        $score->addRegistration($inscricao->id);
+                        $pontos_time->addRegistration($inscricao->id);
 
                         $quantidade++;
                         $total_registrations_processed++;
@@ -152,7 +152,7 @@ class TeamAwardCalculatorController extends Controller
                         Log::debug("Pontos ({$time_award->id},{$inscricao->clube->id}): {$points}");
                         $pontos_time->score += $points;
 
-                        $score->addRegistration($inscricao->id);
+                        $pontos_time->addRegistration($inscricao->id);
 
                         $total_registrations_processed++;
                     } else {
@@ -162,7 +162,7 @@ class TeamAwardCalculatorController extends Controller
                     Log::debug("Pontos ({$time_award->id},{$inscricao->clube->id}): {$points}");
                     $pontos_time->score += $points;
 
-                    $score->addRegistration($inscricao->id);
+                    $pontos_time->addRegistration($inscricao->id);
                 }
                 $pontos_time->setConfig("total_registrations_processed", ConfigType::Integer, $total_registrations_processed);
 
