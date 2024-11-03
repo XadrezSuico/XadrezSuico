@@ -67,7 +67,7 @@
                             ])
                             ->whereHas("torneio",function($q1) use ($team_score) {
                                 $q1->whereHas("evento",function($q2) use ($team_score) {
-                                    $q2->where([["grupo_evento_id","=",$team_score->event_team_award->event_groups_id]]);
+                                    $q2->where([["grupo_evento_id","=",$team_score->event_team_award->event_groups_id],["classificavel","=",true]]);
                                 });
                             })
                             ->orderBy("posicao","ASC")->get() as $inscricao)
