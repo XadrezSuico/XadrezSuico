@@ -340,7 +340,7 @@ class Torneio_ImportacaoController extends Controller
                                 if (isset($line[($fields["Des" . $j])])) {
                                     if ($line[($fields["Des" . $j])] != NULL && $line[($fields["Des" . $j])] != "") {
                                         // echo "Inserindo critério de desempate '".$criterio->criterio->name."' <br/>";
-                                        $retornos[] = date("d/m/Y H:i:s") . " - Inserindo critério de desempate '" . $criterio->criterio->name . "' - Valor: " . $line[($fields["Des" . $j])];
+                                        $retornos[] = date("d/m/Y H:i:s") . " - Inserindo critério de desempate '" . $criterio->criterio->name . "' ({$criterio->prioridade}) - Valor: " . $line[($fields["Des" . $j])];
                                         $exp_meio = explode("½", $line[($fields["Des" . $j])]);
                                         $exp_virgula = explode(",", $line[($fields["Des" . $j])]);
 
