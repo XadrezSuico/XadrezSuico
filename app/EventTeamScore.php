@@ -112,8 +112,9 @@ class EventTeamScore extends Model
     }
 
 
-    public function addRegistration($id){
-        if($this->registrations_id == null){
+    public function addRegistration($id)
+    {
+        if ($this->registrations_id == null) {
             $this->registrations_id = json_encode([]);
         }
 
@@ -122,5 +123,13 @@ class EventTeamScore extends Model
         sort($registrations_id);
 
         $this->registrations_id = json_encode($registrations_id);
+    }
+    public function hasRegistration($id)
+    {
+        if ($this->registrations_id == null) {
+            $this->registrations_id = json_encode([]);
+        }
+
+        return in_array($id, json_decode($this->registrations_id));
     }
 }
