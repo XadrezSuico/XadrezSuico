@@ -109,7 +109,7 @@
                                         @else
                                             @if($team_award->hasConfig("limit_total_places"))
                                                 {{1}}
-                                                @if($team->hasRegistration($inscricao->id))
+                                                @if($team_score->hasRegistration($inscricao->id))
 
                                                     @if(
                                                         ($is_points)
