@@ -80,9 +80,7 @@
                                 <td>{{$inscricao->posicao}}</td>
                                 <td>
                                     @if($inscricao->confirmado && !$inscricao->is_desclassificado && !$inscricao->desconsiderar_pontuacao_geral)
-
                                         @if($team_award->hasConfig("limit_places"))
-                                                {{2}}
                                             @if($team_award->getConfig("limit_places",true) > $j)
                                                 @if(
                                                     ($is_points)
@@ -108,7 +106,6 @@
                                             @endif
                                         @else
                                             @if($team_award->hasConfig("limit_total_places"))
-                                                {{1}}
                                                 @if($team_score->hasRegistration($inscricao->id))
 
                                                     @if(
