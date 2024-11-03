@@ -49,7 +49,8 @@ class TeamAwardTiebreaksController extends Controller
             }else{
                 $q1->whereHas("evento",function($q2) use ($grupo_evento){
                     $q2->where([
-                        ["grupo_evento_id","=",$grupo_evento->id]
+                        ["grupo_evento_id","=",$grupo_evento->id],
+                        ["classificavel", "=", true]
                     ]);
                 });
             }
@@ -81,7 +82,8 @@ class TeamAwardTiebreaksController extends Controller
             }else{
                 $q1->whereHas("evento",function($q2) use ($grupo_evento){
                     $q2->where([
-                        ["grupo_evento_id","=",$grupo_evento->id]
+                        ["grupo_evento_id","=",$grupo_evento->id],
+                        ["classificavel", "=", true]
                     ]);
                 });
             }
@@ -114,7 +116,8 @@ class TeamAwardTiebreaksController extends Controller
             }else{
                 $q1->whereHas("evento",function($q2) use ($grupo_evento){
                     $q2->where([
-                        ["grupo_evento_id","=",$grupo_evento->id]
+                        ["grupo_evento_id","=",$grupo_evento->id],
+                        ["classificavel", "=", true]
                     ]);
                 });
             }

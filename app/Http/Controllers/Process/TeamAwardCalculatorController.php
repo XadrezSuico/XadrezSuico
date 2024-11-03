@@ -59,7 +59,8 @@ class TeamAwardCalculatorController extends Controller
             }else{
                 $q1->whereHas("evento",function($q2) use ($object){
                     $q2->where([
-                        ["grupo_evento_id","=",$object->id]
+                        ["grupo_evento_id", "=", $object->id],
+                        ["classificavel", "=", true]
                     ]);
                 });
             }
@@ -82,7 +83,8 @@ class TeamAwardCalculatorController extends Controller
             }else{
                 $q1->whereHas("evento",function($q2) use ($object){
                     $q2->where([
-                        ["grupo_evento_id","=",$object->id]
+                        ["grupo_evento_id","=",$object->id],
+                        ["classificavel", "=", true]
                     ]);
                 });
             }
