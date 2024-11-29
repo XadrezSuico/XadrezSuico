@@ -71,6 +71,7 @@ class TeamAwardCalculatorController extends Controller
             ["confirmado", "=", true],
             ["desconsiderar_pontuacao_geral", "=", false],
             ["posicao", ">", 0],
+            ["posicao", "!=", NULL],
             ["clube_id", "!=", NULL],
         ])
         ->whereIn("categoria_id",$categorias_id)

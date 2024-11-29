@@ -7,17 +7,16 @@ use Illuminate\Http\Request;
 
 use App\Http\Controllers\Process\TeamAwardCalculatorController;
 
-use Auth;
-
 use App\GrupoEvento;
-
+use Exception;
+use Illuminate\Support\Facades\Auth;
 
 class TeamAwardController extends Controller
 {
     public function classificar_page($grupo_evento_id)
     {
         $user = Auth::user();
-        if (!$user->hasPermissionGlobal() && !$user->hasPermissionEventByPerfil($id,[7])) {
+        if (!$user->hasPermissionGlobal() && !$user->hasPermissionGroupEventByPerfil($grupo_evento_id,[7])) {
             return redirect("/");
         }
 
@@ -29,7 +28,7 @@ class TeamAwardController extends Controller
     public function classificar_call($grupo_evento_id, $time_awards_id, $action)
     {
         $user = Auth::user();
-        if (!$user->hasPermissionGlobal() && !$user->hasPermissionEventByPerfil($id,[7])) {
+        if (!$user->hasPermissionGlobal() && !$user->hasPermissionGroupEventByPerfil($grupo_evento_id,[7])) {
             return redirect("/");
         }
 

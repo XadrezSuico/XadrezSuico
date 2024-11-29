@@ -30,7 +30,7 @@ class EventTeamAward extends Model
     public function hasPlace($place, $is_points = false, $registration = null){
         if($is_points){
             if($registration){
-                if($registration->pontos > 0){
+                if($registration->pontos != null){
                     return true;
                 }
             }
