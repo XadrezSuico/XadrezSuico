@@ -79,7 +79,7 @@
 
                 <td>{{$inscricao->enxadrista->getNascimentoPublico()}}</td>
                 <td>{{$inscricao->getCidade()}}</td>
-                <td>@if($inscricao->clube) {{$inscricao->clube->getName()}} @else Sem Clube @endif</td>
+                <td>@if($inscricao->clube) {{$inscricao->clube->getName()}} (ID: {{$inscricao->clube->id}}) @else Sem Clube @endif</td>
                 @foreach($evento->event_classificates->all() as $event_classificates)
                     <td>
                         @if($inscricao->enxadrista->estaInscrito($event_classificates->event->id))
