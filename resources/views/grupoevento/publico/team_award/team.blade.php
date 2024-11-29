@@ -99,7 +99,7 @@
                                                     @php($j++)
                                                     @php($total += ($is_points) ? $team_award->getPlace($inscricao->categoria,$inscricao->posicao,true,true,$inscricao) : $team_award->getPlace($inscricao->categoria,$inscricao->posicao,true))
                                                 @else
-                                                    0.
+                                                    0
                                                 @endif
                                             @else
                                                 -
@@ -125,7 +125,7 @@
                                                         @php($j++)
                                                         @php($total += ($is_points) ? $team_award->getPlace($inscricao->categoria,$inscricao->posicao,true,true,$inscricao) : $team_award->getPlace($inscricao->categoria,$inscricao->posicao,true))
                                                     @else
-                                                        0..
+                                                        0
                                                     @endif
                                                 @else
                                                     -
@@ -148,7 +148,7 @@
                                                     @php($j++)
                                                     @php($total += ($is_points) ? $team_award->getPlace($inscricao->categoria,$inscricao->posicao,true,true,$inscricao) : $team_award->getPlace($inscricao->categoria,$inscricao->posicao,true))
                                                 @else
-                                                    0...
+                                                    0
                                                 @endif
                                             @endif
                                         @endif
