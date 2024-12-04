@@ -9,6 +9,7 @@ use App\Evento;
 use App\Categoria;
 use App\Classification\EventClassificateCategory;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\MessageBag;
 
 class EventCategoryController extends Controller
 {
@@ -30,7 +31,11 @@ class EventCategoryController extends Controller
             // ||
             // !$user->hasPermissionEventByPerfil($evento->id, [14, 15])
         ) {
-            return redirect("/");
+
+            $messageBag = new MessageBag;
+            $messageBag->add("type", "danger");
+            $messageBag->add("alerta", "Você não possui privilégios para acesso a essa funcionalidade.");
+            return redirect("/")->withErrors($messageBag);
         }
 
         return view("evento.classificator.category.new", compact("evento"));
@@ -49,7 +54,10 @@ class EventCategoryController extends Controller
             // ||
             // !$user->hasPermissionEventByPerfil($evento->id, [14, 15])
         ) {
-            return redirect("/");
+            $messageBag = new MessageBag;
+            $messageBag->add("type", "danger");
+            $messageBag->add("alerta", "Você não possui privilégios para acesso a essa funcionalidade.");
+            return redirect("/")->withErrors($messageBag);
         }
 
         $event_classificate_category = new EventClassificateCategory;
@@ -73,7 +81,10 @@ class EventCategoryController extends Controller
             // ||
             // !$user->hasPermissionEventByPerfil($evento->id, [14, 15])
         ) {
-            return redirect("/");
+            $messageBag = new MessageBag;
+            $messageBag->add("type", "danger");
+            $messageBag->add("alerta", "Você não possui privilégios para acesso a essa funcionalidade.");
+            return redirect("/")->withErrors($messageBag);
         }
 
         if (EventClassificateCategory::where([["id","=",$id]])->count() == 0) {
@@ -109,7 +120,10 @@ class EventCategoryController extends Controller
             // ||
             // !$user->hasPermissionEventByPerfil($evento->id, [14, 15])
         ) {
-            return redirect("/");
+            $messageBag = new MessageBag;
+            $messageBag->add("type", "danger");
+            $messageBag->add("alerta", "Você não possui privilégios para acesso a essa funcionalidade.");
+            return redirect("/")->withErrors($messageBag);
         }
 
         if (EventClassificateCategory::where([["id", "=", $id]])->count() == 0) {
