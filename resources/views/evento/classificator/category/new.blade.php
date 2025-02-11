@@ -36,6 +36,7 @@
                             @foreach($evento->classificator_getCategories() as $category)
                                 <option value="{{$category->id}}">
                                     {{$category->id}} - {{$category->name}}
+                                    |
                                     @if($category->grupo_evento) GE: {{$category->grupo_evento->id}} - {{$category->grupo_evento->name}} @endif
                                     @if($category->evento) E: {{$category->evento->id}} - {{$category->evento->name}} @endif
                                 </option>
