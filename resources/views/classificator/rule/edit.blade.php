@@ -1,8 +1,17 @@
 @extends('adminlte::page')
 
-@section("title", "Evento #".$evento->id." (".$evento->name.") >> XadrezSuíço Classificador #".$event_classificates->id." (".$event_classificates->name.") >> Regra >> Novo")
+@if($element->isEvent())
+    @section("title", "Evento #".$element->id." (".$element->name.") >> XadrezSuíço Classificador #".$event_classificates->id." (".$event_classificates->event->name.") >> Regra >> Editar")
+@else
+    @section("title", "Grupo de Evento #".$element->id." (".$element->name.") >> XadrezSuíço Classificador #".$event_classificates->id." (".$event_classificates->event->name.") >> Regra >> Editar")
+@endif
+
 @section('content_header')
-  <h1>Evento #{{$evento->id}} ({{$evento->name}}) >> XadrezSuíço Classificador #{{$event_classificates->id}} ({{$event_classificates->name}}) >> Regra >> Novo</h1>
+    @if($element->isEvent())
+        <h1>Evento #{{$element->id}} ({{$element->name}}) >> XadrezSuíço Classificador #{{$event_classificates->id}} ({{$event_classificates->event->name}}) >> Regra >> Editar</h1>
+    @else
+        <h1>Grupo de Evento #{{$element->id}} ({{$element->name}}) >> XadrezSuíço Classificador #{{$event_classificates->id}} ({{$event_classificates->event->name}}) >> Regra >> Editar</h1>
+    @endif
 @stop
 
 
@@ -17,7 +26,13 @@
 @section("content")
 	<!-- Main row -->
 	<ul class="nav nav-pills">
-		<li role="presentation"><a href="/evento/dashboard/{{$evento->id}}?tab=classificator">Voltar a Lista de Regras na Dashboard de Evento</a></li>
+		 @if($element->isEvent())
+            <li role="presentation"><a href="/evento/dashboard/{{$element->id}}?tab=classificator">Voltar a Lista de Regras na Dashboard de Evento</a></li>
+            <li role="presentation"><a href="{{url("/classificator/event/".$element->id."/".$event_classificates->id."/rule/new")}}">Nova Regra</a></li>
+        @else
+            <li role="presentation"><a href="/grupoevento/dashboard/{{$element->id}}?tab=classificator">Voltar a Lista de Regras na Dashboard de Grupo de Evento</a></li>
+            <li role="presentation"><a href="{{url("/classificator/event_group/".$element->id."/".$event_classificates->id."/rule/new")}}">Nova Regra</a></li>
+        @endif
 	</ul>
 	<div class="row">
   <section class="col-lg-12 connectedSortable">
@@ -25,10 +40,10 @@
 
 		<div class="box box-primary">
 			<div class="box-header">
-				<h3 class="box-title">Nova Regra</h3>
+				<h3 class="box-title">Editar Regra</h3>
 			</div>
 			<!-- form start -->
-			<form method="post">
+					<form method="post">
 				<div class="box-body">
 					<div class="form-group">
 						<label for="type">Tipo de Regra</label>
@@ -41,7 +56,7 @@
                     </div>
 					<div class="form-group" id="value_block">
 						<label for="value">Valor</label>
-						<input name="value" id="value" class="form-control" type="text"/>
+						<input name="value" id="value" class="form-control" type="text" value="{{$event_classificate_rule->value}}"/>
                     </div>
 					<div class="form-group" id="event_block">
 						<label for="event_id">Evento</label>
@@ -67,10 +82,10 @@
                                     @switch($type_config["type"])
                                         @case("text")
                                         @case("integer")
-                                            <input type="text" id="config_{{$key}}" name="config_{{$key}}" class="form-control"/>
+                                            <input type="text" id="config_{{$key}}" name="config_{{$key}}" class="form-control" value="{{$event_classificate_rule->getConfig($key,true)}}"/>
                                         @break
                                         @case("boolean")
-                                            <label><input type="checkbox" id="config_{{$key}}" name="config_{{$key}}" autocomplete="off"/> {{$type_config["name"]}}</label><br/>
+                                            <label><input type="checkbox" id="config_{{$key}}" name="config_{{$key}}" autocomplete="off" @if($event_classificate_rule->getConfig($key,true)) checked @endif/> {{$type_config["name"]}}</label><br/>
                                         @break
                                     @endswitch
                                     <small>{{$type_config["description"]}}</small>
@@ -102,14 +117,20 @@
         $("#type").select2();
         $("#event_id").select2();
 
+
+        $("#type").val(["{{$event_classificate_rule->type}}"]).change();
+        $("#event_id").val([{{$event_classificate_rule->event_id}}]).change();
+
+
         $("#type").on("select2:select",function(){
-            checkTypeSelected();
+            checkTypeSelected(true);
         });
 
-        checkTypeSelected();
+        checkTypeSelected(false);
   });
 
-  function checkTypeSelected(){
+
+  function checkTypeSelected(clear){
     switch($("#type").val()){
         case "position":
         case "position-absolute":
@@ -118,20 +139,22 @@
             $("#value_block").show("fast");
             $("#event_block").hide("fast");
 
-            $("#event_block select").val("").change();
+            if(clear) $("#event_block select").val("").change();
         break;
         case "pre-classificate":
             $("#value_block").hide("fast");
             $("#event_block").show("fast");
 
-            $("#value_block input").val("");
+            if(clear) $("#value_block input").val("");
             break;
         default:
             $("#value_block").hide("fast");
             $("#event_block").hide("fast");
 
-            $("#value_block input").val("");
-            $("#event_block select").val("").change();
+            if(clear) {
+                $("#value_block input").val("");
+                $("#event_block select").val("").change();
+            }
     }
   }
 </script>

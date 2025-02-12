@@ -1039,8 +1039,8 @@ class Evento extends Model
 
     public function classificator_getCategories(){
         $categories = array();
-        foreach($this->event_classificates->all() as $event_classificate){
-            foreach($event_classificate->event->categorias->all() as $categoria_relacionada){
+        foreach ($this->event_classificates->all() as $event_classificate) {
+            foreach ($event_classificate->event->categorias->all() as $categoria_relacionada) {
                 $categories[] = $categoria_relacionada->categoria;
             }
         }

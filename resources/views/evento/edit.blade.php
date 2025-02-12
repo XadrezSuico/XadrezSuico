@@ -1586,15 +1586,15 @@
                                         </div>
                                     @endif
                                     <ul class="nav nav-pills">
-                                        <li role="presentation"><a href="{{url("/evento/".$evento->id."/classificator/".$event_classificates->id."/process")}}">!!!! Processar Classificações (Use com cuidado)</a></li>
-                                        <li role="presentation"><a href="{{url("/evento/".$evento->id."/classificator/".$event_classificates->id."/classificated/delete")}}">!!!! Remover classificados</a></li>
+                                        <li role="presentation"><a href="{{url("/classificator/event/".$evento->id."/".$event_classificates->id."/process")}}">!!!! Processar Classificações (Use com cuidado)</a></li>
+                                        <li role="presentation"><a href="{{url("/classificator/event/".$evento->id."/".$event_classificates->id."/classificated/delete")}}">!!!! Remover classificados</a></li>
                                         @if($total_classified > 0)
-                                            <li role="presentation"><a href="{{url("/inscricao/classificados/".$evento->id."/".$event_classificates->id)}}">[PÚBLICO] Lista de Classificados</a></li>
+                                            <li role="presentation"><a href="{{url("/inscricao/classificados/".$event_classificates->id)}}">[PÚBLICO] Lista de Classificados</a></li>
                                         @endif
                                     </ul>
 
                                     <ul class="nav nav-pills">
-                                        <li role="presentation"><a href="{{url("/evento/".$evento->id."/classificator/".$event_classificates->id."/rule/new")}}">Nova Regra</a></li>
+                                        <li role="presentation"><a href="{{url("/classificator/event/".$evento->id."/".$event_classificates->id."/rule/new")}}">Nova Regra</a></li>
                                     </ul>
                                     <table id="tabela_classificators" class="table-responsive table-condensed table-striped" style="width: 100%">
                                         <thead>
@@ -1649,7 +1649,7 @@
                                                         <td>{{$rule->howMuchClassificated()}}</td>
                                                     @endif
                                                     <td>
-                                                        <a class="btn btn-default" href="{{url("/evento/".$evento->id."/classificator/".$event_classificates->id."/rule/edit/".$rule->id)}}" role="button">Editar</a>
+                                                        <a class="btn btn-default" href="{{url("/classificator/event/".$evento->id."/".$event_classificates->id."/rule/edit/".$rule->id)}}" role="button">Editar</a>
                                                     </td>
                                                 </tr>
                                             @endforeach
@@ -1673,7 +1673,7 @@
                                     <thead>
                                         <tr>
                                             <th>#</th>
-                                            <th>Evento Classificador à Este</th>
+                                            <th>Classificador à Este</th>
                                             <th width="20%">Opções</th>
                                         </tr>
                                     </thead>
@@ -1682,17 +1682,34 @@
                                             <tr>
                                                 <td>{{$event_classificate->id}}</td>
                                                 <td>
-                                                    {{$event_classificate->event_classificator->name}}<br/>
-                                                    Grupo de Evento: {{$event_classificate->event_classificator->grupo_evento->name}}
+                                                    @if($event_classificate->event_classificator)
+                                                        <strong>Evento:</strong>
+                                                        {{$event_classificate->event_classificator->name}}<br/>
+                                                        <small>Grupo de Evento: {{$event_classificate->event_classificator->grupo_evento->name}}</small>
+                                                    @else
+                                                        <strong>Grupo de Evento:</strong>
+                                                        {{$event_classificate->event_group_classificator->name}}
+                                                    @endif
                                                 </td>
                                                 <td>
 
-                                                    @if(
-                                                        \Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
-                                                        \Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($event_classificate->event_classificator->id,[3,4,5]) ||
-                                                        \Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($event_classificate->event_classificator->grupo_evento->id,[6,7])
-                                                    )
-                                                        <a class="btn btn-warning mr-1" href="{{url("/evento/dashboard/".$event_classificate->event_classificator->id)}}" role="button">Acessar Dashboard do Evento</a>
+                                                    @if($event_classificate->event_classificator)
+                                                        @if(
+                                                            \Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
+                                                            \Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($event_classificate->event_classificator->id,[3,4,5]) ||
+                                                            \Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($event_classificate->event_classificator->grupo_evento->id,[6,7])
+                                                        )
+                                                            <a class="btn btn-warning mr-1" href="{{url("/evento/dashboard/".$event_classificate->event_classificator->id)}}" role="button">Acessar Dashboard do Evento</a>
+                                                        @endif
+                                                    @endif
+                                                    @if($event_classificate->event_group_classificator)
+                                                        @if(
+                                                            \Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
+                                                            \Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfilByGroupEvent($event_classificate->event_group_classificator->id,[3,4,5]) ||
+                                                            \Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($event_classificate->event_group_classificator->id,[6,7])
+                                                        )
+                                                            <a class="btn btn-warning mr-1" href="{{url("/grupoevento/dashboard/".$event_classificate->event_group_classificator->id)}}" role="button">Acessar Dashboard do Grupo de Evento</a>
+                                                        @endif
                                                     @endif
                                                     <a class="btn btn-default" href="{{url("/evento/".$evento->id."/classificator/edit/".$event_classificate->id)}}" role="button">Editar</a>
                                                 </td>

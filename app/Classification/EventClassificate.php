@@ -17,6 +17,11 @@ class EventClassificate extends Model
         return $this->belongsTo("App\Evento", "event_classificator_id", "id");
     }
 
+    public function event_group_classificator()
+    {
+        return $this->belongsTo("App\GrupoEvento", "event_group_classificator_id", "id");
+    }
+
     public function rules()
     {
         return $this->hasMany("App\Classification\EventClassificateRule", "event_classificates_id", "id");
@@ -32,10 +37,17 @@ class EventClassificate extends Model
             });
         })
         ->whereHas("configs", function ($q1) use ($xzsuic_classificator) {
-            $q1->where([
-                ["key", "=", "event_classificator_id"],
-                ["integer", "=", $xzsuic_classificator->event_classificator->id],
-            ]);
+            if ($xzsuic_classificator->event_classificator) {
+                $q1->where([
+                    ["key", "=", "event_classificator_id"],
+                    ["integer", "=", $xzsuic_classificator->event_classificator->id],
+                ]);
+            } else {
+                $q1->where([
+                    ["key", "=", "event_group_classificator_id"],
+                    ["integer", "=", $xzsuic_classificator->event_group_classificator->id],
+                ]);
+            }
         })
         ->whereHas("configs", function ($q1) use ($xzsuic_classificator) {
             $q1->where([
@@ -56,10 +68,17 @@ class EventClassificate extends Model
             });
         })
             ->whereHas("configs", function ($q1) use ($xzsuic_classificator) {
-                $q1->where([
-                    ["key", "=", "event_classificator_id"],
-                    ["integer", "=", $xzsuic_classificator->event_classificator->id],
-                ]);
+                if($xzsuic_classificator->event_classificator){
+                    $q1->where([
+                        ["key", "=", "event_classificator_id"],
+                        ["integer", "=", $xzsuic_classificator->event_classificator->id],
+                    ]);
+                }else{
+                    $q1->where([
+                        ["key", "=", "event_group_classificator_id"],
+                        ["integer", "=", $xzsuic_classificator->event_group_classificator->id],
+                    ]);
+                }
             })
             ->whereHas("configs", function ($q1) use ($xzsuic_classificator) {
                 $q1->where([

@@ -7,6 +7,7 @@ use App\Categoria;
 use App\Pais;
 use App\Estado;
 use App\Cidade;
+use App\Classification\EventClassificate;
 use App\Clube;
 use App\Email;
 use App\Enxadrista;
@@ -279,18 +280,15 @@ class InscricaoController extends Controller
     }
 
 
-    public function visualizar_classificados($id,$classificator_id)
+    public function visualizar_classificados($classificator_id)
     {
-        $evento = Evento::find($id);
-        if ($evento) {
-            if($evento->event_classificates()->where([["id","=",$classificator_id]])->count() > 0){
-                $xdzsc_classificador = $evento->event_classificates()->where([["id", "=", $classificator_id]])->first();
+        if(EventClassificate::where([["id","=",$classificator_id]])->count() > 0){
+            $xdzsc_classificador = EventClassificate::where([["id", "=", $classificator_id]])->first();
 
 
-                return view("inscricao.classificados", compact("evento","xdzsc_classificador"));
-            }
-
+            return view("inscricao.classificados", compact("xdzsc_classificador"));
         }
+
         return abort(404);
     }
     public function visualizar_indicados($id, $campos_id, $opcaos_id)

@@ -9,6 +9,7 @@ use App\Enum\ClassificationTypeRuleConfig;
 use App\Enum\ConfigType;
 use App\Enum\EmailType;
 use App\Evento;
+use App\GrupoEvento;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\EmailController;
 use App\Inscricao;
@@ -28,27 +29,55 @@ class XadrezSuicoClassificatorProcessController extends Controller
 
     private $log = array();
 
-    public function process($event_id, $event_classificates_id)
+    public function process($type, $element_id, $event_classificates_id)
     {
         $user = Auth::user();
-        $evento = Evento::find($event_id);
+        if ($type == "event") {
+            $element = Evento::find($element_id);
+        } else {
+            $element = GrupoEvento::find($element_id);
+        }
 
-        if ($evento->event_classificates()->where([["id", "=", $event_classificates_id]])->count() == 0) {
+        if ($element->event_classificates()->where([["id", "=", $event_classificates_id]])->count() == 0) {
             return redirect()->back();
         }
-        $event_classificates = $evento->event_classificates()->where([["id", "=", $event_classificates_id]])->first();
+        $event_classificates = $element->event_classificates()->where([["id", "=", $event_classificates_id]])->first();
 
-        if (
-            (
-                !$user->hasPermissionGlobal() &&
-                !$user->hasPermissionEventByPerfil($evento->id, [3, 4]) &&
-                !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [6, 7])
-            )
-            ||
-            !$user->hasPermissionEventByPerfil($event_classificates->event->id, [14, 15])
-        ) {
-            return redirect("/");
+
+        if ($type == "event") {
+            if (
+                (
+                    !$user->hasPermissionGlobal() &&
+                    !$user->hasPermissionEventByPerfil($element->id, [3, 4]) &&
+                    !$user->hasPermissionGroupEventByPerfil($element->grupo_evento->id, [6, 7])
+                )
+                ||
+                !$user->hasPermissionEventByPerfil($event_classificates->event->id, [14, 16])
+            ) {
+                return redirect("/");
+            }
+        } else {
+
+            if (
+                (
+                    !$user->hasPermissionGlobal() &&
+                    !$user->hasPermissionEventByPerfilByGroupEvent($element->id, [3, 4]) &&
+                    !$user->hasPermissionGroupEventByPerfil($element->id, [6, 7])
+                )
+                ||
+                !$user->hasPermissionEventByPerfil($event_classificates->event->id, [14, 16])
+            ) {
+                return redirect("/");
+            }
         }
+
+        if($element->isEvent()){
+            return $this->process_event($element, $event_classificates);
+        }
+    }
+    public function process_event($element, $event_classificates)
+    {
+        $user = Auth::user();
 
         foreach (ClassificationTypeRule::getProcessOrder() as $type_to_process) {
             $this->log[] = "----- ----- ---- ----";
@@ -60,19 +89,19 @@ class XadrezSuicoClassificatorProcessController extends Controller
 
             switch ($type_to_process) {
                 case ClassificationTypeRule::POSITION:
-                    $this->process_position_rules($evento, $event_classificates);
+                    $this->event__process_position_rules($element, $event_classificates);
                     break;
                 case ClassificationTypeRule::POSITION_ABSOLUTE:
-                    $this->process_position_absolute_rules($evento, $event_classificates);
+                    $this->event__process_position_absolute_rules($element, $event_classificates);
                     break;
                 case ClassificationTypeRule::PRE_CLASSIFICATE:
-                    $this->process_pre_classificate_rules($evento, $event_classificates);
+                    $this->event__process_pre_classificate_rules($element, $event_classificates);
                     break;
                 case ClassificationTypeRule::PLACE_BY_QUANTITY:
-                    $this->process_place_by_quantity_rules($evento, $event_classificates);
+                    $this->event__process_place_by_quantity_rules($element, $event_classificates);
                     break;
                 case ClassificationTypeRule::CLASSIFICATE_BY_START_POSITION:
-                    $this->process_classificate_by_start_position_rules($evento, $event_classificates);
+                    $this->event__process_classificate_by_start_position_rules($element, $event_classificates);
                     break;
             }
         }
@@ -82,21 +111,21 @@ class XadrezSuicoClassificatorProcessController extends Controller
         $this->log[] = "----- ----- ---- ----";
         $this->log[] = "----- ----- ---- ----";
         $this->log[] = "----- ----- ---- ----";
-        $this->process_default_confirmed_rules($evento, $event_classificates);
+        $this->event__process_default_confirmed_rules($element, $event_classificates);
         $this->log[] = "----- ----- ---- ----";
         $this->log[] = "----- ----- ---- ----";
         $this->log[] = "----- ----- ---- ----";
         $this->log[] = "----- ----- ---- ----";
         $this->log[] = "----- ----- ---- ----";
         $this->log[] = "----- ----- ---- ----";
-        $this->process_default_rules($evento, $event_classificates);
+        $this->event__process_default_rules($element, $event_classificates);
         $this->log[] = "----- ----- ---- ----";
         $this->log[] = "----- ----- ---- ----";
         $this->log[] = "----- ----- ---- ----";
         $this->log[] = "----- ----- ---- ----";
         $this->log[] = "----- ----- ---- ----";
         $this->log[] = "----- ----- ---- ----";
-        $this->process_default_not_classificated_rules($evento, $event_classificates);
+        $this->event__process_default_not_classificated_rules($element, $event_classificates);
 
 
         EmailController::schedule(
@@ -109,37 +138,64 @@ class XadrezSuicoClassificatorProcessController extends Controller
         $messageBag->add("type", "success");
         $messageBag->add("alerta", "O classificador foi executado com sucesso! Um e-mail será encaminhado com os detalhes.");
 
-        return redirect("/evento/dashboard/{$evento->id}?tab=classificator")->withErrors($messageBag);
+        return redirect("/evento/dashboard/{$element->id}?tab=classificator")->withErrors($messageBag);
     }
-    public function delete_classified($event_id, $event_classificates_id)
+    public function delete_classified($type, $element_id, $event_classificates_id)
     {
         $user = Auth::user();
-        $evento = Evento::find($event_id);
+        if ($type == "event") {
+            $element = Evento::find($element_id);
+        } else {
+            $element = GrupoEvento::find($element_id);
+        }
 
-        if ($evento->event_classificates()->where([["id", "=", $event_classificates_id]])->count() == 0) {
+        if ($element->event_classificates()->where([["id", "=", $event_classificates_id]])->count() == 0) {
             return redirect()->back();
         }
-        $event_classificates = $evento->event_classificates()->where([["id", "=", $event_classificates_id]])->first();
+        $event_classificates = $element->event_classificates()->where([["id", "=", $event_classificates_id]])->first();
 
-        if (
-            (
-                !$user->hasPermissionGlobal() &&
-                !$user->hasPermissionEventByPerfil($evento->id, [3, 4]) &&
-                !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [6, 7])
-            )
-            ||
-            !$user->hasPermissionEventByPerfil($event_classificates->event->id, [14, 15])
-        ) {
-            return redirect("/");
+
+        if ($type == "event") {
+            if (
+                (
+                    !$user->hasPermissionGlobal() &&
+                    !$user->hasPermissionEventByPerfil($element->id, [3, 4]) &&
+                    !$user->hasPermissionGroupEventByPerfil($element->grupo_evento->id, [6, 7])
+                )
+                ||
+                !$user->hasPermissionEventByPerfil($event_classificates->event->id, [14, 16])
+            ) {
+                return redirect("/");
+            }
+        } else {
+
+            if (
+                (
+                    !$user->hasPermissionGlobal() &&
+                    !$user->hasPermissionEventByPerfilByGroupEvent($element->id, [3, 4]) &&
+                    !$user->hasPermissionGroupEventByPerfil($element->id, [6, 7])
+                )
+                ||
+                !$user->hasPermissionEventByPerfil($event_classificates->event->id, [14, 16])
+            ) {
+                return redirect("/");
+            }
         }
 
         $count = 0;
         foreach(
-            Inscricao::whereHas("configs",function($q1) use ($event_id){
-                $q1->where([
-                    ["key", "=", "event_classificator_id"],
-                    ["integer", "=", $event_id],
-                ]);
+            Inscricao::whereHas("configs",function($q1) use ($element){
+                if($element->isEvent()){
+                    $q1->where([
+                        ["key", "=", "event_classificator_id"],
+                        ["integer", "=", $element->id],
+                    ]);
+                }else{
+                    $q1->where([
+                        ["key", "=", "event_group_classificator_id"],
+                        ["integer", "=", $element->id],
+                    ]);
+                }
             })
             ->whereHas("torneio", function ($q1) use ($event_classificates) {
                 $q1->where([["evento_id", "=", $event_classificates->event->id]]);
@@ -166,10 +222,10 @@ class XadrezSuicoClassificatorProcessController extends Controller
         $messageBag->add("type", "success");
         $messageBag->add("alerta", "Os classificados foram removidos com sucesso! Total: {$count}");
 
-        return redirect("/evento/dashboard/{$evento->id}?tab=classificator")->withErrors($messageBag);
+        return redirect("/evento/dashboard/{$element->id}?tab=classificator")->withErrors($messageBag);
     }
 
-    public function process_position_rules($event, $xzsuic_classificator)
+    public function event__process_position_rules($event, $xzsuic_classificator)
     {
         $type = ClassificationTypeRule::POSITION;
         $classificator_type = ClassificationTypeRule::get($type);
@@ -184,12 +240,12 @@ class XadrezSuicoClassificatorProcessController extends Controller
         }
 
         foreach ($xzsuic_classificator->rules()->where([["type", "=", $type]])->orderBy("id", "ASC")->get() as $rule) {
-            $this->process_position($event, $xzsuic_classificator, $rule);
+            $this->event__process_position($event, $xzsuic_classificator, $rule);
         }
 
         $this->log[] = date("d/m/Y H:i:s") . " - Fim do Processo - Tipo de Classificador: " . $classificator_type["name"];
     }
-    public function process_position($event, $xzsuic_classificator, $rule, $is_default = false, $is_default_not_classificated =false, $is_default_confirmed = false)
+    public function event__process_position($event, $xzsuic_classificator, $rule, $is_default = false, $is_default_not_classificated =false, $is_default_confirmed = false)
     {
         $type = ClassificationTypeRule::POSITION;
         $classificator_type = ClassificationTypeRule::get($type);
@@ -504,7 +560,7 @@ class XadrezSuicoClassificatorProcessController extends Controller
     }
 
 
-    public function process_position_absolute_rules($event, $xzsuic_classificator)
+    public function event__process_position_absolute_rules($event, $xzsuic_classificator)
     {
         $type = ClassificationTypeRule::POSITION_ABSOLUTE;
         $classificator_type = ClassificationTypeRule::get($type);
@@ -519,12 +575,12 @@ class XadrezSuicoClassificatorProcessController extends Controller
         }
 
         foreach ($xzsuic_classificator->rules()->where([["type", "=", $type]])->orderBy("id", "ASC")->get() as $rule) {
-            $this->process_position_absolute($event, $xzsuic_classificator, $rule);
+            $this->event__process_position_absolute($event, $xzsuic_classificator, $rule);
         }
 
         $this->log[] = date("d/m/Y H:i:s") . " - Fim do Processo - Tipo de Classificador: " . $classificator_type["name"];
     }
-    public function process_position_absolute($event, $xzsuic_classificator,$rule, $is_default = false, $is_default_not_classificated =false, $is_default_confirmed = false)
+    public function event__process_position_absolute($event, $xzsuic_classificator,$rule, $is_default = false, $is_default_not_classificated =false, $is_default_confirmed = false)
     {
         $type = ClassificationTypeRule::POSITION_ABSOLUTE;
         $classificator_type = ClassificationTypeRule::get($type);
@@ -842,7 +898,7 @@ class XadrezSuicoClassificatorProcessController extends Controller
 
 
 
-    public function process_pre_classificate_rules($event, $xzsuic_classificator)
+    public function event__process_pre_classificate_rules($event, $xzsuic_classificator)
     {
         $type = ClassificationTypeRule::PRE_CLASSIFICATE;
         $classificator_type = ClassificationTypeRule::get($type);
@@ -857,12 +913,12 @@ class XadrezSuicoClassificatorProcessController extends Controller
         }
 
         foreach ($xzsuic_classificator->rules()->where([["type", "=", $type]])->orderBy("id", "ASC")->get() as $rule) {
-            $this->process_pre_classificate($event, $xzsuic_classificator, $rule);
+            $this->event__process_pre_classificate($event, $xzsuic_classificator, $rule);
         }
 
         $this->log[] = date("d/m/Y H:i:s") . " - Fim do Processo - Tipo de Classificador: " . $classificator_type["name"];
     }
-    public function process_pre_classificate($event, $xzsuic_classificator,$rule, $is_default = false, $is_default_not_classificated =false, $is_default_confirmed = false)
+    public function event__process_pre_classificate($event, $xzsuic_classificator,$rule, $is_default = false, $is_default_not_classificated =false, $is_default_confirmed = false)
     {
         $type = ClassificationTypeRule::PRE_CLASSIFICATE;
         $classificator_type = ClassificationTypeRule::get($type);
@@ -1497,7 +1553,7 @@ class XadrezSuicoClassificatorProcessController extends Controller
             }
     }
 
-    public function process_place_by_quantity_rules($event, $xzsuic_classificator)
+    public function event__process_place_by_quantity_rules($event, $xzsuic_classificator)
     {
         $type = ClassificationTypeRule::PLACE_BY_QUANTITY;
         $classificator_type = ClassificationTypeRule::get($type);
@@ -1512,12 +1568,12 @@ class XadrezSuicoClassificatorProcessController extends Controller
         }
 
         foreach ($xzsuic_classificator->rules()->where([["type", "=", $type]])->orderBy("id", "ASC")->get() as $rule) {
-            $this->process_place_by_quantity($event, $xzsuic_classificator, $rule);
+            $this->event__process_place_by_quantity($event, $xzsuic_classificator, $rule);
         }
 
         $this->log[] = date("d/m/Y H:i:s") . " - Fim do Processo - Tipo de Classificador: " . $classificator_type["name"];
     }
-    public function process_place_by_quantity($event, $xzsuic_classificator,$rule, $is_default = false, $is_default_not_classificated =false, $is_default_confirmed = false)
+    public function event__process_place_by_quantity($event, $xzsuic_classificator,$rule, $is_default = false, $is_default_not_classificated =false, $is_default_confirmed = false)
     {
         $type = ClassificationTypeRule::PLACE_BY_QUANTITY;
         $classificator_type = ClassificationTypeRule::get($type);
@@ -1870,7 +1926,7 @@ class XadrezSuicoClassificatorProcessController extends Controller
     }
 
 
-    public function process_classificate_by_start_position_rules($event, $xzsuic_classificator)
+    public function event__process_classificate_by_start_position_rules($event, $xzsuic_classificator)
     {
         $type = ClassificationTypeRule::CLASSIFICATE_BY_START_POSITION;
         $classificator_type = ClassificationTypeRule::get($type);
@@ -1885,12 +1941,12 @@ class XadrezSuicoClassificatorProcessController extends Controller
         }
 
         foreach ($xzsuic_classificator->rules()->where([["type", "=", $type]])->orderBy("id", "ASC")->get() as $rule) {
-            $this->process_classificate_by_start_position($event, $xzsuic_classificator, $rule);
+            $this->event__process_classificate_by_start_position($event, $xzsuic_classificator, $rule);
         }
 
         $this->log[] = date("d/m/Y H:i:s") . " - Fim do Processo - Tipo de Classificador: " . $classificator_type["name"];
     }
-    public function process_classificate_by_start_position($event, $xzsuic_classificator,$rule, $is_default = false, $is_default_not_classificated =false, $is_default_confirmed = false)
+    public function event__process_classificate_by_start_position($event, $xzsuic_classificator,$rule, $is_default = false, $is_default_not_classificated =false, $is_default_confirmed = false)
     {
         $type = ClassificationTypeRule::CLASSIFICATE_BY_START_POSITION;
         $classificator_type = ClassificationTypeRule::get($type);
@@ -2254,59 +2310,59 @@ class XadrezSuicoClassificatorProcessController extends Controller
 
 
 
-    public function process_default_rules($event, $xzsuic_classificator)
+    public function event__process_default_rules($event, $xzsuic_classificator)
     {
         $this->log[] = date("d/m/Y H:i:s") . " - Início do Processo - Regras PADRÃO";
         foreach ($xzsuic_classificator->rules->all() as $rule) {
             if ($rule->hasConfig(ClassificationTypeRuleConfig::DEFAULT)) {
                 switch ($rule->type) {
                     case ClassificationTypeRule::POSITION:
-                        $this->process_position($event, $xzsuic_classificator, $rule, true);
+                        $this->event__process_position($event, $xzsuic_classificator, $rule, true);
                         break;
                     case ClassificationTypeRule::POSITION_ABSOLUTE:
-                        $this->process_position_absolute($event, $xzsuic_classificator, $rule, true);
+                        $this->event__process_position_absolute($event, $xzsuic_classificator, $rule, true);
                         break;
                     case ClassificationTypeRule::PRE_CLASSIFICATE:
-                        $this->process_pre_classificate($event, $xzsuic_classificator, $rule, true);
+                        $this->event__process_pre_classificate($event, $xzsuic_classificator, $rule, true);
                         break;
                     case ClassificationTypeRule::PLACE_BY_QUANTITY:
-                        $this->process_place_by_quantity($event, $xzsuic_classificator, $rule, true);
+                        $this->event__process_place_by_quantity($event, $xzsuic_classificator, $rule, true);
                         break;
                     case ClassificationTypeRule::CLASSIFICATE_BY_START_POSITION:
-                        $this->process_classificate_by_start_position($event, $xzsuic_classificator, $rule, true);
+                        $this->event__process_classificate_by_start_position($event, $xzsuic_classificator, $rule, true);
                         break;
                 }
             }
         }
         $this->log[] = date("d/m/Y H:i:s") . " - Fim do Processo - Regras PADRÃO";
     }
-    public function process_default_confirmed_rules($event, $xzsuic_classificator)
+    public function event__process_default_confirmed_rules($event, $xzsuic_classificator)
     {
         $this->log[] = date("d/m/Y H:i:s") . " - Início do Processo - Regras PADRÃO PARA CONFIRMADOS";
         foreach ($xzsuic_classificator->rules->all() as $rule) {
             if ($rule->hasConfig(ClassificationTypeRuleConfig::DEFAULT_CONFIRMED)) {
                 switch ($rule->type) {
                     case ClassificationTypeRule::POSITION:
-                        $this->process_position($event, $xzsuic_classificator, $rule, false, false, true);
+                        $this->event__process_position($event, $xzsuic_classificator, $rule, false, false, true);
                         break;
                     case ClassificationTypeRule::POSITION_ABSOLUTE:
-                        $this->process_position_absolute($event, $xzsuic_classificator, $rule, false, false, true);
+                        $this->event__process_position_absolute($event, $xzsuic_classificator, $rule, false, false, true);
                         break;
                     case ClassificationTypeRule::PRE_CLASSIFICATE:
-                        $this->process_pre_classificate($event, $xzsuic_classificator, $rule, false, false, true);
+                        $this->event__process_pre_classificate($event, $xzsuic_classificator, $rule, false, false, true);
                         break;
                     case ClassificationTypeRule::PLACE_BY_QUANTITY:
-                        $this->process_place_by_quantity($event, $xzsuic_classificator, $rule, false, false, true);
+                        $this->event__process_place_by_quantity($event, $xzsuic_classificator, $rule, false, false, true);
                         break;
                     case ClassificationTypeRule::CLASSIFICATE_BY_START_POSITION:
-                        $this->process_classificate_by_start_position($event, $xzsuic_classificator, $rule, false, false,true);
+                        $this->event__process_classificate_by_start_position($event, $xzsuic_classificator, $rule, false, false,true);
                         break;
                 }
             }
         }
         $this->log[] = date("d/m/Y H:i:s") . " - Fim do Processo - Regras PADRÃO PARA CONFIRMADOS";
     }
-    public function process_default_not_classificated_rules($event, $xzsuic_classificator)
+    public function event__process_default_not_classificated_rules($event, $xzsuic_classificator)
     {
         $this->log[] = date("d/m/Y H:i:s") . " - Início do Processo - Regras PADRÃO PARA NÃO CLASSIFICADOS";
         foreach ($xzsuic_classificator->rules->all() as $rule) {
@@ -2314,19 +2370,19 @@ class XadrezSuicoClassificatorProcessController extends Controller
 
                 switch ($rule->type) {
                     case ClassificationTypeRule::POSITION:
-                        $this->process_position($event, $xzsuic_classificator, $rule, true, true);
+                        $this->event__process_position($event, $xzsuic_classificator, $rule, true, true);
                         break;
                     case ClassificationTypeRule::POSITION_ABSOLUTE:
-                        $this->process_position_absolute($event, $xzsuic_classificator, $rule, true, true);
+                        $this->event__process_position_absolute($event, $xzsuic_classificator, $rule, true, true);
                         break;
                     case ClassificationTypeRule::PRE_CLASSIFICATE:
-                        $this->process_pre_classificate($event, $xzsuic_classificator, $rule, true, true);
+                        $this->event__process_pre_classificate($event, $xzsuic_classificator, $rule, true, true);
                         break;
                     case ClassificationTypeRule::PLACE_BY_QUANTITY:
-                        $this->process_place_by_quantity($event, $xzsuic_classificator, $rule, true, true);
+                        $this->event__process_place_by_quantity($event, $xzsuic_classificator, $rule, true, true);
                         break;
                     case ClassificationTypeRule::CLASSIFICATE_BY_START_POSITION:
-                        $this->process_classificate_by_start_position($event, $xzsuic_classificator, $rule, true, true);
+                        $this->event__process_classificate_by_start_position($event, $xzsuic_classificator, $rule, true, true);
                         break;
                 }
             }
