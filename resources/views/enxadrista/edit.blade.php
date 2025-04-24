@@ -452,9 +452,11 @@
 
 		$("#clube_id").select2().val([{{$enxadrista->clube_id}}]).change();
 		$("#sexos_id").select2().val([{{$enxadrista->sexos_id}}]).change();
-        var newOptionPaisNascimento = new Option("{{$enxadrista->pais_nascimento->nome}} ({{$enxadrista->pais_nascimento->codigo_iso}})", "{{$enxadrista->pais_nascimento->id}}", false, false);
-        $('#pais_nascimento_id').append(newOptionPaisNascimento).trigger('change');
-		$("#pais_nascimento_id").val([{{$enxadrista->pais_id}}]).change();
+        @if($enxadrista->pais_nascimento)
+            var newOptionPaisNascimento = new Option("{{$enxadrista->pais_nascimento->nome}} ({{$enxadrista->pais_nascimento->codigo_iso}})", "{{$enxadrista->pais_nascimento->id}}", false, false);
+            $('#pais_nascimento_id').append(newOptionPaisNascimento).trigger('change');
+            $("#pais_nascimento_id").val([{{$enxadrista->pais_id}}]).change();
+        @endif
         @if($enxadrista->pais_celular)
             var newOptionPaisCelular = new Option("{{$enxadrista->pais_celular->nome}} ({{$enxadrista->pais_celular->codigo_iso}})", "{{$enxadrista->pais_celular->id}}", false, false);
             $('#pais_celular_id').append(newOptionPaisCelular).trigger('change');
