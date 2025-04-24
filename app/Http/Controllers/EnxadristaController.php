@@ -71,19 +71,43 @@ class EnxadristaController extends Controller
         }
         $nome_corrigido = trim($nome_corrigido);
 
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string',
-            'email' => 'required|string|email|max:255',
-            'born' => 'required|string',
-            'cidade_id' => 'required|string',
-            'sexos_id' => 'required|string',
-            'pais_nascimento_id' => 'required|string',
-            'pais_celular_id' => 'required|string',
-            'celular' => 'required|string',
+        $validator = \Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+            'born' => 'required|date',
+            'cidade_id' => 'required|integer|exists:cidades,id',
+            'sexos_id' => 'required|integer|exists:sexos,id',
+            'pais_nascimento_id' => 'required|integer|exists:paises,id',
+            'pais_celular_id' => 'required|integer|exists:paises,id',
+            'celular' => 'required|string|regex:/^\d{9,15}$/',
+        ], [
+            'name.required' => 'O nome é obrigatório.',
+            'name.max' => 'O nome não pode ultrapassar 255 caracteres.',
+            'email.required' => 'O e-mail é obrigatório.',
+            'email.email' => 'O e-mail deve ser válido.',
+            'email.max' => 'O e-mail não pode ultrapassar 255 caracteres.',
+            'born.required' => 'A data de nascimento é obrigatória.',
+            'born.date' => 'A data de nascimento deve ser uma data válida.',
+            'cidade_id.required' => 'A cidade é obrigatória.',
+            'cidade_id.integer' => 'A cidade deve ser um número inteiro.',
+            'cidade_id.exists' => 'A cidade informada não existe.',
+            'sexos_id.required' => 'O sexo é obrigatório.',
+            'sexos_id.integer' => 'O sexo deve ser um número inteiro.',
+            'sexos_id.exists' => 'O sexo informado não existe.',
+            'pais_nascimento_id.required' => 'O país de nascimento é obrigatório.',
+            'pais_nascimento_id.integer' => 'O país de nascimento deve ser um número inteiro.',
+            'pais_nascimento_id.exists' => 'O país de nascimento informado não existe.',
+            'pais_celular_id.required' => 'O país do celular é obrigatório.',
+            'pais_celular_id.integer' => 'O país do celular deve ser um número inteiro.',
+            'pais_celular_id.exists' => 'O país do celular informado não existe.',
+            'celular.required' => 'O número de celular é obrigatório.',
+            'celular.regex' => 'O celular deve conter entre 9 e 15 dígitos numéricos.',
         ]);
+
         if ($validator->fails()) {
-            return redirect()->back()->withErrors($validator->errors());
+            return redirect()->back()->withErrors($validator)->withInput();
         }
+
 
         $documentos = array();
 
@@ -282,18 +306,40 @@ class EnxadristaController extends Controller
         }
 
         $validator = \Validator::make($request->all(), [
-            'name' => 'required|string',
-            'email' => 'required|string|email|max:255',
-            'born' => 'required|string',
-            'cidade_id' => 'required|string',
-            'sexos_id' => 'required|string',
-            'pais_nascimento_id' => 'required|string',
-            'pais_celular_id' => 'required|string',
-            'celular' => 'required|string',
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+            'born' => 'required|date',
+            'cidade_id' => 'required|integer|exists:cidades,id',
+            'sexos_id' => 'required|integer|exists:sexos,id',
+            'pais_nascimento_id' => 'required|integer|exists:paises,id',
+            'pais_celular_id' => 'required|integer|exists:paises,id',
+            'celular' => 'required|string|regex:/^\d{9,15}$/',
+        ], [
+            'name.required' => 'O nome é obrigatório.',
+            'email.required' => 'O e-mail é obrigatório.',
+            'email.email' => 'O e-mail deve ser válido.',
+            'born.required' => 'A data de nascimento é obrigatória.',
+            'born.date' => 'A data de nascimento deve ser uma data válida.',
+            'cidade_id.required' => 'A cidade é obrigatória.',
+            'cidade_id.integer' => 'A cidade deve ser um número inteiro.',
+            'cidade_id.exists' => 'A cidade informada não é válida.',
+            'sexos_id.required' => 'O sexo é obrigatório.',
+            'sexos_id.integer' => 'O sexo deve ser um número inteiro.',
+            'sexos_id.exists' => 'O sexo informado não é válido.',
+            'pais_nascimento_id.required' => 'O país de nascimento é obrigatório.',
+            'pais_nascimento_id.integer' => 'O país de nascimento deve ser um número inteiro.',
+            'pais_nascimento_id.exists' => 'O país de nascimento informado não é válido.',
+            'pais_celular_id.required' => 'O país do celular é obrigatório.',
+            'pais_celular_id.integer' => 'O país do celular deve ser um número inteiro.',
+            'pais_celular_id.exists' => 'O país do celular informado não é válido.',
+            'celular.required' => 'O número de celular é obrigatório.',
+            'celular.regex' => 'O celular deve conter entre 9 e 15 dígitos numéricos.',
         ]);
+
         if ($validator->fails()) {
-            return redirect()->back()->withErrors($validator->errors());
+            return redirect()->back()->withErrors($validator)->withInput();
         }
+
 
         $enxadrista = Enxadrista::find($id);
 
