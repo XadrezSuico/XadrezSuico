@@ -455,9 +455,11 @@
         var newOptionPaisNascimento = new Option("{{$enxadrista->pais_nascimento->nome}} ({{$enxadrista->pais_nascimento->codigo_iso}})", "{{$enxadrista->pais_nascimento->id}}", false, false);
         $('#pais_nascimento_id').append(newOptionPaisNascimento).trigger('change');
 		$("#pais_nascimento_id").val([{{$enxadrista->pais_id}}]).change();
-		var newOptionPaisCelular = new Option("{{$enxadrista->pais_celular->nome}} ({{$enxadrista->pais_celular->codigo_iso}})", "{{$enxadrista->pais_celular->id}}", false, false);
-        $('#pais_celular_id').append(newOptionPaisCelular).trigger('change');
-		$("#pais_celular_id").val([{{$enxadrista->pais_celular_id}}]).change();
+        @if($enxadrista->pais_celular)
+            var newOptionPaisCelular = new Option("{{$enxadrista->pais_celular->nome}} ({{$enxadrista->pais_celular->codigo_iso}})", "{{$enxadrista->pais_celular->id}}", false, false);
+            $('#pais_celular_id').append(newOptionPaisCelular).trigger('change');
+            $("#pais_celular_id").val([{{$enxadrista->pais_celular_id}}]).change();
+        @endif
 		Loading.enable(loading_default_animation,10000);
 		buscaTipoDocumentos(function(){
 			Loading.destroy();
