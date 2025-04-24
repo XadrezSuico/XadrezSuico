@@ -272,16 +272,7 @@ class EnxadristaController extends Controller
         $clubes = Clube::all();
         $sexos = Sexo::all();
 
-        if(!$enxadrista->lbx_id){
-            $client = new Client;
-            $response = $client->get(env("LBX_RATING_SERVER")."/rating/search/byName?search=" . $enxadrista->name);
-            $html = (string) $response->getBody();
-            $json_lbx = json_decode($html);
-        }else{
-            $json_lbx = false;
-        }
-
-        return view('enxadrista.edit', compact("enxadrista", "clubes", "sexos", "json_lbx"));
+        return view('enxadrista.edit', compact("enxadrista", "clubes", "sexos"));
     }
     public function edit_post($id, Request $request)
     {
