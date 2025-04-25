@@ -74,12 +74,12 @@ class EnxadristaController extends Controller
         $validator = \Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255',
-            'born' => 'required|date',
+            'born' => 'required|string',
             'cidade_id' => 'required|integer|exists:cidade,id',
             'sexos_id' => 'required|integer|exists:sexos,id',
             'pais_nascimento_id' => 'required|integer|exists:pais,id',
             'pais_celular_id' => 'required|integer|exists:pais,id',
-            'celular' => 'required|string|regex:/^\d{9,15}$/',
+            'celular' => 'required|string',
         ], [
             'name.required' => 'O nome é obrigatório.',
             'name.max' => 'O nome não pode ultrapassar 255 caracteres.',
@@ -308,12 +308,12 @@ class EnxadristaController extends Controller
         $validator = \Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255',
-            'born' => 'required|date',
+            'born' => 'required|string',
             'cidade_id' => 'required|integer|exists:cidade,id',
             'sexos_id' => 'required|integer|exists:sexos,id',
             'pais_nascimento_id' => 'required|integer|exists:pais,id',
             'pais_celular_id' => 'required|integer|exists:pais,id',
-            'celular' => 'required|string|regex:/^\d{9,15}$/',
+            'celular' => 'required|string',
         ], [
             'name.required' => 'O nome é obrigatório.',
             'email.required' => 'O e-mail é obrigatório.',
