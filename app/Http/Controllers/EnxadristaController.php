@@ -612,8 +612,11 @@ class EnxadristaController extends Controller
         }
 
         if ($enxadrista->isDeletavel()) {
-            foreach($enxadrista->documentos->all() as $documento){
+            foreach ($enxadrista->documentos->all() as $documento) {
                 $documento->delete();
+            }
+            foreach ($enxadrista->emails->all() as $email) {
+                $email->delete();
             }
             $enxadrista->delete();
         }
