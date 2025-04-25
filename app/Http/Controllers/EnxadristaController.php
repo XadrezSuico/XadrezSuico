@@ -402,7 +402,7 @@ class EnxadristaController extends Controller
                     ->count();
 
                     if($temEnxadrista_count > 0){
-                        $temEnxadrista_count = Enxadrista::where([
+                        $temEnxadrista = Enxadrista::where([
                             ["id","!=",$enxadrista->id]
                         ])
                         ->whereHas("documentos",function($q1) use($request, $tipo_documento_pais){
@@ -603,7 +603,7 @@ class EnxadristaController extends Controller
         $enxadrista = Enxadrista::find($id);
 
 
-        if ($enx->hasConfig("united_to")) {
+        if ($enxadrista->hasConfig("united_to")) {
             $messageBag = new MessageBag;
             $messageBag->add("type", "danger");
             $messageBag->add("alerta", "Este cadastro foi unido a outro cadastro e com isso não é permitida a exclusão.");
