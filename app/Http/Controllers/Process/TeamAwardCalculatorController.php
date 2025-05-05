@@ -99,7 +99,7 @@ class TeamAwardCalculatorController extends Controller
                 $is_points = true;
             }
         }
-        Log::debug("Total de inscrições encontradas: " . $inscricoes_count);
+        Log::debug("Total de inscrições encontradas: " . $inscricoes_count .'('.$inscricoes->count().')');
         foreach ($inscricoes as $inscricao) {
             if($time_award->hasPlace($inscricao->posicao) || $is_points){
                 if($is_points){
