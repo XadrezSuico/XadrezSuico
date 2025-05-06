@@ -187,7 +187,6 @@ class GrupoEventoController extends Controller
             foreach ($event_team_award->configs->all() as $award_config) {
                 $award_config_new = $award_config->replicate();
                 $award_config_new->event_team_awards_id = $event_team_award_new->id;
-                $award_config_new->categories_id = $categories_relationship[$award_category->categories_id];
 
                 // Verifica se a chave contém um padrão %category_{number}%
                 if (preg_match('/%category_(\d+)%/', $award_config_new->key, $matches)) {
