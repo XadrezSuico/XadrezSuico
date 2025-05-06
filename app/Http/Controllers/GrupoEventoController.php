@@ -159,6 +159,46 @@ class GrupoEventoController extends Controller
             }
         }
 
+        foreach($grupo_evento->event_team_awards->all() as $event_team_award){
+            $event_team_award_new = $event_team_award->replicate();
+            $event_team_award_new->event_groups_id = $novo_grupo_evento->id;
+            $event_team_award_new->save();
+
+
+            foreach ($event_team_award->categories->all() as $award_category) {
+                $award_category_new = $award_category->replicate();
+                $award_category_new->categories_id = $categories_relationship[$award_category->categories_id];
+                $award_category_new->event_team_awards_id = $event_team_award_new->id;
+                $award_category_new->save();
+            }
+
+            foreach ($event_team_award->scores->all() as $award_score) {
+                $award_score_new = $award_score->replicate();
+                $award_score_new->event_team_awards_id = $event_team_award_new->id;
+                $award_score_new->save();
+            }
+
+            foreach ($event_team_award->tiebreaks->all() as $award_tiebreak) {
+                $award_tiebreak_new = $award_tiebreak->replicate();
+                $award_tiebreak_new->event_team_awards_id = $event_team_award_new->id;
+                $award_tiebreak_new->save();
+            }
+
+            foreach ($event_team_award->configs->all() as $award_config) {
+                $award_config_new = $award_config->replicate();
+                $award_config_new->event_team_awards_id = $event_team_award_new->id;
+                $award_config_new->categories_id = $categories_relationship[$award_category->categories_id];
+
+                // Verifica se a chave contém um padrão %category_{number}%
+                if (preg_match('/%category_(\d+)%/', $award_config_new->key, $matches)) {
+                    $number = $matches[1]; // Pega o número encontrado
+                    $award_config_new->key = preg_replace('/%category_\d+%/', '$categories_relationship[' . $number . ']', $award_config_new->key);
+                }
+
+                $award_config_new->save();
+            }
+        }
+
         $this->importEmailTemplates($novo_grupo_evento->id);
 
         if(!$user->hasPermissionGlobal()){
