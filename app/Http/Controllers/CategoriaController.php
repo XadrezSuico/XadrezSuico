@@ -110,7 +110,7 @@ class CategoriaController extends Controller
 
             echo "[" . count((array) $criterios) . "]";
             foreach ($criterios as $criterio) {
-                $desempate = $criterio->criterio->sort_desempate($inscrito_a, $inscrito_b);
+                $desempate = $criterio->criterio->sort_desempate($inscrito_a, $inscrito_b, $criterio->prioridade);
                 if ($desempate != 0) {
                     echo $criterio->criterio->name. " - Res(".$desempate.")---<br/>";
                     return $desempate;

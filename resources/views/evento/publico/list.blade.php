@@ -182,7 +182,7 @@
                             @endforeach
                             @if($torneio->tipo_torneio->usaPontuacao()) <td>@if($inscricao->posicao) {{$inscricao->pontos}} @else - @endif</td> @endif
                             @foreach($criterios as $criterio)
-                                <th>@if($criterio->criterio->valor_criterio_visualizacao($inscricao->id)) {{$criterio->criterio->valor_criterio_visualizacao($inscricao->id)}} @else - @endif</th>
+                                <th>@if($criterio->criterio->valor_criterio_visualizacao($inscricao->id, $criterio->prioridade)) {{$criterio->criterio->valor_criterio_visualizacao($inscricao->id, $criterio->prioridade)}} @else - @endif</th>
                             @endforeach
                         </tr>
                     @endforeach

@@ -35,11 +35,20 @@ class CriterioDesempate extends Model
         return CriterioDesempate::where([["is_geral", "=", true]]);
     }
 
-    public function valor_criterio($inscrito_id)
+    public function valor_criterio($inscrito_id, $prioridade)
     {
         $desempate = InscricaoCriterioDesempate::where([
             ["criterio_desempate_id", "=", $this->id],
             ["inscricao_id", "=", $inscrito_id],
+            ["prioridade", "=", $prioridade],
+        ])->first();
+        if ($desempate) {
+            return $desempate;
+        }
+        $desempate = InscricaoCriterioDesempate::where([
+            ["criterio_desempate_id", "=", $this->id],
+            ["inscricao_id", "=", $inscrito_id],
+            ["prioridade", "=", null],
         ])->first();
         if ($desempate) {
             return $desempate;
@@ -47,9 +56,9 @@ class CriterioDesempate extends Model
 
         return false;
     }
-    public function valor_criterio_visualizacao($inscrito_id)
+    public function valor_criterio_visualizacao($inscrito_id, $prioridade)
     {
-        $desempate = $this->valor_criterio($inscrito_id);
+        $desempate = $this->valor_criterio($inscrito_id, $prioridade);
         if ($desempate) {
             switch($this->internal_code){
                 case "TT3_1":
@@ -104,10 +113,10 @@ class CriterioDesempate extends Model
         return false;
     }
 
-    public function sort_desempate($inscrito_a, $inscrito_b)
+    public function sort_desempate($inscrito_a, $inscrito_b, $prioridade)
     {
-        $desempate_a = $this->valor_criterio($inscrito_a->id);
-        $desempate_b = $this->valor_criterio($inscrito_b->id);
+        $desempate_a = $this->valor_criterio($inscrito_a->id, $prioridade);
+        $desempate_b = $this->valor_criterio($inscrito_b->id, $prioridade);
 
 
 

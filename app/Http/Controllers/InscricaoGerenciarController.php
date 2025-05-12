@@ -213,14 +213,14 @@ class InscricaoGerenciarController extends Controller
 
                 foreach ($torneio->getCriteriosTotal() as $criterio) {
                     $criterio_salvar = $criterio->criterio->valor_criterio($inscricao->id);
-                    if ($request->has("criterio_" . $criterio->criterio->id)) {
-                        if (is_numeric($request->input("criterio_" . $criterio->criterio->id))) {
+                    if ($request->has("criterio_" . $criterio->criterio->id . "_" . $criterio->prioridade)) {
+                        if (is_numeric($request->input("criterio_" . $criterio->criterio->id . "_" . $criterio->prioridade))) {
                             if (!$criterio_salvar) {
                                 $criterio_salvar = new InscricaoCriterioDesempate;
                                 $criterio_salvar->criterio_desempate_id = $criterio->criterio->id;
                                 $criterio_salvar->inscricao_id = $inscricao->id;
                             }
-                            $criterio_salvar->valor = $request->input("criterio_" . $criterio->criterio->id);
+                            $criterio_salvar->valor = $request->input("criterio_" . $criterio->criterio->id . "_" . $criterio->prioridade);
                             $criterio_salvar->save();
                         } else {
                             if ($criterio_salvar) {
@@ -238,15 +238,15 @@ class InscricaoGerenciarController extends Controller
 
             } else {
                 foreach ($torneio->getCriteriosManuais() as $criterio) {
-                    $criterio_salvar = $criterio->criterio->valor_criterio($inscricao->id);
-                    if ($request->has("criterio_" . $criterio->criterio->id)) {
-                        if (is_numeric($request->input("criterio_" . $criterio->criterio->id))) {
+                    $criterio_salvar = $criterio->criterio->valor_criterio($inscricao->id, $criterio->prioridade);
+                    if ($request->has("criterio_" . $criterio->criterio->id."_".$criterio->prioridade)) {
+                        if (is_numeric($request->input("criterio_" . $criterio->criterio->id."_".$criterio->prioridade))) {
                             if (!$criterio_salvar) {
                                 $criterio_salvar = new InscricaoCriterioDesempate;
                                 $criterio_salvar->criterio_desempate_id = $criterio->criterio->id;
                                 $criterio_salvar->inscricao_id = $inscricao->id;
                             }
-                            $criterio_salvar->valor = $request->input("criterio_" . $criterio->criterio->id);
+                            $criterio_salvar->valor = $request->input("criterio_" . $criterio->criterio->id . "_" . $criterio->prioridade);
                             $criterio_salvar->save();
                         } else {
                             if ($criterio_salvar) {
