@@ -4,9 +4,9 @@ namespace App;
 
 use App\InscricaoCriterioDesempate;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log;
 use Spatie\Activitylog\Traits\LogsActivity;
 
-use Log;
 
 class CriterioDesempate extends Model
 {
@@ -108,6 +108,9 @@ class CriterioDesempate extends Model
     {
         $desempate_a = $this->valor_criterio($inscrito_a->id);
         $desempate_b = $this->valor_criterio($inscrito_b->id);
+
+
+
         Log::debug("Comparação de critérios (".$this->name.") entre ".$inscrito_a->id." e ".$inscrito_b->id);
         if ($desempate_a && !$desempate_b) {
             Log::debug("critério B não existe");
@@ -116,13 +119,22 @@ class CriterioDesempate extends Model
             Log::debug("critério A não existe");
             return 0;
         } elseif ($desempate_a && $desempate_b) {
-
-            if ($desempate_a->valor < $desempate_b->valor) {
-            Log::debug("critério A < B");
-                return 1;
-            } elseif ($desempate_a->valor > $desempate_b->valor) {
-                Log::debug("critério A > B");
-                return -1;
+            if($this->direction == "DESC"){
+                if ($desempate_a->valor < $desempate_b->valor) {
+                    Log::debug("critério A < B");
+                    return 1;
+                } elseif ($desempate_a->valor > $desempate_b->valor) {
+                    Log::debug("critério A > B");
+                    return -1;
+                }
+            }else{
+                if ($desempate_a->valor < $desempate_b->valor) {
+                    Log::debug("critério A < B");
+                    return -1;
+                } elseif ($desempate_a->valor > $desempate_b->valor) {
+                    Log::debug("critério A > B");
+                    return 1;
+                }
             }
 
         }
@@ -135,10 +147,18 @@ class CriterioDesempate extends Model
         $desempate_a = $this->valor_criterio_geral($pontuacao_a->enxadrista->id, $pontuacao_a->grupo_evento_id, $pontuacao_a->categoria_id);
         $desempate_b = $this->valor_criterio_geral($pontuacao_b->enxadrista->id, $pontuacao_b->grupo_evento_id, $pontuacao_b->categoria_id);
         // echo $desempate_a, $desempate_b;
-        if ($desempate_a->valor < $desempate_b->valor) {
-            return 1;
-        } elseif ($desempate_a->valor > $desempate_b->valor) {
-            return -1;
+        if ($this->direction == "DESC") {
+            if ($desempate_a->valor < $desempate_b->valor) {
+                return 1;
+            } elseif ($desempate_a->valor > $desempate_b->valor) {
+                return -1;
+            }
+        }else{
+            if ($desempate_a->valor < $desempate_b->valor) {
+                return -1;
+            } elseif ($desempate_a->valor > $desempate_b->valor) {
+                return 1;
+            }
         }
         return 0;
     }
