@@ -27,6 +27,7 @@ class DefaultController extends Controller
                 $defaults["city_default"] = env("CIDADE_DEFAULT",null);
             }
         }
+        $defaults["company_user"] = config("xadrezsuico.company_user");
 
         return response()->json(["ok"=>1,"error"=>0,"defaults"=>$defaults]);
     }
