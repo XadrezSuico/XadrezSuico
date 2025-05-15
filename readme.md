@@ -55,6 +55,9 @@ Você pode sugerir alterações através das issues! Estaremos "escutando", diga
 ## Posso ajudar no desenvolvimento do XadrezSuíço?
 CLARO! Faça um fork do projeto e nos ajude a deixar esse projeto ainda com ainda mais funcionalidades!
 
+# Agradecimentos
+FEXPAR - Federação de Xadrez do Paraná, principalmente na pessoa do presidente Paulo Virgilio Rios Rodriguez pelo apoio dado para a evolução da plataforma.
+
 -----
 
 ## O que há de novo?
