@@ -88,6 +88,9 @@ class PREsporteTeamItemExport implements FromView, WithStyles, WithColumnWidths,
                 ]);
 
                 $l = 8;
+                for ($a = "A"; $a < "L"; $a++) {
+                    $cells_top[] = "{$a}{$l}";
+                }
                 foreach ($this->event->inscritosPorClube($this->club->id) as $id_categoria => $inscricoes) {
                     for ($a = "A"; $a < "L"; $a++) {
                         $cells_bottom[] = "{$a}{$l}";
