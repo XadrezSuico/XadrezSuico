@@ -64,7 +64,7 @@ class PREsporteTeamItemExport implements FromView, WithStyles, WithColumnWidths,
                 $cells_top = array();
 
 
-                $event->sheet->getStyle("C3")->applyFromArray([
+                $event->sheet->getStyle("E3")->applyFromArray([
                     'borders' => [
                         'top' => [
                             'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
