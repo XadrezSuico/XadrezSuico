@@ -42,7 +42,15 @@ class PREsporteTeamItemExport implements FromView, WithStyles, WithColumnWidths,
             // Style the first row as bold text.
             1    => ['font' => ['bold' => true, 'size' => 16]],
             2    => ['font' => ['bold' => true]],
-            3    => ['font' => ['bold' => true]],
+            "A3"    => ['font' => ['bold' => true]],
+            "B3"    => ['font' => ['bold' => true]],
+            "C3"    => ['font' => ['bold' => true]],
+            "D3"    => ['font' => ['bold' => true]],
+            "E3"    => ['font' => ['bold' => true]],
+            "F3"    => ['font' => ['bold' => true]],
+            "G3"    => ['font' => ['bold' => true]],
+            "H3"    => ['font' => ['bold' => true]],
+            "I3"    => ['font' => ['bold' => true]],
 
             // Styling a specific cell by coordinate.
             'B2' => ['font' => ['italic' => true]],
