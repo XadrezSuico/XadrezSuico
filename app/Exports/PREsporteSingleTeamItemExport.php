@@ -44,6 +44,8 @@ class PREsporteSingleTeamItemExport implements FromView, WithStyles, WithColumnW
             // Style the first row as bold text.
             1    => ['font' => ['bold' => true, 'size' => 16]],
             2    => ['font' => ['bold' => true]],
+            "A3"    => ['font' => ['bold' => true]],
+            5    => ['font' => ['bold' => true]],
 
             // Styling a specific cell by coordinate.
             'B2' => ['font' => ['italic' => true]],
@@ -64,7 +66,7 @@ class PREsporteSingleTeamItemExport implements FromView, WithStyles, WithColumnW
                 $cells_bottom = array();
                 $cells_top = array();
 
-                $l = 4;
+                $l = 9;
                 foreach ($this->event->inscritosPorClube($this->club->id) as $id_categoria => $inscricoes){
                     for($a = "A"; $a < "L"; $a++){
                         $cells_bottom[] = "{$a}{$l}";

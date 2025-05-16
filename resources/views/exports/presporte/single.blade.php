@@ -18,6 +18,19 @@
                 {{$clube->getName()}}
             </td>
         </tr>
+        <tr></tr>
+        <tr>
+            <td colspan="12" style="border: 1px solid: #000 !important; text-align: center">
+                <h3 style="margin:0;font-weight:bold">OBSERVAÇÕES DE PREENCHIMENTO:</h3>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="12" style="border: 1px solid: #000 !important; text-align: center">
+                X - Desconfirmar | T1 - Tabuleiro 1 | T2 - Tabuleiro 2 | T3 - Tabuleiro 3 | R - Reserva
+            </td>
+        </tr>
+        <tr></tr>
+        <tr></tr>
         @foreach(
             $evento->inscritosPorClube($clube->id) as $id_categoria => $inscricoes
         )
