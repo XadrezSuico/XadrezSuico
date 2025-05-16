@@ -63,6 +63,28 @@ class PREsporteTeamItemExport implements FromView, WithStyles, WithColumnWidths,
                 $cells_bottom = array();
                 $cells_top = array();
 
+
+                $event->sheet->getStyle("B3")->applyFromArray([
+                    'borders' => [
+                        'top' => [
+                            'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                            'color' => ['argb' => '000000'],
+                        ],
+                        'bottom' => [
+                            'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                            'color' => ['argb' => '000000'],
+                        ],
+                        'left' => [
+                            'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                            'color' => ['argb' => '000000'],
+                        ],
+                        'right' => [
+                            'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                            'color' => ['argb' => '000000'],
+                        ],
+                    ],
+                ]);
+
                 $l = 8;
                 foreach ($this->event->inscritosPorClube($this->club->id) as $id_categoria => $inscricoes) {
                     for ($a = "A"; $a < "L"; $a++) {
