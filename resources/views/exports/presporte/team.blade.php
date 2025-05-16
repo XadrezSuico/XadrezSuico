@@ -21,7 +21,16 @@
         <tr></tr>
         <tr>
             <td colspan="12" style="border: 1px solid: #000 !important; text-align: center">
-                <h3 style="margin:0;font-weight:bold">OBSERVAÇÕES DE PREENCHIMENTO</h3>
+                <h3 style="margin:0;font-weight:bold">OBSERVAÇÕES DE PREENCHIMENTO:</h3>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="12" style="border: 1px solid: #000 !important; text-align: center">
+                X - Desconfirmar<br/>
+                T1 - Tabuleiro 1<br/>
+                T2 - Tabuleiro 2<br/>
+                T3 - Tabuleiro 3<br/>
+                R - Reserva<br/>
             </td>
         </tr>
         <tr></tr>

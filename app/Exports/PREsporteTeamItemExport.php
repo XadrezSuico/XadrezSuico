@@ -50,6 +50,7 @@ class PREsporteTeamItemExport implements FromView, WithStyles, WithColumnWidths,
             "F3"    => ['font' => ['bold' => true]],
             "G3"    => ['font' => ['bold' => true]],
             "H3"    => ['font' => ['bold' => true]],
+            5    => ['font' => ['bold' => true]],
             // "I3"    => ['font' => ['bold' => true]],
 
             // Styling a specific cell by coordinate.
