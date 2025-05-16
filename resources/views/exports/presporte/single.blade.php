@@ -26,7 +26,7 @@
         </tr>
         <tr>
             <td colspan="12" style="border: 1px solid: #000 !important; text-align: center">
-                X - Desconfirmar | T1 - Tabuleiro 1 | T2 - Tabuleiro 2 | T3 - Tabuleiro 3 | R - Reserva
+                C - Confirmar | X - Desconfirmar
             </td>
         </tr>
         <tr></tr>
