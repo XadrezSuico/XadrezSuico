@@ -933,7 +933,11 @@ class InscricaoGerenciarController extends Controller
             }else{
                 $texto .= $inscricao->enxadrista->id . ";";
             }
-            $texto .= "BRA;";
+            if ($evento->hasConfig("fed_use_club")) {
+                $texto .= (($inscricao->clube) ? $inscricao->clube->abbr : "") . ";";
+            } else {
+                $texto .= $inscricao->enxadrista->pais_nascimento->codigo_iso . ";";
+            }
 
             if ($evento->tipo_rating) {
                 if ($evento->usa_fide) {
@@ -1030,7 +1034,11 @@ class InscricaoGerenciarController extends Controller
             }else{
                 $texto .= $inscricao->enxadrista->id . ";";
             }
-            $texto .= "BRA;";
+            if ($evento->hasConfig("fed_use_club")) {
+                $texto .= (($inscricao->clube) ? $inscricao->clube->abbr : "") . ";";
+            } else {
+                $texto .= $inscricao->enxadrista->pais_nascimento->codigo_iso . ";";
+            }
 
             if ($evento->tipo_rating) {
                 if ($evento->usa_fide) {
@@ -1424,7 +1432,17 @@ class InscricaoGerenciarController extends Controller
             $texto .= $club->name.";";
             $texto .= $club->name.";";
             $texto .= $club->id.";";
-            $texto .= ";BRA;;";
+            $texto .= ";";
+            if ($evento->hasConfig("fed_use_club")) {
+                $texto .= (($club->clube) ? $club->abbr : "") . ";";
+            } else {
+                if($club->cidade)
+                    if ($club->cidade->estado)
+                        if ($club->cidade->estado->pais)
+                            $texto .= $club->cidade->estado->pais->codigo_iso;
+                $texto .= ";";
+            }
+            $texto .= ";";
             $texto .= "\r\n";
         }
         return $texto;
