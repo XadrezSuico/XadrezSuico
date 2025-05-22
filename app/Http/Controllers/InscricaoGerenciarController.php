@@ -684,6 +684,11 @@ class InscricaoGerenciarController extends Controller
                 $texto .= $inscricao->cidade->name . ";";
             }
 
+            if (!$inscricao->enxadrista->firstname || !$inscricao->enxadrista->lastname) {
+                $inscricao->enxadrista->splitName();
+                $inscricao->enxadrista->save();
+            }
+
             $texto .= $inscricao->enxadrista->lastname . ";";
             $texto .= $inscricao->enxadrista->firstname . ";";
             $texto .= $inscricao->enxadrista->id . "\r\n";
@@ -777,6 +782,11 @@ class InscricaoGerenciarController extends Controller
             } else {
                 $texto .= $inscricao->cidade->ibge_id . ";";
                 $texto .= $inscricao->cidade->name . ";";
+            }
+
+            if (!$inscricao->enxadrista->firstname || !$inscricao->enxadrista->lastname) {
+                $inscricao->enxadrista->splitName();
+                $inscricao->enxadrista->save();
             }
 
             $texto .= $inscricao->enxadrista->firstname . ";";
@@ -874,6 +884,11 @@ class InscricaoGerenciarController extends Controller
                 $texto .= $inscricao->cidade->name . ";";
             }
 
+            if (!$inscricao->enxadrista->firstname || !$inscricao->enxadrista->lastname) {
+                $inscricao->enxadrista->splitName();
+                $inscricao->enxadrista->save();
+            }
+
             $texto .= $inscricao->enxadrista->firstname . ";";
             $texto .= $inscricao->enxadrista->lastname . " [".$inscricao->enxadrista->chess_com_username."];";
             $texto .= $inscricao->enxadrista->id . "\r\n";
@@ -966,6 +981,11 @@ class InscricaoGerenciarController extends Controller
                 $texto .= $inscricao->clube->getName() . ";";
             } else {
                 $texto .= ";";
+            }
+
+            if (!$inscricao->enxadrista->firstname || !$inscricao->enxadrista->lastname) {
+                $inscricao->enxadrista->splitName();
+                $inscricao->enxadrista->save();
             }
 
             $texto .= $inscricao->enxadrista->firstname . ";";
@@ -1067,6 +1087,11 @@ class InscricaoGerenciarController extends Controller
                 $texto .= $inscricao->clube->getFullName() . ";";
             } else {
                 $texto .= "0;;";
+            }
+
+            if(!$inscricao->enxadrista->firstname || !$inscricao->enxadrista->lastname){
+                $inscricao->enxadrista->splitName();
+                $inscricao->enxadrista->save();
             }
 
             $texto .= $inscricao->enxadrista->firstname . ";";
@@ -1183,6 +1208,11 @@ class InscricaoGerenciarController extends Controller
                 $texto .= $inscricao->cidade->name . ";";
             }
 
+            if (!$inscricao->enxadrista->firstname || !$inscricao->enxadrista->lastname) {
+                $inscricao->enxadrista->splitName();
+                $inscricao->enxadrista->save();
+            }
+
             $texto .= ((count($explode_fide_name) > 1) ? $explode_fide_name[0] : $inscricao->enxadrista->lastname) . ";";
             $texto .= ((count($explode_fide_name) > 1) ? $explode_fide_name[1] : $inscricao->enxadrista->firstname) . ";";
             $texto .= $inscricao->enxadrista->id . "\r\n";
@@ -1289,6 +1319,11 @@ class InscricaoGerenciarController extends Controller
             } else {
                 $texto .= ";";
                 $texto .= ";";
+            }
+
+            if (!$inscricao->enxadrista->firstname || !$inscricao->enxadrista->lastname) {
+                $inscricao->enxadrista->splitName();
+                $inscricao->enxadrista->save();
             }
 
             $texto .= ((count($explode_fide_name) > 1) ? $explode_fide_name[0] : $inscricao->enxadrista->lastname) . ";";
@@ -1405,6 +1440,11 @@ class InscricaoGerenciarController extends Controller
             } else {
                 $texto .= $inscricao->cidade->ibge_id . ";";
                 $texto .= $inscricao->cidade->name . ";";
+            }
+
+            if (!$inscricao->enxadrista->firstname || !$inscricao->enxadrista->lastname) {
+                $inscricao->enxadrista->splitName();
+                $inscricao->enxadrista->save();
             }
 
             $texto .= $inscricao->enxadrista->lastname . ";";
