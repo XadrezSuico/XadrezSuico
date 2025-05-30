@@ -13,11 +13,11 @@ return [
     |
     */
 
-    'title' => 'Sistema '. (env("IS_XADREZSUICO", true) ? "RokadeManager" : "XadrezSuíço"),
+    'title' => 'Sistema '. (env("IS_XADREZSUICO", false) ? "XadrezSuíço" : "RokadeManager"),
 
     'title_prefix' => '',
 
-    'title_postfix' => 'Sistema ' . (env("IS_XADREZSUICO", true) ? "RokadeManager" : "XadrezSuíço"),
+    'title_postfix' => 'Sistema ' . (env("IS_XADREZSUICO", false) ? "XadrezSuíço" : "RokadeManager"),
 
     /*
     |--------------------------------------------------------------------------
@@ -30,9 +30,9 @@ return [
     |
     */
 
-    'logo' => (env("IS_XADREZSUICO", true) ? "RokadeManager" : "XadrezSuíço"),
+    'logo' => (env("IS_XADREZSUICO", false) ? "XadrezSuíço" : "RokadeManager"),
 
-    'logo_mini' => (env("IS_XADREZSUICO", true) ? "RMn" : "XSu"),
+    'logo_mini' => (env("IS_XADREZSUICO", false) ? "XSu" : "RMn"),
 
     /*
     |--------------------------------------------------------------------------
@@ -45,7 +45,7 @@ return [
     |
     */
 
-    'skin' => 'purple',
+    'skin' => (env("IS_XADREZSUICO", false) ? "green" : "purple"),
 
     /*
     |--------------------------------------------------------------------------
