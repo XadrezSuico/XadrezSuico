@@ -542,7 +542,7 @@
                     	<button id="clubeNaoCadastradoEnxadrista" onclick="chamaCadastroClube(0)" class="btn btn-success">O meu clube/instituição/escola não está cadastrado</button>
 					</div>
 					<div class="form-group">
-						<label><input type="checkbox" id="enxadrista_xadrezsuico_aceito"> Eu aceito o <a href="{{url("/termosdeuso")}}" target="_blank">termo de uso</a> e a <a href="{{url("/politicadeprivacidade")}}" target="_blank">política de privacidade</a> da Plataforma de Gerenciamento de Circuitos de Xadrez - XadrezSuíço - Implementada pela <u>{{env("IMPLEMENTADO_POR")}}</u>.</label>
+						<label><input type="checkbox" id="enxadrista_xadrezsuico_aceito"> Eu aceito o <a href="{{url("/termosdeuso")}}" target="_blank">termo de uso</a> e a <a href="{{url("/politicadeprivacidade")}}" target="_blank">política de privacidade</a> da Plataforma de Gerenciamento de Circuitos de Xadrez - {{config("xadrezsuico.name","XadrezSuíço")}} - Implementada pela <u>{{env("IMPLEMENTADO_POR")}}</u>.</label>
 					</div>
 				</div>
 			</div>
@@ -621,7 +621,7 @@
 				@else
 					<div class="form-group">
 						<label><input type="checkbox" id="regulamento_aceito"> Eu aceito o @if($evento->grupo_evento->regulamento_link) <a href="{{$evento->grupo_evento->regulamento_link}}" target="_blank"> @endif regulamento do  {{$evento->grupo_evento->name}} @if($evento->grupo_evento->regulamento_link) </a> @endif integralmente.</label><br/>
-						<label><input type="checkbox" id="xadrezsuico_aceito"> Eu aceito o <a href="{{url("/termosdeuso")}}" target="_blank">termo de uso</a> e a <a href="{{url("/politicadeprivacidade")}}" target="_blank">política de privacidade</a> da Plataforma de Gerenciamento de Circuitos de Xadrez - XadrezSuíço - Implementada pela <u>{{env("IMPLEMENTADO_POR")}}</u>.</label>
+						<label><input type="checkbox" id="xadrezsuico_aceito"> Eu aceito o <a href="{{url("/termosdeuso")}}" target="_blank">termo de uso</a> e a <a href="{{url("/politicadeprivacidade")}}" target="_blank">política de privacidade</a> da Plataforma de Gerenciamento de Circuitos de Xadrez - {{config("xadrezsuico.name","XadrezSuíço")}} - Implementada pela <u>{{env("IMPLEMENTADO_POR")}}</u>.</label>
 						<label><input type="checkbox" id="imagem_aceito"> Eu (ou Responsável) cedo meus direitos de imagem do Enxadrista aos organizadores do <u>{{$evento->name}}</u> de forma gratuita, a título de divulgação em material impresso ou digital em caráter informativo.</label>
 					</div>
 				@endif
@@ -1713,7 +1713,7 @@
 					$("#pesquisa div").html("");
 					$("#inscricao").boxWidget('collapse');
                     if(data.is_lichess_integration == 1){
-                        $("#successMessage").html("<strong>Sua inscrição foi efetuada no XadrezSuíço com sucesso!</strong><hr/>");
+                        $("#successMessage").html("<strong>Sua inscrição foi efetuada no ".config("xadrezsuico.name","XadrezSuíço")." com sucesso!</strong><hr/>");
                         $("#successMessage").html($("#successMessage").html().concat("Você receberá em no máximo 30 minutos uma mensagem no endereço de e-mail do cadastro com a confirmação do preenchimento do formulário. Proceda com a inscrição no Lichess.org:<hr/>"));
                         $("#successMessage").html($("#successMessage").html().concat("Agora você necessita entrar no torneio do Lichess.org para poder jogar:<br/>"));
                         $("#successMessage").html($("#successMessage").html().concat("<a href=\"").concat(data.lichess_process_link).concat("\" class=\"btn btn-lg btn-default btn-block\" target=\"_blank\"><strong>Clique aqui</strong> e continue sua inscrição para o Torneio do Lichess.org</a><hr/>"));

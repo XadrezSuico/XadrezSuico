@@ -1,8 +1,8 @@
 version: '1.4.2'
 appVersion: latest
 type: install
-id: xadrezsuico
-name: XadrezSuíço
+id: rokade
+name: Rokade Manager
 baseUrl: https://raw.githubusercontent.com/xadrezsuico/xadrezsuico/develop
 logo: /images/logo-transparent.png
 homepage: http://xadrezsuico.github.io/

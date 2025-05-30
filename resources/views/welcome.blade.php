@@ -80,7 +80,7 @@
 		</div>
 
 		<div class="box-body">
-			Seja bem-vindo(a) ao XadrezSuíço: uma plataforma em desenvolvimento com o foco em gestão de torneios de xadrez.
+			Seja bem-vindo(a) ao {{config("xadrezsuico.name","XadrezSuíço")}}: uma plataforma em desenvolvimento com o foco em gestão de torneios de xadrez.
 		</div>
 	</div>
 

@@ -19,7 +19,7 @@ class SeedPerfilAddEventClassificateRuleOperator extends Migration
             $perfil = new Perfil;
             $perfil->id = 16;
         }
-        $perfil->name = "XadrezSuíço Classificador - Operador (Regras)";
+        $perfil->name = "Classificador - Operador (Regras)";
         $perfil->save();
     }
 

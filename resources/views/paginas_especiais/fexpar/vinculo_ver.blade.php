@@ -41,7 +41,7 @@
             <h5><strong>Tipo de Vínculo:</strong> {{$vinculo_consulta->getVinculoType()}}</h5>
             @if($vinculo_consulta->is_confirmed_system)
                 <h5><strong>Quantos eventos que o enxadrista participou competindo por este clube:</strong> {{$vinculo_consulta->system_inscricoes_in_this_club_confirmed}} (Valor em <strong>{{$vinculo_consulta->getCreatedAt()}}</strong>)</h5>
-                <small>Observação: Esta informação compreende apenas os registros de eventos que constam no XadrezSuíço que atendam os seguintes requisitos:
+                <small>Observação: Esta informação compreende apenas os registros de eventos que constam no {{config("xadrezsuico.name","XadrezSuíço")}} que atendam os seguintes requisitos:
                     <ul>
                         <li>Esteja com a inscrição com a mesma cidade e clube do vínculo;</li>
                         <li>O evento em questão esteja devidamente homologado.</li>
@@ -54,7 +54,7 @@
                 <p>{!!$vinculo_consulta->events_played!!}</p>
             @endif
             <hr/>
-            <h5><strong>Eventos via Sistema XadrezSuíço (Informação obtida durante a consulta):</strong></h5>
+            <h5><strong>Eventos via Sistema {{config("xadrezsuico.name","XadrezSuíço")}} (Informação obtida durante a consulta):</strong></h5>
             <table class="table" width="100%">
                 <thead>
                     <tr>

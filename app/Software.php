@@ -41,7 +41,7 @@ class Software extends Model
     }
 
     public function isXadrezSuico(){
-        if($this->name == "XadrezSuíço"){
+        if($this->name == "XadrezSuíço" || $this->name == "RokadeManager"){
             return true;
         }
         return false;
@@ -70,9 +70,9 @@ class Software extends Model
     }
 
     public static function hasXadrezSuico(){
-        return Software::where([["name","=","XadrezSuíço"]])->count() > 0;
+        return Software::whereIn("name",["XadrezSuíço", "Rokade Manager"])->count() > 0;
     }
     public static function getXadrezSuico(){
-        return Software::where([["name","=","XadrezSuíço"]])->first();
+        return Software::whereIn("name",["XadrezSuíço", "Rokade Manager"])->first();
     }
 }

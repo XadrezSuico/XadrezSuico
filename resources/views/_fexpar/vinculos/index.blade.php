@@ -19,7 +19,7 @@
             <p>Existem dois tipos de vínculos:</p>
             <ul>
                 <li>
-                    <strong>Automático:</strong> É o vínculo identificado pelo XadrezSuíço, onde segue alguns critérios para tal.<br/>
+                    <strong>Automático:</strong> É o vínculo identificado pelo {{config("xadrezsuico.name","XadrezSuíço")}}, onde segue alguns critérios para tal.<br/>
                     O primeiro é que o clube deve estar vinculado a uma cidade do Paraná e estar habilitado para vínculo (Campo <strong>É clube válido para vínculo federativo?</strong> no cadastro de Clube).<br/>
                     Após isso, de madrugada é efetuado em duas etapas os vínculos: a Pré-vinculação e a Vinculação.
                     <ul>
@@ -29,7 +29,7 @@
                                 <li>Cadastro com CPF e RG para Brasileiros - Identidade ou Passaporte para Estrangeiros;</li>
                                 <li>Possuir vínculo de cidade em alguma cidade do Paraná em seu cadastro de Enxadrista;</li>
                                 <li>Possuir vínculo de clube em alguma entidade do Paraná apta em seu cadastro de Enxadrista;</li>
-                                <li>Ter participado (confirmado sem W.O.) em algum evento no ano de {{date("Y")}} gerenciado por completo no XadrezSuíço.</li>
+                                <li>Ter participado (confirmado sem W.O.) em algum evento no ano de {{date("Y")}} gerenciado por completo no {{config("xadrezsuico.name","XadrezSuíço")}}.</li>
                             </ol>
                             Os enxadristas que atendem estes requisitos, automaticamente recebem um pré-vínculo ao clube que está no cadastro de enxadrista. O qual poderá ser confirmado na noite subsequente.
                         </li>
@@ -41,7 +41,7 @@
                 </li>
                 <li>
                     <strong>Manual:</strong> Este é o processo que acontece através da ação de um usuário com permissão, onde pode alterar o vínculo automático fornecido ou então criar um vínculo para algum enxadrista ainda não vinculado.<br/>
-                    Este processo serve também para vincular enxadristas que participaram em algum evento válido para vínculo não gerenciado pelo XadrezSuíço. É necessário que o usuário informe manualmente os nomes dos eventos que geraram este vínculo.
+                    Este processo serve também para vincular enxadristas que participaram em algum evento válido para vínculo não gerenciado pelo {{config("xadrezsuico.name","XadrezSuíço")}}. É necessário que o usuário informe manualmente os nomes dos eventos que geraram este vínculo.
                 </li>
             </ul>
             <hr/>

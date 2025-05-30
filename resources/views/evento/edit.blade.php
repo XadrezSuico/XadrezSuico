@@ -168,14 +168,14 @@
                                 </a>
                             @endif
 							<hr/>
-                            <h4>XadrezSuíço Emparceirador:</h4>
-							<a href="{{url("/evento/".$evento->id."/exports/xadrezsuicoemparceirador")}}" class="btn btn-app">
+                            <h4>{{config("xadrezsuico.name","XadrezSuíço")}} Emparceirador:</h4>
+							<a href="{{url("/evento/".$evento->id."/exports/emparceirador")}}" class="btn btn-app">
 								<i class="fa fa-download"></i>
-								Baixar Arquivo do XadrezSuíço Emparceirador (Todas as inscrições - Sem dados)
+								Baixar Arquivo do {{config("xadrezsuico.name","XadrezSuíço")}} Emparceirador (Todas as inscrições - Sem dados)
 							</a>
 							<a href="{{url("/evento/".$evento->id."/exports/xadrezsuicoemparceirador/data")}}" class="btn btn-app">
 								<i class="fa fa-download"></i>
-								Baixar Arquivo do XadrezSuíço Emparceirador (Inscrições Confirmadas - Com dados)
+								Baixar Arquivo do {{config("xadrezsuico.name","XadrezSuíço")}} Emparceirador (Inscrições Confirmadas - Com dados)
 							</a>
                             <hr/>
                             <h4>Divulgação de Emparceiramentos:</h4>
@@ -356,11 +356,11 @@
                                     </a><br/>
                                     <a href="{{url("/evento/".$evento->id."/exports/presporte/team")}}?fill_blanks" class="btn btn-app">
                                         <i class="fa fa-chevron-circle-down"></i>
-                                        Baixar Fichas de Confirmação (por Equipes - Preenchidas Conforme Confirmações no XadrezSuíço) - .xlsx
+                                        Baixar Fichas de Confirmação (por Equipes - Preenchidas Conforme Confirmações no {{config("xadrezsuico.name","XadrezSuíço")}}) - .xlsx
                                     </a>
                                     <a href="{{url("/evento/".$evento->id."/exports/presporte/team/pdf")}}?fill_blanks" class="btn btn-app">
                                         <i class="fa fa-chevron-circle-down"></i>
-                                        Baixar Fichas de Confirmação (por Equipes - Preenchidas Conforme Confirmações no XadrezSuíço) - .pdf
+                                        Baixar Fichas de Confirmação (por Equipes - Preenchidas Conforme Confirmações no {{config("xadrezsuico.name","XadrezSuíço")}}) - .pdf
                                     </a>
                                 @else
                                     <a href="{{url("/evento/".$evento->id."/exports/presporte/single")}}" class="btn btn-app">
@@ -373,11 +373,11 @@
                                     </a><br/>
                                     <a href="{{url("/evento/".$evento->id."/exports/presporte/single")}}?fill_blanks" class="btn btn-app">
                                         <i class="fa fa-chevron-circle-down"></i>
-                                        Baixar Fichas de Confirmação (Individual - Preenchidas Conforme Confirmações no XadrezSuíço) - .xlsx
+                                        Baixar Fichas de Confirmação (Individual - Preenchidas Conforme Confirmações no {{config("xadrezsuico.name","XadrezSuíço")}}) - .xlsx
                                     </a>
                                     <a href="{{url("/evento/".$evento->id."/exports/presporte/single/pdf")}}?fill_blanks" class="btn btn-app">
                                         <i class="fa fa-chevron-circle-down"></i>
-                                        Baixar Fichas de Confirmação (Individual - Preenchidas Conforme Confirmações no XadrezSuíço) - .pdf
+                                        Baixar Fichas de Confirmação (Individual - Preenchidas Conforme Confirmações no {{config("xadrezsuico.name","XadrezSuíço")}}) - .pdf
                                     </a>
                                 @endif
                             @endif
@@ -445,14 +445,14 @@
 								<div class="form-group">
 									<label for="exportacao_sm_modelo">Tipo de Exportação - Swiss Manager *</label>
 									<select name="exportacao_sm_modelo" id="exportacao_sm_modelo" class="form-control width-100" @if(!\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() && !\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4]) && !\Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])) disabled="disabled" @endif>
-										<option value="0">Padrão XadrezSuíço</option>
+										<option value="0">Padrão {{config("xadrezsuico.name","XadrezSuíço")}}</option>
 										<option value="1">FIDE</option>
 										<option value="7">FIDE - Exporta somente clube</option>
 										<option value="2">LBX</option>
-										<option value="3">Padrão XadrezSuíço (Nome no Sobrenome, e Sobrenome no Nome)</option>
-										<option value="4">Padrão XadrezSuíço Chess.com (Nome no Sobrenome, Sobrenome no Nome e no Nome também informa o Usuário do Chess.com)</option>
-										<option value="5">Padrão XadrezSuíço sem Cidade (Nome no Sobrenome, Sobrenome no Nome sem Cidade)</option>
-										<option value="6">Padrão XadrezSuíço sem Cidade (Nome no Sobrenome, Sobrenome no Nome sem Cidade) em Torneio por Equipe</option>
+										<option value="3">Padrão {{config("xadrezsuico.name","XadrezSuíço")}} (Nome no Sobrenome, e Sobrenome no Nome)</option>
+										<option value="4">Padrão {{config("xadrezsuico.name","XadrezSuíço")}} Chess.com (Nome no Sobrenome, Sobrenome no Nome e no Nome também informa o Usuário do Chess.com)</option>
+										<option value="5">Padrão {{config("xadrezsuico.name","XadrezSuíço")}} sem Cidade (Nome no Sobrenome, Sobrenome no Nome sem Cidade)</option>
+										<option value="6">Padrão {{config("xadrezsuico.name","XadrezSuíço")}} sem Cidade (Nome no Sobrenome, Sobrenome no Nome sem Cidade) em Torneio por Equipe</option>
 									</select>
 								</div>
                                 <div class="form-group">
@@ -542,27 +542,27 @@
                                     <div class="form-group">
                                         <label for="lichess_team_id">Lichess.org: ID do Time/Equipe</label>
                                         <input name="lichess_team_id" id="lichess_team_id" class="form-control" type="text" value="{{$evento->lichess_team_id}}" @if(!\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() && !\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4]) && !\Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])) disabled="disabled" @endif />
-                                        <small><strong>Importante!</strong> Aqui vai o ID do Time no Lichess. Vale constar que para que um torneio tenha integração com o XadrezSuíço é necessário que seja efetuado por um time/equipe que XadrezSuíço tenha permissões. Segue exemplo de onde encontrar o ID do Time: https://lichess.org/team/<strong>circuito-sesc-de-xadrez-2021</strong></small>
+                                        <small><strong>Importante!</strong> Aqui vai o ID do Time no Lichess. Vale constar que para que um torneio tenha integração com o {{config("xadrezsuico.name","XadrezSuíço")}} é necessário que seja efetuado por um time/equipe que {{config("xadrezsuico.name","XadrezSuíço")}} tenha permissões. Segue exemplo de onde encontrar o ID do Time: https://lichess.org/team/<strong>circuito-sesc-de-xadrez-2021</strong></small>
                                         @if($evento->lichess_team_id) <br/><a href="https://lichess.org/team/{{$evento->lichess_team_id}}" target="_blank">Link do Time</a> @endif
                                     </div>
                                     @if(\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() || \Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4]) || \Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7]))
                                         <div class="form-group">
                                             <label for="lichess_team_password">Lichess.org: Senha para a Entrada no Time/Equipe</label>
                                             <input name="lichess_team_password" id="lichess_team_password" class="form-control" type="text" value="{{$evento->lichess_team_password}}" />
-                                            <small><strong>Importante!</strong> Aqui vai a Senha para a Entrada no Time no Lichess. Vale constar que para que um torneio tenha integração com o XadrezSuíço é necessário que seja efetuado por um time/equipe que XadrezSuíço tenha permissões.</small>
+                                            <small><strong>Importante!</strong> Aqui vai a Senha para a Entrada no Time no Lichess. Vale constar que para que um torneio tenha integração com o {{config("xadrezsuico.name","XadrezSuíço")}} é necessário que seja efetuado por um time/equipe que {{config("xadrezsuico.name","XadrezSuíço")}} tenha permissões.</small>
                                         </div>
                                     @endif
                                     <div class="form-group">
                                         <label for="lichess_tournament_id">Lichess.org: ID do Torneio</label>
                                         <input name="lichess_tournament_id" id="lichess_tournament_id" class="form-control" type="text" value="{{$evento->lichess_tournament_id}}" @if(!\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() && !\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4]) && !\Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])) disabled="disabled" @endif />
-                                        <small><strong>Importante!</strong> Aqui vai o ID do Torneio no Lichess. Vale constar que para que um torneio tenha integração com o XadrezSuíço é necessário que seja efetuado por um time/equipe que XadrezSuíço tenha permissões. Segue exemplo de onde encontrar o ID do Torneio: https://lichess.org/swiss/<strong>ZDig8Z5Y</strong></small>
+                                        <small><strong>Importante!</strong> Aqui vai o ID do Torneio no Lichess. Vale constar que para que um torneio tenha integração com o {{config("xadrezsuico.name","XadrezSuíço")}} é necessário que seja efetuado por um time/equipe que {{config("xadrezsuico.name","XadrezSuíço")}} tenha permissões. Segue exemplo de onde encontrar o ID do Torneio: https://lichess.org/swiss/<strong>ZDig8Z5Y</strong></small>
                                         @if($evento->lichess_tournament_id) <br/><a href="https://lichess.org/swiss/{{$evento->lichess_tournament_id}}" target="_blank">Link do Torneio</a> @endif
                                     </div>
                                     @if(\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() || \Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4]) || \Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7]))
                                         <div class="form-group">
                                             <label for="lichess_tournament_password">Lichess.org: Senha para a Inscrição no Torneio</label>
                                             <input name="lichess_tournament_password" id="lichess_tournament_password" class="form-control" type="text" value="{{$evento->lichess_tournament_password}}" />
-                                            <small><strong>Importante!</strong> Aqui vai a Senha para a Inscrição no Torneio no Lichess. Vale constar que para que um torneio tenha integração com o XadrezSuíço é necessário que seja efetuado por um time/equipe que XadrezSuíço tenha permissões.</small>
+                                            <small><strong>Importante!</strong> Aqui vai a Senha para a Inscrição no Torneio no Lichess. Vale constar que para que um torneio tenha integração com o {{config("xadrezsuico.name","XadrezSuíço")}} é necessário que seja efetuado por um time/equipe que {{config("xadrezsuico.name","XadrezSuíço")}} tenha permissões.</small>
                                         </div>
                                     @endif
                                 @else
@@ -631,7 +631,7 @@
 						            \Illuminate\Support\Facades\Auth::user()->hasPermissionGlobalbyPerfil([1,10,11])
                                 )
                                     <div class="form-group">
-                                        <label for="xadrezsuicopag_uuid">XadrezSuíçoPAG: UUID do Evento na Plataforma</label>
+                                        <label for="xadrezsuicopag_uuid">PAG: UUID do Evento na Plataforma</label>
                                         <input name="xadrezsuicopag_uuid" id="xadrezsuicopag_uuid" class="form-control" type="text" value="{{$evento->xadrezsuicopag_uuid}}" />
                                         <small><strong>IMPORTANTE!</strong> Lembre-se de colocar o UUID do Evento na Plataforma caso deseje ativar o pagamento para este evento.</small>
                                     </div>
@@ -971,14 +971,14 @@
                                             @if(
                                                 $xadrezsuicopag_category_request->ok == 1
                                             )
-                                                <label for="category_xadrezsuicopag_uuid">XadrezSuíçoPAG: Categoria</label>
+                                                <label for="category_xadrezsuicopag_uuid">PAG: Categoria</label>
                                                 <select name="xadrezsuicopag_uuid" id="category_xadrezsuicopag_uuid" class="form-control width-100">
-                                                    <option value="">--- Sem Categoria no XadrezSuíçoPAG ---</option>
+                                                    <option value="">--- Sem Categoria no PAG ---</option>
                                                     @foreach($xadrezsuicopag_category_request->categories as $xadrezsuicopag_category)
                                                         <option value="{{$xadrezsuicopag_category->uuid}}">{{$xadrezsuicopag_category->uuid}} - {{$xadrezsuicopag_category->name}}</option>
                                                     @endforeach
                                                 </select>
-                                                <small><strong>IMPORTANTE!</strong> Apenas selecione uma categoria do XadrezSuíçoPAG caso esta necessite pagamento.</small>
+                                                <small><strong>IMPORTANTE!</strong> Apenas selecione uma categoria do PAG caso esta necessite pagamento.</small>
                                             @endif
                                         @endif
                                     @endif
@@ -1012,7 +1012,7 @@
                                                 \Illuminate\Support\Facades\Auth::user()->hasPermissionGlobalbyPerfil([1,10,11]) &&
                                                 $evento->xadrezsuicopag_uuid != ""
                                             )
-                                                <th>Vínculo XadrezSuíçoPAG</th>
+                                                <th>Vínculo PAG</th>
                                             @endif
 											<th width="20%">Opções</th>
 										</tr>
@@ -1048,7 +1048,7 @@
                                                                 {{$xadrezsuicopag_category_request->category->uuid}} -
                                                                 {{$xadrezsuicopag_category_request->category->name}}
                                                             @else
-                                                                Há um registro cadastrado, mas não existe uma categoria com este registro cadastrada no XadrezSuíçoPAG.
+                                                                Há um registro cadastrado, mas não existe uma categoria com este registro cadastrada no PAG.
                                                             @endif
                                                         @else
                                                             -- Não há --
@@ -1573,7 +1573,7 @@
 
                         <div class="box box-primary">
                             <div class="box-header">
-                                <h3 class="box-title">XadrezSuíço Classificador - Regras e Processos de Classificação para o Evento #{{$event_classificates->event->id}} - {{$event_classificates->event->name}}</h3>
+                                <h3 class="box-title">{{config("xadrezsuico.name","XadrezSuíço")}} Classificador - Regras e Processos de Classificação para o Evento #{{$event_classificates->event->id}} - {{$event_classificates->event->name}}</h3>
                             </div>
                             <!-- form start -->
                                 <div class="box-body">
@@ -1661,7 +1661,7 @@
                     @endforeach
                     <div class="box box-primary">
                         <div class="box-header">
-                            <h3 class="box-title">XadrezSuíço Classificador</h3>
+                            <h3 class="box-title">{{config("xadrezsuico.name","XadrezSuíço")}} Classificador</h3>
                         </div>
                         <!-- form start -->
                             <div class="box-body">

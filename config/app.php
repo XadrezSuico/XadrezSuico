@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'name' => env('APP_NAME', 'Sistema XadrezSuíço'),
+    'name' => env('APP_NAME', 'Sistema'),
 
     /*
     |--------------------------------------------------------------------------

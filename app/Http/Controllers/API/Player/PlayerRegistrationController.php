@@ -30,12 +30,12 @@ class PlayerRegistrationController extends Controller
         if (
             !$request->has("accepts.policy")
         ) {
-            return response()->json(["ok" => 0, "error" => 1, "message" => "Você deve aceitar o termo de uso e política de privacidade da plataforma XadrezSuíço!"]);
+            return response()->json(["ok" => 0, "error" => 1, "message" => "Você deve aceitar o termo de uso e política de privacidade da plataforma " . config("xadrezsuico.name", "XadrezSuíço") . "!"]);
         }
         if (
             $request->input("accepts.policy") == 0
         ) {
-            return response()->json(["ok" => 0, "error" => 1, "message" => "Você deve aceitar o termo de uso e política de privacidade da plataforma XadrezSuíço!"]);
+            return response()->json(["ok" => 0, "error" => 1, "message" => "Você deve aceitar o termo de uso e política de privacidade da plataforma " . config("xadrezsuico.name", "XadrezSuíço") . "!"]);
         }
 
         if (

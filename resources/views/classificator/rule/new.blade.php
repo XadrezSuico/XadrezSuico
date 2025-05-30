@@ -1,16 +1,16 @@
 @extends('adminlte::page')
 
 @if($element->isEvent())
-    @section("title", "Evento #".$element->id." (".$element->name.") >> XadrezSuíço Classificador #".$event_classificates->id." (".$event_classificates->event->name.") >> Regra >> Novo")
+    @section("title", "Evento #".$element->id." (".$element->name.") >> Classificador #".$event_classificates->id." (".$event_classificates->event->name.") >> Regra >> Novo")
 @else
-    @section("title", "Grupo de Evento #".$element->id." (".$element->name.") >> XadrezSuíço Classificador #".$event_classificates->id." (".$event_classificates->event->name.") >> Regra >> Novo")
+    @section("title", "Grupo de Evento #".$element->id." (".$element->name.") >> Classificador #".$event_classificates->id." (".$event_classificates->event->name.") >> Regra >> Novo")
 @endif
 
 @section('content_header')
     @if($element->isEvent())
-        <h1>Evento #{{$element->id}} ({{$element->name}}) >> XadrezSuíço Classificador #{{$event_classificates->id}} ({{$event_classificates->event->name}}) >> Regra >> Novo</h1>
+        <h1>Evento #{{$element->id}} ({{$element->name}}) >> Classificador #{{$event_classificates->id}} ({{$event_classificates->event->name}}) >> Regra >> Novo</h1>
     @else
-        <h1>Grupo de Evento #{{$element->id}} ({{$element->name}}) >> XadrezSuíço Classificador #{{$event_classificates->id}} ({{$event_classificates->event->name}}) >> Regra >> Novo</h1>
+        <h1>Grupo de Evento #{{$element->id}} ({{$element->name}}) >> Classificador #{{$event_classificates->id}} ({{$event_classificates->event->name}}) >> Regra >> Novo</h1>
     @endif
 @stop
 

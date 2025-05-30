@@ -16,7 +16,7 @@ class SeedSoftwareAddXadrezSuico extends Migration
     public function up()
     {
         $software = new Software;
-        $software->name = "XadrezSuíço";
+        $software->name = config("xadrezsuico.name", "XadrezSuíço");
         $software->save();
     }
 

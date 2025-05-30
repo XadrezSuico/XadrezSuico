@@ -447,13 +447,13 @@ class InscricaoGerenciarController extends Controller
         ){
             $messageBag = new MessageBag;
             $messageBag->add("type","danger");
-            $messageBag->add("alerta","O sistema não possui integração com o sistema XadrezSuíçoPag.");
+            $messageBag->add("alerta", "O sistema não possui integração com o sistema " . config("xadrezsuico.name", "XadrezSuíço") . "Pag.");
 
             return redirect("/evento/dashboard/".$evento->id."?tab=torneio")->withErrors($messageBag);
         }elseif(!$evento->isPaid()){
             $messageBag = new MessageBag;
             $messageBag->add("type","danger");
-            $messageBag->add("alerta","O presente evento não possui integração com o sistema XadrezSuíçoPag.");
+            $messageBag->add("alerta", "O presente evento não possui integração com o sistema " . config("xadrezsuico.name", "XadrezSuíço") . "Pag.");
 
             return redirect("/evento/dashboard/".$evento->id."?tab=torneio")->withErrors($messageBag);
         }
@@ -576,19 +576,19 @@ class InscricaoGerenciarController extends Controller
                 // LBX
                 return $this->generateTxt_2($inscricoes, $evento, $torneio);
             case 3:
-                // Padrão XadrezSuíço NOME NO SOBRENOME
+                // Padrão Rokade NOME NO SOBRENOME
                 return $this->generateTxt_3($inscricoes, $evento, $torneio);
             case 4:
-                // Padrão XadrezSuíço NOME NO SOBRENOME + Chess.com
+                // Padrão Rokade NOME NO SOBRENOME + Chess.com
                 return $this->generateTxt_4($inscricoes, $evento, $torneio);
             case 5:
-                // Padrão XadrezSuíço NOME NO SOBRENOME + Sem Cidade
+                // Padrão Rokade NOME NO SOBRENOME + Sem Cidade
                 return $this->generateTxt_5($inscricoes, $evento, $torneio);
             case 6:
-                // Padrão XadrezSuíço NOME NO SOBRENOME + Sem Cidade em Torneio por Equipe
+                // Padrão Rokade NOME NO SOBRENOME + Sem Cidade em Torneio por Equipe
                 return $this->generateTxt_6($inscricoes, $evento, $torneio);
             default:
-                // Padrão XadrezSuíço
+                // Padrão Rokade
                 return $this->generateTxt_0($inscricoes, $evento, $torneio);
         }
     }

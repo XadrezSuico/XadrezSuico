@@ -1,8 +1,8 @@
 @extends('adminlte::page')
 
-@section("title", "Evento #".$evento->id." (".$evento->name.") >> XadrezSuíço Classificador >> Vínculo de Categorias >> Novo")
+@section("title", "Evento #".$evento->id." (".$evento->name.") >> Classificador >> Vínculo de Categorias >> Novo")
 @section('content_header')
-  <h1>Evento #{{$evento->id}} ({{$evento->name}}) >> XadrezSuíço Classificador >> Vínculo de Categorias >> Novo</h1>
+  <h1>Evento #{{$evento->id}} ({{$evento->name}}) >> Classificador >> Vínculo de Categorias >> Novo</h1>
 @stop
 
 

@@ -52,7 +52,7 @@
                         <h4>Dados:</h4>
                         @if($vinculo->is_confirmed_system)
                             <h5><strong>Quantos eventos que o enxadrista participou competindo por este clube:</strong> {{$vinculo->system_inscricoes_in_this_club_confirmed}} (Valor em <strong>{{$vinculo->getCreatedAt()}}</strong>)</h5>
-                            <small>Observação: Esta informação compreende apenas os registros de eventos que constam no XadrezSuíço que atendam os seguintes requisitos:
+                            <small>Observação: Esta informação compreende apenas os registros de eventos que constam no {{config("xadrezsuico.name","XadrezSuíço")}} que atendam os seguintes requisitos:
                                 <ul>
                                     <li>Esteja com a inscrição com a mesma cidade e clube do vínculo;</li>
                                     <li>O evento em questão esteja devidamente homologado.</li>
@@ -68,7 +68,7 @@
                             <p>{!!$vinculo->obs!!}</p>
                         @endif
                         <hr/>
-                        <h5><strong>Eventos via XadrezSuíço (Informação obtida durante a consulta):</strong></h5>
+                        <h5><strong>Eventos via {{config("xadrezsuico.name","XadrezSuíço")}} (Informação obtida durante a consulta):</strong></h5>
                         <table class="table" width="100%">
                             <thead>
                                 <tr>
@@ -135,7 +135,7 @@
                             <h3 class="box-title">Gerenciar Vínculo Automático</h3>
                         </div>
                         <div class="box-body">
-                            <p>Este enxadrista possui um vínculo automático gerenciado pelo Sistema XadrezSuíço.</p>
+                            <p>Este enxadrista possui um vínculo automático gerenciado pelo Sistema {{config("xadrezsuico.name","XadrezSuíço")}}.</p>
                             <p>Caso deseje, é possível transformar este vínculo em um vínculo manual, e assim permitir que seja alterado cidade e clube.</p>
                             <button type="button" class="btn btn-lg btn-block btn-danger" id="change_vinculo_to_manual">Desejo transformar em vínculo manual</button>
                         </div>

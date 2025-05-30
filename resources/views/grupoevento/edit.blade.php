@@ -56,7 +56,7 @@
 				<li role="presentation"><a id="tab_pontuacao" href="#pontuacao" aria-controls="pontuacao" role="tab" data-toggle="tab">Pontuação</a></li>
 				<li role="presentation"><a id="tab_campo_personalizado" href="#campo_personalizado" aria-controls="campo_personalizado" role="tab" data-toggle="tab">Campo Personalizado</a></li>
 				<li role="presentation"><a id="tab_email_template" href="#email_template" aria-controls="email_template" role="tab" data-toggle="tab">Templates de E-mail</a></li>
-			    <?php if(\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal()){ ?><li role="presentation"><a id="tab_classificator" href="#classificator" aria-controls="classificator" role="tab" data-toggle="tab">XadrezSuíço Classificador</a></li><?php } ?>
+			    <?php if(\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal()){ ?><li role="presentation"><a id="tab_classificator" href="#classificator" aria-controls="classificator" role="tab" data-toggle="tab">Classificador</a></li><?php } ?>
 			@endif
 		</ul>
 
@@ -91,7 +91,7 @@
 						            \Illuminate\Support\Facades\Auth::user()->hasPermissionGlobalbyPerfil([1,10,11])
                                 )
                                     <div class="form-group">
-                                        <label for="xadrezsuicopag_uuid">XadrezSuíçoPag: UUID do Grupo de Evento</label>
+                                        <label for="xadrezsuicopag_uuid">PAG: UUID do Grupo de Evento</label>
                                         <input name="xadrezsuicopag_uuid" id="xadrezsuicopag_uuid" class="form-control" type="text" value="{{$grupo_evento->xadrezsuicopag_uuid}}" @if(!$user->hasPermissionGlobal() && !$user->hasPermissionGroupEventByPerfil($grupo_evento->id,[7])) disabled="disabled" @endif />
                                     </div>
                                 @endif
@@ -820,7 +820,7 @@
 
                             <div class="box box-primary">
                                 <div class="box-header">
-                                    <h3 class="box-title">XadrezSuíço Classificador - Regras e Processos de Classificação para o Evento #{{$event_classificates->event->id}} - {{$event_classificates->event->name}}</h3>
+                                    <h3 class="box-title">Classificador - Regras e Processos de Classificação para o Evento #{{$event_classificates->event->id}} - {{$event_classificates->event->name}}</h3>
                                 </div>
                                 <!-- form start -->
                                     <div class="box-body">

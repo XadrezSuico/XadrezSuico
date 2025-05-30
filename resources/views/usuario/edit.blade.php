@@ -78,15 +78,15 @@
 									    <option value="10">10 - FEXPAR - Gestor de Vínculos Federativos</option>
                                     @endif
                                     @if(env("XADREZSUICOPAG_URI",null) && env("XADREZSUICOPAG_SYSTEM_ID",null) && env("XADREZSUICOPAG_SYSTEM_TOKEN",null))
-									    <option value="11">11 - XadrezSuíçoPAG - Administrador</option>
-									    <option value="12">12 - XadrezSuíçoPAG - Gerente</option>
-									    <option value="13">13 - XadrezSuíçoPAG - Operador</option>
+									    <option value="11">11 - PAG - Administrador</option>
+									    <option value="12">12 - PAG - Gerente</option>
+									    <option value="13">13 - PAG - Operador</option>
                                     @endif
 								@endif
 								@if(\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobalbyPerfil([1]))
-									<option value="14">14 - XadrezSuíço Classificador - Admin</option>
-									<option value="15">15 - XadrezSuíço Classificador - Operador</option>
-									<option value="16">16 - XadrezSuíço Classificador - Operador (Regras)</option>
+									<option value="14">14 - Classificador - Admin</option>
+									<option value="15">15 - Classificador - Operador</option>
+									<option value="16">16 - Classificador - Operador (Regras)</option>
 								@endif
 							</select>
 						</div>

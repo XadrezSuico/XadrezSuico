@@ -15,7 +15,7 @@
 
     <div class="box">
         <div class="box-body">
-            <p>Esta lista compreende todos os cadastros existentes no sistema XadrezSuíço, preservando algumas informações considerando a LGPD.</p>
+            <p>Esta lista compreende todos os cadastros existentes no sistema {{config("xadrezsuico.name","XadrezSuíço")}}, preservando algumas informações considerando a LGPD.</p>
             <p>Vale constar que esta lista pode possuir registros duplicados, visto que a obrigação do preenchimento correto dos dados do enxadrista é do responsável pela inscrição do mesmo.</p>
             <hr/>
             <table id="tabela" class="table-responsive table-condensed table-striped" style="width: 100%">

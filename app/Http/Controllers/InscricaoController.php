@@ -826,7 +826,7 @@ class InscricaoController extends Controller
         } elseif (
             !$request->has("xadrezsuico_aceito")
         ) {
-            return response()->json(["ok" => 0, "error" => 1, "message" => "Você deve aceitar o termo de uso e política de privacidade da plataforma XadrezSuíço!", "registred" => 0]);
+            return response()->json(["ok" => 0, "error" => 1, "message" => "Você deve aceitar o termo de uso e política de privacidade da plataforma " . config("xadrezsuico.name", "XadrezSuíço") . "!", "registred" => 0]);
         } elseif (
             !$request->has("imagem_aceito")
         ) {
@@ -1045,7 +1045,7 @@ class InscricaoController extends Controller
         if (
             !$request->has("xadrezsuico_aceito")
         ) {
-            return response()->json(["ok" => 0, "error" => 1, "message" => "Você deve aceitar o termo de uso e política de privacidade da plataforma XadrezSuíço!"]);
+            return response()->json(["ok" => 0, "error" => 1, "message" => "Você deve aceitar o termo de uso e política de privacidade da plataforma " . config("xadrezsuico.name", "XadrezSuíço") . "!"]);
         }
 
         if (
@@ -1357,14 +1357,14 @@ class InscricaoController extends Controller
         if ($enxadrista->email) {
             // EMAIL PARA O ENXADRISTA CADASTRADO
             // $text = "Olá " . $enxadrista->name . "!<br/>";
-            // $text .= "Esta é uma confirmação do seu cadastro no Sistema XadrezSuíço implementado pela ".env("IMPLEMENTADO_POR")."<br/>";
-            // $text .= "O seu ID de Cadastro é <strong><u>".$enxadrista->id."</u></strong> e você poderá utilizar ele para encontrar seu cadastro para inscrição no Sistema XadrezSuíço implementado pela ".env("IMPLEMENTADO_POR")." e também para poder efetuar a sua confirmação nos eventos que foi utilizado esta implementação do sistema.<br/>";
+            // $text .= "Esta é uma confirmação do seu cadastro no Sistema " . config("xadrezsuico.name", "XadrezSuíço") . " implementado pela ".env("IMPLEMENTADO_POR")."<br/>";
+            // $text .= "O seu ID de Cadastro é <strong><u>".$enxadrista->id."</u></strong> e você poderá utilizar ele para encontrar seu cadastro para inscrição no Sistema " . config("xadrezsuico.name", "XadrezSuíço") . " implementado pela ".env("IMPLEMENTADO_POR")." e também para poder efetuar a sua confirmação nos eventos que foi utilizado esta implementação do sistema.<br/>";
             // $text .= "Recomendamos que você mantenha salvo este ID/Código de Cadastro para poder agilizar o processo de confirmação ou inscrição.<br/>";
-            // $text .= "Além disso, você receberá neste e-mail as confirmações de inscrições efetuadas nesta implementação do Sistema XadrezSuíço.<br/>";
+            // $text .= "Além disso, você receberá neste e-mail as confirmações de inscrições efetuadas nesta implementação do Sistema " . config("xadrezsuico.name", "XadrezSuíço") . ".<br/>";
             // $text .= "Atenciosamente.";
             // EmailController::scheduleEmail(
             //     $enxadrista->email,
-            //     "Sistema XadrezSuíço (".env("IMPLEMENTADO_POR").") - Cadastro de Enxadrista Realizado - Enxadrista: " . $enxadrista->name,
+            //     "Sistema " . config("xadrezsuico.name", "XadrezSuíço") . " (".env("IMPLEMENTADO_POR").") - Cadastro de Enxadrista Realizado - Enxadrista: " . $enxadrista->name,
             //     $text,
             //     $enxadrista
             // );

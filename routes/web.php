@@ -172,8 +172,8 @@ Route::group(["prefix"=>"evento"],function(){
         Route::get('/premiados', 'EventoGerenciarController@relatorio_premiados')->name('evento.relatorios.premiados');
     });
     Route::group(["prefix"=>"{id}/exports"],function(){
-        Route::get('/xadrezsuicoemparceirador', 'Exports\XadrezSuicoEmparceiradorController@export')->name('evento.exports.xadrezsuicoemparceirador');
-        Route::get('/xadrezsuicoemparceirador/data', 'Exports\XadrezSuicoEmparceiradorController@export_data')->name('evento.exports.xadrezsuicoemparceirador.data');
+        Route::get('/emparceirador', 'Exports\XadrezSuicoEmparceiradorController@export')->name('evento.exports.xadrezsuicoemparceirador');
+        Route::get('/emparceirador/data', 'Exports\XadrezSuicoEmparceiradorController@export_data')->name('evento.exports.xadrezsuicoemparceirador.data');
         Route::get('/presporte/single', 'Event\ExportController@export_presporte_single')->name('evento.exports.presporte.single');
         Route::get('/presporte/single/pdf', 'Event\ExportController@export_presporte_single_pdf')->name('evento.exports.presporte.single.pdf');
         Route::get('/presporte/team', 'Event\ExportController@export_presporte_team')->name('evento.exports.presporte.team');
