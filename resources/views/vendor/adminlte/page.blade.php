@@ -202,6 +202,7 @@
 
 @section('adminlte_js')
     <script src="{{ asset('vendor/adminlte/dist/js/adminlte.min.js') }}"></script>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     @stack('js')
     @yield('js')
 @stop

@@ -693,7 +693,11 @@ class EventoGerenciarController extends Controller
             !$user->hasPermissionEventByPerfil($evento->id, [4]) &&
             !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
         ) {
-            return redirect("/evento/dashboard/".$evento->id);
+            return response()->json([
+                'ok' => 0,
+                'error' => 1,
+                'message' => 'Você não tem permissão para realizar esta ação'
+            ]);
         }
         if ($evento) {
             if ($evento->is_inscricoes_bloqueadas) {
@@ -702,8 +706,17 @@ class EventoGerenciarController extends Controller
                 $evento->is_inscricoes_bloqueadas = true;
             }
             $evento->save();
-            return redirect("/evento/dashboard/" . $evento->id);
+            return response()->json([
+                'ok' => 1,
+                'error' => 0,
+                'message' => 'Status das inscrições atualizado com sucesso'
+            ]);
         }
+        return response()->json([
+            'ok' => 0,
+            'error' => 1,
+            'message' => 'Evento não encontrado'
+        ]);
     }
     public function toggleMostrarClassificacao($evento_id)
     {
@@ -714,60 +727,66 @@ class EventoGerenciarController extends Controller
             !$user->hasPermissionEventByPerfil($evento->id, [4]) &&
             !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
         ) {
-            return redirect("/evento/dashboard/".$evento->id);
+            return response()->json([
+                'ok' => false,
+                'message' => 'Você não tem permissão para realizar esta ação'
+            ]);
         }
         if ($evento) {
-            if ($evento->mostrar_resultados) {
-                $evento->mostrar_resultados = false;
-            } else {
-                $evento->mostrar_resultados = true;
-            }
+            $evento->mostrar_resultados = !$evento->mostrar_resultados;
             $evento->save();
-            return redirect("/evento/dashboard/" . $evento->id);
+            return response()->json([
+                'ok' => true,
+                'message' => $evento->mostrar_resultados ? 'Resultados liberados com sucesso!' : 'Resultados restritos com sucesso!'
+            ]);
         }
+        return response()->json([
+            'ok' => false,
+            'message' => 'Evento não encontrado'
+        ]);
     }
 
     public function toggleEventoClassificavel($evento_id)
     {
         $user = Auth::user();
         $evento = Evento::find($evento_id);
+        if (!$evento) {
+            return response()->json(['ok' => false, 'message' => 'Evento não encontrado']);
+        }
         if (
             !$user->hasPermissionGlobal() &&
             !$user->hasPermissionEventByPerfil($evento->id, [4]) &&
             !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
         ) {
-            return redirect("/evento/dashboard/".$evento->id);
+            return response()->json(['ok' => false, 'message' => 'Acesso negado']);
         }
-        if ($evento) {
-            if ($evento->classificavel) {
-                $evento->classificavel = false;
-            } else {
-                $evento->classificavel = true;
-            }
-            $evento->save();
-            return redirect("/evento/dashboard/" . $evento->id);
-        }
+
+        $evento->classificavel = !$evento->classificavel;
+        $evento->save();
+
+        $msg = $evento->classificavel ? 'Classificação geral liberada para este evento!' : 'Classificação geral bloqueada para este evento!';
+        return response()->json(['ok' => true, 'message' => $msg]);
     }
     public function toggleClassificacaoManual($evento_id)
     {
         $user = Auth::user();
         $evento = Evento::find($evento_id);
+        if (!$evento) {
+            return response()->json(['ok' => false, 'message' => 'Evento não encontrado']);
+        }
         if (
             !$user->hasPermissionGlobal() &&
             !$user->hasPermissionEventByPerfil($evento->id, [4]) &&
             !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
         ) {
-            return redirect("/evento/dashboard".$evento->id);
+            return response()->json(['ok' => false, 'message' => 'Acesso negado']);
         }
-        if ($evento) {
-            if ($evento->e_resultados_manuais) {
-                $evento->e_resultados_manuais = false;
-            } else {
-                $evento->e_resultados_manuais = true;
-            }
-            $evento->save();
-            return redirect("/evento/dashboard/" . $evento->id);
-        }
+
+        $evento->e_resultados_manuais = !$evento->e_resultados_manuais;
+        $evento->save();
+
+        $msg = !$evento->e_resultados_manuais ? 'Resultados automáticos ativados!' : 'Resultados automáticos desativados! Agora os resultados são manuais.';
+        return response()->json(['ok' => true, 'message' => $msg]);
     }
     public function toggleRating($evento_id)
     {
@@ -778,38 +797,38 @@ class EventoGerenciarController extends Controller
             !$user->hasPermissionEventByPerfil($evento->id, [4]) &&
             !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
         ) {
-            return redirect("/evento/dashboard/".$evento->id);
+            return response()->json([
+                'ok' => 0,
+                'error' => 1,
+                'message' => 'Você não tem permissão para realizar esta ação'
+            ]);
         }
         if ($evento) {
-            if ($evento->is_rating_calculate_enabled) {
-                $evento->is_rating_calculate_enabled = false;
-            } else {
-                $evento->is_rating_calculate_enabled = true;
-            }
+            $evento->is_rating_calculate_enabled = !$evento->is_rating_calculate_enabled;
             $evento->save();
-            return redirect("/evento/dashboard/" . $evento->id);
+            return response()->json([
+                'ok' => 1,
+                'error' => 0,
+                'message' => 'Status do cálculo de rating atualizado com sucesso'
+            ]);
         }
+        return response()->json([
+            'ok' => 0,
+            'error' => 1,
+            'message' => 'Evento não encontrado'
+        ]);
     }
-    public function toggleEdicaoInscricao($evento_id)
+    public function toggleEdicaoInscricao($id)
     {
-        $user = Auth::user();
-        $evento = Evento::find($evento_id);
-        if (
-            !$user->hasPermissionGlobal() &&
-            !$user->hasPermissionEventByPerfil($evento->id, [4]) &&
-            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
-        ) {
-            return redirect("/evento/dashboard/".$evento->id);
+        $evento = Evento::find($id);
+        if(!$evento){
+            return response()->json(['ok' => false, 'message' => 'Evento não encontrado']);
         }
-        if ($evento) {
-            if ($evento->permite_edicao_inscricao) {
-                $evento->permite_edicao_inscricao = false;
-            } else {
-                $evento->permite_edicao_inscricao = true;
-            }
-            $evento->save();
-            return redirect("/evento/dashboard/" . $evento->id);
-        }
+
+        $evento->permite_edicao_inscricao = !$evento->permite_edicao_inscricao;
+        $evento->save();
+
+        return response()->json(['ok' => true]);
     }
 
     public function toggleRegistrationPaidConfirmed($evento_id)

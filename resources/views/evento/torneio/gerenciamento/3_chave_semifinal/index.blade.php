@@ -299,7 +299,6 @@
 
 @section("js")
 <!-- Morris.js charts -->
-<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script type="text/javascript" src="{{url("/js/jquery.mask.min.js")}}"></script>
 <script type="text/javascript">
   $(document).ready(function(){

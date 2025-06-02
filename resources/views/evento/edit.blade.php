@@ -18,6 +18,54 @@
 		.width-100{
 			width: 100% !important;
 		}
+        /* Switch estilo Tabler */
+        .form-switch {
+            position: relative;
+            display: inline-block;
+            width: 40px;
+            height: 20px;
+        }
+        .form-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .form-switch .form-check-input {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 20px;
+        }
+        .form-switch .form-check-input:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 2px;
+            bottom: 2px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        .form-switch input:checked + .form-check-input {
+            background-color: #206bc4;
+        }
+        .form-switch input:checked + .form-check-input:before {
+            transform: translateX(20px);
+        }
+        .form-switch input:disabled + .form-check-input {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .switch-label {
+            margin-left: 10px;
+            vertical-align: middle;
+        }
 	</style>
 @endsection
 
@@ -128,27 +176,26 @@
                             @endif
                             <br/>
 
-                            <a href="{{url("/evento/".$evento->id."/toggleinscricoes")}}" class="btn btn-warning btn-app">
-                                @if(!$evento->is_inscricoes_bloqueadas)
-                                    <i class="fa fa-lock"></i>
-                                    Bloquear (Status Atual: Liberado)
-                                @else
-                                    <i class="fa fa-unlock"></i>
-                                    Liberar  (Status Atual: Bloqueado)
-                                @endif
-                                Inscricoes
-                            </a>
+                            <div class="form-group">
+                                <label class="d-flex align-items-center">
+                                    <div class="form-switch">
+                                        <input type="checkbox" id="toggle_inscricoes" @if($evento->is_inscricoes_bloqueadas) checked @endif>
+                                        <span class="form-check-input"></span>
+                                    </div>
+                                    <span id="toggle_inscricoes_status" class="switch-label">Permitir Inscrições</span>
+                                </label>
+                            </div>
 
-                            <a href="{{url("/evento/".$evento->id."/toggleedicaoinscricao")}}" class="btn btn-warning btn-app">
-                                @if($evento->permite_edicao_inscricao)
-                                    <i class="fa fa-lock"></i>
-                                    Restringir (Status Atual: Permitido)
-                                @else
-                                    <i class="fa fa-unlock"></i>
-                                    Permitir (Status Atual: Restringido)
-                                @endif
-                                Edição de Inscrição
-                            </a>
+                            <div class="form-group">
+                                <label class="d-flex align-items-center">
+                                    <div class="form-switch">
+                                        <input type="checkbox" id="toggle_edicao_inscricao" @if($evento->permite_edicao_inscricao) checked @endif>
+                                        <span class="form-check-input"></span>
+                                    </div>
+                                    <span id="toggle_edicao_inscricao_status" class="switch-label">Permitir Edição de Inscrição</span>
+                                </label>
+                            </div>
+
                             @if($evento->isPaid())
                                 <br/>
                                 <a href="{{url("/evento/".$evento->id."/toggleregistrationpaidconfirmed")}}" class="btn btn-warning btn-app">
@@ -183,6 +230,13 @@
 								<i class="fa fa-eye"></i>
 								Link para Acompanhar os Emparceiramentos
 							</a>
+
+							<hr/>
+							<h4>Inscritos:</h4>
+							<a href="{{url("/evento/".$evento->id)}}/inscricoes/list" class="btn btn-app">
+								<i class="fa fa-list"></i>
+								Visualizar Lista de Inscritos (Completa)
+							</a>
 							<hr/>
 							<h4>Classificação:</h4>
 							@if(
@@ -194,33 +248,34 @@
 									<i class="fa fa-sort"></i>
 									Classificar Evento
 								</a>
-								<a href="{{url("/evento/".$evento->id."/toggleresultados")}}" class="btn btn-warning btn-app">
-									@if($evento->mostrar_resultados)
-										<i class="fa fa-lock"></i>
-										Restringir (Status Atual: Liberado)
-									@else
-										<i class="fa fa-unlock"></i>
-										Liberar (Status Atual: Restringido)
-									@endif
-									Classificação Pública
+								<a href="{{url("/evento/classificacao/".$evento->id)}}" class="btn btn-app">
+									<i class="fa fa-eye"></i>
+									Visualizar Classificação
 								</a>
-								@if($evento->mostrar_resultados)
-									<a href="{{url("/evento/classificacao/".$evento->id)}}" class="btn btn-app">
-										<i class="fa fa-eye"></i>
-										Visualizar Classificação (Pública)
-									</a>
-								@endif
+								<br/>
+								<br/>
+								<div class="form-group">
+                                    <label class="d-flex align-items-center">
+                                        <div class="form-switch">
+                                            <input type="checkbox" id="toggle_resultados" @if($evento->mostrar_resultados) checked @endif>
+                                            <span class="form-check-input"></span>
+                                        </div>
+                                        <span id="toggle_resultados_status" class="switch-label">Permitir visualização pública dos resultados</span>
+                                    </label>
+                                </div>
+                                @if($evento->event_team_awards()->count() > 0)
+
+                                    <a href="{{url("/evento/premiacao_time/classificar/".$evento->id)}}" class="btn btn-app">
+                                        <i class="fa fa-sort"></i>
+                                        Classificar Times no Evento
+                                    </a>
+
+                                    <a href="{{url("/evento/".$evento->id."/team_awards/standings")}}" class="btn btn-app">
+                                        <i class="fa fa-list"></i>
+                                        Listar Premiações de Times
+                                    </a>
+                                @endif
 							@endif
-							<a href="{{url("/evento/classificacao/".$evento->id)}}/interno" class="btn btn-app">
-								<i class="fa fa-eye"></i>
-								Visualizar Classificação (Interna)
-							</a>
-							<hr/>
-							<h4>Inscritos:</h4>
-							<a href="{{url("/evento/".$evento->id)}}/inscricoes/list" class="btn btn-app">
-								<i class="fa fa-list"></i>
-								Visualizar Lista de Inscritos (Completa)
-							</a>
 							@if(
 								\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
 								\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4]) ||
@@ -242,75 +297,38 @@
                                 @if($evento->tipo_rating)
                                     <hr/>
                                     <h4>Rating:</h4>
-                                    <a href="{{url("/evento/".$evento->id)}}/togglerating" class="btn btn-app">
-                                        @if($evento->is_rating_calculate_enabled)
-                                            <i class="fa fa-lock"></i>
-                                            Não Permitir o Cálculo do Rating Interno (Status Atual: Permitido)
-                                        @else
-                                            <i class="fa fa-unlock"></i>
-                                            Permitir o Cálculo do Rating Interno (Status Atual: Não Permitido)
-                                        @endif
-                                    </a>
-                                    @if($evento->is_rating_calculate_enabled)
-                                        @if ($evento->consegueCalcularRating() == 0)
-                                            <button type="button" class="btn btn-app disabled" disabled>
-                                                <i class="fa fa-calculator"></i>
-                                                Calcular Rating (Não foi importado o emparceiramento)
-                                            </button>
-                                        @else
-                                            <a href="{{url("/evento/".$evento->id)}}/rating/calculate" class="btn btn-app">
-                                                <i class="fa fa-calculator"></i>
-                                                Calcular Rating
-                                            </a>
-                                        @endif
-                                    @endif
+                                    <div class="form-group">
+                                        <label class="d-flex align-items-center">
+                                            <div class="form-switch">
+                                                <input type="checkbox" id="toggle_rating" @if($evento->is_rating_calculate_enabled) checked @endif>
+                                                <span class="form-check-input"></span>
+                                            </div>
+                                            <span id="toggle_rating_status" class="switch-label">Permitir Cálculo do Rating Interno</span>
+                                        </label>
+                                    </div>
+                                    <div id="toggle_rating_status_container" @if(!$evento->is_rating_calculate_enabled) style="display:none;" @endif>
+										@if ($evento->consegueCalcularRating() == 0)
+											<button type="button" class="btn btn-app disabled" disabled>
+												<i class="fa fa-calculator"></i>
+												Calcular Rating (Não foi importado o emparceiramento)
+											</button>
+										@else
+											<a href="{{url("/evento/".$evento->id)}}/rating/calculate" class="btn btn-app">
+												<i class="fa fa-calculator"></i>
+												Calcular Rating
+											</a>
+										@endif
+                                    </div>
                                 @endif
 
 							@endif
-
-							@if(
-								\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
-								\Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])
-							)
-								<hr/>
-								<h4>Demais Funções:</h4>
-								<a href="{{url("/evento/".$evento->id."/toggleclassificavel")}}" class="btn btn-app">
-									@if($evento->classificavel)
-										<i class="fa fa-lock"></i>
-										Não Permitir (Status Atual: Permitido)
-									@else
-										<i class="fa fa-unlock"></i>
-										Permitir (Status Atual: Não Permitido)
-									@endif
-									Classificação Geral deste Evento
-								</a>
-								<a href="{{url("/evento/".$evento->id."/togglemanual")}}" class="btn btn-app">
-									@if($evento->e_resultados_manuais)
-										<i class="fa fa-lock"></i>
-									@else
-										<i class="fa fa-lock"></i>
-									@endif
-									Resultados @if($evento->e_resultados_manuais) Automáticos  (Status Atual: Manuais) @else Manuais  (Status Atual: Automáticos) @endif
-								</a>
-                                @if($evento->event_team_awards()->count() > 0)
-
-                                    <a href="{{url("/evento/premiacao_time/classificar/".$evento->id)}}" class="btn btn-app">
-                                        <i class="fa fa-sort"></i>
-                                        Classificar Times no Evento
-                                    </a>
-
-                                    <a href="{{url("/evento/".$evento->id."/team_awards/standings")}}" class="btn btn-app">
-                                        <i class="fa fa-list"></i>
-                                        Listar Premiações de Times
-                                    </a>
-                                @endif
-							@endif<br/><br/>
 							@if(
 								\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
 								\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4]) ||
 								\Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])
 							)
                                 @if($evento->evento_classificador_id > 0)
+									<hr/>
                                     <h4>Funções de Evento que possui Classificador:</h4>
                                     <a href="{{url("/evento/".$evento->id."/gerenciamento/torneio_3/import")}}" class="btn btn-app">
                                         <i class="fa fa-upload"></i>
@@ -322,6 +340,7 @@
                                     </a>
                                 @else
                                     @if($evento->grupo_evento_classificador_id > 0)
+										<hr/>
                                         <h4>Funções de Evento que possui Grupo de Evento Classificador:</h4>
                                         <a href="{{url("/evento/".$evento->id."/gerenciamento/import")}}" class="btn btn-app">
                                             <i class="fa fa-upload"></i>
@@ -381,7 +400,26 @@
                                     </a>
                                 @endif
                             @endif
-                            <br/><br/>
+							<hr/>
+                            <h4>Demais Funções:</h4>
+							<div class="form-group">
+								<label class="d-flex align-items-center">
+									<div class="form-switch">
+										<input type="checkbox" id="toggle_classificavel" @if($evento->is_classificavel) checked @endif>
+										<span class="form-check-input"></span>
+									</div>
+									<span id="toggle_classificavel_status" class="switch-label">Permitir classificação geral deste evento</span>
+								</label>
+							</div>
+							<div class="form-group">
+								<label class="d-flex align-items-center">
+									<div class="form-switch">
+										<input type="checkbox" id="toggle_resultados_automaticos" @if(!$evento->e_resultados_manuais) checked @endif>
+										<span class="form-check-input"></span>
+									</div>
+									<span id="toggle_resultados_automaticos_status" class="switch-label">Resultados Automáticos</span>
+								</label>
+							</div>
                             <hr/>
                             <h4>Relatórios:</h4>
                             <a href="{{url("/evento/".$evento->id."/relatorios/premiados")}}" class="btn btn-app">
@@ -1901,6 +1939,317 @@
 		$("#confirmacao_publica_final").mask("00/00/0000 00:00");
 
 
+        // Handler para o switch de inscrições
+        $('#toggle_inscricoes').change(function() {
+            var isChecked = $(this).prop('checked');
+            var statusText = isChecked ? 'Bloqueado' : 'Liberado';
+            
+            $.ajax({
+                url: "{{url('/evento/'.$evento->id.'/toggleinscricoes')}}",
+                type: 'GET',
+                dataType: 'json',
+                success: function(response) {
+                    if(response.ok) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Status das inscrições atualizado com sucesso!',
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 3000,
+                            timerProgressBar: true
+                        });
+                    } else {
+                        // Reverte o switch se houver erro
+                        $('#toggle_inscricoes').prop('checked', !isChecked);
+                        Swal.fire({
+                            icon: 'error',
+                            title: response.message || 'Erro ao atualizar status das inscrições',
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 3000,
+                            timerProgressBar: true
+                        });
+                    }
+                },
+                error: function() {
+                    // Reverte o switch em caso de erro
+                    $('#toggle_inscricoes').prop('checked', !isChecked);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Erro ao comunicar com o servidor',
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true
+                    });
+                }
+            });
+        });
+
+        // Handler para o switch de edição de inscrição
+        $('#toggle_edicao_inscricao').change(function() {
+            var isChecked = $(this).prop('checked');
+            
+            $.ajax({
+                url: "{{url('/evento/'.$evento->id.'/toggleedicaoinscricao')}}",
+                type: 'GET',
+                dataType: 'json',
+                success: function(response) {
+                    if(response.ok) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: response.message || 'Status da edição de inscrição atualizado com sucesso!',
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 3000,
+                            timerProgressBar: true
+                        });
+                    } else {
+                        // Reverte o switch se houver erro
+                        $('#toggle_edicao_inscricao').prop('checked', !isChecked);
+                        Swal.fire({
+                            icon: 'error',
+                            title: response.message || 'Erro ao atualizar status da edição de inscrição',
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 3000,
+                            timerProgressBar: true
+                        });
+                    }
+                },
+                error: function(xhr) {
+                    // Reverte o switch em caso de erro
+                    $('#toggle_edicao_inscricao').prop('checked', !isChecked);
+                    let msg = 'Erro ao comunicar com o servidor';
+                    if(xhr.responseJSON && xhr.responseJSON.message) {
+                        msg = xhr.responseJSON.message;
+                    }
+                    Swal.fire({
+                        icon: 'error',
+                        title: msg,
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true
+                    });
+                }
+            });
+        });
+
+        // Handler para o switch de classificação geral
+        $('#toggle_classificavel').change(function() {
+            var isChecked = $(this).prop('checked');
+            
+            $.ajax({
+                url: "{{url('/evento/'.$evento->id.'/toggleclassificavel')}}",
+                type: 'GET',
+                dataType: 'json',
+                success: function(response) {
+                    if(response.ok) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: response.message || 'Status da classificação geral atualizado com sucesso!',
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 3000,
+                            timerProgressBar: true
+                        });
+                    } else {
+                        // Reverte o switch se houver erro
+                        $('#toggle_classificavel').prop('checked', !isChecked);
+                        Swal.fire({
+                            icon: 'error',
+                            title: response.message || 'Erro ao atualizar status da classificação geral',
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 3000,
+                            timerProgressBar: true
+                        });
+                    }
+                },
+                error: function(xhr) {
+                    // Reverte o switch em caso de erro
+                    $('#toggle_classificavel').prop('checked', !isChecked);
+                    let msg = 'Erro ao comunicar com o servidor';
+                    if(xhr.responseJSON && xhr.responseJSON.message) {
+                        msg = xhr.responseJSON.message;
+                    }
+                    Swal.fire({
+                        icon: 'error',
+                        title: msg,
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true
+                    });
+                }
+            });
+        });
+
+        // Handler para o switch de Resultados Automáticos
+        $('#toggle_resultados_automaticos').change(function() {
+            var isChecked = $(this).prop('checked');
+            $.ajax({
+                url: "{{url('/evento/'.$evento->id.'/togglemanual')}}",
+                type: 'GET',
+                dataType: 'json',
+                success: function(response) {
+                    if(response.ok) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: response.message || 'Status dos resultados atualizado com sucesso!',
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 3000,
+                            timerProgressBar: true
+                        });
+                    } else {
+                        // Reverte o switch se houver erro
+                        $('#toggle_resultados_automaticos').prop('checked', !isChecked);
+                        Swal.fire({
+                            icon: 'error',
+                            title: response.message || 'Erro ao atualizar status dos resultados',
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 3000,
+                            timerProgressBar: true
+                        });
+                    }
+                },
+                error: function(xhr) {
+                    // Reverte o switch em caso de erro
+                    $('#toggle_resultados_automaticos').prop('checked', !isChecked);
+                    let msg = 'Erro ao comunicar com o servidor';
+                    if(xhr.responseJSON && xhr.responseJSON.message) {
+                        msg = xhr.responseJSON.message;
+                    }
+                    Swal.fire({
+                        icon: 'error',
+                        title: msg,
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true
+                    });
+                }
+            });
+        });
+
+        // Handler para o switch de rating
+        $('#toggle_rating').change(function() {
+            var isChecked = $(this).prop('checked');
+            
+            $.ajax({
+                url: "{{url('/evento/'.$evento->id.'/togglerating')}}",
+                type: 'GET',
+                dataType: 'json',
+                success: function(response) {
+                    if(response.ok) {
+                        if(isChecked) {
+                            $('#toggle_rating_status_container').show();
+                        } else {
+                            $('#toggle_rating_status_container').hide();
+                        }
+                        
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Status do cálculo de rating atualizado com sucesso!',
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 3000,
+                            timerProgressBar: true
+                        });
+                    } else {
+                        // Reverte o switch se houver erro
+                        $('#toggle_rating').prop('checked', !isChecked);
+                        Swal.fire({
+                            icon: 'error',
+                            title: response.message || 'Erro ao atualizar status do cálculo de rating',
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 3000,
+                            timerProgressBar: true
+                        });
+                    }
+                },
+                error: function() {
+                    // Reverte o switch em caso de erro
+                    $('#toggle_rating').prop('checked', !isChecked);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Erro ao atualizar status do cálculo de rating',
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true
+                    });
+                }
+            });
+        });
+
+        // Handler para o switch de Resultados
+        $('#toggle_resultados').change(function() {
+            var isChecked = $(this).prop('checked');
+            
+            $.ajax({
+                url: "{{url('/evento/'.$evento->id.'/toggleresultados')}}",
+                type: 'GET',
+                dataType: 'json',
+                success: function(response) {
+                    if(response.ok) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: response.message,
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 3000,
+                            timerProgressBar: true
+                        });
+                    } else {
+                        // Reverte o switch se houver erro
+                        $('#toggle_resultados').prop('checked', !isChecked);
+                        Swal.fire({
+                            icon: 'error',
+                            title: response.message || 'Erro ao atualizar status dos resultados',
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 3000,
+                            timerProgressBar: true
+                        });
+                    }
+                },
+                error: function() {
+                    // Reverte o switch em caso de erro
+                    $('#toggle_resultados').prop('checked', !isChecked);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Erro ao atualizar status dos resultados',
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true
+                    });
+                }
+            });
+        });
   });
 
 	function buscaEstados(buscaCidade,callback){
