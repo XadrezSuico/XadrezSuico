@@ -179,7 +179,7 @@
                             <div class="form-group">
                                 <label class="d-flex align-items-center">
                                     <div class="form-switch">
-                                        <input type="checkbox" id="toggle_inscricoes" @if($evento->is_inscricoes_bloqueadas) checked @endif>
+                                        <input type="checkbox" id="toggle_inscricoes" @if(!$evento->is_inscricoes_bloqueadas) checked @endif>
                                         <span class="form-check-input"></span>
                                     </div>
                                     <span id="toggle_inscricoes_status" class="switch-label">Permitir Inscrições</span>
