@@ -1713,7 +1713,7 @@
 					$("#pesquisa div").html("");
 					$("#inscricao").boxWidget('collapse');
                     if(data.is_lichess_integration == 1){
-                        $("#successMessage").html("<strong>Sua inscrição foi efetuada no ".config("xadrezsuico.name","XadrezSuíço")." com sucesso!</strong><hr/>");
+                        $("#successMessage").html("<strong>Sua inscrição foi efetuada no {{config('xadrezsuico.name','XadrezSuíço')}} com sucesso!</strong><hr/>");
                         $("#successMessage").html($("#successMessage").html().concat("Você receberá em no máximo 30 minutos uma mensagem no endereço de e-mail do cadastro com a confirmação do preenchimento do formulário. Proceda com a inscrição no Lichess.org:<hr/>"));
                         $("#successMessage").html($("#successMessage").html().concat("Agora você necessita entrar no torneio do Lichess.org para poder jogar:<br/>"));
                         $("#successMessage").html($("#successMessage").html().concat("<a href=\"").concat(data.lichess_process_link).concat("\" class=\"btn btn-lg btn-default btn-block\" target=\"_blank\"><strong>Clique aqui</strong> e continue sua inscrição para o Torneio do Lichess.org</a><hr/>"));
