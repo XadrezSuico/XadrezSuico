@@ -608,7 +608,15 @@ Route::group(["prefix" => "especiais"], function () {
     });
 });
 
-Route::get('/event/{any}', function(){
+Route::get('/event/{uuid}', function ($uuid) {
+    $evento = \App\Evento::where('uuid', $uuid)->first();
+    if (!$evento) {
+        abort(404);
+    }
+    return redirect($evento->getEventPublicLink());
+})->name('event.angular.uuid')
+  ->where('uuid', '[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}');
+Route::get('/event/{any}', function () {
     return view("angular");
 })->name('event.angular')->where('any', '.*');
 Route::get('/page/{any}', function(){
