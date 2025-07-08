@@ -10,6 +10,7 @@ use App\Http\Controllers\EmailController;
 use App\Enum\EmailType;
 
 use App\Inscricao;
+use Illuminate\Support\Facades\Log;
 
 class XadrezSuicoPagNotificationController extends Controller
 {
@@ -59,6 +60,8 @@ class XadrezSuicoPagNotificationController extends Controller
         $xadrezsuicopag_controller = XadrezSuicoPagController::getInstance();
 
         $registration_request = $xadrezsuicopag_controller->factory("registration")->get($registration_uuid);
+
+        Log::debug("Notification body: ".json_encode($registration_request));
 
         if($registration_request->ok == 1){
             if($registration_request->registration->status == "paid"){
