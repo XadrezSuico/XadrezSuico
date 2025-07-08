@@ -64,8 +64,10 @@ class XadrezSuicoPagNotificationController extends Controller
         Log::debug("Notification body: ".json_encode($registration_request));
 
         if($registration_request->ok == 1){
-            if($registration_request->registration->status == "paid"){
-                $inscricao = Inscricao::where([["uuid","=",$uuid]])->whereJsonContains("payment_info->uuid",$registration_uuid)->first();
+            Log::debug("Notification ok = 1 ");
+            if ($registration_request->registration->status == "paid"){
+                Log::debug("Notification status = paid ");
+                $inscricao = Inscricao::where([["uuid", "=", $uuid]])->whereJsonContains("payment_info->uuid",$registration_uuid)->first();
 
 
 
