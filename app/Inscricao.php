@@ -90,6 +90,9 @@ class Inscricao extends Model
             if (Cache::has($model->torneio->evento->getCacheKey("registration_public_list"))) {
                 Cache::forget($model->torneio->evento->getCacheKey("registration_public_list"));
             }
+            if (Cache::has($model->torneio->evento->getCacheKey("api_registration_public_list"))) {
+                Cache::forget($model->torneio->evento->getCacheKey("api_registration_public_list"));
+            }
             if ($model->hasCache("v1_public_list")) {
                 $model->forgetCache("v1_public_list");
             }
