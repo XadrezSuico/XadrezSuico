@@ -62,12 +62,12 @@ class CBXRatingController extends Controller
         }
 
         if($show_text) echo "Enxadrista #" . $enxadrista->id . " - " . $enxadrista->name;
-        // $html = file_get_contents("http://cbx.com.br/jogador/".$enxadrista->cbx_id);
+        // $html = file_get_contents("http://cbx.org.br/jogador/".$enxadrista->cbx_id);
 
         $client = new Client([
             'http_errors' => false,
         ]);
-        $response = $client->get("http://cbx.com.br/jogador/" . $enxadrista->cbx_id);
+        $response = $client->get("http://cbx.org.br/jogador/" . $enxadrista->cbx_id);
         if($response->getStatusCode() != 200){
             $html = "";
         }else{
