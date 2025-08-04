@@ -749,7 +749,7 @@ class EnxadristaController extends Controller
 
             $p[2] = $enxadrista->getBorn();
 
-            $p[3] = $enxadrista->sexo->name;
+            $p[3] = ($enxadrista->sexo) ? $enxadrista->sexo->name : "-";
 
             $p[4] = "";
             if ($enxadrista->cbx_id) {
