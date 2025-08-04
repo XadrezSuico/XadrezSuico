@@ -103,7 +103,7 @@
                                 {{$inscricao->enxadrista->getNomePrivado()}}
                             </td>
                             <td>{{$inscricao->enxadrista->getNascimentoPrivado()}}</td>
-                            <td>{{$inscricao->enxadrista->sexo->id}} - {{$inscricao->enxadrista->sexo->name}}</td>
+                            <td>@if($inscricao->enxadrista->sexo) {{$inscricao->enxadrista->sexo->id}} - {{$inscricao->enxadrista->sexo->name}} @else - @endif</td>
                             <td>{{$inscricao->categoria->id}} - {{$inscricao->categoria->name}}</td>
                             <td>{{$inscricao->getCidade()}}</td>
                             <td>@if($inscricao->clube) {{$inscricao->clube->getName()}} @else - @endif</td>
