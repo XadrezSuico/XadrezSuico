@@ -1705,10 +1705,10 @@ class InscricaoController extends Controller
             if ($request->input("fide_id") > 0) {
                 $enxadrista->fide_id = $request->input("fide_id");
 
-                $enxadrista = FIDERatingController::getRating($enxadrista,false,true);
-                if(!$enxadrista->encontrado_fide){
-                    return response()->json(["ok" => 0, "error" => 1, "message" => "O ID FIDE informado não existe. Por favor, verifique esta informação e tente novamente. Lembrando que esta informação DEVE SER válida e deve corresponder ao seu cadastro!", "registred" => 0, "ask" => 0]);
-                }
+                // $enxadrista = FIDERatingController::getRating($enxadrista,false,true);
+                // if(!$enxadrista->encontrado_fide){
+                //     return response()->json(["ok" => 0, "error" => 1, "message" => "O ID FIDE informado não existe. Por favor, verifique esta informação e tente novamente. Lembrando que esta informação DEVE SER válida e deve corresponder ao seu cadastro!", "registred" => 0, "ask" => 0]);
+                // }
             }else{
                 $enxadrista->fide_id = NULL;
             }
