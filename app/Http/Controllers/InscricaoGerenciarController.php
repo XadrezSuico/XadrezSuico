@@ -217,6 +217,7 @@ class InscricaoGerenciarController extends Controller
                         if (is_numeric($request->input("criterio_" . $criterio->criterio->id . "_" . $criterio->prioridade))) {
                             if (!$criterio_salvar) {
                                 $criterio_salvar = new InscricaoCriterioDesempate;
+                                $criterio_salvar->prioridade = $criterio->prioridade;
                                 $criterio_salvar->criterio_desempate_id = $criterio->criterio->id;
                                 $criterio_salvar->inscricao_id = $inscricao->id;
                             }
@@ -243,6 +244,7 @@ class InscricaoGerenciarController extends Controller
                         if (is_numeric($request->input("criterio_" . $criterio->criterio->id."_".$criterio->prioridade))) {
                             if (!$criterio_salvar) {
                                 $criterio_salvar = new InscricaoCriterioDesempate;
+                                $criterio_salvar->prioridade = $criterio->prioridade;
                                 $criterio_salvar->criterio_desempate_id = $criterio->criterio->id;
                                 $criterio_salvar->inscricao_id = $inscricao->id;
                             }
