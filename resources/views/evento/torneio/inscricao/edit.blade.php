@@ -182,7 +182,7 @@
                             @foreach($criterios as $criterio)
                                 <div class="form-group">
                                     <label for="criterio_{{$criterio->criterio->id}}">{{$criterio->criterio->name}} *</label>
-                                    <input type="text" name="criterio_{{$criterio->criterio->id}}" id="criterio_{{$criterio->criterio->id}}_{{$criterio->prioridade}}" class="form-control" value="@if($criterio->criterio->valor_criterio($inscricao->id,$criterio->prioridade)){{$criterio->criterio->valor_criterio($inscricao->id,$criterio->prioridade)->valor}}@endif" @if(!$permitido_edicao) disabled="disabled" @endif />
+                                    <input type="text" name="criterio_{{$criterio->criterio->id}}_{{$criterio->prioridade}}" id="criterio_{{$criterio->criterio->id}}_{{$criterio->prioridade}}" class="form-control" value="@if($criterio->criterio->valor_criterio($inscricao->id,$criterio->prioridade)){{$criterio->criterio->valor_criterio($inscricao->id,$criterio->prioridade)->valor}}@endif" @if(!$permitido_edicao) disabled="disabled" @endif />
                                 </div>
                             @endforeach
                         <hr/>
