@@ -253,11 +253,19 @@ class RatingController extends Controller
                                     if($temRating){
                                         $rating = $temRating["rating"];
 
-                                        $movimentacao = MovimentacaoRating::where([
-                                            ["ratings_id", "=", $rating->id],
+                                        /**
+                                         * Procura uma movimentação para o torneio e exclui elas para inserir a nova
+                                         */
+                                        $movimentacoes = MovimentacaoRating::where([
                                             ["torneio_id", "=", $torneio->id],
-                                        ])->first();
-                                        if ($movimentacao) {
+                                        ])
+                                        ->whereHas("rating",function($q1) use ($inscricao){
+                                            $q1->whereHas("enxadrista",function($q2) use ($inscricao){
+                                                $q2->where([["id","=",$inscricao->enxadrista_id]]);
+                                            });
+                                        })
+                                        ->get();
+                                        foreach ($movimentacoes as $movimentacao) {
                                             // echo "Apagando movimentação de rating deste torneio. <br/>";
                                             // $retornos[] = date("d/m/Y H:i:s") . " - Apagando movimentação de rating deste torneio.";
                                             $movimentacao->delete();
