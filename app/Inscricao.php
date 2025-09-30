@@ -90,10 +90,16 @@ class Inscricao extends Model
                     $xadrezsuicopag_controller = XadrezSuicoPagController::getInstance();
 
                     $category = Categoria::find($model->categoria_id);
-                    Log::debug("Atualizando Inscricao - #{$model->id} - Categoria: " . json_encode($category));
+
+                    $event_category = $category
+                                        ->eventos()
+                                        ->where([["evento_id", "=", $model->torneio->evento->id]])
+                                        ->first();
+
+                    Log::debug("Atualizando Inscricao - #{$model->id} - Categoria no Evento: " . json_encode($event_category));
 
                     Log::debug("Atualizando Inscricao - #{$model->id} - Categoria tem UUID - Alterando a Categoria no XadrezSuicoPag");
-                    $return = $xadrezsuicopag_controller->factory("registration")->change_category($model->getPaymentInfo("uuid"), $category->xadrezsuicopag_uuid);
+                    $return = $xadrezsuicopag_controller->factory("registration")->change_category($model->getPaymentInfo("uuid"), $event_category->xadrezsuicopag_uuid);
 
                     if ($return["ok"] == 1) {
                         if (!$return["result"]) {
