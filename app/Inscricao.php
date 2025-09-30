@@ -96,6 +96,7 @@ class Inscricao extends Model
                     ->first();
 
                 if($old_event_category->xadrezsuicopag_uuid != $event_category->xadrezsuicopag_uuid){
+                    // categoria no evento alterada
                     Log::debug("Atualizando Inscricao - #{$model->id} - Categoria no Evento: " . json_encode($old_event_category));
                     if (!$model->isFree()) {
                         Log::debug("Atualizando Inscricao - #{$model->id} - Inscrição paga");
