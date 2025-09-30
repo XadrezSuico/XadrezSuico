@@ -89,24 +89,42 @@ class Inscricao extends Model
                     Log::debug("Atualizando Inscricao - #{$model->id} - Possui UUID");
                     $xadrezsuicopag_controller = XadrezSuicoPagController::getInstance();
 
-                    $return = $xadrezsuicopag_controller->factory("registration")->change_category($model->getPaymentInfo("uuid"), $model->categoria->xadrezsuicopag_uuid);
+                    $category = Categoria::find($model->categoria_id);
+                    if($category->xadrezsuicopag_uuid){
+                        $return = $xadrezsuicopag_controller->factory("registration")->change_category($model->getPaymentInfo("uuid"), $category->xadrezsuicopag_uuid);
 
-                    if ($return["ok"] == 1) {
-                        if (!$return["result"]) {
-                            Log::debug("Atualizando Inscricao - #{$model->id} - Retorno falso - " . json_encode($return));
-                            return false;
+                        if ($return["ok"] == 1) {
+                            if (!$return["result"]) {
+                                Log::debug("Atualizando Inscricao - #{$model->id} - Retorno falso - " . json_encode($return));
+                                return false;
+                            } else {
+                                Log::debug("Atualizando Inscricao - #{$model->id} - Retorno verdadeiro");
+                            }
                         } else {
-                            Log::debug("Atualizando Inscricao - #{$model->id} - Retorno verdadeiro");
+                            Log::debug("Atualizando Inscricao - #{$model->id} - Sem retorno");
                         }
-                    } else {
-                        Log::debug("Atualizando Inscricao - #{$model->id} - Sem retorno");
+                    }else{
+                        Log::debug("Atualizando Inscricao - #{$model->id} - Categoria não tem UUID - Removendo do XadrezSuicoPag");
+                        $return = $xadrezsuicopag_controller->factory("registration")->delete($model->getPaymentInfo("uuid"));
+
+                        if ($return["ok"] == 1) {
+                            if (!$return["result"]) {
+                                Log::debug("Atualizando Inscricao - #{$model->id} - Excluindo do XadrezSuicoPag - Retorno falso - " . json_encode($return));
+                                return false;
+                            }
+                            Log::debug("Atualizando Inscricao - #{$model->id} - Excluindo do XadrezSuicoPag - Retorno verdadeiro");
+
+                        }else{
+                            Log::debug("Atualizando Inscricao - #{$model->id} - Excluindo do XadrezSuicoPag - Sem retorno");
+                        }
+
                     }
                 }
                 if ($model->paid) {
                     Log::debug("Atualizando Inscricao - #{$model->id} - Já Paga");
                     return false;
                 }
-                Log::debug("Atualizando Inscricao - #{$model->id} - Excluída");
+                Log::debug("Atualizando Inscricao - #{$model->id} - Alterada a Categoria no XadrezSuicoPag");
             }
 
 
