@@ -83,6 +83,33 @@ class Inscricao extends Model
             }
 
 
+            if (!$model->isFree()) {
+                Log::debug("Atualizando Inscricao - #{$model->id} - Inscrição paga");
+                if ($model->getPaymentInfo("uuid")) {
+                    Log::debug("Atualizando Inscricao - #{$model->id} - Possui UUID");
+                    $xadrezsuicopag_controller = XadrezSuicoPagController::getInstance();
+
+                    $return = $xadrezsuicopag_controller->factory("registration")->change_category($model->getPaymentInfo("uuid"), $model->categoria->xadrezsuicopag_uuid);
+
+                    if ($return["ok"] == 1) {
+                        if (!$return["result"]) {
+                            Log::debug("Atualizando Inscricao - #{$model->id} - Retorno falso - " . json_encode($return));
+                            return false;
+                        } else {
+                            Log::debug("Atualizando Inscricao - #{$model->id} - Retorno verdadeiro");
+                        }
+                    } else {
+                        Log::debug("Atualizando Inscricao - #{$model->id} - Sem retorno");
+                    }
+                }
+                if ($model->paid) {
+                    Log::debug("Atualizando Inscricao - #{$model->id} - Já Paga");
+                    return false;
+                }
+                Log::debug("Atualizando Inscricao - #{$model->id} - Excluída");
+            }
+
+
             $model->needToReplicateInfo();
         });
 

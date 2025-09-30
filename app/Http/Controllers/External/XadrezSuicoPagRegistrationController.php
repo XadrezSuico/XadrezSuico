@@ -183,4 +183,73 @@ class XadrezSuicoPagRegistrationController extends Controller
         $json = json_decode($response->getBody());
         return ["ok" => 0, "error" => 1, "message" => "Motivo: Código HTTP " . config("xadrezsuico.name", "XadrezSuíço") . "PAG Incorreto (" . $response->getStatusCode() . "): " . json_encode($json)];
     }
+    // can change category
+    public function can_change_category($registration_uuid)
+    {
+
+        if (env("APP_ENV", "local") != "production") {
+            $client = new \GuzzleHttp\Client(["verify" => false, 'http_errors' => false]);
+        } else {
+            $client = new \GuzzleHttp\Client(['http_errors' => false]);
+        }
+
+        Log::debug("XadrezSuicoPagRegistrationController::can_change_category URL: " . env("XADREZSUICOPAG_URI") . "/api/v1/system/registration/can_change_category/" . $registration_uuid);
+        $response = $client->request('get', env("XADREZSUICOPAG_URI") . "/api/v1/system/registration/can_change_category/" . $registration_uuid, [
+            'headers' => [
+                "System-Id" => env("XADREZSUICOPAG_SYSTEM_ID"),
+                "System-Token" => env("XADREZSUICOPAG_SYSTEM_TOKEN")
+            ]
+        ]);
+
+        if ($response->getStatusCode() < 300) {
+            $json = json_decode($response->getBody(), true);
+            if ($json["ok"] == 1) {
+                return $json;
+            } else {
+                if (isset($json["result"])) {
+                    if ($json["result"]) {
+                        return ["ok" => 1, "error" => 0, "result" => $json["result"], "message" => "Retorno de Erro mas que não existe."];
+                    }
+                }
+                return ["ok" => 0, "error" => 1, "message" => "Motivo Externo (" . config("xadrezsuico.name", "XadrezSuíço") . "PAG): " . $json["message"]];
+            }
+        }
+        $json = json_decode($response->getBody());
+        return ["ok" => 0, "error" => 1, "message" => "Motivo: Código HTTP " . config("xadrezsuico.name", "XadrezSuíço") . "PAG Incorreto (" . $response->getStatusCode() . "): " . json_encode($json)];
+    }
+
+    // change category
+    public function change_category($registration_uuid, $category_uuid)
+    {
+
+        if (env("APP_ENV", "local") != "production") {
+            $client = new \GuzzleHttp\Client(["verify" => false, 'http_errors' => false]);
+        } else {
+            $client = new \GuzzleHttp\Client(['http_errors' => false]);
+        }
+
+        Log::debug("XadrezSuicoPagRegistrationController::change_category URL: " . env("XADREZSUICOPAG_URI") . "/api/v1/system/registration/change_category/" . $registration_uuid . "/" . $category_uuid);
+        $response = $client->request('get', env("XADREZSUICOPAG_URI") . "/api/v1/system/registration/change_category/" . $registration_uuid . "/" . $category_uuid, [
+            'headers' => [
+                "System-Id" => env("XADREZSUICOPAG_SYSTEM_ID"),
+                "System-Token" => env("XADREZSUICOPAG_SYSTEM_TOKEN")
+            ]
+        ]);
+
+        if ($response->getStatusCode() < 300) {
+            $json = json_decode($response->getBody(), true);
+            if ($json["ok"] == 1) {
+                return $json;
+            } else {
+                if (isset($json["result"])) {
+                    if ($json["result"]) {
+                        return ["ok" => 1, "error" => 0, "result" => $json["result"], "message" => "Retorno de Erro mas que não existe."];
+                    }
+                }
+                return ["ok" => 0, "error" => 1, "message" => "Motivo Externo (" . config("xadrezsuico.name", "XadrezSuíço") . "PAG): " . $json["message"]];
+            }
+        }
+        $json = json_decode($response->getBody());
+        return ["ok" => 0, "error" => 1, "message" => "Motivo: Código HTTP " . config("xadrezsuico.name", "XadrezSuíço") . "PAG Incorreto (" . $response->getStatusCode() . "): " . json_encode($json)];
+    }
 }
