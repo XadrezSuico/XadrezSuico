@@ -82,50 +82,60 @@ class Inscricao extends Model
                 Log::debug("uuid: ".$model->uuid);
             }
 
-
-            if (!$model->isFree()) {
-                Log::debug("Atualizando Inscricao - #{$model->id} - Inscrição paga");
-                if ($model->getPaymentInfo("uuid")) {
-                    Log::debug("Atualizando Inscricao - #{$model->id} - Possui UUID");
-                    $xadrezsuicopag_controller = XadrezSuicoPagController::getInstance();
-
-                    $category = Categoria::find($model->categoria_id);
-
-                    $event_category = $category
+            if ($model->categoria_id != $model->getOriginal("categoria_id")) {
+                $old_category = Categoria::find($model->getOriginal("categoria_id"));
+                $old_event_category = $old_category
                                         ->eventos()
                                         ->where([["evento_id", "=", $model->torneio->evento->id]])
                                         ->first();
 
-                    Log::debug("Atualizando Inscricao - #{$model->id} - Categoria no Evento: " . json_encode($event_category));
+                $category = Categoria::find($model->categoria_id);
+                $event_category = $category
+                    ->eventos()
+                    ->where([["evento_id", "=", $model->torneio->evento->id]])
+                    ->first();
 
-                    Log::debug("Atualizando Inscricao - #{$model->id} - Categoria tem UUID - Alterando a Categoria no XadrezSuicoPag");
-                    $return = $xadrezsuicopag_controller->factory("registration")->change_category($model->getPaymentInfo("uuid"), $event_category->xadrezsuicopag_uuid);
+                if($old_event_category->xadrezsuicopag_uuid != $event_category->xadrezsuicopag_uuid){
+                    Log::debug("Atualizando Inscricao - #{$model->id} - Categoria no Evento: " . json_encode($old_event_category));
+                    if (!$model->isFree()) {
+                        Log::debug("Atualizando Inscricao - #{$model->id} - Inscrição paga");
+                        if ($model->getPaymentInfo("uuid")) {
+                            Log::debug("Atualizando Inscricao - #{$model->id} - Possui UUID");
+                            $xadrezsuicopag_controller = XadrezSuicoPagController::getInstance();
 
-                    if ($return["ok"] == 1) {
-                        if (!$return["result"]) {
-                            Log::debug("Atualizando Inscricao - #{$model->id} - Retorno falso - " . json_encode($return));
-                            return false;
-                        } else {
-                            Log::debug("Atualizando Inscricao - #{$model->id} - Retorno verdadeiro");
+
+                            Log::debug("Atualizando Inscricao - #{$model->id} - Categoria no Evento: " . json_encode($event_category));
+
+                            Log::debug("Atualizando Inscricao - #{$model->id} - Categoria tem UUID - Alterando a Categoria no XadrezSuicoPag");
+                            $return = $xadrezsuicopag_controller->factory("registration")->change_category($model->getPaymentInfo("uuid"), $event_category->xadrezsuicopag_uuid);
+
+                            if ($return["ok"] == 1) {
+                                if (!$return["result"]) {
+                                    Log::debug("Atualizando Inscricao - #{$model->id} - Retorno falso - " . json_encode($return));
+                                    return false;
+                                } else {
+                                    Log::debug("Atualizando Inscricao - #{$model->id} - Retorno verdadeiro");
+                                }
+                            } else {
+                                Log::debug("Atualizando Inscricao - #{$model->id} - Sem retorno");
+                            }
                         }
+                        if ($model->paid) {
+                            Log::debug("Atualizando Inscricao - #{$model->id} - Já Paga");
+                            return false;
+                        }
+                        Log::debug("Atualizando Inscricao - #{$model->id} - Alterada a Categoria no XadrezSuicoPag");
                     } else {
-                        Log::debug("Atualizando Inscricao - #{$model->id} - Sem retorno");
+                        Log::debug("Atualizando Inscricao - #{$model->id} - Inscrição não paga");
+                        if ($model->getPaymentInfo("uuid")) {
+                            Log::debug("Atualizando Inscricao - #{$model->id} - Possui UUID");
+                            $xadrezsuicopag_controller = XadrezSuicoPagController::getInstance();
+
+                            $return = $xadrezsuicopag_controller->factory("registration")->delete($model->getPaymentInfo("uuid"));
+                        }
+                        Log::debug("Atualizando Inscricao - #{$model->id} - Excluída do XadrezSuicoPag");
                     }
                 }
-                if ($model->paid) {
-                    Log::debug("Atualizando Inscricao - #{$model->id} - Já Paga");
-                    return false;
-                }
-                Log::debug("Atualizando Inscricao - #{$model->id} - Alterada a Categoria no XadrezSuicoPag");
-            } else {
-                Log::debug("Atualizando Inscricao - #{$model->id} - Inscrição não paga");
-                if ($model->getPaymentInfo("uuid")) {
-                    Log::debug("Atualizando Inscricao - #{$model->id} - Possui UUID");
-                    $xadrezsuicopag_controller = XadrezSuicoPagController::getInstance();
-
-                    $return = $xadrezsuicopag_controller->factory("registration")->delete($model->getPaymentInfo("uuid"));
-                }
-                Log::debug("Atualizando Inscricao - #{$model->id} - Excluída do XadrezSuicoPag");
             }
 
 
