@@ -65,43 +65,56 @@ class RatingController extends Controller
 
                                             // TO DO BUSCAR RATING DA ÚLTIMA RODADA
                                             $rodada_anterior = $torneio->rodadas()->where([["numero","=",$rodada_ant_num]])->first();
-                                            if(!$emparceiramento->rating_a){
-                                                $emparceiramento_a_rodada_anterior = $rodada_anterior
-                                                    ->emparceiramentos()
-                                                    ->where(function($q1) use ($emparceiramento){
-                                                        $q1->where([["inscricao_a","=",$emparceiramento->inscricao_a]]);
-                                                        $q1->orWhere([["inscricao_b","=",$emparceiramento->inscricao_a]]);
-                                                    })
-                                                    ->where([["rodadas_id","=",$rodada_anterior->id]])
-                                                    ->first();
-                                                // print_r($emparceiramento_a_rodada_anterior);
-                                                if($emparceiramento_a_rodada_anterior){
-                                                    if($emparceiramento->inscricao_a == $emparceiramento_a_rodada_anterior->inscricao_a){
-                                                        $emparceiramento->rating_a = $emparceiramento_a_rodada_anterior->rating_a_final;
-                                                    }else{
-                                                        $emparceiramento->rating_a = $emparceiramento_a_rodada_anterior->rating_b_final;
+                                            if($rodada_anterior){
+                                                if(!$emparceiramento->rating_a){
+                                                    $emparceiramento_a_rodada_anterior = $rodada_anterior
+                                                        ->emparceiramentos()
+                                                        ->where(function($q1) use ($emparceiramento){
+                                                            $q1->where([["inscricao_a","=",$emparceiramento->inscricao_a]]);
+                                                            $q1->orWhere([["inscricao_b","=",$emparceiramento->inscricao_a]]);
+                                                        })
+                                                        ->where([["rodadas_id","=",$rodada_anterior->id]])
+                                                        ->first();
+                                                    // print_r($emparceiramento_a_rodada_anterior);
+                                                    if($emparceiramento_a_rodada_anterior){
+                                                        if($emparceiramento->inscricao_a == $emparceiramento_a_rodada_anterior->inscricao_a){
+                                                            $emparceiramento->rating_a = $emparceiramento_a_rodada_anterior->rating_a_final;
+                                                        }else{
+                                                            $emparceiramento->rating_a = $emparceiramento_a_rodada_anterior->rating_b_final;
+                                                        }
                                                     }
                                                 }
-                                            }
 
-                                            if(!$emparceiramento->rating_b){
-                                                $emparceiramento_b_rodada_anterior = $rodada_anterior
-                                                    ->emparceiramentos()
-                                                    ->where(function($q1) use ($emparceiramento){
-                                                        $q1->where([["inscricao_a","=",$emparceiramento->inscricao_b]]);
-                                                        $q1->orWhere([["inscricao_b","=",$emparceiramento->inscricao_b]]);
-                                                    })
-                                                    ->where([["rodadas_id","=",$rodada_anterior->id]])
-                                                    ->first();
-                                                if($emparceiramento_b_rodada_anterior){
-                                                    if($emparceiramento->inscricao_b == $emparceiramento_b_rodada_anterior->inscricao_a){
-                                                        $emparceiramento->rating_b = $emparceiramento_b_rodada_anterior->rating_a_final;
-                                                    }else{
-                                                        $emparceiramento->rating_b = $emparceiramento_b_rodada_anterior->rating_b_final;
+                                                if(!$emparceiramento->rating_b){
+                                                    $emparceiramento_b_rodada_anterior = $rodada_anterior
+                                                        ->emparceiramentos()
+                                                        ->where(function($q1) use ($emparceiramento){
+                                                            $q1->where([["inscricao_a","=",$emparceiramento->inscricao_b]]);
+                                                            $q1->orWhere([["inscricao_b","=",$emparceiramento->inscricao_b]]);
+                                                        })
+                                                        ->where([["rodadas_id","=",$rodada_anterior->id]])
+                                                        ->first();
+                                                    if($emparceiramento_b_rodada_anterior){
+                                                        if($emparceiramento->inscricao_b == $emparceiramento_b_rodada_anterior->inscricao_a){
+                                                            $emparceiramento->rating_b = $emparceiramento_b_rodada_anterior->rating_a_final;
+                                                        }else{
+                                                            $emparceiramento->rating_b = $emparceiramento_b_rodada_anterior->rating_b_final;
+                                                        }
                                                     }
                                                 }
                                             }
                                         }
+                                    }
+
+                                    if(!$emparceiramento->rating_a){
+                                        $ratingdia_a = $rating_dia_controller->getRatingDia($tipo_rating->id, $emparceiramento->inscricao_A->enxadrista->id,date("Y-m-d",strtotime($evento->data_inicio) - (60*60*24)));
+
+                                        $emparceiramento->rating_a = $ratingdia_a->value;
+                                    }
+                                    if(!$emparceiramento->rating_b){
+                                        $ratingdia_b = $rating_dia_controller->getRatingDia($tipo_rating->id, $emparceiramento->inscricao_B->enxadrista->id,date("Y-m-d",strtotime($evento->data_inicio) - (60*60*24)));
+
+                                        $emparceiramento->rating_b = $ratingdia_b->value;
                                     }
 
                                     if($emparceiramento->rating_a && $emparceiramento->rating_b){
@@ -166,25 +179,32 @@ class RatingController extends Controller
 
                                                 // TO DO BUSCAR RATING DA ÚLTIMA RODADA
                                                 $rodada_anterior = $torneio->rodadas()->where([["numero","=",$rodada_ant_num]])->first();
-                                                if(!$emparceiramento->rating_a){
-                                                    $emparceiramento_a_rodada_anterior = $rodada_anterior
-                                                        ->emparceiramentos()
-                                                        ->where(function($q1) use ($emparceiramento){
-                                                            $q1->where([["inscricao_a","=",$emparceiramento->inscricao_a]]);
-                                                            $q1->orWhere([["inscricao_b","=",$emparceiramento->inscricao_a]]);
-                                                        })
-                                                        ->where([["rodadas_id","=",$rodada_anterior->id]])
-                                                        ->first();
-                                                    // print_r($emparceiramento_a_rodada_anterior);
-                                                    if($emparceiramento_a_rodada_anterior){
-                                                        if($emparceiramento->inscricao_a == $emparceiramento_a_rodada_anterior->inscricao_a){
-                                                            $emparceiramento->rating_a = $emparceiramento_a_rodada_anterior->rating_a_final;
-                                                        }else{
-                                                            $emparceiramento->rating_a = $emparceiramento_a_rodada_anterior->rating_b_final;
+                                                if($rodada_anterior){
+                                                    if (!$emparceiramento->rating_a) {
+                                                        $emparceiramento_a_rodada_anterior = $rodada_anterior
+                                                            ->emparceiramentos()
+                                                            ->where(function ($q1) use ($emparceiramento) {
+                                                                $q1->where([["inscricao_a", "=", $emparceiramento->inscricao_a]]);
+                                                                $q1->orWhere([["inscricao_b", "=", $emparceiramento->inscricao_a]]);
+                                                            })
+                                                            ->where([["rodadas_id", "=", $rodada_anterior->id]])
+                                                            ->first();
+                                                        // print_r($emparceiramento_a_rodada_anterior);
+                                                        if ($emparceiramento_a_rodada_anterior) {
+                                                            if ($emparceiramento->inscricao_a == $emparceiramento_a_rodada_anterior->inscricao_a) {
+                                                                $emparceiramento->rating_a = $emparceiramento_a_rodada_anterior->rating_a_final;
+                                                            } else {
+                                                                $emparceiramento->rating_a = $emparceiramento_a_rodada_anterior->rating_b_final;
+                                                            }
                                                         }
                                                     }
                                                 }
                                             }
+                                        }
+                                        if(!$emparceiramento->rating_a){
+                                            $ratingdia_a = $rating_dia_controller->getRatingDia($tipo_rating->id, $emparceiramento->inscricao_A->enxadrista->id, date("Y-m-d", strtotime($evento->data_inicio) - (60 * 60 * 24)));
+
+                                            $emparceiramento->rating_a = $ratingdia_a->value;
                                         }
                                         if($emparceiramento->rating_a){
                                             $emparceiramento->rating_a_if_win = 0;
@@ -204,27 +224,35 @@ class RatingController extends Controller
                                         }else{
                                             $rodada_ant_num = $rodada->numero;
 
-                                            while($rodada_ant_num > 1 && !$emparceiramento->rating_b){
-                                                $rodada_ant_num--;
+                                            $rodada_anterior = $torneio->rodadas()->where([["numero", "=", $rodada_ant_num]])->first();
+                                            if($rodada_anterior){
+                                                while ($rodada_ant_num > 1 && !$emparceiramento->rating_b) {
+                                                    $rodada_ant_num--;
 
-                                                if(!$emparceiramento->rating_b){
-                                                    $emparceiramento_b_rodada_anterior = $rodada_anterior
-                                                        ->emparceiramentos()
-                                                        ->where(function($q1) use ($emparceiramento){
-                                                            $q1->where([["inscricao_a","=",$emparceiramento->inscricao_b]]);
-                                                            $q1->orWhere([["inscricao_b","=",$emparceiramento->inscricao_b]]);
-                                                        })
-                                                        ->where([["rodadas_id","=",$rodada_anterior->id]])
-                                                        ->first();
-                                                    if($emparceiramento_b_rodada_anterior){
-                                                        if($emparceiramento->inscricao_b == $emparceiramento_b_rodada_anterior->inscricao_a){
-                                                            $emparceiramento->rating_b = $emparceiramento_b_rodada_anterior->rating_a_final;
-                                                        }else{
-                                                            $emparceiramento->rating_b = $emparceiramento_b_rodada_anterior->rating_b_final;
+                                                    if (!$emparceiramento->rating_b) {
+                                                        $emparceiramento_b_rodada_anterior = $rodada_anterior
+                                                            ->emparceiramentos()
+                                                            ->where(function ($q1) use ($emparceiramento) {
+                                                                $q1->where([["inscricao_a", "=", $emparceiramento->inscricao_b]]);
+                                                                $q1->orWhere([["inscricao_b", "=", $emparceiramento->inscricao_b]]);
+                                                            })
+                                                            ->where([["rodadas_id", "=", $rodada_anterior->id]])
+                                                            ->first();
+                                                        if ($emparceiramento_b_rodada_anterior) {
+                                                            if ($emparceiramento->inscricao_b == $emparceiramento_b_rodada_anterior->inscricao_a) {
+                                                                $emparceiramento->rating_b = $emparceiramento_b_rodada_anterior->rating_a_final;
+                                                            } else {
+                                                                $emparceiramento->rating_b = $emparceiramento_b_rodada_anterior->rating_b_final;
+                                                            }
                                                         }
                                                     }
                                                 }
                                             }
+                                        }
+                                        if(!$emparceiramento->rating_b){
+                                            $ratingdia_b = $rating_dia_controller->getRatingDia($tipo_rating->id, $emparceiramento->inscricao_B->enxadrista->id, date("Y-m-d", strtotime($evento->data_inicio) - (60 * 60 * 24)));
+
+                                            $emparceiramento->rating_b = $ratingdia_b->value;
                                         }
                                         if($emparceiramento->rating_b){
                                             $emparceiramento->rating_b_if_win = 0;
@@ -253,11 +281,19 @@ class RatingController extends Controller
                                     if($temRating){
                                         $rating = $temRating["rating"];
 
-                                        $movimentacao = MovimentacaoRating::where([
-                                            ["ratings_id", "=", $rating->id],
+                                        /**
+                                         * Procura uma movimentação para o torneio e exclui elas para inserir a nova
+                                         */
+                                        $movimentacoes = MovimentacaoRating::where([
                                             ["torneio_id", "=", $torneio->id],
-                                        ])->first();
-                                        if ($movimentacao) {
+                                        ])
+                                        ->whereHas("rating",function($q1) use ($inscricao){
+                                            $q1->whereHas("enxadrista",function($q2) use ($inscricao){
+                                                $q2->where([["id","=",$inscricao->enxadrista_id]]);
+                                            });
+                                        })
+                                        ->get();
+                                        foreach ($movimentacoes as $movimentacao) {
                                             // echo "Apagando movimentação de rating deste torneio. <br/>";
                                             // $retornos[] = date("d/m/Y H:i:s") . " - Apagando movimentação de rating deste torneio.";
                                             $movimentacao->delete();

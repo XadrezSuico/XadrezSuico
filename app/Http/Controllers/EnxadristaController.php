@@ -71,19 +71,43 @@ class EnxadristaController extends Controller
         }
         $nome_corrigido = trim($nome_corrigido);
 
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string',
-            'email' => 'required|string|email|max:255',
+        $validator = \Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
             'born' => 'required|string',
-            'cidade_id' => 'required|string',
-            'sexos_id' => 'required|string',
-            'pais_nascimento_id' => 'required|string',
-            'pais_celular_id' => 'required|string',
+            'cidade_id' => 'required|integer|exists:cidade,id',
+            'sexos_id' => 'required|integer|exists:sexos,id',
+            'pais_nascimento_id' => 'required|integer|exists:pais,id',
+            'pais_celular_id' => 'required|integer|exists:pais,id',
             'celular' => 'required|string',
+        ], [
+            'name.required' => 'O nome é obrigatório.',
+            'name.max' => 'O nome não pode ultrapassar 255 caracteres.',
+            'email.required' => 'O e-mail é obrigatório.',
+            'email.email' => 'O e-mail deve ser válido.',
+            'email.max' => 'O e-mail não pode ultrapassar 255 caracteres.',
+            'born.required' => 'A data de nascimento é obrigatória.',
+            'born.date' => 'A data de nascimento deve ser uma data válida.',
+            'cidade_id.required' => 'A cidade é obrigatória.',
+            'cidade_id.integer' => 'A cidade deve ser um número inteiro.',
+            'cidade_id.exists' => 'A cidade informada não existe.',
+            'sexos_id.required' => 'O sexo é obrigatório.',
+            'sexos_id.integer' => 'O sexo deve ser um número inteiro.',
+            'sexos_id.exists' => 'O sexo informado não existe.',
+            'pais_nascimento_id.required' => 'O país de nascimento é obrigatório.',
+            'pais_nascimento_id.integer' => 'O país de nascimento deve ser um número inteiro.',
+            'pais_nascimento_id.exists' => 'O país de nascimento informado não existe.',
+            'pais_celular_id.required' => 'O país do celular é obrigatório.',
+            'pais_celular_id.integer' => 'O país do celular deve ser um número inteiro.',
+            'pais_celular_id.exists' => 'O país do celular informado não existe.',
+            'celular.required' => 'O número de celular é obrigatório.',
+            'celular.regex' => 'O celular deve conter entre 9 e 15 dígitos numéricos.',
         ]);
+
         if ($validator->fails()) {
-            return redirect()->back()->withErrors($validator->errors());
+            return redirect()->back()->withErrors($validator)->withInput();
         }
+
 
         $documentos = array();
 
@@ -125,11 +149,33 @@ class EnxadristaController extends Controller
                                 ["numero","=",$request->input("tipo_documento_".$tipo_documento_pais->tipo_documento->id)],
                             ]);
                         }
-                    })->count();
+                    })
+                    ->whereDoesntHave("configs", function ($q1) {
+                        $q1->where([["key", "=", "united_to"]]);
+                    })
+                    ->count();
                     if($temEnxadrista_count > 0){
+                        $temEnxadrista = Enxadrista::whereHas("documentos", function ($q1) use ($request, $tipo_documento_pais) {
+                            if ($tipo_documento_pais->tipo_documento->id == 1) {
+                                $q1->where([
+                                    ["tipo_documentos_id", "=", $tipo_documento_pais->tipo_documento->id],
+                                    ["numero", "=", Util::numeros($request->input("tipo_documento_" . $tipo_documento_pais->tipo_documento->id))],
+                                ]);
+                            } else {
+                                $q1->where([
+                                    ["tipo_documentos_id", "=", $tipo_documento_pais->tipo_documento->id],
+                                    ["numero", "=", $request->input("tipo_documento_" . $tipo_documento_pais->tipo_documento->id)],
+                                ]);
+                            }
+                        })
+                        ->whereDoesntHave("configs", function ($q1) {
+                            $q1->where([["key", "=", "united_to"]]);
+                        })
+                        ->first();
+
                         $messageBag = new MessageBag;
                         $messageBag->add("type","danger");
-                        $messageBag->add("alerta","Já há um cadastro de Enxadrista com o Documento informado.");
+                        $messageBag->add("alerta","Já há um cadastro de Enxadrista com o Documento informado. (ID: {$temEnxadrista->id})");
 
                         return redirect()->back()->withErrors($messageBag);
                     }
@@ -250,16 +296,7 @@ class EnxadristaController extends Controller
         $clubes = Clube::all();
         $sexos = Sexo::all();
 
-        if(!$enxadrista->lbx_id){
-            $client = new Client;
-            $response = $client->get(env("LBX_RATING_SERVER")."/rating/search/byName?search=" . $enxadrista->name);
-            $html = (string) $response->getBody();
-            $json_lbx = json_decode($html);
-        }else{
-            $json_lbx = false;
-        }
-
-        return view('enxadrista.edit', compact("enxadrista", "clubes", "sexos", "json_lbx"));
+        return view('enxadrista.edit', compact("enxadrista", "clubes", "sexos"));
     }
     public function edit_post($id, Request $request)
     {
@@ -269,18 +306,40 @@ class EnxadristaController extends Controller
         }
 
         $validator = \Validator::make($request->all(), [
-            'name' => 'required|string',
-            'email' => 'required|string|email|max:255',
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
             'born' => 'required|string',
-            'cidade_id' => 'required|string',
-            'sexos_id' => 'required|string',
-            'pais_nascimento_id' => 'required|string',
-            'pais_celular_id' => 'required|string',
+            'cidade_id' => 'required|integer|exists:cidade,id',
+            'sexos_id' => 'required|integer|exists:sexos,id',
+            'pais_nascimento_id' => 'required|integer|exists:pais,id',
+            'pais_celular_id' => 'required|integer|exists:pais,id',
             'celular' => 'required|string',
+        ], [
+            'name.required' => 'O nome é obrigatório.',
+            'email.required' => 'O e-mail é obrigatório.',
+            'email.email' => 'O e-mail deve ser válido.',
+            'born.required' => 'A data de nascimento é obrigatória.',
+            'born.date' => 'A data de nascimento deve ser uma data válida.',
+            'cidade_id.required' => 'A cidade é obrigatória.',
+            'cidade_id.integer' => 'A cidade deve ser um número inteiro.',
+            'cidade_id.exists' => 'A cidade informada não é válida.',
+            'sexos_id.required' => 'O sexo é obrigatório.',
+            'sexos_id.integer' => 'O sexo deve ser um número inteiro.',
+            'sexos_id.exists' => 'O sexo informado não é válido.',
+            'pais_nascimento_id.required' => 'O país de nascimento é obrigatório.',
+            'pais_nascimento_id.integer' => 'O país de nascimento deve ser um número inteiro.',
+            'pais_nascimento_id.exists' => 'O país de nascimento informado não é válido.',
+            'pais_celular_id.required' => 'O país do celular é obrigatório.',
+            'pais_celular_id.integer' => 'O país do celular deve ser um número inteiro.',
+            'pais_celular_id.exists' => 'O país do celular informado não é válido.',
+            'celular.required' => 'O número de celular é obrigatório.',
+            'celular.regex' => 'O celular deve conter entre 9 e 15 dígitos numéricos.',
         ]);
+
         if ($validator->fails()) {
-            return redirect()->back()->withErrors($validator->errors());
+            return redirect()->back()->withErrors($validator)->withInput();
         }
+
 
         $enxadrista = Enxadrista::find($id);
 
@@ -336,12 +395,37 @@ class EnxadristaController extends Controller
                                 ["numero","=",$request->input("tipo_documento_".$tipo_documento_pais->tipo_documento->id)],
                             ]);
                         }
-                    })->count();
+                    })
+                    ->whereDoesntHave("configs", function ($q1) {
+                        $q1->where([["key", "=", "united_to"]]);
+                    })
+                    ->count();
 
                     if($temEnxadrista_count > 0){
+                        $temEnxadrista = Enxadrista::where([
+                            ["id","!=",$enxadrista->id]
+                        ])
+                        ->whereHas("documentos",function($q1) use($request, $tipo_documento_pais){
+                            if($tipo_documento_pais->tipo_documento->id == 1){
+                                $q1->where([
+                                    ["tipo_documentos_id","=",$tipo_documento_pais->tipo_documento->id],
+                                    ["numero","=",Util::numeros($request->input("tipo_documento_".$tipo_documento_pais->tipo_documento->id))],
+                                ]);
+                            }else{
+                                $q1->where([
+                                    ["tipo_documentos_id","=",$tipo_documento_pais->tipo_documento->id],
+                                    ["numero","=",$request->input("tipo_documento_".$tipo_documento_pais->tipo_documento->id)],
+                                ]);
+                            }
+                        })
+                        ->whereDoesntHave("configs", function ($q1) {
+                            $q1->where([["key", "=", "united_to"]]);
+                        })
+                        ->first();
+
                         $messageBag = new MessageBag;
                         $messageBag->add("type","danger");
-                        $messageBag->add("alerta","Já há um cadastro de Enxadrista com o Documento informado.");
+                        $messageBag->add("alerta","Já há um cadastro de Enxadrista com o Documento informado.  (ID: {$temEnxadrista->id})");
 
                         return redirect()->back()->withErrors($messageBag);
                     }
@@ -519,7 +603,7 @@ class EnxadristaController extends Controller
         $enxadrista = Enxadrista::find($id);
 
 
-        if ($enx->hasConfig("united_to")) {
+        if ($enxadrista->hasConfig("united_to")) {
             $messageBag = new MessageBag;
             $messageBag->add("type", "danger");
             $messageBag->add("alerta", "Este cadastro foi unido a outro cadastro e com isso não é permitida a exclusão.");
@@ -528,8 +612,11 @@ class EnxadristaController extends Controller
         }
 
         if ($enxadrista->isDeletavel()) {
-            foreach($enxadrista->documentos->all() as $documento){
+            foreach ($enxadrista->documentos->all() as $documento) {
                 $documento->delete();
+            }
+            foreach ($enxadrista->emails->all() as $email) {
+                $email->delete();
             }
             $enxadrista->delete();
         }
@@ -662,7 +749,7 @@ class EnxadristaController extends Controller
 
             $p[2] = $enxadrista->getBorn();
 
-            $p[3] = $enxadrista->sexo->name;
+            $p[3] = ($enxadrista->sexo) ? $enxadrista->sexo->name : "-";
 
             $p[4] = "";
             if ($enxadrista->cbx_id) {

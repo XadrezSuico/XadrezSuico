@@ -274,7 +274,8 @@ class TorneioController extends Controller
 
 
         $new_event = $evento->replicate();
-        $new_event->name .= " - ".$torneio->name;
+        $new_event->uuid = null;
+        $new_event->name .= " - " . $torneio->name;
         $new_event->save();
 
         if ($torneio) {

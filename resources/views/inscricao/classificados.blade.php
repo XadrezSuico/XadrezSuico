@@ -1,10 +1,18 @@
 @extends('adminlte::page')
 
-@section("title", "Visualizar Classificados - Evento: ".$evento->name)
+@if($xdzsc_classificador->event_classificator)
+    @section("title", "Visualizar Classificados - Evento: ".$xdzsc_classificador->event_classificator->name)
+@else
+    @section("title", "Visualizar Classificados - Grupo de Evento: ".$xdzsc_classificador->event_group_classificator->name)
+@endif
 
 @section('content_header')
   <h1>Visualizar Classificados</h1>
-  <h4>Evento: {{$evento->id}} - {{$evento->name}}</h4>
+    @if($xdzsc_classificador->event_classificator)
+        <h4>Evento: {{$xdzsc_classificador->event_classificator->id}} - {{$xdzsc_classificador->event_classificator->name}}</h4>
+    @else
+        <h4>Grupo de Evento: {{$xdzsc_classificador->event_group_classificator->id}} - {{$xdzsc_classificador->event_group_classificator->name}}</h4>
+    @endif
   <h4>Classificador: {{$xdzsc_classificador->id}} - Para Evento: {{$xdzsc_classificador->event->id}} - {{$xdzsc_classificador->event->name}}</h4>
 @stop
 
@@ -26,45 +34,6 @@
 <div class="row">
   <!-- Left col -->
   <section class="col-lg-12 connectedSortable">
-	<!-- general form elements -->
-	<div class="box box-primary">
-		<div class="box-header">
-			<h3 class="box-title evento">Evento: {{$evento->name}}</h3>
-			<div class="pull-right box-tools">
-			</div>
-		</div>
-
-		<div class="box-body">
-			@if($evento->pagina)
-				@if($evento->pagina->imagem) <div style="width: 100%; text-align: center;"><img src="data:image/png;base64, {!!$evento->pagina->imagem!!}" width="100%" style="max-width: 800px"/></div> <br/> @endif
-				@if($evento->pagina->texto) {!!$evento->pagina->texto!!} <br/> @endif
-				@if($evento->pagina->imagem || $evento->pagina->texto) <hr/> @endif
-			@endif
-			<strong>Categorias:</strong><br/>
-			@foreach($evento->categorias->all() as $categoria)
-				{{$categoria->categoria->name}},
-			@endforeach<br/>
-			<strong>Cidade:</strong> {{$evento->cidade->name}}<br/>
-			<strong>Local:</strong> {{$evento->local}}<br/>
-			<strong>Data:</strong>
-            @if($evento->getDataInicio() == $evento->getDataFim())
-                {{$evento->getDataInicio()}}
-            @else
-                {{$evento->getDataInicio()}} - {{$evento->getDataFim()}}
-            @endif<br/>
-			<strong>Maiores informações em:</strong> <a href="{{$evento->link}}" target="_blank">{{$evento->link}}</a><br/>
-			@if($evento->maximo_inscricoes_evento)
-				<hr/>
-				<strong>Total de Inscritos até o presente momento:</strong> {{$evento->quantosInscritos()}}.<br/>
-				<strong>Limite de Inscritos:</strong> {{$evento->maximo_inscricoes_evento}}.<br/>
-				<hr/>
-			@endif
-			@if($evento->getDataFimInscricoesOnline()) <h3><strong>Inscrições antecipadas até:</strong> {{$evento->getDataFimInscricoesOnline()}}.</h3>@endif
-            @if($evento->is_lichess_integration)
-                Informações do Lichess.org são atualizadas a cada 6 horas.
-            @endif
-        </div>
-	</div>
 	<div class="box box-primary">
 		<div class="box-header">
 			<h3 class="box-title">Lista de Classificados</h3>

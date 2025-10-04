@@ -6,6 +6,17 @@
     <h1>Evento #{{$evento->id}} ({{$evento->name}}) - Resultados da Categoria #{{$categoria->id}} ({{$categoria->name}})</h1>
 @stop
 
+@section("css")
+
+<style>
+    .is_draw{
+        background: orange !important;
+        font-weight: bolder !important;
+    }
+</style>
+
+@endsection
+
 @section('content')
     @if (session('status'))
         <div class="alert alert-success">
@@ -75,7 +86,7 @@
                 </thead>
                 <tbody>
                     @foreach($inscricoes as $inscricao)
-                        <tr>
+                        <tr @if(isset($is_internal) && $inscricao->is_draw) class="is_draw" @endif>
 
                             <td data-sort='{{($inscricao->posicao) ? $inscricao->posicao : 999999999}}'>@if($inscricao->posicao) {{$inscricao->posicao}} @else - @endif</td>
                             <td data-sort='{{($inscricao->id)}}'>{{$inscricao->id}}</td>
@@ -171,7 +182,7 @@
                             @endforeach
                             @if($torneio->tipo_torneio->usaPontuacao()) <td>@if($inscricao->posicao) {{$inscricao->pontos}} @else - @endif</td> @endif
                             @foreach($criterios as $criterio)
-                                <th>@if($criterio->criterio->valor_criterio_visualizacao($inscricao->id)) {{$criterio->criterio->valor_criterio_visualizacao($inscricao->id)}} @else - @endif</th>
+                                <th>@if($criterio->criterio->valor_criterio_visualizacao($inscricao->id, $criterio->prioridade)) {{$criterio->criterio->valor_criterio_visualizacao($inscricao->id, $criterio->prioridade)}} @else - @endif</th>
                             @endforeach
                         </tr>
                     @endforeach

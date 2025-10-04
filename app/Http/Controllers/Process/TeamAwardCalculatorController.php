@@ -11,8 +11,7 @@ use App\EventTeamScore;
 use App\EventTeamAwardScore;
 use App\TiebreakTeamAwardValue;
 use App\Inscricao;
-
-use Log;
+use Illuminate\Support\Facades\Log;
 
 class TeamAwardCalculatorController extends Controller
 {
@@ -60,7 +59,8 @@ class TeamAwardCalculatorController extends Controller
             }else{
                 $q1->whereHas("evento",function($q2) use ($object){
                     $q2->where([
-                        ["grupo_evento_id","=",$object->id]
+                        ["grupo_evento_id", "=", $object->id],
+                        ["classificavel", "=", true]
                     ]);
                 });
             }
@@ -71,6 +71,7 @@ class TeamAwardCalculatorController extends Controller
             ["confirmado", "=", true],
             ["desconsiderar_pontuacao_geral", "=", false],
             ["posicao", ">", 0],
+            ["posicao", "!=", NULL],
             ["clube_id", "!=", NULL],
         ])
         ->whereIn("categoria_id",$categorias_id)
@@ -83,7 +84,8 @@ class TeamAwardCalculatorController extends Controller
             }else{
                 $q1->whereHas("evento",function($q2) use ($object){
                     $q2->where([
-                        ["grupo_evento_id","=",$object->id]
+                        ["grupo_evento_id","=",$object->id],
+                        ["classificavel", "=", true]
                     ]);
                 });
             }
@@ -97,7 +99,7 @@ class TeamAwardCalculatorController extends Controller
                 $is_points = true;
             }
         }
-        Log::debug("Total de inscrições encontradas: " . $inscricoes_count);
+        Log::debug("Total de inscrições encontradas: " . $inscricoes_count .'('.$inscricoes->count().')');
         foreach ($inscricoes as $inscricao) {
             if($time_award->hasPlace($inscricao->posicao) || $is_points){
                 if($is_points){
@@ -120,6 +122,15 @@ class TeamAwardCalculatorController extends Controller
                     $pontos_time->save();
                 }
 
+
+
+                if (!$pontos_time->hasConfig("total_registrations_processed")) {
+                    $pontos_time->setConfig("total_registrations_processed", ConfigType::Integer, 0);
+                    $total_registrations_processed = 0;
+                } else {
+                    $total_registrations_processed = $pontos_time->getConfig("total_registrations_processed",true);
+                }
+
                 if ($time_award->hasConfig("limit_places")) {
 
                     if(!$pontos_time->hasConfig("registrations_processed_category_".$inscricao->categoria->id)){
@@ -128,15 +139,36 @@ class TeamAwardCalculatorController extends Controller
 
                     $quantidade = $pontos_time->getConfig("registrations_processed_category_".$inscricao->categoria->id,true);
                     if ($time_award->getConfig("limit_places",true) > $quantidade) {
+                        Log::debug("Pontos ({$time_award->id},{$inscricao->clube->id}): {$points}");
                         $pontos_time->score += $points;
 
+                        $pontos_time->addRegistration($inscricao->id);
+
                         $quantidade++;
+                        $total_registrations_processed++;
                         $pontos_time->setConfig("registrations_processed_category_".$inscricao->categoria->id,ConfigType::Integer,$quantidade);
+                    }else{
+                        Log::debug("Pontos: Limite ultrapasado.");
+                    }
+                }elseif($time_award->hasConfig("limit_total_places")){
+                    if ($time_award->getConfig("limit_total_places", true) > $total_registrations_processed) {
+                        Log::debug("Pontos ({$time_award->id},{$inscricao->clube->id}): {$points}");
+                        $pontos_time->score += $points;
+
+                        $pontos_time->addRegistration($inscricao->id);
+
+                        $total_registrations_processed++;
+                    } else {
+                        Log::debug("Pontos: Limite ultrapasado.");
                     }
                 } else {
+                    Log::debug("Pontos ({$time_award->id},{$inscricao->clube->id}): {$points}");
                     $pontos_time->score += $points;
 
+                    $pontos_time->addRegistration($inscricao->id);
                 }
+                $pontos_time->setConfig("total_registrations_processed", ConfigType::Integer, $total_registrations_processed);
+
                 $pontos_time->save();
                 $retornos[] = "<hr/>";
             }

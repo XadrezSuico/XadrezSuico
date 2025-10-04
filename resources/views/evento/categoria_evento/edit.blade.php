@@ -47,14 +47,14 @@
                                     @if(
                                         $xadrezsuicopag_category_request->ok == 1
                                     )
-                                        <label for="category_xadrezsuicopag_uuid">XadrezSuíçoPAG: Categoria</label>
+                                        <label for="category_xadrezsuicopag_uuid">PAG: Categoria</label>
                                         <select name="xadrezsuicopag_uuid" id="category_xadrezsuicopag_uuid" class="form-control width-100">
-                                            <option value="">--- Sem Categoria no XadrezSuíçoPAG ---</option>
+                                            <option value="">--- Sem Categoria no PAG ---</option>
                                             @foreach($xadrezsuicopag_category_request->categories as $xadrezsuicopag_category)
                                                 <option value="{{$xadrezsuicopag_category->uuid}}">{{$xadrezsuicopag_category->uuid}} - {{$xadrezsuicopag_category->name}}</option>
                                             @endforeach
                                         </select>
-                                        <small><strong>IMPORTANTE!</strong> Apenas selecione uma categoria do XadrezSuíçoPAG caso esta necessite pagamento.</small>
+                                        <small><strong>IMPORTANTE!</strong> Apenas selecione uma categoria do PAG caso esta necessite pagamento.</small>
                                     @endif
                                 @endif
                             @endif

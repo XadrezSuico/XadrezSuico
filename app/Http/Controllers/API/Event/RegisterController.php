@@ -39,7 +39,7 @@ class RegisterController extends Controller
             } elseif (
                 !$request->has("accepts.policy")
             ) {
-                return response()->json(["ok" => 0, "error" => 1, "message" => "Você deve aceitar o termo de uso e política de privacidade da plataforma XadrezSuíço!", "result" => false]);
+                return response()->json(["ok" => 0, "error" => 1, "message" => "Você deve aceitar o termo de uso e política de privacidade da plataforma " . config("xadrezsuico.name", "XadrezSuíço") . "!", "result" => false]);
             } elseif (
                 !$request->has("accepts.image")
             ) {
@@ -55,7 +55,7 @@ class RegisterController extends Controller
             } elseif (
                 !$request->input("accepts.policy")
             ) {
-                return response()->json(["ok" => 0, "error" => 1, "message" => "Você deve aceitar o termo de uso e política de privacidade da plataforma XadrezSuíço!", "result" => false]);
+                return response()->json(["ok" => 0, "error" => 1, "message" => "Você deve aceitar o termo de uso e política de privacidade da plataforma " . config("xadrezsuico.name", "XadrezSuíço") . "!", "result" => false]);
             } elseif (
                 !$request->input("accepts.image")
             ) {

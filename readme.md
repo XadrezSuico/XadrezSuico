@@ -1,26 +1,26 @@
-# Sistema XadrezSuiço
+# Sistema RokadeManager
 
-Sejam bem-vindos ao repositório do sistema XadrezSuíço! Aqui está o código-fonte e outras informações importantes sobre o projeto.
+Sejam bem-vindos ao repositório do sistema RokadeManager! Aqui está o código-fonte e outras informações importantes sobre o projeto.
 
-### Mas o que é o XadrezSuíço?
+### Mas o que é o RokadeManager?
 É uma plataforma de gerenciamento de Circuitos de Xadrez. A ideia da plataforma é algo que possa simplificar o processo pré e pós eventos, ajudando no recebimento das inscrições das etapas dos circuitos e depois podendo efetuar a classificação geral do circuito.
 
-### Eu posso usar o XadrezSuíço?
+### Eu posso usar o RokadeManager?
 Claro que sim! O código está neste repositório, porém, o mesmo está ainda em desenvolvimento, com algumas funções ainda não funcionando, mas já é possível começar a trabalhar com o mesmo. 
 
-### O XadrezSuíço é um software proprietário?
+### O RokadeManager é um software proprietário?
 Não, se trata de um software livre licenciado por uma licença reciproca total, ou seja, se trata de uma licença que caso faça um fork (garfo em inglês, que tem o significado de fazer uma cópia do projeto para você poder trabalhar) do projeto e efetue alterações no mesmo, não seja possível alterar a licença a ser disponibilizada, ou seja, a licença da versão modificada deverá ser a mesma que aqui está.
 No caso foi escolhida a licença GPL de versão 3, por se tratar da versão mais atualizada da licença e também para garantir que este software continue livre para todo o sempre.
 
-### Com quais tecnologias o XadrezSuíço trabalha?
-O XadrezSuíço é desenvolvido em PHP com o framework Laravel, podendo ser utilizados vários tipos de bancos de dados, mas o que mais foi focado para o sistema foi o MySQL/MariaDB, que inclusive é o que recomendamos para uso.
+### Com quais tecnologias o RokadeManager trabalha?
+O RokadeManager é desenvolvido em PHP com o framework Laravel, podendo ser utilizados vários tipos de bancos de dados, mas o que mais foi focado para o sistema foi o MySQL/MariaDB, que inclusive é o que recomendamos para uso.
 
 ### A minha competição utiliza-se dos Ratings FIDE e/ou CBX, vou ter algum problema com isso?
 Não! E isso é uma das coisas mais bacanas deste projeto: ao receber um cadastro com o ID FIDE ou CBX, passado alguns minutos, o mesmo irá importar os ratings para o sistema!
 
-IMPORTANTE! Considerando os ratings FIDE e CBX, o XadrezSuíço por enquanto apenas está trabalhando com os Ratings Rápido. Já está na lista fazer atualização no sistema que permita o uso dos Ratings de Blitz e Convencional, mas ainda não está implementado.
+IMPORTANTE! Considerando os ratings FIDE e CBX, o RokadeManager por enquanto apenas está trabalhando com os Ratings Rápido. Já está na lista fazer atualização no sistema que permita o uso dos Ratings de Blitz e Convencional, mas ainda não está implementado.
 
-## A História por trás do XadrezSuíço
+## A História por trás do RokadeManager
 Bom, preciso personificar um pouco aqui, para deixar mais claro o que acontece neste caso.
 O idealizador do Projeto, João Paulo Polles, é árbitro de Xadrez há mais de 4 anos, e quando o mesmo iniciou a atuar em competições, principalmente como Árbitro Mesa, percebeu que faltava algo para ajudar os árbitros nas competições. Nesta época, o mesmo já fazia o Curso Técnico em Informática e estava o fazendo integrado ao Ensino Médio.
 
@@ -37,6 +37,8 @@ Passou-se um tempo, e percebi que não valeria muito a pena o desenvolvimento de
 
 Com isso, no início de 2019 dei início ao projeto que viria a se tornar o XadrezSuíço. E agora, meses depois do início do desenvolvimento decidi que era hora de começar a publicação pública do software.
 
+Em 2025, após uma análise de mercado, foi identificado que o até então se chamava XadrezSuíço necessitava de um novo nome: Rokade, que é "Roque" em francês, algo que remete muito ao uso da plataforma, e assim começou a se chamar de RokadeManager.
+
 ## Mas e a documentação?
 Então, o mesmo ainda está em desenvolvimento, e assim que o mesmo estiver finalizado irei trabalhar em uma documentação explicando alguns conceitos importantes sobre o software.
 
@@ -52,14 +54,17 @@ O software foi desenvolvido em Laravel, então é o mesmo procedimento de qualqu
 ## E as novas funcionalidades? Como posso sugerir novas?
 Você pode sugerir alterações através das issues! Estaremos "escutando", digamos desta forma.
 
-## Posso ajudar no desenvolvimento do XadrezSuíço?
+## Posso ajudar no desenvolvimento do RokadeManager?
 CLARO! Faça um fork do projeto e nos ajude a deixar esse projeto ainda com ainda mais funcionalidades!
+
+# Agradecimentos
+FEXPAR - Federação de Xadrez do Paraná, principalmente na pessoa do presidente Paulo Virgilio Rios Rodriguez pelo apoio dado para a evolução da plataforma.
 
 -----
 
 ## O que há de novo?
 ### Versão 0.1.0.1 Beta
- - Agora o cálculo de rating é efetuado pelo XadrezSuíço. Para tal, o evento deve calcular o rating e estar vinculado com o Tipo de Rating que é gerenciado pelo XadrezSuíço, e além de importar os resultados, deve-se importar os emparceiramentos com os seus devidos resultados. Além disso, deve-se atentar aos W.O.s para que não seja efetuado o cálculo erroneamente - Issue #54.
+ - Agora o cálculo de rating é efetuado pelo RokadeManager. Para tal, o evento deve calcular o rating e estar vinculado com o Tipo de Rating que é gerenciado pelo RokadeManager, e além de importar os resultados, deve-se importar os emparceiramentos com os seus devidos resultados. Além disso, deve-se atentar aos W.O.s para que não seja efetuado o cálculo erroneamente - Issue #54.
  - Em toda inscrição há um campo onde o(a) enxadrista cede seus direitos de imagem para a organização - Issue #47.
  - Há forma de criar emparceiramento de chave de semi-final/final sem disputa de 3º e 4º - #42.
  - Nova tela onde engloba tanto a inscrição quanto a confirmação - Issue #35.

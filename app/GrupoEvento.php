@@ -105,6 +105,11 @@ class GrupoEvento extends Model
         return $this->hasMany("App\EventGroupConfig", "grupo_evento_id", "id");
     }
 
+    public function event_classificates()
+    {
+        return $this->hasMany("App\Classification\EventClassificate", "event_group_classificator_id", "id");
+    }
+
     public function isDeletavel()
     {
         if ($this->id != null) {
@@ -219,10 +224,15 @@ class GrupoEvento extends Model
         foreach ($this->eventos->all() as $evento) {
             foreach ($evento->event_classificates->all() as $event_classificate) {
                 foreach ($event_classificate->event->categorias->all() as $categoria_relacionada) {
-                    if(!in_array($categoria_relacionada->categoria,$categories)){
+                    if (!in_array($categoria_relacionada->categoria, $categories)) {
                         $categories[] = $categoria_relacionada->categoria;
                     }
                 }
+            }
+        }
+        foreach ($this->event_classificates->all() as $event_classificate) {
+            foreach ($event_classificate->event->categorias->all() as $categoria_relacionada) {
+                $categories[] = $categoria_relacionada->categoria;
             }
         }
         return $categories;
@@ -301,7 +311,7 @@ class GrupoEvento extends Model
             $config = $this->configs()->where([["key", "=", $key]])->first();
 
             if ($config->value_type != $type) {
-                return ["ok" => 0, "error" => 1, "message" => "O tipo do campo é diferente - " . $registration_config->value_type . " != " . $type];
+                return ["ok" => 0, "error" => 1, "message" => "O tipo do campo é diferente - " . $config->value_type . " != " . $type];
             }
         } else {
             $config = new EventGroupConfig;

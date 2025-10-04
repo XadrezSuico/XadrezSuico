@@ -1,6 +1,6 @@
 <div id="mail_portalinterno">
 	<header style="background: #26704c; width: 100%; text-align: center; padding: 20px;">
-		<h2>Sistema XadrezSuiço</h2>
+		<h2>Sistema {{$system_name}} @if($company_user) <small>de {{$company_user}}</small> @endif</h2>
 	</header>
 	<section style="text-align: center;">
 		{!!$content!!}

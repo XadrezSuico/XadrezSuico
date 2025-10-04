@@ -42,6 +42,9 @@ class PREsporteTeamItemExport implements FromView, WithStyles, WithColumnWidths,
             // Style the first row as bold text.
             1    => ['font' => ['bold' => true, 'size' => 16]],
             2    => ['font' => ['bold' => true]],
+            "A3"    => ['font' => ['bold' => true]],
+            5    => ['font' => ['bold' => true]],
+            // "I3"    => ['font' => ['bold' => true]],
 
             // Styling a specific cell by coordinate.
             'B2' => ['font' => ['italic' => true]],
@@ -62,7 +65,29 @@ class PREsporteTeamItemExport implements FromView, WithStyles, WithColumnWidths,
                 $cells_bottom = array();
                 $cells_top = array();
 
-                $l = 4;
+
+                $event->sheet->getStyle("E3")->applyFromArray([
+                    'borders' => [
+                        'top' => [
+                            'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                            'color' => ['argb' => '000000'],
+                        ],
+                        'bottom' => [
+                            'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                            'color' => ['argb' => '000000'],
+                        ],
+                        'left' => [
+                            'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                            'color' => ['argb' => '000000'],
+                        ],
+                        'right' => [
+                            'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                            'color' => ['argb' => '000000'],
+                        ],
+                    ],
+                ]);
+
+                $l = 9;
                 foreach ($this->event->inscritosPorClube($this->club->id) as $id_categoria => $inscricoes) {
                     for ($a = "A"; $a < "L"; $a++) {
                         $cells_bottom[] = "{$a}{$l}";

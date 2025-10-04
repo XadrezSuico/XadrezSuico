@@ -8,6 +8,7 @@ use App\Http\Controllers\External\XadrezSuicoPagController;
 
 use App\Categoria;
 use App\CategoriaEvento;
+use App\CategoriaTorneio;
 use App\Cidade;
 use App\CriterioDesempate;
 use App\CriterioDesempateEvento;
@@ -30,6 +31,7 @@ use App\Enum\EmailType;
 use App\Enum\ConfigType;
 use App\Exports\EnxadristasInscritosFromView;
 use App\Helper\SingletonValueHelper;
+use App\Torneio;
 use Log;
 
 class EventoGerenciarController extends Controller
@@ -575,6 +577,47 @@ class EventoGerenciarController extends Controller
         $categoria_evento->save();
         return redirect("/evento/dashboard/" . $evento_id . "?tab=categorias_relacionadas");
     }
+    public function categoria_createTournament($evento_id, $id)
+    {
+        $evento = Evento::find($evento_id);
+        $user = Auth::user();
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionEventByPerfil($evento->id, [4]) &&
+            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
+        ) {
+            return redirect("/evento/dashboard/" . $evento->id);
+        }
+        $categoria = CategoriaEvento::find($id);
+
+        $messageBag = new MessageBag;
+
+        if($evento->torneios()->whereHas("categorias", function ($q) use ($categoria) {
+            $q->where([["categoria_id", "=", $categoria->categoria_id]]);
+        })->count() == 0){
+            $torneio = new Torneio;
+            $torneio->evento_id = $evento->id;
+            $torneio->name = "Torneio Categoria - ".$categoria->categoria->name;
+            $torneio->tipo_torneio_id = 1;
+            $torneio->softwares_id = 1;
+            $torneio->save();
+
+            $torneio_categoria = new CategoriaTorneio;
+            $torneio_categoria->torneio_id = $torneio->id;
+            $torneio_categoria->categoria_id = $categoria->categoria->id;
+            $torneio_categoria->save();
+
+            $messageBag->add("alerta", "O torneio foi criado para a categoria com sucesso!");
+            $messageBag->add("type", "success");
+
+            return redirect("/evento/dashboard/" . $evento_id . "?tab=categorias_relacionadas")->withErrors($messageBag);
+        }
+
+
+        $messageBag->add("alerta", "A categoria já está vinculada a um torneio e não é possível fazer este processo.");
+        $messageBag->add("type", "danger");
+        return redirect("/evento/dashboard/" . $evento_id . "?tab=categorias_relacionadas")->withErrors($messageBag);
+    }
     public function categoria_remove($id, $categoria_evento_id)
     {
         $user = Auth::user();
@@ -650,7 +693,11 @@ class EventoGerenciarController extends Controller
             !$user->hasPermissionEventByPerfil($evento->id, [4]) &&
             !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
         ) {
-            return redirect("/evento/dashboard/".$evento->id);
+            return response()->json([
+                'ok' => 0,
+                'error' => 1,
+                'message' => 'Você não tem permissão para realizar esta ação'
+            ]);
         }
         if ($evento) {
             if ($evento->is_inscricoes_bloqueadas) {
@@ -659,8 +706,17 @@ class EventoGerenciarController extends Controller
                 $evento->is_inscricoes_bloqueadas = true;
             }
             $evento->save();
-            return redirect("/evento/dashboard/" . $evento->id);
+            return response()->json([
+                'ok' => 1,
+                'error' => 0,
+                'message' => 'Status das inscrições atualizado com sucesso'
+            ]);
         }
+        return response()->json([
+            'ok' => 0,
+            'error' => 1,
+            'message' => 'Evento não encontrado'
+        ]);
     }
     public function toggleMostrarClassificacao($evento_id)
     {
@@ -671,60 +727,66 @@ class EventoGerenciarController extends Controller
             !$user->hasPermissionEventByPerfil($evento->id, [4]) &&
             !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
         ) {
-            return redirect("/evento/dashboard/".$evento->id);
+            return response()->json([
+                'ok' => false,
+                'message' => 'Você não tem permissão para realizar esta ação'
+            ]);
         }
         if ($evento) {
-            if ($evento->mostrar_resultados) {
-                $evento->mostrar_resultados = false;
-            } else {
-                $evento->mostrar_resultados = true;
-            }
+            $evento->mostrar_resultados = !$evento->mostrar_resultados;
             $evento->save();
-            return redirect("/evento/dashboard/" . $evento->id);
+            return response()->json([
+                'ok' => true,
+                'message' => $evento->mostrar_resultados ? 'Resultados liberados com sucesso!' : 'Resultados restritos com sucesso!'
+            ]);
         }
+        return response()->json([
+            'ok' => false,
+            'message' => 'Evento não encontrado'
+        ]);
     }
 
     public function toggleEventoClassificavel($evento_id)
     {
         $user = Auth::user();
         $evento = Evento::find($evento_id);
+        if (!$evento) {
+            return response()->json(['ok' => false, 'message' => 'Evento não encontrado']);
+        }
         if (
             !$user->hasPermissionGlobal() &&
             !$user->hasPermissionEventByPerfil($evento->id, [4]) &&
             !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
         ) {
-            return redirect("/evento/dashboard/".$evento->id);
+            return response()->json(['ok' => false, 'message' => 'Acesso negado']);
         }
-        if ($evento) {
-            if ($evento->classificavel) {
-                $evento->classificavel = false;
-            } else {
-                $evento->classificavel = true;
-            }
-            $evento->save();
-            return redirect("/evento/dashboard/" . $evento->id);
-        }
+
+        $evento->classificavel = !$evento->classificavel;
+        $evento->save();
+
+        $msg = $evento->classificavel ? 'Classificação geral liberada para este evento!' : 'Classificação geral bloqueada para este evento!';
+        return response()->json(['ok' => true, 'message' => $msg]);
     }
     public function toggleClassificacaoManual($evento_id)
     {
         $user = Auth::user();
         $evento = Evento::find($evento_id);
+        if (!$evento) {
+            return response()->json(['ok' => false, 'message' => 'Evento não encontrado']);
+        }
         if (
             !$user->hasPermissionGlobal() &&
             !$user->hasPermissionEventByPerfil($evento->id, [4]) &&
             !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
         ) {
-            return redirect("/evento/dashboard".$evento->id);
+            return response()->json(['ok' => false, 'message' => 'Acesso negado']);
         }
-        if ($evento) {
-            if ($evento->e_resultados_manuais) {
-                $evento->e_resultados_manuais = false;
-            } else {
-                $evento->e_resultados_manuais = true;
-            }
-            $evento->save();
-            return redirect("/evento/dashboard/" . $evento->id);
-        }
+
+        $evento->e_resultados_manuais = !$evento->e_resultados_manuais;
+        $evento->save();
+
+        $msg = !$evento->e_resultados_manuais ? 'Resultados automáticos ativados!' : 'Resultados automáticos desativados! Agora os resultados são manuais.';
+        return response()->json(['ok' => true, 'message' => $msg]);
     }
     public function toggleRating($evento_id)
     {
@@ -735,38 +797,38 @@ class EventoGerenciarController extends Controller
             !$user->hasPermissionEventByPerfil($evento->id, [4]) &&
             !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
         ) {
-            return redirect("/evento/dashboard/".$evento->id);
+            return response()->json([
+                'ok' => 0,
+                'error' => 1,
+                'message' => 'Você não tem permissão para realizar esta ação'
+            ]);
         }
         if ($evento) {
-            if ($evento->is_rating_calculate_enabled) {
-                $evento->is_rating_calculate_enabled = false;
-            } else {
-                $evento->is_rating_calculate_enabled = true;
-            }
+            $evento->is_rating_calculate_enabled = !$evento->is_rating_calculate_enabled;
             $evento->save();
-            return redirect("/evento/dashboard/" . $evento->id);
+            return response()->json([
+                'ok' => 1,
+                'error' => 0,
+                'message' => 'Status do cálculo de rating atualizado com sucesso'
+            ]);
         }
+        return response()->json([
+            'ok' => 0,
+            'error' => 1,
+            'message' => 'Evento não encontrado'
+        ]);
     }
-    public function toggleEdicaoInscricao($evento_id)
+    public function toggleEdicaoInscricao($id)
     {
-        $user = Auth::user();
-        $evento = Evento::find($evento_id);
-        if (
-            !$user->hasPermissionGlobal() &&
-            !$user->hasPermissionEventByPerfil($evento->id, [4]) &&
-            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
-        ) {
-            return redirect("/evento/dashboard/".$evento->id);
+        $evento = Evento::find($id);
+        if(!$evento){
+            return response()->json(['ok' => false, 'message' => 'Evento não encontrado']);
         }
-        if ($evento) {
-            if ($evento->permite_edicao_inscricao) {
-                $evento->permite_edicao_inscricao = false;
-            } else {
-                $evento->permite_edicao_inscricao = true;
-            }
-            $evento->save();
-            return redirect("/evento/dashboard/" . $evento->id);
-        }
+
+        $evento->permite_edicao_inscricao = !$evento->permite_edicao_inscricao;
+        $evento->save();
+
+        return response()->json(['ok' => true]);
     }
 
     public function toggleRegistrationPaidConfirmed($evento_id)
@@ -883,10 +945,10 @@ class EventoGerenciarController extends Controller
         $evento = Evento::find($evento_id);
         if (
             !$user->hasPermissionGlobal() &&
-            !$user->hasPermissionEventByPerfil($evento->id,[3, 4, 5]) &&
-            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[6,7])
+            !$user->hasPermissionEventByPerfil($evento->id, [3, 4, 5]) &&
+            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [6, 7])
         ) {
-            return redirect("/evento/dashboard/".$evento->id);
+            return redirect("/evento/dashboard/" . $evento->id);
         }
         return view("evento.publico.classificacao", compact("evento"));
     }
@@ -904,7 +966,7 @@ class EventoGerenciarController extends Controller
 
         $categoria = Categoria::find($categoria_id);
         $torneio = $categoria->getTorneioByEvento($evento);
-        if($evento->is_lichess_integration){
+        if ($evento->is_lichess_integration) {
             $inscricoes = Inscricao::where([
                 ["categoria_id", "=", $categoria->id],
             ])
@@ -916,7 +978,7 @@ class EventoGerenciarController extends Controller
                 ->orderBy("confirmado", "DESC")
                 ->orderBy("posicao", "ASC")
                 ->get();
-        }else{
+        } else {
             $inscricoes = Inscricao::where([
                 ["categoria_id", "=", $categoria->id],
                 ["confirmado", "=", true],
@@ -930,7 +992,77 @@ class EventoGerenciarController extends Controller
                 ->get();
         }
         $criterios = $torneio->getCriteriosTotal();
-        return view("evento.publico.list", compact("evento", "torneio", "categoria", "inscricoes", "criterios"));
+
+        $is_internal = true;
+        return view("evento.publico.list", compact("evento", "torneio", "categoria", "inscricoes", "criterios", "is_internal"));
+    }
+
+    public function classificacao_v2($evento_id)
+    {
+        $user = Auth::user();
+        $evento = Evento::find($evento_id);
+
+        if (!$evento) {
+            return abort(404);
+        }
+
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionEventByPerfil($evento->id, [3, 4, 5]) &&
+            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [6, 7])
+        ) {
+            return redirect("/evento/dashboard/" . $evento->id);
+        }
+        return view("evento.publico.v2.classificacao", compact("evento"));
+    }
+    public function resultados_v2($evento_id, $categoria_id)
+    {
+        $user = Auth::user();
+        $evento = Evento::find($evento_id);
+
+        if (!$evento) {
+            return abort(404);
+        }
+
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionEventByPerfil($evento->id, [4]) &&
+            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
+        ) {
+            return redirect("/evento/dashboard/" . $evento->id);
+        }
+
+        $categoria = Categoria::find($categoria_id);
+        $torneio = $categoria->getTorneioByEvento($evento);
+        if ($evento->is_lichess_integration) {
+            $inscricoes = Inscricao::where([
+                ["categoria_id", "=", $categoria->id],
+            ])
+                ->whereHas("torneio", function ($q1) use ($evento) {
+                    $q1->where([
+                        ["evento_id", "=", $evento->id],
+                    ]);
+                })
+                ->orderBy("confirmado", "DESC")
+                ->orderBy("posicao", "ASC")
+                ->get();
+        } else {
+            $inscricoes = Inscricao::where([
+                ["categoria_id", "=", $categoria->id],
+                ["confirmado", "=", true],
+            ])
+                ->whereHas("torneio", function ($q1) use ($evento) {
+                    $q1->where([
+                        ["evento_id", "=", $evento->id],
+                    ]);
+                })
+                ->orderBy("posicao", "ASC")
+                ->get();
+        }
+        $criterios = $torneio->getCriteriosTotal();
+
+        $is_internal = true;
+        return view("evento.publico.list", compact("evento", "torneio", "categoria", "inscricoes", "criterios", "is_internal"));
     }
 
     public function visualizar_inscricoes($id)

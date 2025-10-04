@@ -212,17 +212,6 @@
                                         <label for="lbx_id">ID LBX</label>
                                         <input name="lbx_id" id="lbx_id" class="form-control" type="text" value="{{$enxadrista->lbx_id}}" @if(!$permitido_edicao) disabled="disabled" @endif />
                                     </div>
-                                    @if(!$enxadrista->lbx_id)
-                                            Pesquisa pelo Nome Completo:<br/>
-                                            @foreach($json_lbx as $row)
-                                                ID: {{$row->id}}<br/>
-                                                Nome: {{$row->sobrenome}}, {{$row->nome}}<br/>
-                                                FED: {{$row->fed}}<br/>
-                                                Cidade: {{$row->codigo_cidade}} - {{$row->nome_cidade}}<br/>
-                                                @if(isset($row->nascimento)) Data de Nascimento: {{$row->nascimento}}<br/> @endif
-                                                <hr/>
-                                            @endforeach
-                                    @endif
                                 </div>
                                 <div class="col-md-4">
                                     <div class="form-group">
@@ -463,12 +452,16 @@
 
 		$("#clube_id").select2().val([{{$enxadrista->clube_id}}]).change();
 		$("#sexos_id").select2().val([{{$enxadrista->sexos_id}}]).change();
-        var newOptionPaisNascimento = new Option("{{$enxadrista->pais_nascimento->nome}} ({{$enxadrista->pais_nascimento->codigo_iso}})", "{{$enxadrista->pais_nascimento->id}}", false, false);
-        $('#pais_nascimento_id').append(newOptionPaisNascimento).trigger('change');
-		$("#pais_nascimento_id").val([{{$enxadrista->pais_id}}]).change();
-		var newOptionPaisCelular = new Option("{{$enxadrista->pais_celular->nome}} ({{$enxadrista->pais_celular->codigo_iso}})", "{{$enxadrista->pais_celular->id}}", false, false);
-        $('#pais_celular_id').append(newOptionPaisCelular).trigger('change');
-		$("#pais_celular_id").val([{{$enxadrista->pais_celular_id}}]).change();
+        @if($enxadrista->pais_nascimento)
+            var newOptionPaisNascimento = new Option("{{$enxadrista->pais_nascimento->nome}} ({{$enxadrista->pais_nascimento->codigo_iso}})", "{{$enxadrista->pais_nascimento->id}}", false, false);
+            $('#pais_nascimento_id').append(newOptionPaisNascimento).trigger('change');
+            $("#pais_nascimento_id").val([{{$enxadrista->pais_id}}]).change();
+        @endif
+        @if($enxadrista->pais_celular)
+            var newOptionPaisCelular = new Option("{{$enxadrista->pais_celular->nome}} ({{$enxadrista->pais_celular->codigo_iso}})", "{{$enxadrista->pais_celular->id}}", false, false);
+            $('#pais_celular_id').append(newOptionPaisCelular).trigger('change');
+            $("#pais_celular_id").val([{{$enxadrista->pais_celular_id}}]).change();
+        @endif
 		Loading.enable(loading_default_animation,10000);
 		buscaTipoDocumentos(function(){
 			Loading.destroy();

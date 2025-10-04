@@ -22,7 +22,7 @@ class SeedPaginaTableAddPoliticaDePrivacidade extends Migration
             $pagina->uuid = "16f32fa4-c9f8-43ca-bc41-b7ceac03b60e";
         }
 
-        $pagina->title = "Política de Privacidade do XadrezSuíço";
+        $pagina->title = "Política de Privacidade do  " . config("xadrezsuico.name", "XadrezSuíço") . "";
         $pagina->texto = '<h3>A. Introdução</h3>
             <p>A privacidade dos visitantes e usuários de nossa plataforma é muito importante para nós, e estamos comprometidos em protegê-la.
                 Esta política explica o que faremos com suas informações pessoais.</p>
@@ -68,7 +68,7 @@ class SeedPaginaTableAddPoliticaDePrivacidade extends Migration
             <p>Considerando os dados e tratamentos dispostos neste documento e a aplicação dos mesmos, o aceite é efetuado durante o processo de cadastro no sistema de forma completa, não sendo possível aceitar parcialmente o presente.</p>
 
             <h3>F. Da plataforma</h3>
-            <p>O XadrezSuíço é uma plataforma de código aberto, onde é possível qualquer indivíduo efetuar o download e fazer a sua própria implementação. Além disso, você pode ter acesso ao código-fonte para auditar como a plataforma funciona e conhecer como é operada. Para isso acesse o repositório da mesma no github: <a href="https://github.com/xadrezsuico/xadrezsuico">https://github.com/xadrezsuico/xadrezsuico</a>.</p>
+            <p>O  ". config("xadrezsuico.name","XadrezSuíço")." é uma plataforma de código aberto, onde é possível qualquer indivíduo efetuar o download e fazer a sua própria implementação. Além disso, você pode ter acesso ao código-fonte para auditar como a plataforma funciona e conhecer como é operada. Para isso acesse o repositório da mesma no github: <a href="https://github.com/xadrezsuico/xadrezsuico">https://github.com/xadrezsuico/xadrezsuico</a>.</p>
 
             <h3>G. Da atualização do presente documento</h3>
             <p>Caso ocorra alguma atualização no presente documento, o mesmo será encaminhado por e-mail o qual aguardará retorno de não aceite durante o período de 30 dias corridos, o qual, caso não haja manifestação, será considerado como aceito. Para aceites após a data de publicação, entra em vigor assim que efetuado o aceite.</p>

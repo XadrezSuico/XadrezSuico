@@ -23,13 +23,13 @@ class SeedEmailTemplates extends Migration
             $email_template_1->email_type = 1;
         }
         $email_template_1->name = "Confirmação de Cadastro de Enxadrista";
-        $email_template_1->subject = "Sistema XadrezSuíço - Cadastro de Enxadrista Realizado - Enxadrista: {enxadrista.name}";
+        $email_template_1->subject = "Sistema ". config("xadrezsuico.name", "XadrezSuíço") . " - Cadastro de Enxadrista Realizado - Enxadrista: {enxadrista.name}";
 
         $email_template_1->message = "Olá {enxadrista.name}!<br/>";
-        $email_template_1->message .= "Esta é uma confirmação do seu cadastro no Sistema XadrezSuíço<br/>";
-        $email_template_1->message .= "O seu ID de Cadastro é <strong><u>{enxadrista.id}</u></strong> e você poderá utilizar ele para encontrar seu cadastro para inscrição no Sistema XadrezSuíço e também para poder efetuar a sua confirmação nos eventos que foi utilizado esta implementação do sistema.<br/>";
+        $email_template_1->message .= "Esta é uma confirmação do seu cadastro no Sistema  " . config("xadrezsuico.name", "XadrezSuíço") . "<br/>";
+        $email_template_1->message .= "O seu ID de Cadastro é <strong><u>{enxadrista.id}</u></strong> e você poderá utilizar ele para encontrar seu cadastro para inscrição no Sistema  " . config("xadrezsuico.name", "XadrezSuíço") . " e também para poder efetuar a sua confirmação nos eventos que foi utilizado esta implementação do sistema.<br/>";
         $email_template_1->message .= "Recomendamos que você mantenha salvo este ID/Código de Cadastro para poder agilizar o processo de confirmação ou inscrição.<br/>";
-        $email_template_1->message .= "Além disso, você receberá neste e-mail as confirmações de inscrições efetuadas nesta implementação do Sistema XadrezSuíço.<br/>";
+        $email_template_1->message .= "Além disso, você receberá neste e-mail as confirmações de inscrições efetuadas nesta implementação do Sistema  " . config("xadrezsuico.name", "XadrezSuíço") . ".<br/>";
         $email_template_1->message .= "Atenciosamente.";
 
         $email_template_1->save();

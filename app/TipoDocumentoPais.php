@@ -21,7 +21,7 @@ class TipoDocumentoPais extends Model
             "name" => $this->tipo_documento->nome,
             "pattern" => $this->tipo_documento->padrao,
             "validation" => $this->tipo_documento->validacao,
-            "is_required" => $this->e_requerido
+            "is_required" => $this->e_requerido == 1
         ];
     }
 }

@@ -7,6 +7,7 @@ use App\Categoria;
 use App\Pais;
 use App\Estado;
 use App\Cidade;
+use App\Classification\EventClassificate;
 use App\Clube;
 use App\Email;
 use App\Enxadrista;
@@ -279,18 +280,15 @@ class InscricaoController extends Controller
     }
 
 
-    public function visualizar_classificados($id,$classificator_id)
+    public function visualizar_classificados($classificator_id)
     {
-        $evento = Evento::find($id);
-        if ($evento) {
-            if($evento->event_classificates()->where([["id","=",$classificator_id]])->count() > 0){
-                $xdzsc_classificador = $evento->event_classificates()->where([["id", "=", $classificator_id]])->first();
+        if(EventClassificate::where([["id","=",$classificator_id]])->count() > 0){
+            $xdzsc_classificador = EventClassificate::where([["id", "=", $classificator_id]])->first();
 
 
-                return view("inscricao.classificados", compact("evento","xdzsc_classificador"));
-            }
-
+            return view("inscricao.classificados", compact("xdzsc_classificador"));
         }
+
         return abort(404);
     }
     public function visualizar_indicados($id, $campos_id, $opcaos_id)
@@ -828,7 +826,7 @@ class InscricaoController extends Controller
         } elseif (
             !$request->has("xadrezsuico_aceito")
         ) {
-            return response()->json(["ok" => 0, "error" => 1, "message" => "Você deve aceitar o termo de uso e política de privacidade da plataforma XadrezSuíço!", "registred" => 0]);
+            return response()->json(["ok" => 0, "error" => 1, "message" => "Você deve aceitar o termo de uso e política de privacidade da plataforma " . config("xadrezsuico.name", "XadrezSuíço") . "!", "registred" => 0]);
         } elseif (
             !$request->has("imagem_aceito")
         ) {
@@ -1047,7 +1045,7 @@ class InscricaoController extends Controller
         if (
             !$request->has("xadrezsuico_aceito")
         ) {
-            return response()->json(["ok" => 0, "error" => 1, "message" => "Você deve aceitar o termo de uso e política de privacidade da plataforma XadrezSuíço!"]);
+            return response()->json(["ok" => 0, "error" => 1, "message" => "Você deve aceitar o termo de uso e política de privacidade da plataforma " . config("xadrezsuico.name", "XadrezSuíço") . "!"]);
         }
 
         if (
@@ -1359,14 +1357,14 @@ class InscricaoController extends Controller
         if ($enxadrista->email) {
             // EMAIL PARA O ENXADRISTA CADASTRADO
             // $text = "Olá " . $enxadrista->name . "!<br/>";
-            // $text .= "Esta é uma confirmação do seu cadastro no Sistema XadrezSuíço implementado pela ".env("IMPLEMENTADO_POR")."<br/>";
-            // $text .= "O seu ID de Cadastro é <strong><u>".$enxadrista->id."</u></strong> e você poderá utilizar ele para encontrar seu cadastro para inscrição no Sistema XadrezSuíço implementado pela ".env("IMPLEMENTADO_POR")." e também para poder efetuar a sua confirmação nos eventos que foi utilizado esta implementação do sistema.<br/>";
+            // $text .= "Esta é uma confirmação do seu cadastro no Sistema " . config("xadrezsuico.name", "XadrezSuíço") . " implementado pela ".env("IMPLEMENTADO_POR")."<br/>";
+            // $text .= "O seu ID de Cadastro é <strong><u>".$enxadrista->id."</u></strong> e você poderá utilizar ele para encontrar seu cadastro para inscrição no Sistema " . config("xadrezsuico.name", "XadrezSuíço") . " implementado pela ".env("IMPLEMENTADO_POR")." e também para poder efetuar a sua confirmação nos eventos que foi utilizado esta implementação do sistema.<br/>";
             // $text .= "Recomendamos que você mantenha salvo este ID/Código de Cadastro para poder agilizar o processo de confirmação ou inscrição.<br/>";
-            // $text .= "Além disso, você receberá neste e-mail as confirmações de inscrições efetuadas nesta implementação do Sistema XadrezSuíço.<br/>";
+            // $text .= "Além disso, você receberá neste e-mail as confirmações de inscrições efetuadas nesta implementação do Sistema " . config("xadrezsuico.name", "XadrezSuíço") . ".<br/>";
             // $text .= "Atenciosamente.";
             // EmailController::scheduleEmail(
             //     $enxadrista->email,
-            //     "Sistema XadrezSuíço (".env("IMPLEMENTADO_POR").") - Cadastro de Enxadrista Realizado - Enxadrista: " . $enxadrista->name,
+            //     "Sistema " . config("xadrezsuico.name", "XadrezSuíço") . " (".env("IMPLEMENTADO_POR").") - Cadastro de Enxadrista Realizado - Enxadrista: " . $enxadrista->name,
             //     $text,
             //     $enxadrista
             // );
@@ -1707,10 +1705,10 @@ class InscricaoController extends Controller
             if ($request->input("fide_id") > 0) {
                 $enxadrista->fide_id = $request->input("fide_id");
 
-                $enxadrista = FIDERatingController::getRating($enxadrista,false,true);
-                if(!$enxadrista->encontrado_fide){
-                    return response()->json(["ok" => 0, "error" => 1, "message" => "O ID FIDE informado não existe. Por favor, verifique esta informação e tente novamente. Lembrando que esta informação DEVE SER válida e deve corresponder ao seu cadastro!", "registred" => 0, "ask" => 0]);
-                }
+                // $enxadrista = FIDERatingController::getRating($enxadrista,false,true);
+                // if(!$enxadrista->encontrado_fide){
+                //     return response()->json(["ok" => 0, "error" => 1, "message" => "O ID FIDE informado não existe. Por favor, verifique esta informação e tente novamente. Lembrando que esta informação DEVE SER válida e deve corresponder ao seu cadastro!", "registred" => 0, "ask" => 0]);
+                // }
             }else{
                 $enxadrista->fide_id = NULL;
             }

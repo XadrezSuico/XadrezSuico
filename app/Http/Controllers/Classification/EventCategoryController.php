@@ -9,6 +9,7 @@ use App\Evento;
 use App\Categoria;
 use App\Classification\EventClassificateCategory;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\MessageBag;
 
 class EventCategoryController extends Controller
 {
@@ -30,7 +31,11 @@ class EventCategoryController extends Controller
             // ||
             // !$user->hasPermissionEventByPerfil($evento->id, [14, 15])
         ) {
-            return redirect("/");
+
+            $messageBag = new MessageBag;
+            $messageBag->add("type", "danger");
+            $messageBag->add("alerta", "Você não possui privilégios para acesso a essa funcionalidade.");
+            return redirect("/home")->withErrors($messageBag);
         }
 
         return view("evento.classificator.category.new", compact("evento"));
@@ -49,7 +54,10 @@ class EventCategoryController extends Controller
             // ||
             // !$user->hasPermissionEventByPerfil($evento->id, [14, 15])
         ) {
-            return redirect("/");
+            $messageBag = new MessageBag;
+            $messageBag->add("type", "danger");
+            $messageBag->add("alerta", "Você não possui privilégios para acesso a essa funcionalidade.");
+            return redirect("/home")->withErrors($messageBag);
         }
 
         $event_classificate_category = new EventClassificateCategory;
@@ -73,11 +81,17 @@ class EventCategoryController extends Controller
             // ||
             // !$user->hasPermissionEventByPerfil($evento->id, [14, 15])
         ) {
-            return redirect("/");
+            $messageBag = new MessageBag;
+            $messageBag->add("type", "danger");
+            $messageBag->add("alerta", "Você não possui privilégios para acesso a essa funcionalidade.");
+            return redirect("/home")->withErrors($messageBag);
         }
 
         if (EventClassificateCategory::where([["id","=",$id]])->count() == 0) {
-            return redirect()->back();
+            $messageBag = new MessageBag;
+            $messageBag->add("type", "danger");
+            $messageBag->add("alerta", "Classificador não encontrado.");
+            return redirect()->back()->withErrors($messageBag);
         }
 
         $event_classificate_category = EventClassificateCategory::find($id);
@@ -87,10 +101,16 @@ class EventCategoryController extends Controller
         $obj = $this;
 
         if (!$event_classificate_category->category_classificator->evento) {
-            return redirect()->back();
+            $messageBag = new MessageBag;
+            $messageBag->add("type", "danger");
+            $messageBag->add("alerta", "Classificador não possui evento para classificar.");
+            return redirect()->back()->withErrors($messageBag);
         }
         if ($event_classificate_category->category_classificator->evento->id != $evento->id) {
-            return redirect()->back();
+            $messageBag = new MessageBag;
+            $messageBag->add("type", "danger");
+            $messageBag->add("alerta", "A categoria não pertence ao Evento Classificador.");
+            return redirect()->back()->withErrors($messageBag);
         }
 
         return view("evento.classificator.category.edit", compact("evento", "event_classificate_category"));
@@ -109,21 +129,32 @@ class EventCategoryController extends Controller
             // ||
             // !$user->hasPermissionEventByPerfil($evento->id, [14, 15])
         ) {
-            return redirect("/");
+            $messageBag = new MessageBag;
+            $messageBag->add("type", "danger");
+            $messageBag->add("alerta", "Você não possui privilégios para acesso a essa funcionalidade.");
+            return redirect("/home")->withErrors($messageBag);
         }
 
         if (EventClassificateCategory::where([["id", "=", $id]])->count() == 0) {
-            return redirect()->back();
+            $messageBag = new MessageBag;
+            $messageBag->add("type", "danger");
+            $messageBag->add("alerta", "Classificador não encontrado.");
+            return redirect()->back()->withErrors($messageBag);
         }
 
         $event_classificate_category = EventClassificateCategory::find($id);
 
-
         if (!$event_classificate_category->category_classificator->evento) {
-            return redirect()->back();
+            $messageBag = new MessageBag;
+            $messageBag->add("type", "danger");
+            $messageBag->add("alerta", "Classificador não possui evento para classificar.");
+            return redirect()->back()->withErrors($messageBag);
         }
         if ($event_classificate_category->category_classificator->evento->id != $evento->id) {
-            return redirect()->back();
+            $messageBag = new MessageBag;
+            $messageBag->add("type", "danger");
+            $messageBag->add("alerta", "A categoria não pertence ao Evento Classificador.");
+            return redirect()->back()->withErrors($messageBag);
         }
 
         $event_classificate_category->category_id = $request->category_id;

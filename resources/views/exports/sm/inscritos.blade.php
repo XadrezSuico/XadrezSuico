@@ -28,7 +28,7 @@
                                 XZ{{ $inscricao->enxadrista->id }}
                             @endif
                         @else
-                            XZ{{ $inscricao->enxadrista->id }}
+                            {{ $inscricao->enxadrista->id }}
                         @endif
                     </td>
                     <td>

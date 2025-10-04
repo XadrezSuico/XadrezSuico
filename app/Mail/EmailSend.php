@@ -32,8 +32,12 @@ class EmailSend extends Mailable
     public function build()
     {
         $content = $this->email->text;
+
+        $system_name = config("xadrezsuico.name","XadrezSuíço");
+        $company_user = config("xadrezsuico.company_user","XadrezSuíço");
+
         return $this
         ->subject($this->email->subject)
-        ->view('layouts.mail',compact("content"));
+        ->view('layouts.mail',compact("content","system_name","company_user"));
     }
 }

@@ -213,14 +213,15 @@ class InscricaoGerenciarController extends Controller
 
                 foreach ($torneio->getCriteriosTotal() as $criterio) {
                     $criterio_salvar = $criterio->criterio->valor_criterio($inscricao->id);
-                    if ($request->has("criterio_" . $criterio->criterio->id)) {
-                        if (is_numeric($request->input("criterio_" . $criterio->criterio->id))) {
+                    if ($request->has("criterio_" . $criterio->criterio->id . "_" . $criterio->prioridade)) {
+                        if (is_numeric($request->input("criterio_" . $criterio->criterio->id . "_" . $criterio->prioridade))) {
                             if (!$criterio_salvar) {
                                 $criterio_salvar = new InscricaoCriterioDesempate;
+                                $criterio_salvar->prioridade = $criterio->prioridade;
                                 $criterio_salvar->criterio_desempate_id = $criterio->criterio->id;
                                 $criterio_salvar->inscricao_id = $inscricao->id;
                             }
-                            $criterio_salvar->valor = $request->input("criterio_" . $criterio->criterio->id);
+                            $criterio_salvar->valor = $request->input("criterio_" . $criterio->criterio->id . "_" . $criterio->prioridade);
                             $criterio_salvar->save();
                         } else {
                             if ($criterio_salvar) {
@@ -238,15 +239,16 @@ class InscricaoGerenciarController extends Controller
 
             } else {
                 foreach ($torneio->getCriteriosManuais() as $criterio) {
-                    $criterio_salvar = $criterio->criterio->valor_criterio($inscricao->id);
-                    if ($request->has("criterio_" . $criterio->criterio->id)) {
-                        if (is_numeric($request->input("criterio_" . $criterio->criterio->id))) {
+                    $criterio_salvar = $criterio->criterio->valor_criterio($inscricao->id, $criterio->prioridade);
+                    if ($request->has("criterio_" . $criterio->criterio->id."_".$criterio->prioridade)) {
+                        if (is_numeric($request->input("criterio_" . $criterio->criterio->id."_".$criterio->prioridade))) {
                             if (!$criterio_salvar) {
                                 $criterio_salvar = new InscricaoCriterioDesempate;
+                                $criterio_salvar->prioridade = $criterio->prioridade;
                                 $criterio_salvar->criterio_desempate_id = $criterio->criterio->id;
                                 $criterio_salvar->inscricao_id = $inscricao->id;
                             }
-                            $criterio_salvar->valor = $request->input("criterio_" . $criterio->criterio->id);
+                            $criterio_salvar->valor = $request->input("criterio_" . $criterio->criterio->id . "_" . $criterio->prioridade);
                             $criterio_salvar->save();
                         } else {
                             if ($criterio_salvar) {
@@ -447,13 +449,13 @@ class InscricaoGerenciarController extends Controller
         ){
             $messageBag = new MessageBag;
             $messageBag->add("type","danger");
-            $messageBag->add("alerta","O sistema não possui integração com o sistema XadrezSuíçoPag.");
+            $messageBag->add("alerta", "O sistema não possui integração com o sistema " . config("xadrezsuico.name", "XadrezSuíço") . "Pag.");
 
             return redirect("/evento/dashboard/".$evento->id."?tab=torneio")->withErrors($messageBag);
         }elseif(!$evento->isPaid()){
             $messageBag = new MessageBag;
             $messageBag->add("type","danger");
-            $messageBag->add("alerta","O presente evento não possui integração com o sistema XadrezSuíçoPag.");
+            $messageBag->add("alerta", "O presente evento não possui integração com o sistema " . config("xadrezsuico.name", "XadrezSuíço") . "Pag.");
 
             return redirect("/evento/dashboard/".$evento->id."?tab=torneio")->withErrors($messageBag);
         }
@@ -576,19 +578,19 @@ class InscricaoGerenciarController extends Controller
                 // LBX
                 return $this->generateTxt_2($inscricoes, $evento, $torneio);
             case 3:
-                // Padrão XadrezSuíço NOME NO SOBRENOME
+                // Padrão Rokade NOME NO SOBRENOME
                 return $this->generateTxt_3($inscricoes, $evento, $torneio);
             case 4:
-                // Padrão XadrezSuíço NOME NO SOBRENOME + Chess.com
+                // Padrão Rokade NOME NO SOBRENOME + Chess.com
                 return $this->generateTxt_4($inscricoes, $evento, $torneio);
             case 5:
-                // Padrão XadrezSuíço NOME NO SOBRENOME + Sem Cidade
+                // Padrão Rokade NOME NO SOBRENOME + Sem Cidade
                 return $this->generateTxt_5($inscricoes, $evento, $torneio);
             case 6:
-                // Padrão XadrezSuíço NOME NO SOBRENOME + Sem Cidade em Torneio por Equipe
+                // Padrão Rokade NOME NO SOBRENOME + Sem Cidade em Torneio por Equipe
                 return $this->generateTxt_6($inscricoes, $evento, $torneio);
             default:
-                // Padrão XadrezSuíço
+                // Padrão Rokade
                 return $this->generateTxt_0($inscricoes, $evento, $torneio);
         }
     }
@@ -682,6 +684,11 @@ class InscricaoGerenciarController extends Controller
             } else {
                 $texto .= $inscricao->cidade->ibge_id . ";";
                 $texto .= $inscricao->cidade->name . ";";
+            }
+
+            if (!$inscricao->enxadrista->firstname || !$inscricao->enxadrista->lastname) {
+                $inscricao->enxadrista->splitName();
+                $inscricao->enxadrista->save();
             }
 
             $texto .= $inscricao->enxadrista->lastname . ";";
@@ -779,6 +786,11 @@ class InscricaoGerenciarController extends Controller
                 $texto .= $inscricao->cidade->name . ";";
             }
 
+            if (!$inscricao->enxadrista->firstname || !$inscricao->enxadrista->lastname) {
+                $inscricao->enxadrista->splitName();
+                $inscricao->enxadrista->save();
+            }
+
             $texto .= $inscricao->enxadrista->firstname . ";";
             $texto .= $inscricao->enxadrista->lastname . ";";
             $texto .= $inscricao->enxadrista->id . "\r\n";
@@ -874,6 +886,11 @@ class InscricaoGerenciarController extends Controller
                 $texto .= $inscricao->cidade->name . ";";
             }
 
+            if (!$inscricao->enxadrista->firstname || !$inscricao->enxadrista->lastname) {
+                $inscricao->enxadrista->splitName();
+                $inscricao->enxadrista->save();
+            }
+
             $texto .= $inscricao->enxadrista->firstname . ";";
             $texto .= $inscricao->enxadrista->lastname . " [".$inscricao->enxadrista->chess_com_username."];";
             $texto .= $inscricao->enxadrista->id . "\r\n";
@@ -933,7 +950,11 @@ class InscricaoGerenciarController extends Controller
             }else{
                 $texto .= $inscricao->enxadrista->id . ";";
             }
-            $texto .= "BRA;";
+            if ($evento->hasConfig("fed_use_club")) {
+                $texto .= (($inscricao->clube) ? $inscricao->clube->abbr : "") . ";";
+            } else {
+                $texto .= $inscricao->enxadrista->pais_nascimento->codigo_iso . ";";
+            }
 
             if ($evento->tipo_rating) {
                 if ($evento->usa_fide) {
@@ -962,6 +983,11 @@ class InscricaoGerenciarController extends Controller
                 $texto .= $inscricao->clube->getName() . ";";
             } else {
                 $texto .= ";";
+            }
+
+            if (!$inscricao->enxadrista->firstname || !$inscricao->enxadrista->lastname) {
+                $inscricao->enxadrista->splitName();
+                $inscricao->enxadrista->save();
             }
 
             $texto .= $inscricao->enxadrista->firstname . ";";
@@ -1030,7 +1056,11 @@ class InscricaoGerenciarController extends Controller
             }else{
                 $texto .= $inscricao->enxadrista->id . ";";
             }
-            $texto .= "BRA;";
+            if ($evento->hasConfig("fed_use_club")) {
+                $texto .= (($inscricao->clube) ? $inscricao->clube->abbr : "") . ";";
+            } else {
+                $texto .= $inscricao->enxadrista->pais_nascimento->codigo_iso . ";";
+            }
 
             if ($evento->tipo_rating) {
                 if ($evento->usa_fide) {
@@ -1059,6 +1089,11 @@ class InscricaoGerenciarController extends Controller
                 $texto .= $inscricao->clube->getFullName() . ";";
             } else {
                 $texto .= "0;;";
+            }
+
+            if(!$inscricao->enxadrista->firstname || !$inscricao->enxadrista->lastname){
+                $inscricao->enxadrista->splitName();
+                $inscricao->enxadrista->save();
             }
 
             $texto .= $inscricao->enxadrista->firstname . ";";
@@ -1175,6 +1210,11 @@ class InscricaoGerenciarController extends Controller
                 $texto .= $inscricao->cidade->name . ";";
             }
 
+            if (!$inscricao->enxadrista->firstname || !$inscricao->enxadrista->lastname) {
+                $inscricao->enxadrista->splitName();
+                $inscricao->enxadrista->save();
+            }
+
             $texto .= ((count($explode_fide_name) > 1) ? $explode_fide_name[0] : $inscricao->enxadrista->lastname) . ";";
             $texto .= ((count($explode_fide_name) > 1) ? $explode_fide_name[1] : $inscricao->enxadrista->firstname) . ";";
             $texto .= $inscricao->enxadrista->id . "\r\n";
@@ -1281,6 +1321,11 @@ class InscricaoGerenciarController extends Controller
             } else {
                 $texto .= ";";
                 $texto .= ";";
+            }
+
+            if (!$inscricao->enxadrista->firstname || !$inscricao->enxadrista->lastname) {
+                $inscricao->enxadrista->splitName();
+                $inscricao->enxadrista->save();
             }
 
             $texto .= ((count($explode_fide_name) > 1) ? $explode_fide_name[0] : $inscricao->enxadrista->lastname) . ";";
@@ -1399,6 +1444,11 @@ class InscricaoGerenciarController extends Controller
                 $texto .= $inscricao->cidade->name . ";";
             }
 
+            if (!$inscricao->enxadrista->firstname || !$inscricao->enxadrista->lastname) {
+                $inscricao->enxadrista->splitName();
+                $inscricao->enxadrista->save();
+            }
+
             $texto .= $inscricao->enxadrista->lastname . ";";
             $texto .= $inscricao->enxadrista->firstname . ";";
             $texto .= $inscricao->enxadrista->id . "\r\n";
@@ -1424,7 +1474,17 @@ class InscricaoGerenciarController extends Controller
             $texto .= $club->name.";";
             $texto .= $club->name.";";
             $texto .= $club->id.";";
-            $texto .= ";BRA;;";
+            $texto .= ";";
+            if ($evento->hasConfig("fed_use_club")) {
+                $texto .= (($club->clube) ? $club->abbr : "") . ";";
+            } else {
+                if($club->cidade)
+                    if ($club->cidade->estado)
+                        if ($club->cidade->estado->pais)
+                            $texto .= $club->cidade->estado->pais->codigo_iso;
+                $texto .= ";";
+            }
+            $texto .= ";";
             $texto .= "\r\n";
         }
         return $texto;

@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'name' => env('APP_NAME', 'Sistema XadrezSuíço'),
+    'name' => env('APP_NAME', 'Sistema'),
 
     /*
     |--------------------------------------------------------------------------
@@ -243,6 +243,9 @@ return [
 
         'Excel' => Maatwebsite\Excel\Facades\Excel::class,
 	    'QrCode' => SimpleSoftwareIO\QrCode\Facades\QrCode::class,
+
+
+        'ClassificationTypeRuleConfig' => App\Enum\ClassificationTypeRuleConfig::class,
     ],
 
 ];

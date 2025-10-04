@@ -1,8 +1,17 @@
 @extends('adminlte::page')
 
-@section("title", "Evento #".$evento->id." (".$evento->name.") >> XadrezSuíço Classificador >> Vínculo de Categorias >> Editar")
+@if($element->isEvent())
+    @section("title", "Evento #".$element->id." (".$element->name.") >> XadrezSuíço Classificador #".$event_classificates->id." (".$event_classificates->event->name.") >> Regra >> Editar")
+@else
+    @section("title", "Grupo de Evento #".$element->id." (".$element->name.") >> XadrezSuíço Classificador #".$event_classificates->id." (".$event_classificates->event->name.") >> Regra >> Editar")
+@endif
+
 @section('content_header')
-  <h1>Evento #{{$evento->id}} ({{$evento->name}}) >> XadrezSuíço Classificador >> Vínculo de Categorias >> Editar</h1>
+    @if($element->isEvent())
+        <h1>Evento #{{$element->id}} ({{$element->name}}) >> XadrezSuíço Classificador #{{$event_classificates->id}} ({{$event_classificates->event->name}}) >> Regra >> Editar</h1>
+    @else
+        <h1>Grupo de Evento #{{$element->id}} ({{$element->name}}) >> XadrezSuíço Classificador #{{$event_classificates->id}} ({{$event_classificates->event->name}}) >> Regra >> Editar</h1>
+    @endif
 @stop
 
 
@@ -17,8 +26,13 @@
 @section("content")
 	<!-- Main row -->
 	<ul class="nav nav-pills">
-		<li role="presentation"><a href="/evento/dashboard/{{$evento->id}}?tab=classificator">Voltar a Lista de Classificadores na Dashboard de Evento</a></li>
-		<li role="presentation"><a href="{{url("/evento/".$evento->id."/classificator/".$event_classificates->id."/rule/new")}}">Nova Regra</a></li>
+		 @if($element->isEvent())
+            <li role="presentation"><a href="/evento/dashboard/{{$element->id}}?tab=classificator">Voltar a Lista de Regras na Dashboard de Evento</a></li>
+            <li role="presentation"><a href="{{url("/classificator/event/".$element->id."/".$event_classificates->id."/rule/new")}}">Nova Regra</a></li>
+        @else
+            <li role="presentation"><a href="/grupoevento/dashboard/{{$element->id}}?tab=classificator">Voltar a Lista de Regras na Dashboard de Grupo de Evento</a></li>
+            <li role="presentation"><a href="{{url("/classificator/event_group/".$element->id."/".$event_classificates->id."/rule/new")}}">Nova Regra</a></li>
+        @endif
 	</ul>
 	<div class="row">
   <section class="col-lg-12 connectedSortable">
@@ -26,7 +40,7 @@
 
 		<div class="box box-primary">
 			<div class="box-header">
-				<h3 class="box-title">Editar Vínculo de Categoria</h3>
+				<h3 class="box-title">Editar Regra</h3>
 			</div>
 			<!-- form start -->
 					<form method="post">
@@ -52,6 +66,32 @@
                                 <option value="{{$event_item->id}}">#{{$event_item->id}} - {{$event_item->name}}</option>
                             @endforeach
                         </select>
+                    </div>
+                    <hr/>
+                    <label>Regras para Funcionamento da Regra:</label>
+                    <div class="row">
+                        @foreach(ClassificationTypeRuleConfig::list() as $key => $type_config)
+					        <div class="col-md-6">
+                                <div class="form-group">
+                                    @switch($type_config["type"])
+                                        @case("text")
+                                        @case("integer")
+                                            <label for="config_{{$key}}">{{$type_config["name"]}}</label>
+                                        @break
+                                    @endswitch
+                                    @switch($type_config["type"])
+                                        @case("text")
+                                        @case("integer")
+                                            <input type="text" id="config_{{$key}}" name="config_{{$key}}" class="form-control" value="{{$event_classificate_rule->getConfig($key,true)}}"/>
+                                        @break
+                                        @case("boolean")
+                                            <label><input type="checkbox" id="config_{{$key}}" name="config_{{$key}}" autocomplete="off" @if($event_classificate_rule->getConfig($key,true)) checked @endif/> {{$type_config["name"]}}</label><br/>
+                                        @break
+                                    @endswitch
+                                    <small>{{$type_config["description"]}}</small>
+                                </div>
+                            </div>
+                        @endforeach
                     </div>
 				</div>
 				<!-- /.box-body -->
@@ -95,6 +135,7 @@
         case "position":
         case "position-absolute":
         case "place-by-quantity":
+        case "classificate-by-start-position":
             $("#value_block").show("fast");
             $("#event_block").hide("fast");
 

@@ -88,6 +88,11 @@ class Evento extends Model
         return $this->belongsTo("App\GrupoEvento", "grupo_evento_id", "id");
     }
 
+    public function parent_event()
+    {
+        return $this->belongsTo("App\Evento", "parent_evento_id", "id");
+    }
+
     public function cidade()
     {
         return $this->belongsTo("App\Cidade", "cidade_id", "id");
@@ -140,6 +145,11 @@ class Evento extends Model
     public function event_classificate_rules()
     {
         return $this->hasMany("App\Classification\EventClassificateRule", "event_id", "id");
+    }
+
+    public function event_children()
+    {
+        return $this->hasMany("App\Evento", "parent_evento_id", "id");
     }
 
     public function tipo_rating()
@@ -484,6 +494,28 @@ class Evento extends Model
             $total += $torneio->inscricoes()->count();
         }
         return $total - $this->quantosInscritosConfirmadosLichess();
+    }
+    public function quantosEmparceiramentos()
+    {
+        $total = 0;
+        foreach ($this->torneios->all() as $torneio) {
+            foreach ($torneio->rodadas->all() as $rodada) {
+                $total += $rodada->emparceiramentos()->where([["is_wo_a", "=", false], ["is_wo_b", "=", false]])->count();
+            }
+        }
+        return $total;
+    }
+    public function quantosClubes()
+    {
+        $equipes = array();
+        foreach ($this->torneios->all() as $torneio) {
+            foreach($torneio->inscricoes()->where([["confirmado", "=", true], ["desconsiderar_pontuacao_geral", "=", false]])->get() as $inscricao){
+                if(!in_array($inscricao->clube_id,$equipes) && $inscricao->clube_id != null){
+                    $equipes[] = $inscricao->clube_id;
+                }
+            }
+        }
+        return count($equipes);
     }
     public function estaLotado()
     {
@@ -1007,8 +1039,8 @@ class Evento extends Model
 
     public function classificator_getCategories(){
         $categories = array();
-        foreach($this->event_classificates->all() as $event_classificate){
-            foreach($event_classificate->event->categorias->all() as $categoria_relacionada){
+        foreach ($this->event_classificates->all() as $event_classificate) {
+            foreach ($event_classificate->event->categorias->all() as $categoria_relacionada) {
                 $categories[] = $categoria_relacionada->categoria;
             }
         }

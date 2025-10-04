@@ -87,8 +87,8 @@
 
             <h3>Pagamento da Inscrição</h3>
             <ul>
-                <li><strong>{inscricao.payment.uuid}</strong> - UUID da Inscrição no XadrezSuíçoPag</li>
-                <li><strong>{inscricao.payment.link}</strong> - Link para Pagamento da Inscrição no XadrezSuíçoPag</li>
+                <li><strong>{inscricao.payment.uuid}</strong> - UUID da Inscrição no PAG</li>
+                <li><strong>{inscricao.payment.link}</strong> - Link para Pagamento da Inscrição no PAG</li>
                 <li>
                     <strong>{inscricao.link_edicao}</strong> - Link para Editar a Inscrição.<br/>
                     <small><strong>IMPORTANTE!</strong> Este link só é preenchido caso o evento permita a edição da inscrição. A função fica disponível até o fim do prazo de inscrição.</small>

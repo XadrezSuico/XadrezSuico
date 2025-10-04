@@ -63,7 +63,10 @@ Route::group(["prefix"=>"inscricao"],function(){
     Route::get('/{id}/enxadrista/getCidadeClube/{enxadrista_id}', 'InscricaoController@getCidadeClube')->name('inscricao.getCidadeClube');
     Route::get('/visualizar/{id}', 'InscricaoController@visualizar_inscricoes')->name('inscricao.visualizar.inscricao');
     Route::get('/premiados/{id}', 'InscricaoController@visualizar_premiados')->name('inscricao.visualizar.premiados');
-    Route::get('/classificados/{id}/{classificator_id}', 'InscricaoController@visualizar_classificados')->name('inscricao.visualizar.classificados');
+    Route::get('/classificados/{id}/{classificator_id}', function($a1, $a2){
+        return redirect("/inscricao/classificados/".$a2);
+    });
+    Route::get('/classificados/{classificator_id}', 'InscricaoController@visualizar_classificados')->name('inscricao.visualizar.classificados');
     Route::get('/indicados/{id}/{campo_id}/{opcao_id}', 'InscricaoController@visualizar_indicados')->name('inscricao.visualizar.indicados');
     Route::group(["prefix"=>"v2"],function(){
         Route::get('/{id}/busca/enxadrista', 'InscricaoController@telav2_buscaEnxadrista')->name('inscricao.v2.busca.enxadrista');
@@ -125,16 +128,29 @@ Route::group(["prefix"=>"usuario"],function(){
     });
 });
 
+
+Route::group(["prefix" => "classificator/{type}/{element_id}"], function () {
+    Route::group(["prefix" => "{event_classificates_id}/rule"], function () {
+        Route::get('/new', 'Classification\ClassificateEventRuleController@new')->name('evento.classificator.rule.new');
+        Route::post('/new', 'Classification\ClassificateEventRuleController@new_post')->name('evento.classificator.rule.new.post');
+        Route::get('/edit/{id}', 'Classification\ClassificateEventRuleController@edit')->name('evento.classificator.rule.edit');
+        Route::post('/edit/{id}', 'Classification\ClassificateEventRuleController@edit_post')->name('evento.classificator.rule.edit.post');
+    });
+    Route::get('{event_classificates_id}/process', 'Classification\XadrezSuicoClassificatorProcessController@process')->name('evento.classificator.process');
+    Route::get('{event_classificates_id}/classificated/delete', 'Classification\XadrezSuicoClassificatorProcessController@delete_classified')->name('evento.classificator.delete_classified');
+});
+
 Route::group(["prefix"=>"evento"],function(){
 	Route::get('/dashboard/{id}', 'EventoGerenciarController@edit')->name('evento.dashboard');
 	Route::post('/dashboard/{id}', 'EventoGerenciarController@edit_post')->name('evento.dashboard.post');
 	Route::post('/{id}/pagina', 'EventoGerenciarController@edit_pagina_post')->name('evento.dashboard.pagina.post');
     Route::get('/delete/{id}', 'EventoGerenciarController@delete')->name('evento.delete');
     Route::get('/classificar/{id}', 'EventoGerenciarController@classificar')->name('evento.classificar');
-    Route::get('/classificacao/{id}', 'EventoController@classificacao')->name('evento.classificacao');
+    Route::get('/classificacao/{id}', 'EventoController@classificacao_v2')->name('evento.classificacao');
     Route::get('/premiados/{id}', 'InscricaoController@visualizar_premiados')->name('evento.visualizar.premiados');
     Route::get('/acompanhar/{id}', 'EventoController@acompanhar')->name('evento.acompanhar');
     Route::get('/{id}/resultados/{categoria_id}', 'EventoController@resultados')->name('evento.resultados');
+    Route::get('/{id}/api/resultados/{categoria_id}', 'EventoController@resultados_v2')->name('evento.resultados.v2');
     Route::get('/{id}/toggleinscricoes', 'EventoGerenciarController@toggleInscricoes')->name('evento.toggleInscricoes');
     Route::get('/{id}/toggleresultados', 'EventoGerenciarController@toggleMostrarClassificacao')->name('evento.toggleMostrarClassificacao');
     Route::get('/{id}/toggleclassificavel', 'EventoGerenciarController@toggleEventoClassificavel')->name('evento.toggleEventoClassificavel');
@@ -144,7 +160,7 @@ Route::group(["prefix"=>"evento"],function(){
     Route::get('/{id}/toggleregistrationpaidconfirmed', 'EventoGerenciarController@toggleRegistrationPaidConfirmed')->name('evento.toggleRegistrationPaidConfirmed');
     Route::get('/{id}/confirmAllRegistrations', 'EventoGerenciarController@confirmAllRegistrations')->name('evento.toggleInscricoes');
     Route::get('/{id}/unconfirmAllRegistrations', 'EventoGerenciarController@unconfirmAllRegistrations')->name('evento.toggleInscricoes');
-    Route::get('/classificacao/{id}/interno', 'EventoGerenciarController@classificacao')->name('evento.classificacao.interno');
+    Route::get('/classificacao/{id}/interno', 'EventoGerenciarController@classificacao_v2')->name('evento.classificacao.interno');
     Route::get('/{id}/resultados/{categoria_id}/interno', 'EventoGerenciarController@resultados')->name('evento.resultados.interno');
 	Route::get('/{id}/inscricoes/list', 'EventoGerenciarController@visualizar_inscricoes')->name('evento.inscricoes.list');
 	Route::get('/{id}/enxadristas/sm', 'EventoGerenciarController@downloadListaManagerParaEvento')->name('evento.enxadristas.sm');
@@ -156,8 +172,8 @@ Route::group(["prefix"=>"evento"],function(){
         Route::get('/premiados', 'EventoGerenciarController@relatorio_premiados')->name('evento.relatorios.premiados');
     });
     Route::group(["prefix"=>"{id}/exports"],function(){
-        Route::get('/xadrezsuicoemparceirador', 'Exports\XadrezSuicoEmparceiradorController@export')->name('evento.exports.xadrezsuicoemparceirador');
-        Route::get('/xadrezsuicoemparceirador/data', 'Exports\XadrezSuicoEmparceiradorController@export_data')->name('evento.exports.xadrezsuicoemparceirador.data');
+        Route::get('/emparceirador', 'Exports\XadrezSuicoEmparceiradorController@export')->name('evento.exports.xadrezsuicoemparceirador');
+        Route::get('/emparceirador/data', 'Exports\XadrezSuicoEmparceiradorController@export_data')->name('evento.exports.xadrezsuicoemparceirador.data');
         Route::get('/presporte/single', 'Event\ExportController@export_presporte_single')->name('evento.exports.presporte.single');
         Route::get('/presporte/single/pdf', 'Event\ExportController@export_presporte_single_pdf')->name('evento.exports.presporte.single.pdf');
         Route::get('/presporte/team', 'Event\ExportController@export_presporte_team')->name('evento.exports.presporte.team');
@@ -184,8 +200,6 @@ Route::group(["prefix"=>"evento"],function(){
         Route::post('/new', 'Classification\ClassificateEventController@new_post')->name('evento.classificator.new.post');
         Route::get('/edit/{id}', 'Classification\ClassificateEventController@edit')->name('evento.classificator.edit');
         Route::post('/edit/{id}', 'Classification\ClassificateEventController@edit_post')->name('evento.classificator.edit.post');
-        Route::get('{event_classificates_id}/process', 'Classification\XadrezSuicoClassificatorProcessController@process')->name('evento.classificator.process');
-        Route::get('{event_classificates_id}/classificated/delete', 'Classification\XadrezSuicoClassificatorProcessController@delete_classified')->name('evento.classificator.delete_classified');
     });
 
 
@@ -304,6 +318,7 @@ Route::group(["prefix"=>"evento"],function(){
         Route::get('/remove/{categoria_evento_id}', 'EventoGerenciarController@categoria_remove')->name('evento.categoria.remove');
         Route::get('/edit/{categoria_evento_id}', 'EventoGerenciarController@categoria_edit')->name('evento.categoria.edit');
         Route::post('/edit/{categoria_evento_id}', 'EventoGerenciarController@categoria_edit_post')->name('evento.categoria.edit/post');
+        Route::get('/createTournament/{categoria_evento_id}', 'EventoGerenciarController@categoria_createTournament')->name('evento.categoria.createTournament');
     });
 
     Route::group(["prefix"=>"{evento_id}/categorias"],function(){
@@ -423,6 +438,7 @@ Route::group(["prefix"=>"grupoevento"],function(){
 	Route::get('/dashboard/{id}', 'GrupoEventoController@edit')->name('grupoevento.dashboard');
 	Route::post('/dashboard/{id}', 'GrupoEventoController@edit_post')->name('grupoevento.dashboard.post');
 	Route::get('/clone/{id}', 'GrupoEventoController@clone')->name('grupoevento.clone');
+    Route::get('/clone/{id}/event/{evento_id}', 'GrupoEventoController@evento_clone')->name('grupoevento.clone.event');
 	Route::get('/delete/{id}', 'GrupoEventoController@delete')->name('grupoevento.delete');
     Route::get('/classificar/{id}', 'GrupoEventoController@classificar_page')->name('grupoevento.classificar');
     Route::get('/classificar/{id}/call/{categoria_id}/{action}', 'GrupoEventoController@classificar_call')->name('grupoevento.classificar.call');
@@ -446,6 +462,7 @@ Route::group(["prefix"=>"grupoevento"],function(){
             Route::post('/add', 'CategoriaGrupoEventoController@sexo_add')->name('grupoevento.categorias.sexo.add');
             Route::get('/remove/{categoria_sexo_id}', 'CategoriaGrupoEventoController@sexo_remove')->name('grupoevento.categorias.sexo.remove');
         });
+        Route::get('/createTemplate/{id}', 'CategoriaGrupoEventoController@create_template')->name('grupoevento.categorias.create_template');
     });
     Route::group(["prefix"=>"{grupo_evento_id}/campos"],function(){
         Route::post('/new', 'CampoPersonalizadoGrupoEventoController@new_post')->name('grupoevento.campos.new.post');
@@ -577,6 +594,7 @@ Route::group(["prefix" => "especiais"], function () {
     Route::group(["prefix" => "fexpar"], function () {
         Route::group(["prefix" => "vinculos"], function () {
             Route::get('/', 'FEXPAR\VinculoFederativoController@vinculos')->name('especiais.fexpar.vinculos');
+            Route::get('/{year}', 'FEXPAR\VinculoFederativoController@vinculos')->name('especiais.fexpar.vinculos')->where('year', '[0-9]{4}');
             Route::get('/consulta', 'FEXPAR\VinculoFederativoController@consulta_form')->name('especiais.fexpar.consulta');
             Route::get('/validacao', 'FEXPAR\VinculoFederativoController@consulta_form')->name('especiais.fexpar.consulta');
             Route::get('/{uuid}', 'FEXPAR\VinculoFederativoController@vinculo')->name('especiais.fexpar.vinculo'); // uuid do vinculo
@@ -590,7 +608,15 @@ Route::group(["prefix" => "especiais"], function () {
     });
 });
 
-Route::get('/event/{any}', function(){
+Route::get('/event/{uuid}', function ($uuid) {
+    $evento = \App\Evento::where('uuid', $uuid)->first();
+    if (!$evento) {
+        abort(404);
+    }
+    return redirect($evento->getEventPublicLink());
+})->name('event.angular.uuid')
+  ->where('uuid', '[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}');
+Route::get('/event/{any}', function () {
     return view("angular");
 })->name('event.angular')->where('any', '.*');
 Route::get('/page/{any}', function(){

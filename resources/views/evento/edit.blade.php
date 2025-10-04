@@ -3,7 +3,10 @@
 @section("title", "Dashboard de Evento")
 
 @section('content_header')
-  <h1>Dashboard de Evento: {{$evento->name}}</h1>
+    @if($evento->parent_event)
+    <h5>Filho do Evento: {{$evento->parent_event->name}}</h5>
+    @endif
+    <h1>Dashboard de Evento: {{$evento->name}}</h1>
 @stop
 
 
@@ -15,6 +18,54 @@
 		.width-100{
 			width: 100% !important;
 		}
+        /* Switch estilo Tabler */
+        .form-switch {
+            position: relative;
+            display: inline-block;
+            width: 40px;
+            height: 20px;
+        }
+        .form-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .form-switch .form-check-input {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 20px;
+        }
+        .form-switch .form-check-input:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 2px;
+            bottom: 2px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        .form-switch input:checked + .form-check-input {
+            background-color: #206bc4;
+        }
+        .form-switch input:checked + .form-check-input:before {
+            transform: translateX(20px);
+        }
+        .form-switch input:disabled + .form-check-input {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .switch-label {
+            margin-left: 10px;
+            vertical-align: middle;
+        }
 	</style>
 @endsection
 
@@ -26,7 +77,11 @@
 @section("content")
 <!-- Main row -->
 <ul class="nav nav-pills">
+@if($evento->parent_event)
+  <li role="presentation"><a href="/evento/dashboard/{{$evento->parent_event->id}}?tab=evento_filho">Voltar a Dashboard do Evento Pai</a></li>
+@else
   <li role="presentation"><a href="/grupoevento/dashboard/{{$evento->grupo_evento->id}}">Voltar a Dashboard de Grupo de Evento</a></li>
+@endif
 </ul>
 <div class="row">
   <!-- Left col -->
@@ -40,10 +95,14 @@
 			<li role="presentation"><a id="tab_criterio_desempate" href="#criterio_desempate" aria-controls="criterio_desempate" role="tab" data-toggle="tab">Critério de Desempate</a></li>
 			<li role="presentation"><a id="tab_categoria" href="#categoria" aria-controls="categoria" role="tab" data-toggle="tab">Categoria: Cadastro</a></li>
 			<li role="presentation"><a id="tab_categorias_relacionadas" href="#categorias_relacionadas" aria-controls="categorias_relacionadas" role="tab" data-toggle="tab">Categorias Relacionadas</a></li>
+			@if($evento->event_children()->count() > 0) <li role="presentation"><a id="tab_evento_filho" href="#evento_filho" aria-controls="torneio" role="tab" data-toggle="tab">Eventos Filhos</a></li> @endif
 			<li role="presentation"><a id="tab_torneio" href="#torneio" aria-controls="torneio" role="tab" data-toggle="tab">Torneios</a></li>
 			<li role="presentation"><a id="tab_campo_personalizado" href="#campo_personalizado" aria-controls="campo_personalizado" role="tab" data-toggle="tab">Campos Personalizados Adicionais</a></li>
             <li role="presentation"><a id="tab_email_template" href="#email_template" aria-controls="email_template" role="tab" data-toggle="tab">Templates de E-mail</a></li>
-			<?php if(\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal()){ ?><li role="presentation"><a id="tab_classificator" href="#classificator" aria-controls="classificator" role="tab" data-toggle="tab">XadrezSuíço Classificador</a></li><?php } ?>
+			@if(
+                \Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
+				\Illuminate\Support\Facades\Auth::user()->hasPermissionEventsByPerfil([14,15,16])
+            ) <li role="presentation"><a id="tab_classificator" href="#classificator" aria-controls="classificator" role="tab" data-toggle="tab">XadrezSuíço Classificador</a></li> @endif
         </ul>
 
 		<!-- Tab panes -->
@@ -117,27 +176,26 @@
                             @endif
                             <br/>
 
-                            <a href="{{url("/evento/".$evento->id."/toggleinscricoes")}}" class="btn btn-warning btn-app">
-                                @if(!$evento->is_inscricoes_bloqueadas)
-                                    <i class="fa fa-lock"></i>
-                                    Bloquear (Status Atual: Liberado)
-                                @else
-                                    <i class="fa fa-unlock"></i>
-                                    Liberar  (Status Atual: Bloqueado)
-                                @endif
-                                Inscricoes
-                            </a>
+                            <div class="form-group">
+                                <label class="d-flex align-items-center">
+                                    <div class="form-switch">
+                                        <input type="checkbox" id="toggle_inscricoes" @if(!$evento->is_inscricoes_bloqueadas) checked @endif>
+                                        <span class="form-check-input"></span>
+                                    </div>
+                                    <span id="toggle_inscricoes_status" class="switch-label">Permitir Inscrições</span>
+                                </label>
+                            </div>
 
-                            <a href="{{url("/evento/".$evento->id."/toggleedicaoinscricao")}}" class="btn btn-warning btn-app">
-                                @if($evento->permite_edicao_inscricao)
-                                    <i class="fa fa-lock"></i>
-                                    Restringir (Status Atual: Permitido)
-                                @else
-                                    <i class="fa fa-unlock"></i>
-                                    Permitir (Status Atual: Restringido)
-                                @endif
-                                Edição de Inscrição
-                            </a>
+                            <div class="form-group">
+                                <label class="d-flex align-items-center">
+                                    <div class="form-switch">
+                                        <input type="checkbox" id="toggle_edicao_inscricao" @if($evento->permite_edicao_inscricao) checked @endif>
+                                        <span class="form-check-input"></span>
+                                    </div>
+                                    <span id="toggle_edicao_inscricao_status" class="switch-label">Permitir Edição de Inscrição</span>
+                                </label>
+                            </div>
+
                             @if($evento->isPaid())
                                 <br/>
                                 <a href="{{url("/evento/".$evento->id."/toggleregistrationpaidconfirmed")}}" class="btn btn-warning btn-app">
@@ -157,20 +215,27 @@
                                 </a>
                             @endif
 							<hr/>
-                            <h4>XadrezSuíço Emparceirador:</h4>
-							<a href="{{url("/evento/".$evento->id."/exports/xadrezsuicoemparceirador")}}" class="btn btn-app">
+                            <h4>{{config("xadrezsuico.name","XadrezSuíço")}} Emparceirador:</h4>
+							<a href="{{url("/evento/".$evento->id."/exports/emparceirador")}}" class="btn btn-app">
 								<i class="fa fa-download"></i>
-								Baixar Arquivo do XadrezSuíço Emparceirador (Todas as inscrições - Sem dados)
+								Baixar Arquivo do {{config("xadrezsuico.name","XadrezSuíço")}} Emparceirador (Todas as inscrições - Sem dados)
 							</a>
 							<a href="{{url("/evento/".$evento->id."/exports/xadrezsuicoemparceirador/data")}}" class="btn btn-app">
 								<i class="fa fa-download"></i>
-								Baixar Arquivo do XadrezSuíço Emparceirador (Inscrições Confirmadas - Com dados)
+								Baixar Arquivo do {{config("xadrezsuico.name","XadrezSuíço")}} Emparceirador (Inscrições Confirmadas - Com dados)
 							</a>
                             <hr/>
                             <h4>Divulgação de Emparceiramentos:</h4>
 							<a href="{{url("/evento/acompanhar/".$evento->id)}}" class="btn btn-app">
 								<i class="fa fa-eye"></i>
 								Link para Acompanhar os Emparceiramentos
+							</a>
+
+							<hr/>
+							<h4>Inscritos:</h4>
+							<a href="{{url("/evento/".$evento->id)}}/inscricoes/list" class="btn btn-app">
+								<i class="fa fa-list"></i>
+								Visualizar Lista de Inscritos (Completa)
 							</a>
 							<hr/>
 							<h4>Classificação:</h4>
@@ -183,33 +248,34 @@
 									<i class="fa fa-sort"></i>
 									Classificar Evento
 								</a>
-								<a href="{{url("/evento/".$evento->id."/toggleresultados")}}" class="btn btn-warning btn-app">
-									@if($evento->mostrar_resultados)
-										<i class="fa fa-lock"></i>
-										Restringir (Status Atual: Liberado)
-									@else
-										<i class="fa fa-unlock"></i>
-										Liberar (Status Atual: Restringido)
-									@endif
-									Classificação Pública
+								<a href="{{url("/evento/classificacao/".$evento->id)}}" class="btn btn-app">
+									<i class="fa fa-eye"></i>
+									Visualizar Classificação
 								</a>
-								@if($evento->mostrar_resultados)
-									<a href="{{url("/evento/classificacao/".$evento->id)}}" class="btn btn-app">
-										<i class="fa fa-eye"></i>
-										Visualizar Classificação (Pública)
-									</a>
-								@endif
+								<br/>
+								<br/>
+								<div class="form-group">
+                                    <label class="d-flex align-items-center">
+                                        <div class="form-switch">
+                                            <input type="checkbox" id="toggle_resultados" @if($evento->mostrar_resultados) checked @endif>
+                                            <span class="form-check-input"></span>
+                                        </div>
+                                        <span id="toggle_resultados_status" class="switch-label">Permitir visualização pública dos resultados</span>
+                                    </label>
+                                </div>
+                                @if($evento->event_team_awards()->count() > 0)
+
+                                    <a href="{{url("/evento/premiacao_time/classificar/".$evento->id)}}" class="btn btn-app">
+                                        <i class="fa fa-sort"></i>
+                                        Classificar Times no Evento
+                                    </a>
+
+                                    <a href="{{url("/evento/".$evento->id."/team_awards/standings")}}" class="btn btn-app">
+                                        <i class="fa fa-list"></i>
+                                        Listar Premiações de Times
+                                    </a>
+                                @endif
 							@endif
-							<a href="{{url("/evento/classificacao/".$evento->id)}}/interno" class="btn btn-app">
-								<i class="fa fa-eye"></i>
-								Visualizar Classificação (Interna)
-							</a>
-							<hr/>
-							<h4>Inscritos:</h4>
-							<a href="{{url("/evento/".$evento->id)}}/inscricoes/list" class="btn btn-app">
-								<i class="fa fa-list"></i>
-								Visualizar Lista de Inscritos (Completa)
-							</a>
 							@if(
 								\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
 								\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4]) ||
@@ -231,75 +297,38 @@
                                 @if($evento->tipo_rating)
                                     <hr/>
                                     <h4>Rating:</h4>
-                                    <a href="{{url("/evento/".$evento->id)}}/togglerating" class="btn btn-app">
-                                        @if($evento->is_rating_calculate_enabled)
-                                            <i class="fa fa-lock"></i>
-                                            Não Permitir o Cálculo do Rating Interno (Status Atual: Permitido)
-                                        @else
-                                            <i class="fa fa-unlock"></i>
-                                            Permitir o Cálculo do Rating Interno (Status Atual: Não Permitido)
-                                        @endif
-                                    </a>
-                                    @if($evento->is_rating_calculate_enabled)
-                                        @if ($evento->consegueCalcularRating() == 0)
-                                            <button type="button" class="btn btn-app disabled" disabled>
-                                                <i class="fa fa-calculator"></i>
-                                                Calcular Rating (Não foi importado o emparceiramento)
-                                            </button>
-                                        @else
-                                            <a href="{{url("/evento/".$evento->id)}}/rating/calculate" class="btn btn-app">
-                                                <i class="fa fa-calculator"></i>
-                                                Calcular Rating
-                                            </a>
-                                        @endif
-                                    @endif
+                                    <div class="form-group">
+                                        <label class="d-flex align-items-center">
+                                            <div class="form-switch">
+                                                <input type="checkbox" id="toggle_rating" @if($evento->is_rating_calculate_enabled) checked @endif>
+                                                <span class="form-check-input"></span>
+                                            </div>
+                                            <span id="toggle_rating_status" class="switch-label">Permitir Cálculo do Rating Interno</span>
+                                        </label>
+                                    </div>
+                                    <div id="toggle_rating_status_container" @if(!$evento->is_rating_calculate_enabled) style="display:none;" @endif>
+										@if ($evento->consegueCalcularRating() == 0)
+											<button type="button" class="btn btn-app disabled" disabled>
+												<i class="fa fa-calculator"></i>
+												Calcular Rating (Não foi importado o emparceiramento)
+											</button>
+										@else
+											<a href="{{url("/evento/".$evento->id)}}/rating/calculate" class="btn btn-app">
+												<i class="fa fa-calculator"></i>
+												Calcular Rating
+											</a>
+										@endif
+                                    </div>
                                 @endif
 
 							@endif
-
-							@if(
-								\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
-								\Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])
-							)
-								<hr/>
-								<h4>Demais Funções:</h4>
-								<a href="{{url("/evento/".$evento->id."/toggleclassificavel")}}" class="btn btn-app">
-									@if($evento->classificavel)
-										<i class="fa fa-lock"></i>
-										Não Permitir (Status Atual: Permitido)
-									@else
-										<i class="fa fa-unlock"></i>
-										Permitir (Status Atual: Não Permitido)
-									@endif
-									Classificação Geral deste Evento
-								</a>
-								<a href="{{url("/evento/".$evento->id."/togglemanual")}}" class="btn btn-app">
-									@if($evento->e_resultados_manuais)
-										<i class="fa fa-lock"></i>
-									@else
-										<i class="fa fa-lock"></i>
-									@endif
-									Resultados @if($evento->e_resultados_manuais) Automáticos  (Status Atual: Manuais) @else Manuais  (Status Atual: Automáticos) @endif
-								</a>
-                                @if($evento->event_team_awards()->count() > 0)
-
-                                    <a href="{{url("/evento/premiacao_time/classificar/".$evento->id)}}" class="btn btn-app">
-                                        <i class="fa fa-sort"></i>
-                                        Classificar Times no Evento
-                                    </a>
-
-                                    <a href="{{url("/evento/".$evento->id."/team_awards/standings")}}" class="btn btn-app">
-                                        <i class="fa fa-list"></i>
-                                        Listar Premiações de Times
-                                    </a>
-                                @endif
-							@endif<br/><br/>
 							@if(
 								\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
 								\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4]) ||
 								\Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])
 							)
                                 @if($evento->evento_classificador_id > 0)
+									<hr/>
                                     <h4>Funções de Evento que possui Classificador:</h4>
                                     <a href="{{url("/evento/".$evento->id."/gerenciamento/torneio_3/import")}}" class="btn btn-app">
                                         <i class="fa fa-upload"></i>
@@ -311,6 +340,7 @@
                                     </a>
                                 @else
                                     @if($evento->grupo_evento_classificador_id > 0)
+										<hr/>
                                         <h4>Funções de Evento que possui Grupo de Evento Classificador:</h4>
                                         <a href="{{url("/evento/".$evento->id."/gerenciamento/import")}}" class="btn btn-app">
                                             <i class="fa fa-upload"></i>
@@ -345,11 +375,11 @@
                                     </a><br/>
                                     <a href="{{url("/evento/".$evento->id."/exports/presporte/team")}}?fill_blanks" class="btn btn-app">
                                         <i class="fa fa-chevron-circle-down"></i>
-                                        Baixar Fichas de Confirmação (por Equipes - Preenchidas Conforme Confirmações no XadrezSuíço) - .xlsx
+                                        Baixar Fichas de Confirmação (por Equipes - Preenchidas Conforme Confirmações no {{config("xadrezsuico.name","XadrezSuíço")}}) - .xlsx
                                     </a>
                                     <a href="{{url("/evento/".$evento->id."/exports/presporte/team/pdf")}}?fill_blanks" class="btn btn-app">
                                         <i class="fa fa-chevron-circle-down"></i>
-                                        Baixar Fichas de Confirmação (por Equipes - Preenchidas Conforme Confirmações no XadrezSuíço) - .pdf
+                                        Baixar Fichas de Confirmação (por Equipes - Preenchidas Conforme Confirmações no {{config("xadrezsuico.name","XadrezSuíço")}}) - .pdf
                                     </a>
                                 @else
                                     <a href="{{url("/evento/".$evento->id."/exports/presporte/single")}}" class="btn btn-app">
@@ -362,15 +392,34 @@
                                     </a><br/>
                                     <a href="{{url("/evento/".$evento->id."/exports/presporte/single")}}?fill_blanks" class="btn btn-app">
                                         <i class="fa fa-chevron-circle-down"></i>
-                                        Baixar Fichas de Confirmação (Individual - Preenchidas Conforme Confirmações no XadrezSuíço) - .xlsx
+                                        Baixar Fichas de Confirmação (Individual - Preenchidas Conforme Confirmações no {{config("xadrezsuico.name","XadrezSuíço")}}) - .xlsx
                                     </a>
                                     <a href="{{url("/evento/".$evento->id."/exports/presporte/single/pdf")}}?fill_blanks" class="btn btn-app">
                                         <i class="fa fa-chevron-circle-down"></i>
-                                        Baixar Fichas de Confirmação (Individual - Preenchidas Conforme Confirmações no XadrezSuíço) - .pdf
+                                        Baixar Fichas de Confirmação (Individual - Preenchidas Conforme Confirmações no {{config("xadrezsuico.name","XadrezSuíço")}}) - .pdf
                                     </a>
                                 @endif
                             @endif
-                            <br/><br/>
+							<hr/>
+                            <h4>Demais Funções:</h4>
+							<div class="form-group">
+								<label class="d-flex align-items-center">
+									<div class="form-switch">
+										<input type="checkbox" id="toggle_classificavel" @if($evento->is_classificavel) checked @endif>
+										<span class="form-check-input"></span>
+									</div>
+									<span id="toggle_classificavel_status" class="switch-label">Permitir classificação geral deste evento</span>
+								</label>
+							</div>
+							<div class="form-group">
+								<label class="d-flex align-items-center">
+									<div class="form-switch">
+										<input type="checkbox" id="toggle_resultados_automaticos" @if(!$evento->e_resultados_manuais) checked @endif>
+										<span class="form-check-input"></span>
+									</div>
+									<span id="toggle_resultados_automaticos_status" class="switch-label">Resultados Automáticos</span>
+								</label>
+							</div>
                             <hr/>
                             <h4>Relatórios:</h4>
                             <a href="{{url("/evento/".$evento->id."/relatorios/premiados")}}" class="btn btn-app">
@@ -383,304 +432,7 @@
 				</section>
 			</div>
 			<div role="tabpanel" class="tab-pane" id="resume">
-				<br/>
-				<section class="col-lg-12 connectedSortable">
-					<div class="box box-primary">
-						<div class="box-header">
-							<h3 class="box-title">Resumo</h3>
-						</div>
-						<!-- form start -->
-
-                        <div class="box-body">
-
-                            <div class="row">
-                                <!-- Total de Inscritos -->
-                                <div class="col-sm-12 col-md-6">
-                                    <!-- small box -->
-                                    <div class="small-box bg-aqua">
-                                        <div class="inner">
-                                        <h3>{{$evento->quantosInscritos()}}</h3>
-
-                                        <p>Total de Inscritos</p>
-                                        </div>
-                                        <div class="icon">
-                                        <i class="fa fa-users"></i>
-                                        </div>
-                                        <!--<a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>-->
-                                    </div>
-                                </div>
-                                <!-- Total de Confirmados -->
-                                <div class="col-sm-12 col-md-6">
-                                    <!-- small box -->
-                                    <div class="small-box bg-aqua">
-                                        <div class="inner">
-                                        <h3>{{$evento->quantosInscritosConfirmados()}}</h3>
-
-                                        <p>Total de Confirmados</p>
-                                        </div>
-                                        <div class="icon">
-                                        <i class="fa fa-check"></i>
-                                        </div>
-                                        <!--<a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>-->
-                                    </div>
-                                </div>
-                                <!-- Total de Presentes -->
-                                <div class="col-sm-12 col-md-6">
-                                    <!-- small box -->
-                                    <div class="small-box bg-aqua">
-                                        <div class="inner">
-                                        <h3>{{$evento->quantosInscritosPresentes()}}</h3>
-
-                                        <p>Total de Presentes</p>
-                                        </div>
-                                        <div class="icon">
-                                        <i class="fa fa-check-circle"></i>
-                                        </div>
-                                        <!--<a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>-->
-                                    </div>
-                                </div>
-                                <!-- Total de Resultados (Importados) -->
-                                <div class="col-sm-12 col-md-6">
-                                    <!-- small box -->
-                                    <div class="small-box bg-aqua">
-                                        <div class="inner">
-                                        <h3>{{$evento->quantosInscritosComResultados()}}</h3>
-
-                                        <p>Total de Resultados</p>
-                                        </div>
-                                        <div class="icon">
-                                        <i class="fa fa-check-circle"></i>
-                                        </div>
-                                        <!--<a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>-->
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                @if($evento->isPaid())
-                                    <!-- Total de Pagos -->
-                                    <div class="col-sm-6 col-md-4">
-                                        <!-- small box -->
-                                        <div class="small-box bg-aqua">
-                                            <div class="inner">
-                                            <h3>{{$evento->howManyPaid()}}</h3>
-
-                                            <p>Total de Pagos</p>
-                                            </div>
-                                            <div class="icon">
-                                            <i class="fa fa-money"></i>
-                                            </div>
-                                            <!--<a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>-->
-                                        </div>
-                                    </div>
-                                    <!-- Total de Gratuidades -->
-                                    <div class="col-sm-6 col-md-4">
-                                        <!-- small box -->
-                                        <div class="small-box bg-aqua">
-                                            <div class="inner">
-                                            <h3>{{$evento->howManyFree()}}</h3>
-
-                                            <p>Total de Gratuidades (Categorias Gratuitas)</p>
-                                            </div>
-                                            <div class="icon">
-                                            <i class="fa fa-money"></i>
-                                            </div>
-                                            <!--<a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>-->
-                                        </div>
-                                    </div>
-                                    <!-- Total de Não Pagos -->
-                                    <div class="col-sm-6 col-md-4">
-                                        <!-- small box -->
-                                        <div class="small-box bg-aqua">
-                                            <div class="inner">
-                                            <h3>{{$evento->howManyNotPaid()}}</h3>
-
-                                            <p>Total de Não Pagos</p>
-                                            </div>
-                                            <div class="icon">
-                                            <i class="fa fa-money"></i>
-                                            </div>
-                                            <!--<a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>-->
-                                        </div>
-                                    </div>
-
-
-                                    <!-- Total de Confirmados Pagos -->
-                                    <div class="col-sm-6 col-md-4">
-                                        <!-- small box -->
-                                        <div class="small-box bg-aqua">
-                                            <div class="inner">
-                                            <h3>{{$evento->howManyConfirmedPaid()}}</h3>
-
-                                            <p>Total de Confirmados Pagos</p>
-                                            </div>
-                                            <div class="icon">
-                                            <i class="fa fa-money"></i>
-                                            </div>
-                                            <!--<a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>-->
-                                        </div>
-                                    </div>
-                                    <!-- Total de Confirmados Gratuidades -->
-                                    <div class="col-sm-6 col-md-4">
-                                        <!-- small box -->
-                                        <div class="small-box bg-aqua">
-                                            <div class="inner">
-                                            <h3>{{$evento->howManyConfirmedFree()}}</h3>
-
-                                            <p>Total de Confirmados Gratuidades</p>
-                                            </div>
-                                            <div class="icon">
-                                            <i class="fa fa-money"></i>
-                                            </div>
-                                            <!--<a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>-->
-                                        </div>
-                                    </div>
-                                    <!-- Total de Confirmados Não Pagos -->
-                                    <div class="col-sm-6 col-md-4">
-                                        <!-- small box -->
-                                        <div class="small-box bg-aqua">
-                                            <div class="inner">
-                                            <h3>{{$evento->howManyConfirmedNotPaid()}}</h3>
-
-                                            <p>Total de Confirmados Não Pagos</p>
-                                            </div>
-                                            <div class="icon">
-                                            <i class="fa fa-money"></i>
-                                            </div>
-                                            <!--<a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>-->
-                                        </div>
-                                    </div>
-
-
-                                    <!-- Total de Presentes Pagos -->
-                                    <div class="col-sm-6 col-md-4">
-                                        <!-- small box -->
-                                        <div class="small-box bg-aqua">
-                                            <div class="inner">
-                                            <h3>{{$evento->howManyPresentPaid()}}</h3>
-
-                                            <p>Total de Presentes Pagos</p>
-                                            </div>
-                                            <div class="icon">
-                                            <i class="fa fa-money"></i>
-                                            </div>
-                                            <!--<a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>-->
-                                        </div>
-                                    </div>
-                                    <!-- Total de Presentes Gratuidades -->
-                                    <div class="col-sm-6 col-md-4">
-                                        <!-- small box -->
-                                        <div class="small-box bg-aqua">
-                                            <div class="inner">
-                                            <h3>{{$evento->howManyPresentFree()}}</h3>
-
-                                            <p>Total de Presentes Gratuidades</p>
-                                            </div>
-                                            <div class="icon">
-                                            <i class="fa fa-money"></i>
-                                            </div>
-                                            <!--<a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>-->
-                                        </div>
-                                    </div>
-                                    <!-- Total de Presentes Não Pagos -->
-                                    <div class="col-sm-6 col-md-4">
-                                        <!-- small box -->
-                                        <div class="small-box bg-aqua">
-                                            <div class="inner">
-                                            <h3>{{$evento->howManyPresentNotPaid()}}</h3>
-
-                                            <p>Total de Presentes Não Pagos</p>
-                                            </div>
-                                            <div class="icon">
-                                            <i class="fa fa-money"></i>
-                                            </div>
-                                            <!--<a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>-->
-                                        </div>
-                                    </div>
-
-                                    <!-- Total de Resultados Pagos -->
-                                    <div class="col-sm-6 col-md-4">
-                                        <!-- small box -->
-                                        <div class="small-box bg-aqua">
-                                            <div class="inner">
-                                            <h3>{{$evento->howManyWithResultsPaid()}}</h3>
-
-                                            <p>Total de Resultados Pagos</p>
-                                            </div>
-                                            <div class="icon">
-                                            <i class="fa fa-money"></i>
-                                            </div>
-                                            <!--<a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>-->
-                                        </div>
-                                    </div>
-                                    <!-- Total de Resultados Gratuidades -->
-                                    <div class="col-sm-6 col-md-4">
-                                        <!-- small box -->
-                                        <div class="small-box bg-aqua">
-                                            <div class="inner">
-                                            <h3>{{$evento->howManyWithResultsFree()}}</h3>
-
-                                            <p>Total de Resultados Gratuidades</p>
-                                            </div>
-                                            <div class="icon">
-                                            <i class="fa fa-money"></i>
-                                            </div>
-                                            <!--<a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>-->
-                                        </div>
-                                    </div>
-                                    <!-- Total de Resultados Não Pagos -->
-                                    <div class="col-sm-6 col-md-4">
-                                        <!-- small box -->
-                                        <div class="small-box bg-aqua">
-                                            <div class="inner">
-                                            <h3>{{$evento->howManyWithResultsNotPaid()}}</h3>
-
-                                            <p>Total de Resultados Não Pagos</p>
-                                            </div>
-                                            <div class="icon">
-                                            <i class="fa fa-money"></i>
-                                            </div>
-                                            <!--<a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>-->
-                                        </div>
-                                    </div>
-                                @endif
-
-                                @php($bigger_tournament = $evento->getTournamentWithMoreRegistrations())
-                                    <!-- Maior Torneio -->
-                                    <div class="col-sm-12 col-md-8">
-                                        <!-- small box -->
-                                        <div class="small-box bg-aqua">
-                                            <div class="inner">
-                                            <h3>{{$bigger_tournament["status"] ? $bigger_tournament["tournament"]->name : $bigger_tournament["tournament"]}}</h3>
-
-                                            <p>Maior Torneio</p>
-                                            </div>
-                                            <div class="icon">
-                                            <i class="fa fa-award"></i>
-                                            </div>
-                                            <!--<a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>-->
-                                        </div>
-                                    </div>
-                                    <!-- Maior Torneio Total -->
-                                    <div class="col-sm-12 col-md-4">
-                                        <!-- small box -->
-                                        <div class="small-box bg-aqua">
-                                            <div class="inner">
-                                            <h3>{{$bigger_tournament["total"]}}</h3>
-
-                                            <p>Total de Inscritos no Maior Torneio</p>
-                                            </div>
-                                            <div class="icon">
-                                            <i class="fa fa-award"></i>
-                                            </div>
-                                            <!--<a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>-->
-                                        </div>
-                                    </div>
-
-
-                            </div>
-                        </div>
-					</div>
-				</section>
+                @include("evento._tabs.resume")
 			</div>
 			<div role="tabpanel" class="tab-pane" id="editar_evento">
 				<br/>
@@ -731,14 +483,14 @@
 								<div class="form-group">
 									<label for="exportacao_sm_modelo">Tipo de Exportação - Swiss Manager *</label>
 									<select name="exportacao_sm_modelo" id="exportacao_sm_modelo" class="form-control width-100" @if(!\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() && !\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4]) && !\Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])) disabled="disabled" @endif>
-										<option value="0">Padrão XadrezSuíço</option>
+										<option value="0">Padrão {{config("xadrezsuico.name","XadrezSuíço")}}</option>
 										<option value="1">FIDE</option>
 										<option value="7">FIDE - Exporta somente clube</option>
 										<option value="2">LBX</option>
-										<option value="3">Padrão XadrezSuíço (Nome no Sobrenome, e Sobrenome no Nome)</option>
-										<option value="4">Padrão XadrezSuíço Chess.com (Nome no Sobrenome, Sobrenome no Nome e no Nome também informa o Usuário do Chess.com)</option>
-										<option value="5">Padrão XadrezSuíço sem Cidade (Nome no Sobrenome, Sobrenome no Nome sem Cidade)</option>
-										<option value="6">Padrão XadrezSuíço sem Cidade (Nome no Sobrenome, Sobrenome no Nome sem Cidade) em Torneio por Equipe</option>
+										<option value="3">Padrão {{config("xadrezsuico.name","XadrezSuíço")}} (Nome no Sobrenome, e Sobrenome no Nome)</option>
+										<option value="4">Padrão {{config("xadrezsuico.name","XadrezSuíço")}} Chess.com (Nome no Sobrenome, Sobrenome no Nome e no Nome também informa o Usuário do Chess.com)</option>
+										<option value="5">Padrão {{config("xadrezsuico.name","XadrezSuíço")}} sem Cidade (Nome no Sobrenome, Sobrenome no Nome sem Cidade)</option>
+										<option value="6">Padrão {{config("xadrezsuico.name","XadrezSuíço")}} sem Cidade (Nome no Sobrenome, Sobrenome no Nome sem Cidade) em Torneio por Equipe</option>
 									</select>
 								</div>
                                 <div class="form-group">
@@ -828,27 +580,27 @@
                                     <div class="form-group">
                                         <label for="lichess_team_id">Lichess.org: ID do Time/Equipe</label>
                                         <input name="lichess_team_id" id="lichess_team_id" class="form-control" type="text" value="{{$evento->lichess_team_id}}" @if(!\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() && !\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4]) && !\Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])) disabled="disabled" @endif />
-                                        <small><strong>Importante!</strong> Aqui vai o ID do Time no Lichess. Vale constar que para que um torneio tenha integração com o XadrezSuíço é necessário que seja efetuado por um time/equipe que XadrezSuíço tenha permissões. Segue exemplo de onde encontrar o ID do Time: https://lichess.org/team/<strong>circuito-sesc-de-xadrez-2021</strong></small>
+                                        <small><strong>Importante!</strong> Aqui vai o ID do Time no Lichess. Vale constar que para que um torneio tenha integração com o {{config("xadrezsuico.name","XadrezSuíço")}} é necessário que seja efetuado por um time/equipe que {{config("xadrezsuico.name","XadrezSuíço")}} tenha permissões. Segue exemplo de onde encontrar o ID do Time: https://lichess.org/team/<strong>circuito-sesc-de-xadrez-2021</strong></small>
                                         @if($evento->lichess_team_id) <br/><a href="https://lichess.org/team/{{$evento->lichess_team_id}}" target="_blank">Link do Time</a> @endif
                                     </div>
                                     @if(\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() || \Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4]) || \Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7]))
                                         <div class="form-group">
                                             <label for="lichess_team_password">Lichess.org: Senha para a Entrada no Time/Equipe</label>
                                             <input name="lichess_team_password" id="lichess_team_password" class="form-control" type="text" value="{{$evento->lichess_team_password}}" />
-                                            <small><strong>Importante!</strong> Aqui vai a Senha para a Entrada no Time no Lichess. Vale constar que para que um torneio tenha integração com o XadrezSuíço é necessário que seja efetuado por um time/equipe que XadrezSuíço tenha permissões.</small>
+                                            <small><strong>Importante!</strong> Aqui vai a Senha para a Entrada no Time no Lichess. Vale constar que para que um torneio tenha integração com o {{config("xadrezsuico.name","XadrezSuíço")}} é necessário que seja efetuado por um time/equipe que {{config("xadrezsuico.name","XadrezSuíço")}} tenha permissões.</small>
                                         </div>
                                     @endif
                                     <div class="form-group">
                                         <label for="lichess_tournament_id">Lichess.org: ID do Torneio</label>
                                         <input name="lichess_tournament_id" id="lichess_tournament_id" class="form-control" type="text" value="{{$evento->lichess_tournament_id}}" @if(!\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() && !\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4]) && !\Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])) disabled="disabled" @endif />
-                                        <small><strong>Importante!</strong> Aqui vai o ID do Torneio no Lichess. Vale constar que para que um torneio tenha integração com o XadrezSuíço é necessário que seja efetuado por um time/equipe que XadrezSuíço tenha permissões. Segue exemplo de onde encontrar o ID do Torneio: https://lichess.org/swiss/<strong>ZDig8Z5Y</strong></small>
+                                        <small><strong>Importante!</strong> Aqui vai o ID do Torneio no Lichess. Vale constar que para que um torneio tenha integração com o {{config("xadrezsuico.name","XadrezSuíço")}} é necessário que seja efetuado por um time/equipe que {{config("xadrezsuico.name","XadrezSuíço")}} tenha permissões. Segue exemplo de onde encontrar o ID do Torneio: https://lichess.org/swiss/<strong>ZDig8Z5Y</strong></small>
                                         @if($evento->lichess_tournament_id) <br/><a href="https://lichess.org/swiss/{{$evento->lichess_tournament_id}}" target="_blank">Link do Torneio</a> @endif
                                     </div>
                                     @if(\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() || \Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4]) || \Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7]))
                                         <div class="form-group">
                                             <label for="lichess_tournament_password">Lichess.org: Senha para a Inscrição no Torneio</label>
                                             <input name="lichess_tournament_password" id="lichess_tournament_password" class="form-control" type="text" value="{{$evento->lichess_tournament_password}}" />
-                                            <small><strong>Importante!</strong> Aqui vai a Senha para a Inscrição no Torneio no Lichess. Vale constar que para que um torneio tenha integração com o XadrezSuíço é necessário que seja efetuado por um time/equipe que XadrezSuíço tenha permissões.</small>
+                                            <small><strong>Importante!</strong> Aqui vai a Senha para a Inscrição no Torneio no Lichess. Vale constar que para que um torneio tenha integração com o {{config("xadrezsuico.name","XadrezSuíço")}} é necessário que seja efetuado por um time/equipe que {{config("xadrezsuico.name","XadrezSuíço")}} tenha permissões.</small>
                                         </div>
                                     @endif
                                 @else
@@ -917,7 +669,7 @@
 						            \Illuminate\Support\Facades\Auth::user()->hasPermissionGlobalbyPerfil([1,10,11])
                                 )
                                     <div class="form-group">
-                                        <label for="xadrezsuicopag_uuid">XadrezSuíçoPAG: UUID do Evento na Plataforma</label>
+                                        <label for="xadrezsuicopag_uuid">PAG: UUID do Evento na Plataforma</label>
                                         <input name="xadrezsuicopag_uuid" id="xadrezsuicopag_uuid" class="form-control" type="text" value="{{$evento->xadrezsuicopag_uuid}}" />
                                         <small><strong>IMPORTANTE!</strong> Lembre-se de colocar o UUID do Evento na Plataforma caso deseje ativar o pagamento para este evento.</small>
                                     </div>
@@ -1257,14 +1009,14 @@
                                             @if(
                                                 $xadrezsuicopag_category_request->ok == 1
                                             )
-                                                <label for="category_xadrezsuicopag_uuid">XadrezSuíçoPAG: Categoria</label>
+                                                <label for="category_xadrezsuicopag_uuid">PAG: Categoria</label>
                                                 <select name="xadrezsuicopag_uuid" id="category_xadrezsuicopag_uuid" class="form-control width-100">
-                                                    <option value="">--- Sem Categoria no XadrezSuíçoPAG ---</option>
+                                                    <option value="">--- Sem Categoria no PAG ---</option>
                                                     @foreach($xadrezsuicopag_category_request->categories as $xadrezsuicopag_category)
                                                         <option value="{{$xadrezsuicopag_category->uuid}}">{{$xadrezsuicopag_category->uuid}} - {{$xadrezsuicopag_category->name}}</option>
                                                     @endforeach
                                                 </select>
-                                                <small><strong>IMPORTANTE!</strong> Apenas selecione uma categoria do XadrezSuíçoPAG caso esta necessite pagamento.</small>
+                                                <small><strong>IMPORTANTE!</strong> Apenas selecione uma categoria do PAG caso esta necessite pagamento.</small>
                                             @endif
                                         @endif
                                     @endif
@@ -1298,7 +1050,7 @@
                                                 \Illuminate\Support\Facades\Auth::user()->hasPermissionGlobalbyPerfil([1,10,11]) &&
                                                 $evento->xadrezsuicopag_uuid != ""
                                             )
-                                                <th>Vínculo XadrezSuíçoPAG</th>
+                                                <th>Vínculo PAG</th>
                                             @endif
 											<th width="20%">Opções</th>
 										</tr>
@@ -1334,7 +1086,7 @@
                                                                 {{$xadrezsuicopag_category_request->category->uuid}} -
                                                                 {{$xadrezsuicopag_category_request->category->name}}
                                                             @else
-                                                                Há um registro cadastrado, mas não existe uma categoria com este registro cadastrada no XadrezSuíçoPAG.
+                                                                Há um registro cadastrado, mas não existe uma categoria com este registro cadastrada no PAG.
                                                             @endif
                                                         @else
                                                             -- Não há --
@@ -1343,7 +1095,10 @@
                                                 @endif
 												<td>
 													<a class="btn btn-success" href="{{url("/evento/".$evento->id."/categoria/edit/".$categoria->id)}}" role="button"><i class="fa fa-edit"></i></a>
-													@if(
+                                                    @if($evento->torneios()->whereHas("categorias",function ($q) use ($categoria){ $q->where([["categoria_id","=",$categoria->categoria_id]]); })->count() == 0)
+                                                        <a class="btn btn-warning" href="{{url("/evento/".$evento->id."/categoria/createTournament/".$categoria->id)}}" role="button"><i class="fa fa-plus"></i></a>
+                                                    @endif
+                                                    @if(
 														\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
 														\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4]) ||
 														\Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])
@@ -1588,6 +1343,132 @@
 					</div>
 				</section>
 			</div>
+			<div role="tabpanel" class="tab-pane" id="evento_filho">
+				<br/>
+				<section class="col-lg-12 connectedSortable">
+					<div class="box box-primary">
+						<div class="box-header">
+							<h3 class="box-title">Eventos Filhos</h3>
+						</div>
+						<!-- form start -->
+                        <div class="box-body">
+
+                            <table id="tabela_evento" class="table-responsive table-condensed table-striped" style="width: 100%">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Nome</th>
+                                        <th>Período</th>
+                                        @if(
+                                            \Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
+                                            \Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfilByGroupEvent($evento->grupo_evento->id,[4,5]) ||
+                                            \Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])
+                                        )
+                                            <th>Status</th>
+                                        @endif
+                                        <th>Local</th>
+                                        <th>Inscritos</th>
+                                        <th width="20%">Opções</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($evento->event_children->all() as $evento_filho)
+                                        @if(
+                                            \Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
+                                            \Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento_filho->id,[3,4,5]) ||
+                                            \Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento_filho->grupo_evento->id,[6,7])
+                                        )
+                                            <tr>
+                                                <td>{{$evento_filho->id}}</td>
+                                                <td>{{$evento_filho->name}}</td>
+                                                <td data-order="{{$evento_filho->data_inicio}}">
+                                                    @if($evento_filho->getDataInicio() == $evento_filho->getDataFim())
+                                                        {{$evento_filho->getDataInicio()}}
+                                                    @else
+                                                        {{$evento_filho->getDataInicio()}}<br/>{{$evento_filho->getDataFim()}}
+                                                    @endif
+                                                </td>
+                                                @if(
+                                                    \Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
+                                                    \Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento_filho->id,[4,5]) ||
+                                                    \Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento_filho->grupo_evento->id,[7])
+                                                )
+                                                    <td>
+                                                        @if(!$evento_filho->inscricoes_encerradas())
+                                                            <strong>Recebendo</strong> Inscrições
+                                                        @else
+                                                            Inscrições Encerradas e/ou Bloqueadas
+                                                        @endif
+                                                        <hr/>
+
+                                                        @if($evento_filho->classificavel)
+                                                            @if($evento_filho->consegueCalcularClassificacaoGeral())
+                                                                <strong>Apto</strong> para Classificação Geral
+                                                            @else
+                                                                Não Liberado para Classificação Geral - Há Torneios não importados.
+                                                            @endif
+                                                        @else
+                                                            Não Liberado para Classificação Geral - Não está liberado para cálculo da classificação geral.
+                                                        @endif
+                                                        <hr/>
+
+                                                        @if($evento_filho->tipo_rating)
+                                                            @if($evento_filho->consegueCalcularRating())
+                                                                <strong>Apto</strong> para Cálculo de Rating
+                                                            @else
+                                                                Inapto para Cálculo de Rating - Falta importar emparceiramentos
+                                                            @endif
+                                                            <hr/>
+                                                        @endif
+                                                    </td>
+                                                @endif
+                                                <td>{{$evento_filho->cidade->getName()}} <br/> {{$evento_filho->local}}</td>
+                                                <td>
+                                                    Total de Inscritos: {{$evento_filho->quantosInscritos()}}<br/>
+                                                    @if(
+                                                        \Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
+                                                        \Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento_filho->id,[4,5]) ||
+                                                        \Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento_filho->grupo_evento->id,[7])
+                                                    )
+                                                        Confirmados: {{$evento_filho->quantosInscritosConfirmados()}}<br/>
+                                                        Presentes: {{$evento_filho->quantosInscritosPresentes()}}
+                                                        <hr/>
+                                                        @if($evento_filho->is_lichess_integration)
+                                                            <strong>Torneio Lichess.org</strong><br/>
+                                                            Inscritos: <strong>{{$evento_filho->quantosInscritosConfirmadosLichess()}}</strong><br/>
+                                                            Não Inscritos: <strong>{{$evento_filho->quantosInscritosFaltamLichess()}}</strong>
+                                                        @endif
+                                                    @endif
+                                                </td>
+                                                <td>
+                                                    @if(
+                                                        \Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
+                                                        \Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento_filho->id,[3,4]) ||
+                                                        \Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento_filho->grupo_evento->id,[6,7])
+                                                    )
+                                                        <a class="btn btn-default" href="{{url("/evento/dashboard/".$evento_filho->id)}}" role="button">Dashboard</a>
+                                                    @endif
+                                                    <a class="btn btn-success" href="{{$evento_filho->getEventPublicLink()}}" target="_blank" role="button">Link de Divulgação</a>
+                                                    @if(
+                                                        \Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
+                                                        \Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento_filho->id,[4,5]) ||
+                                                        \Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento_filho->grupo_evento->id,[7])
+                                                    )
+                                                        <a class="btn btn-success" href="{{url("/inscricao/".$evento_filho->id)}}" target="_blank" role="button">Nova Inscrição</a>
+                                                    @endif
+
+                                                    @if($evento_filho->isDeletavel() && (\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() || \Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento_filho->grupo_evento->id,[7]) )) <a class="btn btn-danger" href="{{url("/evento/delete/".$evento_filho->id)}}" role="button">Apagar</a> @endif
+                                                </td>
+                                            </tr>
+                                        @endif
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- /.box-body -->
+					</div>
+				</section>
+			</div>
 
 			<div role="tabpanel" class="tab-pane" id="campo_personalizado">
 				<br/>
@@ -1730,7 +1611,7 @@
 
                         <div class="box box-primary">
                             <div class="box-header">
-                                <h3 class="box-title">XadrezSuíço Classificador - Regras e Processos de Classificação para o Evento #{{$event_classificates->event->id}} - {{$event_classificates->event->name}}</h3>
+                                <h3 class="box-title">{{config("xadrezsuico.name","XadrezSuíço")}} Classificador - Regras e Processos de Classificação para o Evento #{{$event_classificates->event->id}} - {{$event_classificates->event->name}}</h3>
                             </div>
                             <!-- form start -->
                                 <div class="box-body">
@@ -1743,15 +1624,15 @@
                                         </div>
                                     @endif
                                     <ul class="nav nav-pills">
-                                        <li role="presentation"><a href="{{url("/evento/".$evento->id."/classificator/".$event_classificates->id."/process")}}">!!!! Processar Classificações (Use com cuidado)</a></li>
-                                        <li role="presentation"><a href="{{url("/evento/".$evento->id."/classificator/".$event_classificates->id."/classificated/delete")}}">!!!! Remover classificados</a></li>
+                                        <li role="presentation"><a href="{{url("/classificator/event/".$evento->id."/".$event_classificates->id."/process")}}">!!!! Processar Classificações (Use com cuidado)</a></li>
+                                        <li role="presentation"><a href="{{url("/classificator/event/".$evento->id."/".$event_classificates->id."/classificated/delete")}}">!!!! Remover classificados</a></li>
                                         @if($total_classified > 0)
-                                            <li role="presentation"><a href="{{url("/inscricao/classificados/".$evento->id."/".$event_classificates->id)}}">[PÚBLICO] Lista de Classificados</a></li>
+                                            <li role="presentation"><a href="{{url("/inscricao/classificados/".$event_classificates->id)}}">[PÚBLICO] Lista de Classificados</a></li>
                                         @endif
                                     </ul>
 
                                     <ul class="nav nav-pills">
-                                        <li role="presentation"><a href="{{url("/evento/".$evento->id."/classificator/".$event_classificates->id."/rule/new")}}">Nova Regra</a></li>
+                                        <li role="presentation"><a href="{{url("/classificator/event/".$evento->id."/".$event_classificates->id."/rule/new")}}">Nova Regra</a></li>
                                     </ul>
                                     <table id="tabela_classificators" class="table-responsive table-condensed table-striped" style="width: 100%">
                                         <thead>
@@ -1788,13 +1669,25 @@
                                                                     Vagas a Cada: {{$rule->value}} (ou fração).
                                                                 @endif
                                                             @break
+                                                            @case(\App\Enum\ClassificationTypeRule::CLASSIFICATE_BY_START_POSITION)
+                                                                Posição na Classificação Inicial: {{$rule->value}}
+                                                            @break
                                                         @endswitch
+                                                        @if($rule->configs()->count() > 0)
+                                                            <hr/>
+                                                            <label>Regras adicionais:</label>
+                                                            @foreach(ClassificationTypeRuleConfig::list() as $key => $type_config)
+                                                                @if($rule->hasConfig($key))
+                                                                    <br/> {{$type_config["name"]}}: {{$type_config["type"] == "boolean" ? "Sim" : $rule->getConfig($key,true)}}
+                                                                @endif
+                                                            @endforeach
+                                                        @endif
                                                     </td>
                                                     @if($total_classified > 0)
                                                         <td>{{$rule->howMuchClassificated()}}</td>
                                                     @endif
                                                     <td>
-                                                        <a class="btn btn-default" href="{{url("/evento/".$evento->id."/classificator/".$event_classificates->id."/rule/edit/".$rule->id)}}" role="button">Editar</a>
+                                                        <a class="btn btn-default" href="{{url("/classificator/event/".$evento->id."/".$event_classificates->id."/rule/edit/".$rule->id)}}" role="button">Editar</a>
                                                     </td>
                                                 </tr>
                                             @endforeach
@@ -1806,7 +1699,7 @@
                     @endforeach
                     <div class="box box-primary">
                         <div class="box-header">
-                            <h3 class="box-title">XadrezSuíço Classificador</h3>
+                            <h3 class="box-title">{{config("xadrezsuico.name","XadrezSuíço")}} Classificador</h3>
                         </div>
                         <!-- form start -->
                             <div class="box-body">
@@ -1818,7 +1711,7 @@
                                     <thead>
                                         <tr>
                                             <th>#</th>
-                                            <th>Evento Classificador à Este</th>
+                                            <th>Classificador à Este</th>
                                             <th width="20%">Opções</th>
                                         </tr>
                                     </thead>
@@ -1827,17 +1720,34 @@
                                             <tr>
                                                 <td>{{$event_classificate->id}}</td>
                                                 <td>
-                                                    {{$event_classificate->event_classificator->name}}<br/>
-                                                    Grupo de Evento: {{$event_classificate->event_classificator->grupo_evento->name}}
+                                                    @if($event_classificate->event_classificator)
+                                                        <strong>Evento:</strong>
+                                                        {{$event_classificate->event_classificator->name}}<br/>
+                                                        <small>Grupo de Evento: {{$event_classificate->event_classificator->grupo_evento->name}}</small>
+                                                    @else
+                                                        <strong>Grupo de Evento:</strong>
+                                                        {{$event_classificate->event_group_classificator->name}}
+                                                    @endif
                                                 </td>
                                                 <td>
 
-                                                    @if(
-                                                        \Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
-                                                        \Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($event_classificate->event_classificator->id,[3,4,5]) ||
-                                                        \Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($event_classificate->event_classificator->grupo_evento->id,[6,7])
-                                                    )
-                                                        <a class="btn btn-warning mr-1" href="{{url("/evento/dashboard/".$event_classificate->event_classificator->id)}}" role="button">Acessar Dashboard do Evento</a>
+                                                    @if($event_classificate->event_classificator)
+                                                        @if(
+                                                            \Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
+                                                            \Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($event_classificate->event_classificator->id,[3,4,5]) ||
+                                                            \Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($event_classificate->event_classificator->grupo_evento->id,[6,7])
+                                                        )
+                                                            <a class="btn btn-warning mr-1" href="{{url("/evento/dashboard/".$event_classificate->event_classificator->id)}}" role="button">Acessar Dashboard do Evento</a>
+                                                        @endif
+                                                    @endif
+                                                    @if($event_classificate->event_group_classificator)
+                                                        @if(
+                                                            \Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
+                                                            \Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfilByGroupEvent($event_classificate->event_group_classificator->id,[3,4,5]) ||
+                                                            \Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($event_classificate->event_group_classificator->id,[6,7])
+                                                        )
+                                                            <a class="btn btn-warning mr-1" href="{{url("/grupoevento/dashboard/".$event_classificate->event_group_classificator->id)}}" role="button">Acessar Dashboard do Grupo de Evento</a>
+                                                        @endif
                                                     @endif
                                                     <a class="btn btn-default" href="{{url("/evento/".$evento->id."/classificator/edit/".$event_classificate->id)}}" role="button">Editar</a>
                                                 </td>
@@ -2029,6 +1939,317 @@
 		$("#confirmacao_publica_final").mask("00/00/0000 00:00");
 
 
+        // Handler para o switch de inscrições
+        $('#toggle_inscricoes').change(function() {
+            var isChecked = $(this).prop('checked');
+            var statusText = isChecked ? 'Bloqueado' : 'Liberado';
+            
+            $.ajax({
+                url: "{{url('/evento/'.$evento->id.'/toggleinscricoes')}}",
+                type: 'GET',
+                dataType: 'json',
+                success: function(response) {
+                    if(response.ok) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Status das inscrições atualizado com sucesso!',
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 3000,
+                            timerProgressBar: true
+                        });
+                    } else {
+                        // Reverte o switch se houver erro
+                        $('#toggle_inscricoes').prop('checked', !isChecked);
+                        Swal.fire({
+                            icon: 'error',
+                            title: response.message || 'Erro ao atualizar status das inscrições',
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 3000,
+                            timerProgressBar: true
+                        });
+                    }
+                },
+                error: function() {
+                    // Reverte o switch em caso de erro
+                    $('#toggle_inscricoes').prop('checked', !isChecked);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Erro ao comunicar com o servidor',
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true
+                    });
+                }
+            });
+        });
+
+        // Handler para o switch de edição de inscrição
+        $('#toggle_edicao_inscricao').change(function() {
+            var isChecked = $(this).prop('checked');
+            
+            $.ajax({
+                url: "{{url('/evento/'.$evento->id.'/toggleedicaoinscricao')}}",
+                type: 'GET',
+                dataType: 'json',
+                success: function(response) {
+                    if(response.ok) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: response.message || 'Status da edição de inscrição atualizado com sucesso!',
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 3000,
+                            timerProgressBar: true
+                        });
+                    } else {
+                        // Reverte o switch se houver erro
+                        $('#toggle_edicao_inscricao').prop('checked', !isChecked);
+                        Swal.fire({
+                            icon: 'error',
+                            title: response.message || 'Erro ao atualizar status da edição de inscrição',
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 3000,
+                            timerProgressBar: true
+                        });
+                    }
+                },
+                error: function(xhr) {
+                    // Reverte o switch em caso de erro
+                    $('#toggle_edicao_inscricao').prop('checked', !isChecked);
+                    let msg = 'Erro ao comunicar com o servidor';
+                    if(xhr.responseJSON && xhr.responseJSON.message) {
+                        msg = xhr.responseJSON.message;
+                    }
+                    Swal.fire({
+                        icon: 'error',
+                        title: msg,
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true
+                    });
+                }
+            });
+        });
+
+        // Handler para o switch de classificação geral
+        $('#toggle_classificavel').change(function() {
+            var isChecked = $(this).prop('checked');
+            
+            $.ajax({
+                url: "{{url('/evento/'.$evento->id.'/toggleclassificavel')}}",
+                type: 'GET',
+                dataType: 'json',
+                success: function(response) {
+                    if(response.ok) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: response.message || 'Status da classificação geral atualizado com sucesso!',
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 3000,
+                            timerProgressBar: true
+                        });
+                    } else {
+                        // Reverte o switch se houver erro
+                        $('#toggle_classificavel').prop('checked', !isChecked);
+                        Swal.fire({
+                            icon: 'error',
+                            title: response.message || 'Erro ao atualizar status da classificação geral',
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 3000,
+                            timerProgressBar: true
+                        });
+                    }
+                },
+                error: function(xhr) {
+                    // Reverte o switch em caso de erro
+                    $('#toggle_classificavel').prop('checked', !isChecked);
+                    let msg = 'Erro ao comunicar com o servidor';
+                    if(xhr.responseJSON && xhr.responseJSON.message) {
+                        msg = xhr.responseJSON.message;
+                    }
+                    Swal.fire({
+                        icon: 'error',
+                        title: msg,
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true
+                    });
+                }
+            });
+        });
+
+        // Handler para o switch de Resultados Automáticos
+        $('#toggle_resultados_automaticos').change(function() {
+            var isChecked = $(this).prop('checked');
+            $.ajax({
+                url: "{{url('/evento/'.$evento->id.'/togglemanual')}}",
+                type: 'GET',
+                dataType: 'json',
+                success: function(response) {
+                    if(response.ok) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: response.message || 'Status dos resultados atualizado com sucesso!',
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 3000,
+                            timerProgressBar: true
+                        });
+                    } else {
+                        // Reverte o switch se houver erro
+                        $('#toggle_resultados_automaticos').prop('checked', !isChecked);
+                        Swal.fire({
+                            icon: 'error',
+                            title: response.message || 'Erro ao atualizar status dos resultados',
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 3000,
+                            timerProgressBar: true
+                        });
+                    }
+                },
+                error: function(xhr) {
+                    // Reverte o switch em caso de erro
+                    $('#toggle_resultados_automaticos').prop('checked', !isChecked);
+                    let msg = 'Erro ao comunicar com o servidor';
+                    if(xhr.responseJSON && xhr.responseJSON.message) {
+                        msg = xhr.responseJSON.message;
+                    }
+                    Swal.fire({
+                        icon: 'error',
+                        title: msg,
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true
+                    });
+                }
+            });
+        });
+
+        // Handler para o switch de rating
+        $('#toggle_rating').change(function() {
+            var isChecked = $(this).prop('checked');
+            
+            $.ajax({
+                url: "{{url('/evento/'.$evento->id.'/togglerating')}}",
+                type: 'GET',
+                dataType: 'json',
+                success: function(response) {
+                    if(response.ok) {
+                        if(isChecked) {
+                            $('#toggle_rating_status_container').show();
+                        } else {
+                            $('#toggle_rating_status_container').hide();
+                        }
+                        
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Status do cálculo de rating atualizado com sucesso!',
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 3000,
+                            timerProgressBar: true
+                        });
+                    } else {
+                        // Reverte o switch se houver erro
+                        $('#toggle_rating').prop('checked', !isChecked);
+                        Swal.fire({
+                            icon: 'error',
+                            title: response.message || 'Erro ao atualizar status do cálculo de rating',
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 3000,
+                            timerProgressBar: true
+                        });
+                    }
+                },
+                error: function() {
+                    // Reverte o switch em caso de erro
+                    $('#toggle_rating').prop('checked', !isChecked);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Erro ao atualizar status do cálculo de rating',
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true
+                    });
+                }
+            });
+        });
+
+        // Handler para o switch de Resultados
+        $('#toggle_resultados').change(function() {
+            var isChecked = $(this).prop('checked');
+            
+            $.ajax({
+                url: "{{url('/evento/'.$evento->id.'/toggleresultados')}}",
+                type: 'GET',
+                dataType: 'json',
+                success: function(response) {
+                    if(response.ok) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: response.message,
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 3000,
+                            timerProgressBar: true
+                        });
+                    } else {
+                        // Reverte o switch se houver erro
+                        $('#toggle_resultados').prop('checked', !isChecked);
+                        Swal.fire({
+                            icon: 'error',
+                            title: response.message || 'Erro ao atualizar status dos resultados',
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 3000,
+                            timerProgressBar: true
+                        });
+                    }
+                },
+                error: function() {
+                    // Reverte o switch em caso de erro
+                    $('#toggle_resultados').prop('checked', !isChecked);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Erro ao atualizar status dos resultados',
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true
+                    });
+                }
+            });
+        });
   });
 
 	function buscaEstados(buscaCidade,callback){

@@ -40,9 +40,13 @@ class GerenciadorVinculosFederativosController extends Controller
                         case 2:
                             $type = 2;
                             break;
-                        // apenas manual
+                            // apenas manual
                         case 3:
                             $type = 3;
+                            break;
+                            // apenas pré-vinculados
+                        case 4:
+                            $type = 4;
                             break;
                     }
                 }
@@ -267,10 +271,16 @@ class GerenciadorVinculosFederativosController extends Controller
                         $q1->where([["is_confirmed_system","=",true],["ano","=",date("Y")]]);
                     });
                     break;
-                // apenas manual
+                    // apenas manual
                 case 3:
-                    $enxadristas->whereHas("vinculos",function($q1) use ($request){
-                        $q1->where([["is_confirmed_manually","=",true],["ano","=",date("Y")]]);
+                    $enxadristas->whereHas("vinculos", function ($q1) use ($request) {
+                        $q1->where([["is_confirmed_manually", "=", true], ["ano", "=", date("Y")]]);
+                    });
+                    break;
+                    // apenas pré-vinculados
+                case 4:
+                    $enxadristas->whereHas("vinculos", function ($q1) use ($request) {
+                        $q1->where([["is_confirmed_system", "=", false],["is_confirmed_manually", "=", false], ["ano", "=", date("Y")]]);
                     });
                     break;
             }
@@ -378,6 +388,10 @@ class GerenciadorVinculosFederativosController extends Controller
             }elseif($enxadrista->vinculos()->where([["ano","=",date("Y")],["is_confirmed_system","=",false],["is_confirmed_manually","=",false]])->count() > 0){
                 $pre_vinculo = $enxadrista->vinculos()->where([["ano","=",date("Y")],["is_confirmed_system","=",false],["is_confirmed_manually","=",false]])->first();
                 $p[7] = "<strong>Pré-vinculado</strong>";
+                if($pre_vinculo->is_efective){
+                    $p[7] .= "<br/>";
+                    $p[7] .= "Pré-vinculo a partir de vínculo confirmado de período anterior.";
+                }
                 $p[5] .= "<hr/>Pré-Vínculo por: <strong>#".$pre_vinculo->cidade->id." - ".$pre_vinculo->cidade->name."</strong>";
                 $p[6] .= "<hr/>Pré-Vínculo por: <strong>#".$pre_vinculo->clube->id." - ".$pre_vinculo->clube->getName()."</strong>";
             }else{

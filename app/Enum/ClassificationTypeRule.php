@@ -7,6 +7,7 @@ class ClassificationTypeRule
     const POSITION_ABSOLUTE = "position-absolute";
     const PRE_CLASSIFICATE = "pre-classificate";
     const PLACE_BY_QUANTITY = "place-by-quantity";
+    const CLASSIFICATE_BY_START_POSITION = "classificate-by-start-position";
 
     static $types = array(
         "position" => array(
@@ -22,8 +23,12 @@ class ClassificationTypeRule
             "description" => "Indica qual evento deve-se considerar a pré-classificação, onde todos os participantes daquele evento tem o direito a vaga se jogarem o evento."
         ),
         "place-by-quantity" => array(
-            "name"=>"Quantidade de Vagas por Participantes",
+            "name" => "Quantidade de Vagas por Participantes",
             "description" => "Indica a quantidade de vagas pela quantidade de participantes."
+        ),
+        "classificate-by-start-position" => array(
+            "name" => "Classificação por Classificação Inicial",
+            "description" => "Classifica uma posição específica a partir da classificação inicial."
         ),
     );
 
@@ -42,6 +47,7 @@ class ClassificationTypeRule
 
     public static function getProcessOrder(){
         return [
+            self::CLASSIFICATE_BY_START_POSITION,
             self::PRE_CLASSIFICATE,
             self::POSITION_ABSOLUTE,
             self::POSITION,

@@ -4,9 +4,9 @@ namespace App;
 
 use App\InscricaoCriterioDesempate;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log;
 use Spatie\Activitylog\Traits\LogsActivity;
 
-use Log;
 
 class CriterioDesempate extends Model
 {
@@ -35,11 +35,20 @@ class CriterioDesempate extends Model
         return CriterioDesempate::where([["is_geral", "=", true]]);
     }
 
-    public function valor_criterio($inscrito_id)
+    public function valor_criterio($inscrito_id, $prioridade)
     {
         $desempate = InscricaoCriterioDesempate::where([
             ["criterio_desempate_id", "=", $this->id],
             ["inscricao_id", "=", $inscrito_id],
+            ["prioridade", "=", $prioridade],
+        ])->first();
+        if ($desempate) {
+            return $desempate;
+        }
+        $desempate = InscricaoCriterioDesempate::where([
+            ["criterio_desempate_id", "=", $this->id],
+            ["inscricao_id", "=", $inscrito_id],
+            ["prioridade", "=", null],
         ])->first();
         if ($desempate) {
             return $desempate;
@@ -47,9 +56,9 @@ class CriterioDesempate extends Model
 
         return false;
     }
-    public function valor_criterio_visualizacao($inscrito_id)
+    public function valor_criterio_visualizacao($inscrito_id, $prioridade)
     {
-        $desempate = $this->valor_criterio($inscrito_id);
+        $desempate = $this->valor_criterio($inscrito_id, $prioridade);
         if ($desempate) {
             switch($this->internal_code){
                 case "TT3_1":
@@ -104,10 +113,13 @@ class CriterioDesempate extends Model
         return false;
     }
 
-    public function sort_desempate($inscrito_a, $inscrito_b)
+    public function sort_desempate($inscrito_a, $inscrito_b, $prioridade)
     {
-        $desempate_a = $this->valor_criterio($inscrito_a->id);
-        $desempate_b = $this->valor_criterio($inscrito_b->id);
+        $desempate_a = $this->valor_criterio($inscrito_a->id, $prioridade);
+        $desempate_b = $this->valor_criterio($inscrito_b->id, $prioridade);
+
+
+
         Log::debug("Comparação de critérios (".$this->name.") entre ".$inscrito_a->id." e ".$inscrito_b->id);
         if ($desempate_a && !$desempate_b) {
             Log::debug("critério B não existe");
@@ -116,13 +128,22 @@ class CriterioDesempate extends Model
             Log::debug("critério A não existe");
             return 0;
         } elseif ($desempate_a && $desempate_b) {
-
-            if ($desempate_a->valor < $desempate_b->valor) {
-            Log::debug("critério A < B");
-                return 1;
-            } elseif ($desempate_a->valor > $desempate_b->valor) {
-                Log::debug("critério A > B");
-                return -1;
+            if($this->direction == "DESC"){
+                if ($desempate_a->valor < $desempate_b->valor) {
+                    Log::debug("critério A < B");
+                    return 1;
+                } elseif ($desempate_a->valor > $desempate_b->valor) {
+                    Log::debug("critério A > B");
+                    return -1;
+                }
+            }else{
+                if ($desempate_a->valor < $desempate_b->valor) {
+                    Log::debug("critério A < B");
+                    return -1;
+                } elseif ($desempate_a->valor > $desempate_b->valor) {
+                    Log::debug("critério A > B");
+                    return 1;
+                }
             }
 
         }
@@ -135,10 +156,18 @@ class CriterioDesempate extends Model
         $desempate_a = $this->valor_criterio_geral($pontuacao_a->enxadrista->id, $pontuacao_a->grupo_evento_id, $pontuacao_a->categoria_id);
         $desempate_b = $this->valor_criterio_geral($pontuacao_b->enxadrista->id, $pontuacao_b->grupo_evento_id, $pontuacao_b->categoria_id);
         // echo $desempate_a, $desempate_b;
-        if ($desempate_a->valor < $desempate_b->valor) {
-            return 1;
-        } elseif ($desempate_a->valor > $desempate_b->valor) {
-            return -1;
+        if ($this->direction == "DESC") {
+            if ($desempate_a->valor < $desempate_b->valor) {
+                return 1;
+            } elseif ($desempate_a->valor > $desempate_b->valor) {
+                return -1;
+            }
+        }else{
+            if ($desempate_a->valor < $desempate_b->valor) {
+                return -1;
+            } elseif ($desempate_a->valor > $desempate_b->valor) {
+                return 1;
+            }
         }
         return 0;
     }

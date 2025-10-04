@@ -22,6 +22,7 @@ use App\Torneio;
 use App\TorneioTemplate;
 use App\TorneioTemplateGrupoEvento;
 use App\EmailTemplate;
+use Illuminate\Support\Str;
 use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -155,6 +156,45 @@ class GrupoEventoController extends Controller
                 $template_categoria_novo_grupo->categoria_id = $categories_relationship[$template_categoria_novo_grupo->categoria_id];
                 $template_categoria_novo_grupo->torneio_template_id = $torneio_template_novo_grupo->id;
                 $template_categoria_novo_grupo->save();
+            }
+        }
+
+        foreach($grupo_evento->event_team_awards->all() as $event_team_award){
+            $event_team_award_new = $event_team_award->replicate();
+            $event_team_award_new->event_groups_id = $novo_grupo_evento->id;
+            $event_team_award_new->save();
+
+
+            foreach ($event_team_award->categories->all() as $award_category) {
+                $award_category_new = $award_category->replicate();
+                $award_category_new->categories_id = $categories_relationship[$award_category->categories_id];
+                $award_category_new->event_team_awards_id = $event_team_award_new->id;
+                $award_category_new->save();
+            }
+
+            foreach ($event_team_award->scores->all() as $award_score) {
+                $award_score_new = $award_score->replicate();
+                $award_score_new->event_team_awards_id = $event_team_award_new->id;
+                $award_score_new->save();
+            }
+
+            foreach ($event_team_award->tiebreaks->all() as $award_tiebreak) {
+                $award_tiebreak_new = $award_tiebreak->replicate();
+                $award_tiebreak_new->event_team_awards_id = $event_team_award_new->id;
+                $award_tiebreak_new->save();
+            }
+
+            foreach ($event_team_award->configs->all() as $award_config) {
+                $award_config_new = $award_config->replicate();
+                $award_config_new->event_team_awards_id = $event_team_award_new->id;
+
+                // Verifica se a chave contém um padrão %category_{number}%
+                if (preg_match('/%category_(\d+)%/', $award_config_new->key, $matches)) {
+                    $number = $matches[1]; // Pega o número encontrado
+                    $award_config_new->key = preg_replace('/%category_\d+%/', '$categories_relationship[' . $number . ']', $award_config_new->key);
+                }
+
+                $award_config_new->save();
             }
         }
 
@@ -559,6 +599,94 @@ class GrupoEventoController extends Controller
         return redirect("/grupoevento/dashboard/" . $grupo_evento->id . "?tab=evento");
     }
 
+    public function evento_clone($id, $evento_id){
+
+        $user = Auth::user();
+        if (!$user->hasPermissionGlobal() && !$user->hasPermissionGroupEventByPerfil($id, [7])) {
+            return redirect("/grupoevento");
+        }
+
+        $grupo_evento = GrupoEvento::find($id);
+
+        if($grupo_evento->eventos()->where([["id","=",$evento_id]])->count() == 0){
+            return redirect()->back();
+        }
+
+        $evento = $grupo_evento->eventos()->where([["id", "=", $evento_id]])->first();
+        $novo_evento = $evento->replicate();
+        $novo_evento->uuid = Str::uuid();
+        $novo_evento->name .= " (CÓPIA)";
+
+        $novo_evento->save();
+
+
+        $categorias_ids = array();
+
+        // IMPORTAÇÃO DAS CATEGORIAS
+        foreach ($evento->categorias->all() as $categoria) {
+            $categoria_evento = $categoria->replicate();
+            $categoria_evento->evento_id = $novo_evento->id;
+            $categoria_evento->save();
+        }
+
+
+        // IMPORTAÇÃO DOS TORNEIOS
+        foreach ($evento->torneios->all() as $torneio) {
+            $novo_torneio = $torneio->replicate();
+            $novo_torneio->evento_id = $novo_evento->id;
+            $novo_torneio->save();
+
+
+            // IMPORTAÇÃO DAS CATEGORIAS DO TORNEIO
+            foreach ($torneio->categorias->all() as $categoria) {
+                $categoria_torneio = $categoria->replicate();
+                $categoria_torneio->torneio_id = $novo_torneio->id;
+                $categoria_torneio->save();
+            }
+            // IMPORTAÇÃO DAS CONFIGURAÇÕES DO TORNEIO
+            foreach ($torneio->configs->all() as $config) {
+                $config_torneio = $config->replicate();
+                $config_torneio->torneio_id = $novo_torneio->id;
+                $config_torneio->save();
+            }
+            TorneioController::generateRodadasDefault($novo_torneio->id);
+        }
+        // IMPORTAÇÃO DOS CRITÉRIOS DE DESEMPATE
+        foreach ($evento->criterios->all() as $criterio_desempate) {
+            $criterio_desempate_evento = $criterio_desempate->replicate();
+            $criterio_desempate_evento->evento_id = $novo_evento->id;
+            $criterio_desempate_evento->save();
+        }
+
+        if ($evento->tipo_rating_interno) {
+            $novo_tipo_rating_interno = $evento->tipo_rating_interno->replicate();
+            $novo_tipo_rating_interno->evento_id = $novo_evento->id;
+            $novo_tipo_rating_interno->save();
+        }
+        if ($evento->pagina) {
+            $nova_pagina = $evento->pagina->replicate();
+            $nova_pagina->evento_id = $novo_evento->id;
+            $nova_pagina->save();
+        }
+        // IMPORTAÇÃO DOS TEMPLATES DE E-MAIL
+        foreach ($evento->email_templates->all() as $email_template) {
+            $email_template_evento = $email_template->replicate();
+            $email_template_evento->evento_id = $novo_evento->id;
+            $email_template_evento->save();
+        }
+        // IMPORTAÇÃO DOS ITENS DE TIMELINE
+        foreach ($evento->timeline_items->all() as $timeline_item) {
+            $timeline_item_evento = $timeline_item->replicate();
+            $timeline_item_evento->event_id = $novo_evento->id;
+            $timeline_item_evento->save();
+        }
+
+
+        $messageBag = new MessageBag;
+        $messageBag->add("type", "success");
+        $messageBag->add("alerta", "Evento duplicado com sucesso!");
+        return redirect("/evento/dashboard/" . $novo_evento->id)->withErrors($messageBag);
+    }
 
 
 

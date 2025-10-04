@@ -22,7 +22,7 @@ class SeedPerfilAddXadrezSuicoPagPermissions extends Migration
             $perfil_11 = new Perfil;
             $perfil_11->id = 11;
         }
-        $perfil_11->name = "XadrezSuíçoPAG - Administrador";
+        $perfil_11->name = "PAG - Administrador";
         $perfil_11->save();
 
         $perfil_12 = Perfil::find(12);
@@ -30,7 +30,7 @@ class SeedPerfilAddXadrezSuicoPagPermissions extends Migration
             $perfil_12 = new Perfil;
             $perfil_12->id = 12;
         }
-        $perfil_12->name = "XadrezSuíçoPAG - Gerente";
+        $perfil_12->name = "PAG - Gerente";
         $perfil_12->save();
 
         $perfil_13 = Perfil::find(13);
@@ -38,7 +38,7 @@ class SeedPerfilAddXadrezSuicoPagPermissions extends Migration
             $perfil_13 = new Perfil;
             $perfil_13->id = 13;
         }
-        $perfil_13->name = "XadrezSuíçoPAG - Operador";
+        $perfil_13->name = "PAG - Operador";
         $perfil_13->save();
     }
 

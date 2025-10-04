@@ -134,7 +134,7 @@ class AppServiceProvider extends ServiceProvider
                 ]);
             }
             if(Auth::check()){
-                $event->menu->add("XADREZSUÍÇO");
+                $event->menu->add(mb_strtoupper(config("xadrezsuico.name", "XadrezSuíço")));
                 $event->menu->add([
                     'text' => 'O que há de novo?',
                     'url'  => '/whatsnew',

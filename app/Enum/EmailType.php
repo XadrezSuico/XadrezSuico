@@ -27,9 +27,9 @@ class EmailType
         7 => array("name"=>"Inscrição Recebida - Pagamento Pendente","is_general"=>0),
         8 => array("name"=>"Pagamento Confirmado - Inscrição Confirmada","is_general"=>0),
         9 => array("name"=>"Inscrição Confirmada Automaticamente Pelo Pagamento","is_general"=>0),
-        10 => array("name"=>"XadrezSuíço Classificador - Processamento","is_general"=>1),
-        11 => array("name"=>"XadrezSuíço - Novo Usuário","is_general"=>1),
-        12 => array("name"=>"XadrezSuíço - Nova Permissão ao Usuário","is_general"=>1),
+        10 => array("name"=>"Classificador - Processamento","is_general"=>1),
+        11 => array("name"=>"Novo Usuário","is_general"=>1),
+        12 => array("name"=>"Nova Permissão ao Usuário","is_general"=>1),
     );
 
     public function list(){

@@ -56,7 +56,7 @@
 				<li role="presentation"><a id="tab_pontuacao" href="#pontuacao" aria-controls="pontuacao" role="tab" data-toggle="tab">Pontuação</a></li>
 				<li role="presentation"><a id="tab_campo_personalizado" href="#campo_personalizado" aria-controls="campo_personalizado" role="tab" data-toggle="tab">Campo Personalizado</a></li>
 				<li role="presentation"><a id="tab_email_template" href="#email_template" aria-controls="email_template" role="tab" data-toggle="tab">Templates de E-mail</a></li>
-			    <?php if(\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal()){ ?><li role="presentation"><a id="tab_classificator" href="#classificator" aria-controls="classificator" role="tab" data-toggle="tab">XadrezSuíço Classificador</a></li><?php } ?>
+			    <?php if(\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal()){ ?><li role="presentation"><a id="tab_classificator" href="#classificator" aria-controls="classificator" role="tab" data-toggle="tab">Classificador</a></li><?php } ?>
 			@endif
 		</ul>
 
@@ -91,7 +91,7 @@
 						            \Illuminate\Support\Facades\Auth::user()->hasPermissionGlobalbyPerfil([1,10,11])
                                 )
                                     <div class="form-group">
-                                        <label for="xadrezsuicopag_uuid">XadrezSuíçoPag: UUID do Grupo de Evento</label>
+                                        <label for="xadrezsuicopag_uuid">PAG: UUID do Grupo de Evento</label>
                                         <input name="xadrezsuicopag_uuid" id="xadrezsuicopag_uuid" class="form-control" type="text" value="{{$grupo_evento->xadrezsuicopag_uuid}}" @if(!$user->hasPermissionGlobal() && !$user->hasPermissionGroupEventByPerfil($grupo_evento->id,[7])) disabled="disabled" @endif />
                                     </div>
                                 @endif
@@ -228,7 +228,7 @@
 										</tr>
 									</thead>
 									<tbody>
-										@foreach($grupo_evento->eventos->all() as $evento)
+										@foreach($grupo_evento->eventos()->whereNull("parent_evento_id")->get() as $evento)
 											@if(
 												\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
 												\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[3,4,5]) ||
@@ -618,7 +618,10 @@
 													<td>@if(!$categoria->nao_classificar) Sim @else Não @endif</td>
 													<td>
 														<a class="btn btn-success" href="{{url("/grupoevento/".$grupo_evento->id."/categorias/dashboard/".$categoria->id)}}" role="button"><i class="fa fa-dashboard"></i></a>
-														@if($categoria->isDeletavel()) <a class="btn btn-danger" href="{{url("/grupoevento/".$grupo_evento->id."/categorias/delete/".$categoria->id)}}" role="button"><i class="fa fa-times"></i></a> @endif
+														@if($categoria->torneios_template()->count() == 0)
+														    <a class="btn btn-warning" href="{{url("/grupoevento/".$grupo_evento->id."/categorias/createTemplate/".$categoria->id)}}" role="button"><i class="fa fa-plus"></i></a>
+                                                        @endif
+                                                        @if($categoria->isDeletavel()) <a class="btn btn-danger" href="{{url("/grupoevento/".$grupo_evento->id."/categorias/delete/".$categoria->id)}}" role="button"><i class="fa fa-times"></i></a> @endif
 													</td>
 												</tr>
 											@endforeach
@@ -812,6 +815,97 @@
                 <div role="tabpanel" class="tab-pane" id="classificator">
                     <br/>
                     <section class="col-lg-12 connectedSortable">
+
+                        @foreach($grupo_evento->event_classificates->all() as $event_classificates)
+
+                            <div class="box box-primary">
+                                <div class="box-header">
+                                    <h3 class="box-title">Classificador - Regras e Processos de Classificação para o Evento #{{$event_classificates->event->id}} - {{$event_classificates->event->name}}</h3>
+                                </div>
+                                <!-- form start -->
+                                    <div class="box-body">
+                                        @php($total_classified = $event_classificates->howMuchClassificated())
+                                        @if($total_classified > 0)
+                                            <div class="alert alert-success" role="alert">
+                                                <strong>Classificado!</strong><br/>
+                                                O presente classificador foi classificado.<br/>
+                                                Total de Classificados: {{$total_classified}}
+                                            </div>
+                                        @endif
+                                        <ul class="nav nav-pills">
+                                            <li role="presentation"><a href="{{url("/classificator/event_group/".$grupo_evento->id."/".$event_classificates->id."/process")}}">!!!! Processar Classificações (Use com cuidado)</a></li>
+                                            <li role="presentation"><a href="{{url("/classificator/event_group/".$grupo_evento->id."/".$event_classificates->id."/classificated/delete")}}">!!!! Remover classificados</a></li>
+                                            @if($total_classified > 0)
+                                                <li role="presentation"><a href="{{url("/inscricao/classificados/".$event_classificates->id)}}">[PÚBLICO] Lista de Classificados</a></li>
+                                            @endif
+                                        </ul>
+
+                                        <ul class="nav nav-pills">
+                                            <li role="presentation"><a href="{{url("/classificator/event_group/".$grupo_evento->id."/".$event_classificates->id."/rule/new")}}">Nova Regra</a></li>
+                                        </ul>
+                                        <table id="tabela_classificators" class="table-responsive table-condensed table-striped" style="width: 100%">
+                                            <thead>
+                                                <tr>
+                                                    <th>#</th>
+                                                    <th>Regra</th>
+                                                    <th>Configurações</th>
+                                                    @if($total_classified > 0)
+                                                        <th>Total de Classificados</th>
+                                                    @endif
+                                                    <th width="20%">Opções</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach($event_classificates->rules->all() as $rule)
+                                                    <tr>
+                                                        <td>{{$rule->id}}</td>
+                                                        <td>{{$rule->getRuleName()}}</td>
+                                                        <td>
+                                                            @switch($rule->type)
+                                                                @case(\App\Enum\ClassificationTypeRule::POSITION)
+                                                                    Posição Relativa: {{$rule->value}}
+                                                                @break
+                                                                @case(\App\Enum\ClassificationTypeRule::POSITION_ABSOLUTE)
+                                                                    Posição Absoluta: {{$rule->value}}
+                                                                @break
+                                                                @case(\App\Enum\ClassificationTypeRule::PRE_CLASSIFICATE)
+                                                                    Pré-classificação pelo Evento: #{{$rule->event->id}} - {{$rule->event->name}}
+                                                                @break
+                                                                @case(\App\Enum\ClassificationTypeRule::PLACE_BY_QUANTITY)
+                                                                    @if($rule->is_absolute)
+                                                                        Vagas a Cada: {{$rule->value}} (Completos).
+                                                                    @else
+                                                                        Vagas a Cada: {{$rule->value}} (ou fração).
+                                                                    @endif
+                                                                @break
+                                                                @case(\App\Enum\ClassificationTypeRule::CLASSIFICATE_BY_START_POSITION)
+                                                                    Posição na Classificação Inicial: {{$rule->value}}
+                                                                @break
+                                                            @endswitch
+                                                            @if($rule->configs()->count() > 0)
+                                                                <hr/>
+                                                                <label>Regras adicionais:</label>
+                                                                @foreach(ClassificationTypeRuleConfig::list() as $key => $type_config)
+                                                                    @if($rule->hasConfig($key))
+                                                                        <br/> {{$type_config["name"]}}: {{$type_config["type"] == "boolean" ? "Sim" : $rule->getConfig($key,true)}}
+                                                                    @endif
+                                                                @endforeach
+                                                            @endif
+                                                        </td>
+                                                        @if($total_classified > 0)
+                                                            <td>{{$rule->howMuchClassificated()}}</td>
+                                                        @endif
+                                                        <td>
+                                                            <a class="btn btn-default" href="{{url("/classificator/event_group/".$grupo_evento->id."/".$event_classificates->id."/rule/edit/".$rule->id)}}" role="button">Editar</a>
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <!-- /.box-body -->
+                            </div>
+                        @endforeach
                         <div class="box box-primary">
                             <div class="box-header">
                                 <h3 class="box-title">Categorias Vinculadas</h3>
@@ -905,6 +999,19 @@
 
         $("#estados_id").select2();
         $("#cidade_id").select2();
+
+		$("#pais_id").on("select2:select",function(){
+			Loading.enable(loading_default_animation,10000);
+            buscaEstados(false,()=>{
+				Loading.destroy();
+            });
+        });
+		$("#estados_id").on("select2:select",function(){
+			Loading.enable(loading_default_animation,10000);
+            buscaCidades(()=>{
+				Loading.destroy();
+            });
+        });
 
 
 		@if(env("PAIS_DEFAULT"))

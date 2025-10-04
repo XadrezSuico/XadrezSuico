@@ -1,8 +1,17 @@
 @extends('adminlte::page')
 
-@section("title", "Evento #".$evento->id." (".$evento->name.") >> XadrezSuíço Classificador #".$event_classificates->id." (".$event_classificates->name.") >> Regra >> Novo")
+@if($element->isEvent())
+    @section("title", "Evento #".$element->id." (".$element->name.") >> Classificador #".$event_classificates->id." (".$event_classificates->event->name.") >> Regra >> Novo")
+@else
+    @section("title", "Grupo de Evento #".$element->id." (".$element->name.") >> Classificador #".$event_classificates->id." (".$event_classificates->event->name.") >> Regra >> Novo")
+@endif
+
 @section('content_header')
-  <h1>Evento #{{$evento->id}} ({{$evento->name}}) >> XadrezSuíço Classificador #{{$event_classificates->id}} ({{$event_classificates->name}}) >> Regra >> Novo</h1>
+    @if($element->isEvent())
+        <h1>Evento #{{$element->id}} ({{$element->name}}) >> Classificador #{{$event_classificates->id}} ({{$event_classificates->event->name}}) >> Regra >> Novo</h1>
+    @else
+        <h1>Grupo de Evento #{{$element->id}} ({{$element->name}}) >> Classificador #{{$event_classificates->id}} ({{$event_classificates->event->name}}) >> Regra >> Novo</h1>
+    @endif
 @stop
 
 
@@ -17,7 +26,11 @@
 @section("content")
 	<!-- Main row -->
 	<ul class="nav nav-pills">
-		<li role="presentation"><a href="/evento/dashboard/{{$evento->id}}?tab=classificator">Voltar a Lista de Regras na Dashboard de Evento</a></li>
+        @if($element->isEvent())
+            <li role="presentation"><a href="/evento/dashboard/{{$element->id}}?tab=classificator">Voltar a Lista de Regras na Dashboard de Evento</a></li>
+        @else
+            <li role="presentation"><a href="/grupoevento/dashboard/{{$element->id}}?tab=classificator">Voltar a Lista de Regras na Dashboard de Grupo de Evento</a></li>
+        @endif
 	</ul>
 	<div class="row">
   <section class="col-lg-12 connectedSortable">
@@ -51,6 +64,32 @@
                                 <option value="{{$event_item->id}}">#{{$event_item->id}} - {{$event_item->name}}</option>
                             @endforeach
                         </select>
+                    </div>
+                    <hr/>
+                    <label>Regras para Funcionamento da Regra:</label>
+                    <div class="row">
+                        @foreach(ClassificationTypeRuleConfig::list() as $key => $type_config)
+					        <div class="col-md-6">
+                                <div class="form-group">
+                                    @switch($type_config["type"])
+                                        @case("text")
+                                        @case("integer")
+                                            <label for="config_{{$key}}">{{$type_config["name"]}}</label>
+                                        @break
+                                    @endswitch
+                                    @switch($type_config["type"])
+                                        @case("text")
+                                        @case("integer")
+                                            <input type="text" id="config_{{$key}}" name="config_{{$key}}" class="form-control"/>
+                                        @break
+                                        @case("boolean")
+                                            <label><input type="checkbox" id="config_{{$key}}" name="config_{{$key}}" autocomplete="off"/> {{$type_config["name"]}}</label><br/>
+                                        @break
+                                    @endswitch
+                                    <small>{{$type_config["description"]}}</small>
+                                </div>
+                            </div>
+                        @endforeach
                     </div>
 				</div>
 				<!-- /.box-body -->
@@ -88,6 +127,7 @@
         case "position":
         case "position-absolute":
         case "place-by-quantity":
+        case "classificate-by-start-position":
             $("#value_block").show("fast");
             $("#event_block").hide("fast");
 

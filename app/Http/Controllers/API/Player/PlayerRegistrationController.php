@@ -30,12 +30,12 @@ class PlayerRegistrationController extends Controller
         if (
             !$request->has("accepts.policy")
         ) {
-            return response()->json(["ok" => 0, "error" => 1, "message" => "Você deve aceitar o termo de uso e política de privacidade da plataforma XadrezSuíço!"]);
+            return response()->json(["ok" => 0, "error" => 1, "message" => "Você deve aceitar o termo de uso e política de privacidade da plataforma " . config("xadrezsuico.name", "XadrezSuíço") . "!"]);
         }
         if (
             $request->input("accepts.policy") == 0
         ) {
-            return response()->json(["ok" => 0, "error" => 1, "message" => "Você deve aceitar o termo de uso e política de privacidade da plataforma XadrezSuíço!"]);
+            return response()->json(["ok" => 0, "error" => 1, "message" => "Você deve aceitar o termo de uso e política de privacidade da plataforma " . config("xadrezsuico.name", "XadrezSuíço") . "!"]);
         }
 
         if (
@@ -241,6 +241,9 @@ class PlayerRegistrationController extends Controller
         $enxadrista->pais_celular_id = $request->input("cellphone_country_id");
         $enxadrista->celular = $request->input("cellphone");
         $enxadrista->cidade_id = $request->input("city_id");
+        $enxadrista->encontrado_cbx = false;
+        $enxadrista->encontrado_fide = false;
+        $enxadrista->encontrado_lbx = false;
         if ($request->has("club_id")) {
             if ($request->input("club_id") > 0) {
                 $enxadrista->clube_id = $request->input("club_id");
@@ -260,10 +263,10 @@ class PlayerRegistrationController extends Controller
             if ($request->input("fide_id") > 0) {
                 $enxadrista->fide_id = $request->input("fide_id");
 
-                $enxadrista = FIDERatingController::getRating($enxadrista, false, true, false);
-                if (!$enxadrista->encontrado_fide) {
-                    return response()->json(["ok" => 0, "error" => 1, "message" => "O ID FIDE informado não existe. Por favor, verifique esta informação e tente novamente. Lembrando que esta informação DEVE SER válida e deve corresponder ao cadastro deste enxadrista!", "registred" => 0, "ask" => 0]);
-                }
+                // $enxadrista = FIDERatingController::getRating($enxadrista, false, true, false);
+                // if (!$enxadrista->encontrado_fide) {
+                //     return response()->json(["ok" => 0, "error" => 1, "message" => "O ID FIDE informado não existe. Por favor, verifique esta informação e tente novamente. Lembrando que esta informação DEVE SER válida e deve corresponder ao cadastro deste enxadrista!", "registred" => 0, "ask" => 0]);
+                // }
             }
         }
         if ($request->has("lbx_id")) {

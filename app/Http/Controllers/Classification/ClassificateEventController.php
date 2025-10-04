@@ -53,7 +53,12 @@ class ClassificateEventController extends Controller
         $event_classificate = new EventClassificate;
         $event_classificate->event_id = $evento->id;
 
-        $event_classificate->event_classificator_id = $request->event_classificator_id;
+        if($request->event_classificator_id && $request->event_or_event_group == "event"){
+            $event_classificate->event_classificator_id = $request->event_classificator_id;
+        }elseif($request->event_group_classificator_id && $request->event_or_event_group == "event_group"){
+            $event_classificate->event_group_classificator_id = $request->event_group_classificator_id;
+        }
+
         $event_classificate->save();
 
         return redirect("/evento/" . $evento->id . "/classificator/edit/" . $event_classificate->id);
@@ -106,7 +111,12 @@ class ClassificateEventController extends Controller
 
         $event_classificate = $evento->event_classificators()->where([["id", "=", $id]])->first();
 
-        $event_classificate->event_classificator_id = $request->event_classificator_id;
+        if ($request->event_classificator_id) {
+            $event_classificate->event_classificator_id = $request->event_classificator_id;
+        } elseif ($request->event_group_classificator_id) {
+            $event_classificate->event_group_classificator_id = $request->event_group_classificator_id;
+        }
+
         $event_classificate->save();
 
         return redirect("/evento/" . $evento->id . "/classificator/edit/" . $event_classificate->id);

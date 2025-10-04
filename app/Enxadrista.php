@@ -83,6 +83,11 @@ class Enxadrista extends Model
         return $this->hasMany("App\PlayerConfig", "enxadrista_id", "id");
     }
 
+    public function emails()
+    {
+        return $this->hasMany("App\Email", "enxadrista_id", "id");
+    }
+
     // Method to get the correct ID
     public function getId(){
         if($this->hasConfig("united_to")){

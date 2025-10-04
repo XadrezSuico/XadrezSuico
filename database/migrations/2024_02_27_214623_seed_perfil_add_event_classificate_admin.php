@@ -19,7 +19,7 @@ class SeedPerfilAddEventClassificateAdmin extends Migration
             $perfil = new Perfil;
             $perfil->id = 14;
         }
-        $perfil->name = "XadrezSuíço Classificador - Admin";
+        $perfil->name = "Classificador - Admin";
         $perfil->save();
     }
 

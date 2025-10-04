@@ -74,7 +74,7 @@
             @switch($passo)
                 @case(1)
                     @if($inscricao->torneio->evento->isLichessDelayToEnter())
-                        <h3>É hora de efetuar sua Inscrição no Torneio do Lichess.org. Clique no botão abaixo para ser redirecionado ao Lichess para efetuar login e fornecer acesso ao XadrezSuíço:</h3>
+                        <h3>É hora de efetuar sua Inscrição no Torneio do Lichess.org. Clique no botão abaixo para ser redirecionado ao Lichess para efetuar login e fornecer acesso ao {{config("xadrezsuico.name","XadrezSuíço")}}:</h3>
                         <a href="{{url("/inscricao/".$inscricao->uuid."/lichess/redirect")}}" class="btn btn-lg btn-success btn-block">
                             <strong>Logar no Lichess.org</strong>
                         </a><br/>

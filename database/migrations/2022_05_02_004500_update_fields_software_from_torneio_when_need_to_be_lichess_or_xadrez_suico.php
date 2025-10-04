@@ -16,14 +16,14 @@ class UpdateFieldsSoftwareFromTorneioWhenNeedToBeLichessOrXadrezSuico extends Mi
      */
     public function up()
     {
-        $xadrezsuico = Software::where([["name","=","XadrezSuíço"]])->first();
+        $xadrezsuico = Software::whereIn("name",["XadrezSuíço","Rokade Manager"])->first();
         $lichess = Software::where([["name","=","Lichess.org (Online)"]])->first();
 
         foreach(Torneio::all() as $torneio){
             if($torneio->evento->is_lichess_integration){ // Se usa integração com o Lichess.org, ele é operado pelo Lichess
                 $torneio->softwares_id = $lichess->id;
                 $torneio->save();
-            }elseif($torneio->tipo_torneio->name == "Chave Semi-final"){ // Se o tipo for de chave, o Software é o XadrezSuíço
+            }elseif($torneio->tipo_torneio->name == "Chave Semi-final"){ // Se o tipo for de chave, o Software é o RokadeManager
                 $torneio->softwares_id = $xadrezsuico->id;
                 $torneio->save();
             }

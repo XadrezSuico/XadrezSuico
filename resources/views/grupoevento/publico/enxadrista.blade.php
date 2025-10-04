@@ -32,44 +32,46 @@
         </div>
     </div>
     @foreach($enxadrista->getCategoriasParticipantesbyGrupoEvento($grupo_evento->id) as $categoria)
-        <div class="box">
-            <div class="box-header">
-                <h3 class="box-title">Categoria: {{$categoria->name}}</h3>
-                <div class="pull-right box-tools">
+        @if(!$categoria->nao_classificar)
+            <div class="box">
+                <div class="box-header">
+                    <h3 class="box-title">Categoria: {{$categoria->name}}</h3>
+                    <div class="pull-right box-tools">
+                    </div>
+                </div>
+                @php($pontuacao_enxadrista = $enxadrista->getPontuacaoGeral($grupo_evento->id,$categoria->id))
+                <div class="box-body">
+                    <strong>Pontuação Atual:</strong> @if($pontuacao_enxadrista) {{$pontuacao_enxadrista->pontos}} @else - @endif<br/>
+                    <strong>Quantidade de Etapas Consideradas para a Pontuação:</strong> @if($pontuacao_enxadrista) {{$pontuacao_enxadrista->inscricoes_calculadas}} @else - @endif<br/>
+                    @if($grupo_evento->limite_calculo_geral) <strong>Limite de Etapas Consideradas para a Pontuação neste Grupo de Evento:</strong> {{$grupo_evento->limite_calculo_geral}} @endif
+
+                    <table class="table-responsive table-condensed table-striped tabela" style="width: 100%">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Evento</th>
+                                <th>Torneio</th>
+                                <th>Categoria</th>
+                                <th>Posição</th>
+                                <th>Pontuação</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($enxadrista->getInscricoesByGrupoEventoECategoria($grupo_evento->id,$categoria->id) as $inscricao)
+                                <tr>
+                                    <td>{{$inscricao->id}}</td>
+                                    <td>{{$inscricao->torneio->evento->name}}</td>
+                                    <td>{{$inscricao->torneio->name}}</td>
+                                    <td>{{$inscricao->categoria->name}}</td>
+                                    <td>{{$inscricao->posicao}}</td>
+                                    <td>@if($inscricao->pontos_geral && $inscricao->confirmado && !$inscricao->is_desclassificado && !$inscricao->desconsiderar_pontuacao_geral) {{$inscricao->pontos_geral}} @else - @endif</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
                 </div>
             </div>
-            @php($pontuacao_enxadrista = $enxadrista->getPontuacaoGeral($grupo_evento->id,$categoria->id))
-            <div class="box-body">
-                <strong>Pontuação Atual:</strong> @if($pontuacao_enxadrista) {{$pontuacao_enxadrista->pontos}} @else - @endif<br/>
-                <strong>Quantidade de Etapas Consideradas para a Pontuação:</strong> @if($pontuacao_enxadrista) {{$pontuacao_enxadrista->inscricoes_calculadas}} @else - @endif<br/>
-                @if($grupo_evento->limite_calculo_geral) <strong>Limite de Etapas Consideradas para a Pontuação neste Grupo de Evento:</strong> {{$grupo_evento->limite_calculo_geral}} @endif
-
-                <table class="table-responsive table-condensed table-striped tabela" style="width: 100%">
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Evento</th>
-                            <th>Torneio</th>
-                            <th>Categoria</th>
-                            <th>Posição</th>
-                            <th>Pontuação</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($enxadrista->getInscricoesByGrupoEventoECategoria($grupo_evento->id,$categoria->id) as $inscricao)
-                            <tr>
-                                <td>{{$inscricao->id}}</td>
-                                <td>{{$inscricao->torneio->evento->name}}</td>
-                                <td>{{$inscricao->torneio->name}}</td>
-                                <td>{{$inscricao->categoria->name}}</td>
-                                <td>{{$inscricao->posicao}}</td>
-                                <td>@if($inscricao->pontos_geral && $inscricao->confirmado && !$inscricao->is_desclassificado && !$inscricao->desconsiderar_pontuacao_geral) {{$inscricao->pontos_geral}} @else - @endif</td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-        </div>
+        @endif
     @endforeach
 @endsection
 

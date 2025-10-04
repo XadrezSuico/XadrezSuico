@@ -1,8 +1,8 @@
 @extends('adminlte::page')
 
-@section("title", "Evento #".$evento->id." (".$evento->name.") >> XadrezSuíço Classificador >> Novo")
+@section("title", "Evento #".$evento->id." (".$evento->name.") >> Classificador >> Novo")
 @section('content_header')
-  <h1>Evento #{{$evento->id}} ({{$evento->name}}) >> XadrezSuíço Classificador >> Novo</h1>
+  <h1>Evento #{{$evento->id}} ({{$evento->name}}) >> Classificador >> Novo</h1>
 @stop
 
 
@@ -31,10 +31,27 @@
 					<form method="post">
 				<div class="box-body">
 					<div class="form-group">
+						<label for="event_or_event_group">Grupo de Evento ou Evento?</label>
+                        <select name="event_or_event_group" id="event_or_event_group" class="form-control width-100">
+                            <option value="event">Evento</option>
+                            <option value="event_group">Grupo de Evento</option>
+                        </select>
+                    </div>
+					<div class="form-group" id="event_classificator_id_group">
 						<label for="event_classificator_id">Evento que Classifica a Este</label>
                         <select name="event_classificator_id" id="event_classificator_id" class="form-control width-100">
+                            <option value="">-- Selecione --</option>
                             @foreach($evento->all() as $evento_class)
                                 <option value="{{$evento_class->id}}">{{$evento_class->id}} - {{$evento_class->name}}</option>
+                            @endforeach
+                        </select>
+                    </div>
+					<div class="form-group" id="event_group_classificator_id_group">
+						<label for="event_group_classificator_id">Grupo de Evento que Classifica a Este</label>
+                        <select name="event_group_classificator_id" id="event_group_classificator_id" class="form-control width-100">
+                            <option value="">-- Selecione --</option>
+                            @foreach($evento->grupo_evento->all() as $grupo_evento_class)
+                                <option value="{{$grupo_evento_class->id}}">{{$grupo_evento_class->id}} - {{$grupo_evento_class->name}}</option>
                             @endforeach
                         </select>
                     </div>
@@ -58,8 +75,33 @@
 <!-- Morris.js charts -->
 <script type="text/javascript" src="{{url("/js/jquery.mask.min.js")}}"></script>
 <script type="text/javascript">
-  $(document).ready(function(){
+    $(document).ready(function(){
         $("#event_classificator_id").select2();
-  });
+        $("#event_group_classificator_id").select2();
+        $("#event_or_event_group").select2();
+
+        $("#event_or_event_group").on("select2:select",()=>{
+            checkEventOrEventGroup();
+        });
+
+        checkEventOrEventGroup();
+    });
+
+    function checkEventOrEventGroup() {
+        const eventClassificator = $("#event_classificator_id_group");
+        const eventGroupClassificator = $("#event_group_classificator_id_group");
+
+        eventClassificator.hide(100);
+        eventGroupClassificator.hide(100);
+
+        setTimeout(() => {
+            if ($("#event_or_event_group").val() === "event") {
+                eventClassificator.show(100);
+            } else {
+                eventGroupClassificator.show(100);
+            }
+        }, 200);
+    }
+
 </script>
 @endsection

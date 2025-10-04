@@ -19,7 +19,7 @@ class SeedPerfilAddEventClassificateOperator extends Migration
             $perfil = new Perfil;
             $perfil->id = 15;
         }
-        $perfil->name = "XadrezSuíço Classificador - Operador";
+        $perfil->name = "Classificador - Operador";
         $perfil->save();
     }
 
