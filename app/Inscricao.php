@@ -82,7 +82,7 @@ class Inscricao extends Model
                 Log::debug("uuid: ".$model->uuid);
             }
 
-            if ($model->categoria_id != $model->getOriginal("categoria_id")) {
+            if ($model->isDirty("categoria_id")) {
                 $old_category = Categoria::find($model->getOriginal("categoria_id"));
                 $old_event_category = $old_category
                                         ->eventos()
