@@ -39,6 +39,24 @@ class CriterioDesempateGeralController extends Controller
             case "G10":
                 return $this->generate_g10($grupo_evento, $enxadrista);
                 break;
+            case "G11":
+                return $this->generate_g11($grupo_evento, $enxadrista, $categoria);
+                break;
+            case "G12":
+                return $this->generate_g12($grupo_evento, $enxadrista, $categoria);
+                break;
+            case "G13":
+                return $this->generate_g13($grupo_evento, $enxadrista, $categoria);
+                break;
+            case "G14":
+                return $this->generate_g14($grupo_evento, $enxadrista, $categoria);
+                break;
+            case "G15":
+                return $this->generate_g15($grupo_evento, $enxadrista, $categoria);
+                break;
+            case "G16":
+                return $this->generate_g16($grupo_evento, $enxadrista, $categoria);
+                break;
         }
     }
 
@@ -260,5 +278,101 @@ class CriterioDesempateGeralController extends Controller
     public function generate_g10($grupo_evento, $enxadrista)
     {
         return 0.00;
+    }
+
+    public function getEtapasValidas($grupo_evento, $categoria)
+    {
+        $etapas = [];
+        $eventos = $grupo_evento->eventos()->orderBy('data_inicio', 'asc')->get();
+        foreach ($eventos as $evento) {
+            $tem_categoria = false;
+            
+            // Verifica pela relação direta com a categoria
+            foreach ($evento->categorias as $categoria_evento) {
+                if ($categoria_evento->categoria_id == $categoria->id) {
+                    $tem_categoria = true;
+                    break;
+                }
+            }
+            
+            // Verifica pelos torneios (se a primeira checagem não encontrou)
+            if (!$tem_categoria) {
+                if ($evento->getTorneioByCategoria($categoria->id)) {
+                    $tem_categoria = true;
+                }
+            }
+
+            if ($tem_categoria) {
+                $etapas[] = $evento;
+            }
+        }
+        return $etapas;
+    }
+
+    public function generate_g_etapa_posicao($grupo_evento, $enxadrista, $categoria, $etapa_index)
+    {
+        $etapas = $this->getEtapasValidas($grupo_evento, $categoria);
+        if (count($etapas) > $etapa_index) {
+            $evento = $etapas[$etapa_index];
+            $inscricao = $evento->enxadristaInscrito($enxadrista->id);
+            if ($inscricao && $inscricao->categoria_id == $categoria->id) {
+                if ($inscricao->isPresent() && $inscricao->posicao > 0) {
+                    return $inscricao->posicao;
+                }
+            }
+        }
+        return null;
+    }
+
+    // CÓDIGO: G11
+    // NOME DO CRITÉRIO: MELHOR POSIÇÃO NA PRIMEIRA ETAPA
+    public function generate_g11($grupo_evento, $enxadrista, $categoria)
+    {
+        return $this->generate_g_etapa_posicao($grupo_evento, $enxadrista, $categoria, 0);
+    }
+
+    // CÓDIGO: G12
+    // NOME DO CRITÉRIO: MELHOR POSIÇÃO NA SEGUNDA ETAPA
+    public function generate_g12($grupo_evento, $enxadrista, $categoria)
+    {
+        return $this->generate_g_etapa_posicao($grupo_evento, $enxadrista, $categoria, 1);
+    }
+
+    // CÓDIGO: G13
+    // NOME DO CRITÉRIO: MELHOR POSIÇÃO NA TERCEIRA ETAPA
+    public function generate_g13($grupo_evento, $enxadrista, $categoria)
+    {
+        return $this->generate_g_etapa_posicao($grupo_evento, $enxadrista, $categoria, 2);
+    }
+
+    // CÓDIGO: G14
+    // NOME DO CRITÉRIO: MELHOR POSIÇÃO NA QUARTA ETAPA
+    public function generate_g14($grupo_evento, $enxadrista, $categoria)
+    {
+        return $this->generate_g_etapa_posicao($grupo_evento, $enxadrista, $categoria, 3);
+    }
+
+    // CÓDIGO: G15
+    // NOME DO CRITÉRIO: MELHOR POSIÇÃO NA QUINTA ETAPA
+    public function generate_g15($grupo_evento, $enxadrista, $categoria)
+    {
+        return $this->generate_g_etapa_posicao($grupo_evento, $enxadrista, $categoria, 4);
+    }
+
+    // CÓDIGO: G16
+    // NOME DO CRITÉRIO: QUANTIDADE DE ETAPAS PARTICIPANTES
+    public function generate_g16($grupo_evento, $enxadrista, $categoria)
+    {
+        $valor = 0;
+        $etapas = $this->getEtapasValidas($grupo_evento, $categoria);
+        foreach ($etapas as $evento) {
+            $inscricao = $evento->enxadristaInscrito($enxadrista->id);
+            if ($inscricao && $inscricao->categoria_id == $categoria->id) {
+                if ($inscricao->isPresent()) {
+                    $valor++;
+                }
+            }
+        }
+        return $valor;
     }
 }
