@@ -1,9 +1,21 @@
 <br/>
-<p class="text-muted">
-    Atalhos operacionais e interruptores do evento. O fluxo típico é:
-    <strong>inscrições</strong> → <strong>emparceiramento</strong> → <strong>classificação e resultados</strong>.
-    Links abrem em nova página quando indicado; os interruptores salvam automaticamente ao alterar.
-</p>
+<div class="callout callout-info" style="margin-bottom: 20px;">
+    <h4 style="margin-top: 0;"><i class="fa fa-info-circle"></i> Sobre esta aba</h4>
+    <p style="margin-bottom: 12px;">Atalhos operacionais e interruptores do evento, agrupados por etapa:</p>
+    <ul class="list-inline" style="margin-bottom: 12px; font-size: 14px;">
+        <li><i class="fa fa-pencil-square-o text-green"></i> <strong>Inscrições</strong></li>
+        <li class="text-muted"><i class="fa fa-long-arrow-right"></i></li>
+        <li><i class="fa fa-random text-light-blue"></i> <strong>Emparceiramento</strong></li>
+        <li class="text-muted"><i class="fa fa-long-arrow-right"></i></li>
+        <li><i class="fa fa-sort-amount-desc text-yellow"></i> <strong>Classificação e resultados</strong></li>
+    </ul>
+    <p class="text-muted" style="margin-bottom: 0; font-size: 13px;">
+        <i class="fa fa-external-link"></i> Alguns links abrem em nova aba.
+        <span class="hidden-xs">&nbsp;·&nbsp;</span>
+        <br class="visible-xs"/>
+        <i class="fa fa-toggle-on"></i> Os interruptores são salvos automaticamente ao alterar.
+    </p>
+</div>
 
 <div class="row">
     <section class="col-lg-6 connectedSortable">
