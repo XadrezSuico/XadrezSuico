@@ -183,6 +183,19 @@ Route::group(["prefix"=>"evento"],function(){
         Route::get('/classificar/{evento_id}', 'Event\TeamAwardController@classificar_page')->name('evento.premiacao_time.classificar');
         Route::get('/classificar/{evento_id}/call/{time_awards_id}/{action}', 'Event\TeamAwardController@classificar_call')->name('evento.premiacao_time.classificar.call');
     });
+    Route::group(["prefix" => "{id}/premiacao_time"], function () {
+        Route::post('/add', 'EventTeamAwardManageController@event_add')->name('evento.premiacao_time.add');
+        Route::get('/remove/{award_id}', 'EventTeamAwardManageController@event_remove')->name('evento.premiacao_time.remove');
+        Route::get('/edit/{award_id}', 'EventTeamAwardManageController@event_edit')->name('evento.premiacao_time.edit');
+        Route::post('/edit/{award_id}', 'EventTeamAwardManageController@event_edit_post')->name('evento.premiacao_time.edit.post');
+        Route::post('/edit/{award_id}/categoria/add', 'EventTeamAwardManageController@event_category_add')->name('evento.premiacao_time.categoria.add');
+        Route::get('/edit/{award_id}/categoria/remove/{link_id}', 'EventTeamAwardManageController@event_category_remove')->name('evento.premiacao_time.categoria.remove');
+        Route::post('/edit/{award_id}/pontuacao/add', 'EventTeamAwardManageController@event_score_add')->name('evento.premiacao_time.pontuacao.add');
+        Route::get('/edit/{award_id}/pontuacao/remove/{score_id}', 'EventTeamAwardManageController@event_score_remove')->name('evento.premiacao_time.pontuacao.remove');
+        Route::post('/edit/{award_id}/pontuacao_categoria', 'EventTeamAwardManageController@event_category_points_post')->name('evento.premiacao_time.pontuacao_categoria');
+        Route::post('/edit/{award_id}/desempate/add', 'EventTeamAwardManageController@event_tiebreak_add')->name('evento.premiacao_time.desempate.add');
+        Route::get('/edit/{award_id}/desempate/remove/{tiebreak_id}', 'EventTeamAwardManageController@event_tiebreak_remove')->name('evento.premiacao_time.desempate.remove');
+    });
     Route::group(["prefix" =>"{evento_id}/classificator"], function () {
         Route::group(["prefix" => "category"], function () {
             Route::get('/new', 'Classification\EventCategoryController@new')->name('evento.classificator.category.new');
@@ -508,6 +521,19 @@ Route::group(["prefix"=>"grupoevento"],function(){
     Route::group(["prefix"=>"premiacao_time"],function(){
         Route::get('/classificar/{grupo_evento_id}', 'EventGroup\TeamAwardController@classificar_page')->name('grupoevento.premiacao_time.classificar');
         Route::get('/classificar/{grupo_evento_id}/call/{time_awards_id}/{action}', 'EventGroup\TeamAwardController@classificar_call')->name('grupoevento.premiacao_time.classificar.call');
+    });
+    Route::group(["prefix"=>"{id}/premiacao_time"],function(){
+        Route::post('/add', 'EventTeamAwardManageController@grupo_add')->name('grupoevento.premiacao_time.add');
+        Route::get('/remove/{award_id}', 'EventTeamAwardManageController@grupo_remove')->name('grupoevento.premiacao_time.remove');
+        Route::get('/edit/{award_id}', 'EventTeamAwardManageController@grupo_edit')->name('grupoevento.premiacao_time.edit');
+        Route::post('/edit/{award_id}', 'EventTeamAwardManageController@grupo_edit_post')->name('grupoevento.premiacao_time.edit.post');
+        Route::post('/edit/{award_id}/categoria/add', 'EventTeamAwardManageController@grupo_category_add')->name('grupoevento.premiacao_time.categoria.add');
+        Route::get('/edit/{award_id}/categoria/remove/{link_id}', 'EventTeamAwardManageController@grupo_category_remove')->name('grupoevento.premiacao_time.categoria.remove');
+        Route::post('/edit/{award_id}/pontuacao/add', 'EventTeamAwardManageController@grupo_score_add')->name('grupoevento.premiacao_time.pontuacao.add');
+        Route::get('/edit/{award_id}/pontuacao/remove/{score_id}', 'EventTeamAwardManageController@grupo_score_remove')->name('grupoevento.premiacao_time.pontuacao.remove');
+        Route::post('/edit/{award_id}/pontuacao_categoria', 'EventTeamAwardManageController@grupo_category_points_post')->name('grupoevento.premiacao_time.pontuacao_categoria');
+        Route::post('/edit/{award_id}/desempate/add', 'EventTeamAwardManageController@grupo_tiebreak_add')->name('grupoevento.premiacao_time.desempate.add');
+        Route::get('/edit/{award_id}/desempate/remove/{tiebreak_id}', 'EventTeamAwardManageController@grupo_tiebreak_remove')->name('grupoevento.premiacao_time.desempate.remove');
     });
 
     Route::group(["prefix"=>"{event_id}/team_awards"],function(){

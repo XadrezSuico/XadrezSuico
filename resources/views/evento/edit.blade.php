@@ -93,6 +93,13 @@
 			<li role="presentation"><a id="tab_editar_evento" href="#editar_evento" aria-controls="editar_evento" role="tab" data-toggle="tab">Editar Evento</a></li>
 			<li role="presentation"><a id="tab_pagina" href="#pagina" aria-controls="pagina" role="tab" data-toggle="tab">Página</a></li>
 			<li role="presentation"><a id="tab_criterio_desempate" href="#criterio_desempate" aria-controls="criterio_desempate" role="tab" data-toggle="tab">Critério de Desempate</a></li>
+			@if(
+				\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
+				\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4]) ||
+				\Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])
+			)
+			<li role="presentation"><a id="tab_premiacao_equipe" href="#premiacao_equipe" aria-controls="premiacao_equipe" role="tab" data-toggle="tab">Premiação por Equipes</a></li>
+			@endif
 			<li role="presentation"><a id="tab_categoria" href="#categoria" aria-controls="categoria" role="tab" data-toggle="tab">Categoria: Cadastro</a></li>
 			<li role="presentation"><a id="tab_categorias_relacionadas" href="#categorias_relacionadas" aria-controls="categorias_relacionadas" role="tab" data-toggle="tab">Categorias Relacionadas</a></li>
 			@if($evento->event_children()->count() > 0) <li role="presentation"><a id="tab_evento_filho" href="#evento_filho" aria-controls="torneio" role="tab" data-toggle="tab">Eventos Filhos</a></li> @endif
@@ -273,6 +280,16 @@
                                     <a href="{{url("/evento/".$evento->id."/team_awards/standings")}}" class="btn btn-app">
                                         <i class="fa fa-list"></i>
                                         Listar Premiações de Times
+                                    </a>
+                                @endif
+                                @if(
+                                    \Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
+                                    \Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4]) ||
+                                    \Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])
+                                )
+                                    <a href="{{url("/evento/dashboard/".$evento->id)}}?tab=premiacao_equipe" class="btn btn-app">
+                                        <i class="fa fa-cog"></i>
+                                        Configurar Premiação por Equipes
                                     </a>
                                 @endif
 							@endif
@@ -861,6 +878,21 @@
 							<!-- /.box-body -->
 					</div>
 				</section>
+			</div>
+
+			<div role="tabpanel" class="tab-pane" id="premiacao_equipe">
+				@php
+					$team_awards = $evento->event_team_awards()->orderBy('name', 'ASC')->get();
+					$team_award_add_url = url('/evento/'.$evento->id.'/premiacao_time/add');
+					$team_award_edit_url_prefix = url('/evento/'.$evento->id.'/premiacao_time/edit');
+					$team_award_remove_url_prefix = url('/evento/'.$evento->id.'/premiacao_time/remove');
+					$can_edit_team_awards = (
+						\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
+						\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4]) ||
+						\Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])
+					);
+				@endphp
+				@include('partials.team_award_list_tab')
 			</div>
 
 			<div role="tabpanel" class="tab-pane" id="categoria">

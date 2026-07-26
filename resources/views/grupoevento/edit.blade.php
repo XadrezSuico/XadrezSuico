@@ -35,6 +35,9 @@
         @endif
         <li role="presentation"><a href="/grupoevento/{{$grupo_evento->id}}/team_awards/standings">Visualizar Classificação Premiação por Times Pública</a></li>
     @endif
+    @if($user->hasPermissionGlobal() || $user->hasPermissionGroupEventByPerfil($grupo_evento->id,[7]))
+        <li role="presentation"><a href="/grupoevento/dashboard/{{$grupo_evento->id}}?tab=premiacao_equipe">Configurar Premiação por Equipes</a></li>
+    @endif
 </ul>
 <ul class="nav nav-pills">
     <li role="presentation"><a href="/grupoevento/{{$grupo_evento->id}}/inscricoes/list">Visualizar Inscrições Totais</a></li>
@@ -54,6 +57,7 @@
 				<li role="presentation"><a id="tab_criterio_desempate_geral" href="#criterio_desempate_geral" aria-controls="criterio_desempate_geral" role="tab" data-toggle="tab">Critério de Desempate Geral</a></li>
 				<li role="presentation"><a id="tab_categoria" href="#categoria" aria-controls="categoria" role="tab" data-toggle="tab">Categoria</a></li>
 				<li role="presentation"><a id="tab_pontuacao" href="#pontuacao" aria-controls="pontuacao" role="tab" data-toggle="tab">Pontuação</a></li>
+				<li role="presentation"><a id="tab_premiacao_equipe" href="#premiacao_equipe" aria-controls="premiacao_equipe" role="tab" data-toggle="tab">Premiação por Equipes</a></li>
 				<li role="presentation"><a id="tab_campo_personalizado" href="#campo_personalizado" aria-controls="campo_personalizado" role="tab" data-toggle="tab">Campo Personalizado</a></li>
 				<li role="presentation"><a id="tab_email_template" href="#email_template" aria-controls="email_template" role="tab" data-toggle="tab">Templates de E-mail</a></li>
 			    <?php if(\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal()){ ?><li role="presentation"><a id="tab_classificator" href="#classificator" aria-controls="classificator" role="tab" data-toggle="tab">Classificador</a></li><?php } ?>
@@ -693,6 +697,16 @@
 								<!-- /.box-body -->
 						</div>
 					</section>
+				</div>
+				<div role="tabpanel" class="tab-pane" id="premiacao_equipe">
+					@php
+						$team_awards = $grupo_evento->event_team_awards()->orderBy('name', 'ASC')->get();
+						$team_award_add_url = url('/grupoevento/'.$grupo_evento->id.'/premiacao_time/add');
+						$team_award_edit_url_prefix = url('/grupoevento/'.$grupo_evento->id.'/premiacao_time/edit');
+						$team_award_remove_url_prefix = url('/grupoevento/'.$grupo_evento->id.'/premiacao_time/remove');
+						$can_edit_team_awards = true;
+					@endphp
+					@include('partials.team_award_list_tab')
 				</div>
 				<div role="tabpanel" class="tab-pane" id="campo_personalizado">
 					<br/>

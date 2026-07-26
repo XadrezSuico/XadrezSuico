@@ -6,7 +6,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class SeedEmailTemplateAddXadrezSuicoClassificadorProcessamento extends Migration
+class SeedEmailTemplateAddNewUser extends Migration
 {
     /**
      * Run the migrations.
@@ -21,17 +21,15 @@ class SeedEmailTemplateAddXadrezSuicoClassificadorProcessamento extends Migratio
             $email_template = new EmailTemplate;
             $email_template->email_type = $type_id;
         }
-        $email_template->name = "XadrezSuíço Classificador - Relatório de Processamento";
-        $email_template->subject = "XadrezSuíço Classificador - Relatório de Processamento - Classificador #{xadrezsuicoclassificador.id}";
+        $email_template->name = "XadrezSuíço - Novo Usuário";
+        $email_template->subject = "XadrezSuíço - Novo Usuário";
 
 
         $email_template->message = "Olá {user.name}!<br/>";
-        $email_template->message .= "Você está recebendo este email para informar que o Classificador #{xadrezsuicoclassificador.id} foi processado com sucesso!<br/>";
+        $email_template->message .= "Você está recebendo este email para informar que foi criado um usuário para você no XadrezSuíço.<br/>";
         $email_template->message .= "Informações:<br/>";
-        $email_template->message .= "Evento Classificador (de):{xadrezsuicoclassificador.event.from.id} - {xadrezsuicoclassificador.event.from.name}<br/>";
-        $email_template->message .= "Evento (para): {xadrezsuicoclassificador.event.to.id} - {xadrezsuicoclassificador.event.to.name}<br/>";
-        $email_template->message .= "Log de Processamento<br/>";
-        $email_template->message .= "{log}";
+        $email_template->message .= "E-mail: {user.email}";
+        $email_template->message .= "Senha Inicial: {user.password}";
 
         $email_template->save();
     }
