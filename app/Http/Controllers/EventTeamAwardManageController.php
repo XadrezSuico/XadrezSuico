@@ -61,22 +61,14 @@ class EventTeamAwardManageController extends Controller
             return redirect("/grupoevento/dashboard/{$id}?tab=premiacao_equipe");
         }
 
-        $categorias = $grupo_evento->categorias()->orderBy("name", "ASC")->get();
-        $criterios_team_award = CriterioDesempate::where([["is_team_award", "=", true]])->orderBy("name", "ASC")->get();
-        $context = "grupo";
-        $parent = $grupo_evento;
-        $url_base = "/grupoevento/{$id}/premiacao_time/edit/{$award_id}";
-        $dashboard_url = "/grupoevento/dashboard/{$id}?tab=premiacao_equipe";
-
-        return view("team_award.edit", compact(
-            "context",
-            "parent",
-            "team_award",
-            "categorias",
-            "criterios_team_award",
-            "user",
-            "url_base",
-            "dashboard_url"
+        return view("team_award.edit", $this->editViewData(
+            $team_award,
+            "grupo",
+            $grupo_evento,
+            $id,
+            $award_id,
+            $user,
+            $grupo_evento->categorias()->orderBy("name", "ASC")->get()
         ));
     }
 
@@ -94,7 +86,7 @@ class EventTeamAwardManageController extends Controller
 
         $this->applyAwardSettings($team_award, $request);
 
-        return redirect("/grupoevento/{$id}/premiacao_time/edit/{$award_id}");
+        return $this->redirectEdit($id, $award_id, "grupo", "Configurações gerais salvas.", "geral");
     }
 
     public function grupo_category_add($id, $award_id, Request $request)
@@ -130,6 +122,16 @@ class EventTeamAwardManageController extends Controller
     public function grupo_category_points_post($id, $award_id, Request $request)
     {
         return $this->category_points_post($id, $award_id, $request, "grupo");
+    }
+
+    public function grupo_category_add_all($id, $award_id)
+    {
+        return $this->category_add_all($id, $award_id, "grupo");
+    }
+
+    public function grupo_import_pontuacoes($id, $award_id)
+    {
+        return $this->import_pontuacoes_grupo($id, $award_id, "grupo");
     }
 
     public function event_add($id, Request $request)
@@ -180,22 +182,14 @@ class EventTeamAwardManageController extends Controller
             return redirect("/evento/dashboard/{$id}?tab=premiacao_equipe");
         }
 
-        $categorias = $evento->grupo_evento->categorias()->orderBy("name", "ASC")->get();
-        $criterios_team_award = CriterioDesempate::where([["is_team_award", "=", true]])->orderBy("name", "ASC")->get();
-        $context = "evento";
-        $parent = $evento;
-        $url_base = "/evento/{$id}/premiacao_time/edit/{$award_id}";
-        $dashboard_url = "/evento/dashboard/{$id}?tab=premiacao_equipe";
-
-        return view("team_award.edit", compact(
-            "context",
-            "parent",
-            "team_award",
-            "categorias",
-            "criterios_team_award",
-            "user",
-            "url_base",
-            "dashboard_url"
+        return view("team_award.edit", $this->editViewData(
+            $team_award,
+            "evento",
+            $evento,
+            $id,
+            $award_id,
+            $user,
+            $evento->grupo_evento->categorias()->orderBy("name", "ASC")->get()
         ));
     }
 
@@ -214,7 +208,7 @@ class EventTeamAwardManageController extends Controller
 
         $this->applyAwardSettings($team_award, $request);
 
-        return redirect("/evento/{$id}/premiacao_time/edit/{$award_id}");
+        return $this->redirectEdit($id, $award_id, "evento", "Configurações gerais salvas.", "geral");
     }
 
     public function event_category_add($id, $award_id, Request $request)
@@ -252,6 +246,144 @@ class EventTeamAwardManageController extends Controller
         return $this->category_points_post($id, $award_id, $request, "evento");
     }
 
+    public function event_category_add_all($id, $award_id)
+    {
+        return $this->category_add_all($id, $award_id, "evento");
+    }
+
+    public function event_import_pontuacoes($id, $award_id)
+    {
+        return $this->import_pontuacoes_grupo($id, $award_id, "evento");
+    }
+
+    private function editViewData(EventTeamAward $team_award, $context, $parent, $parent_id, $award_id, $user, $categorias)
+    {
+        $team_award->load(["categories.category", "scores", "tiebreaks.tiebreak"]);
+
+        $grupo = $context === "grupo" ? $parent : $parent->grupo_evento;
+        $grupo_pontuacoes = $grupo->pontuacoes()->orderBy("posicao", "ASC")->get();
+        $criterios_team_award = CriterioDesempate::where([["is_team_award", "=", true]])->orderBy("name", "ASC")->get();
+        $next_tiebreak_priority = (int) $team_award->tiebreaks()->max("priority") + 1;
+        if ($next_tiebreak_priority < 1) {
+            $next_tiebreak_priority = 1;
+        }
+
+        $linked_category_ids = $team_award->categories->pluck("categories_id")->all();
+        $available_categorias = $categorias->filter(function ($categoria) use ($linked_category_ids) {
+            return !in_array($categoria->id, $linked_category_ids, true);
+        });
+
+        $is_points_mode = $team_award->hasConfig("is_points") && $team_award->getConfig("is_points", true);
+        $url_base = $context === "grupo"
+            ? "/grupoevento/{$parent_id}/premiacao_time/edit/{$award_id}"
+            : "/evento/{$parent_id}/premiacao_time/edit/{$award_id}";
+        $dashboard_url = $context === "grupo"
+            ? "/grupoevento/dashboard/{$parent_id}?tab=premiacao_equipe"
+            : "/evento/dashboard/{$parent_id}?tab=premiacao_equipe";
+        $classificar_url = $context === "grupo"
+            ? url("/grupoevento/premiacao_time/classificar/{$parent_id}")
+            : url("/evento/premiacao_time/classificar/{$parent_id}");
+        $public_standings_url = $context === "grupo"
+            ? url("/grupoevento/{$parent_id}/team_awards/standings")
+            : url("/evento/{$parent_id}/team_awards/standings");
+
+        return compact(
+            "context",
+            "parent",
+            "parent_id",
+            "award_id",
+            "team_award",
+            "categorias",
+            "available_categorias",
+            "criterios_team_award",
+            "grupo_pontuacoes",
+            "next_tiebreak_priority",
+            "is_points_mode",
+            "user",
+            "url_base",
+            "dashboard_url",
+            "classificar_url",
+            "public_standings_url"
+        );
+    }
+
+    private function category_add_all($parent_id, $award_id, $context)
+    {
+        $team_award = $this->resolveAward($parent_id, $award_id, $context);
+        if (!$team_award) {
+            return $this->redirectDashboard($parent_id, $context);
+        }
+
+        $categorias = $context === "grupo"
+            ? GrupoEvento::find($parent_id)->categorias
+            : Evento::find($parent_id)->grupo_evento->categorias;
+
+        $added = 0;
+        foreach ($categorias as $categoria) {
+            if ($team_award->categories()->where([["categories_id", "=", $categoria->id]])->count() == 0) {
+                $link = new EventTeamAwardCategory;
+                $link->event_team_awards_id = $team_award->id;
+                $link->categories_id = $categoria->id;
+                $link->save();
+                $added++;
+            }
+        }
+
+        $message = $added > 0
+            ? "{$added} categoria(s) vinculada(s)."
+            : "Todas as categorias já estavam vinculadas.";
+
+        return $this->redirectEdit($parent_id, $award_id, $context, $message, "pontos");
+    }
+
+    private function import_pontuacoes_grupo($parent_id, $award_id, $context)
+    {
+        $team_award = $this->resolveAward($parent_id, $award_id, $context);
+        if (!$team_award) {
+            return $this->redirectDashboard($parent_id, $context);
+        }
+
+        $grupo = $context === "grupo"
+            ? GrupoEvento::find($parent_id)
+            : Evento::find($parent_id)->grupo_evento;
+
+        $imported = 0;
+        foreach ($grupo->pontuacoes()->orderBy("posicao", "ASC")->get() as $pontuacao) {
+            if ($pontuacao->posicao > 0) {
+                $existing = $team_award->scores()->where([["place", "=", $pontuacao->posicao]])->first();
+                if ($existing) {
+                    $existing->score = (int) $pontuacao->pontuacao;
+                    $existing->save();
+                } else {
+                    $row = new EventTeamAwardScore;
+                    $row->event_team_awards_id = $team_award->id;
+                    $row->place = (int) $pontuacao->posicao;
+                    $row->score = (int) $pontuacao->pontuacao;
+                    $row->save();
+                }
+                $imported++;
+            }
+        }
+
+        if ($imported === 0) {
+            return $this->redirectEdit(
+                $parent_id,
+                $award_id,
+                $context,
+                "Não há pontuação por posição cadastrada na aba Pontuação do grupo de evento.",
+                "pontos"
+            );
+        }
+
+        return $this->redirectEdit(
+            $parent_id,
+            $award_id,
+            $context,
+            "Importadas {$imported} colocação(ões) a partir da pontuação geral do grupo.",
+            "pontos"
+        );
+    }
+
     private function category_add($parent_id, $award_id, Request $request, $context)
     {
         $team_award = $this->resolveAward($parent_id, $award_id, $context);
@@ -267,7 +399,7 @@ class EventTeamAwardManageController extends Controller
             $link->save();
         }
 
-        return redirect($this->editUrl($parent_id, $award_id, $context));
+        return $this->redirectEdit($parent_id, $award_id, $context, "Categoria adicionada.", "pontos");
     }
 
     private function category_remove($parent_id, $award_id, $link_id, $context)
@@ -280,7 +412,7 @@ class EventTeamAwardManageController extends Controller
             }
         }
 
-        return redirect($this->editUrl($parent_id, $award_id, $context));
+        return $this->redirectEdit($parent_id, $award_id, $context, "Categoria removida.", "pontos");
     }
 
     private function score_add($parent_id, $award_id, Request $request, $context)
@@ -306,7 +438,7 @@ class EventTeamAwardManageController extends Controller
             }
         }
 
-        return redirect($this->editUrl($parent_id, $award_id, $context));
+        return $this->redirectEdit($parent_id, $award_id, $context, "Pontuação da colocação salva.", "pontos");
     }
 
     private function score_remove($parent_id, $award_id, $score_id, $context)
@@ -319,7 +451,7 @@ class EventTeamAwardManageController extends Controller
             }
         }
 
-        return redirect($this->editUrl($parent_id, $award_id, $context));
+        return $this->redirectEdit($parent_id, $award_id, $context, "Colocação removida da tabela.", "pontos");
     }
 
     private function tiebreak_add($parent_id, $award_id, Request $request, $context)
@@ -339,7 +471,7 @@ class EventTeamAwardManageController extends Controller
             $row->save();
         }
 
-        return redirect($this->editUrl($parent_id, $award_id, $context));
+        return $this->redirectEdit($parent_id, $award_id, $context, "Critério de desempate adicionado.", "desempate");
     }
 
     private function tiebreak_remove($parent_id, $award_id, $tiebreak_id, $context)
@@ -352,7 +484,7 @@ class EventTeamAwardManageController extends Controller
             }
         }
 
-        return redirect($this->editUrl($parent_id, $award_id, $context));
+        return $this->redirectEdit($parent_id, $award_id, $context, "Critério de desempate removido.", "desempate");
     }
 
     private function category_points_post($parent_id, $award_id, Request $request, $context)
@@ -371,7 +503,7 @@ class EventTeamAwardManageController extends Controller
             }
         }
 
-        return redirect($this->editUrl($parent_id, $award_id, $context));
+        return $this->redirectEdit($parent_id, $award_id, $context, "Pontuação fixa por categoria salva.", "pontos");
     }
 
     private function applyAwardSettings(EventTeamAward $team_award, Request $request)
@@ -485,6 +617,18 @@ class EventTeamAwardManageController extends Controller
             return "/grupoevento/{$parent_id}/premiacao_time/edit/{$award_id}";
         }
         return "/evento/{$parent_id}/premiacao_time/edit/{$award_id}";
+    }
+
+    private function redirectEdit($parent_id, $award_id, $context, $message = null, $tab = null)
+    {
+        $url = $this->editUrl($parent_id, $award_id, $context);
+        if ($tab) {
+            $url .= "?tab=" . urlencode($tab);
+        }
+        if ($message) {
+            return redirect($url)->with("status", $message);
+        }
+        return redirect($url);
     }
 
     private function redirectDashboard($parent_id, $context)

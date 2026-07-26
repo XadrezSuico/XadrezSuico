@@ -195,6 +195,8 @@ Route::group(["prefix"=>"evento"],function(){
         Route::post('/edit/{award_id}/pontuacao_categoria', 'EventTeamAwardManageController@event_category_points_post')->name('evento.premiacao_time.pontuacao_categoria');
         Route::post('/edit/{award_id}/desempate/add', 'EventTeamAwardManageController@event_tiebreak_add')->name('evento.premiacao_time.desempate.add');
         Route::get('/edit/{award_id}/desempate/remove/{tiebreak_id}', 'EventTeamAwardManageController@event_tiebreak_remove')->name('evento.premiacao_time.desempate.remove');
+        Route::get('/edit/{award_id}/categoria/add_all', 'EventTeamAwardManageController@event_category_add_all')->name('evento.premiacao_time.categoria.add_all');
+        Route::get('/edit/{award_id}/importar_pontuacao_grupo', 'EventTeamAwardManageController@event_import_pontuacoes')->name('evento.premiacao_time.import_pontuacoes');
     });
     Route::group(["prefix" =>"{evento_id}/classificator"], function () {
         Route::group(["prefix" => "category"], function () {
@@ -534,6 +536,8 @@ Route::group(["prefix"=>"grupoevento"],function(){
         Route::post('/edit/{award_id}/pontuacao_categoria', 'EventTeamAwardManageController@grupo_category_points_post')->name('grupoevento.premiacao_time.pontuacao_categoria');
         Route::post('/edit/{award_id}/desempate/add', 'EventTeamAwardManageController@grupo_tiebreak_add')->name('grupoevento.premiacao_time.desempate.add');
         Route::get('/edit/{award_id}/desempate/remove/{tiebreak_id}', 'EventTeamAwardManageController@grupo_tiebreak_remove')->name('grupoevento.premiacao_time.desempate.remove');
+        Route::get('/edit/{award_id}/categoria/add_all', 'EventTeamAwardManageController@grupo_category_add_all')->name('grupoevento.premiacao_time.categoria.add_all');
+        Route::get('/edit/{award_id}/importar_pontuacao_grupo', 'EventTeamAwardManageController@grupo_import_pontuacoes')->name('grupoevento.premiacao_time.import_pontuacoes');
     });
 
     Route::group(["prefix"=>"{event_id}/team_awards"],function(){

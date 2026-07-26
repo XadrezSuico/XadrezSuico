@@ -891,6 +891,7 @@
 						\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4]) ||
 						\Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])
 					);
+					$context_label = 'evento';
 				@endphp
 				@include('partials.team_award_list_tab')
 			</div>

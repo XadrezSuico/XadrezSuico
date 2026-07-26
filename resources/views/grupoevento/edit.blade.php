@@ -705,6 +705,7 @@
 						$team_award_edit_url_prefix = url('/grupoevento/'.$grupo_evento->id.'/premiacao_time/edit');
 						$team_award_remove_url_prefix = url('/grupoevento/'.$grupo_evento->id.'/premiacao_time/remove');
 						$can_edit_team_awards = true;
+						$context_label = 'grupo de evento';
 					@endphp
 					@include('partials.team_award_list_tab')
 				</div>
