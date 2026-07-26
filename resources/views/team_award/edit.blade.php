@@ -12,13 +12,19 @@
         flex-shrink: 0;
     }
     .form-switch input {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        margin: 0;
         opacity: 0;
-        width: 0;
-        height: 0;
+        cursor: pointer;
+        z-index: 2;
     }
     .form-switch .form-check-input {
         position: absolute;
-        cursor: pointer;
+        pointer-events: none;
         top: 0;
         left: 0;
         right: 0;
@@ -48,12 +54,13 @@
         display: flex;
         align-items: center;
         margin-bottom: 12px;
+        cursor: pointer;
+        font-weight: normal;
     }
     .switch-label {
         margin-left: 10px;
         margin-bottom: 0;
-        font-weight: normal;
-        cursor: pointer;
+        user-select: none;
     }
     .team-award-checklist li {
         margin-bottom: 6px;
@@ -198,38 +205,38 @@
                         <input name="name" id="name" class="form-control" type="text" value="{{ $team_award->name }}" required />
                     </div>
 
-                    <div class="switch-row">
+                    <label class="switch-row">
                         <div class="form-switch">
                             <input type="checkbox" name="is_public" id="is_public" @if($team_award->is_public) checked @endif>
                             <span class="form-check-input"></span>
                         </div>
-                        <label class="switch-label" for="is_public">Exibir resultados na página pública</label>
-                    </div>
-                    <div class="switch-row">
+                        <span class="switch-label">Exibir resultados na página pública</span>
+                    </label>
+                    <label class="switch-row">
                         <div class="form-switch">
                             <input type="checkbox" name="is_can_calculate" id="is_can_calculate" @if($team_award->is_can_calculate) checked @endif>
                             <span class="form-check-input"></span>
                         </div>
-                        <label class="switch-label" for="is_can_calculate">Permitir cálculo e classificação das equipes</label>
-                    </div>
-                    <div class="switch-row">
+                        <span class="switch-label">Permitir cálculo e classificação das equipes</span>
+                    </label>
+                    <label class="switch-row">
                         <div class="form-switch">
                             <input type="checkbox" name="no_classificate" id="no_classificate" @if($team_award->hasConfig('no_classificate')) checked @endif>
                             <span class="form-check-input"></span>
                         </div>
-                        <label class="switch-label" for="no_classificate">Excluir da classificação automática em lote (classificar manualmente)</label>
-                    </div>
+                        <span class="switch-label">Excluir da classificação automática em lote (classificar manualmente)</span>
+                    </label>
 
                     <hr/>
                     <h4 class="box-title">Modo de soma de pontos</h4>
                     <div class="scoring-mode-hint">
-                        <div class="switch-row">
+                        <label class="switch-row">
                             <div class="form-switch">
                                 <input type="checkbox" name="is_points" id="is_points" @if($is_points_mode) checked @endif>
                                 <span class="form-check-input"></span>
                             </div>
-                            <label class="switch-label" for="is_points">Usar pontos da classificação individual de cada enxadrista</label>
-                        </div>
+                            <span class="switch-label">Usar pontos da classificação individual de cada enxadrista</span>
+                        </label>
                         <p class="help-block" style="margin-bottom: 0;">
                             <strong>Desmarcado:</strong> cada colocação (1º, 2º…) vale o que você definir na aba «Categorias e pontuação».<br/>
                             <strong>Marcado:</strong> soma os pontos já obtidos na classificação do torneio (com opção de valor fixo por categoria).
@@ -511,6 +518,7 @@
     }
 
     $("#is_points").on("change", syncScoringPanels);
+    syncScoringPanels();
 
     $(".btn-preset").on("click", function () {
         $("#place").val($(this).data("place"));
