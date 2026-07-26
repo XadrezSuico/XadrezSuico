@@ -375,7 +375,7 @@
                 <div class="form-group">
                     <label class="d-flex align-items-center">
                         <div class="form-switch">
-                            <input type="checkbox" id="toggle_classificavel" @if($evento->is_classificavel) checked @endif>
+                            <input type="checkbox" id="toggle_classificavel" @if($evento->classificavel) checked @endif>
                             <span class="form-check-input"></span>
                         </div>
                         <span id="toggle_classificavel_status" class="switch-label">Permitir classificação geral deste evento</span>

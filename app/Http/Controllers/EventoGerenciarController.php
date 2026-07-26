@@ -684,10 +684,25 @@ class EventoGerenciarController extends Controller
         }
     }
 
-    public function toggleInscricoes($evento_id)
+    private function parseToggleEnabled(Request $request)
+    {
+        if (!$request->has('enabled')) {
+            return null;
+        }
+        return filter_var($request->query('enabled'), FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+    }
+
+    public function toggleInscricoes(Request $request, $evento_id)
     {
         $user = Auth::user();
         $evento = Evento::find($evento_id);
+        if (!$evento) {
+            return response()->json([
+                'ok' => 0,
+                'error' => 1,
+                'message' => 'Evento não encontrado'
+            ]);
+        }
         if (
             !$user->hasPermissionGlobal() &&
             !$user->hasPermissionEventByPerfil($evento->id, [4]) &&
@@ -699,29 +714,31 @@ class EventoGerenciarController extends Controller
                 'message' => 'Você não tem permissão para realizar esta ação'
             ]);
         }
-        if ($evento) {
-            if ($evento->is_inscricoes_bloqueadas) {
-                $evento->is_inscricoes_bloqueadas = false;
-            } else {
-                $evento->is_inscricoes_bloqueadas = true;
-            }
-            $evento->save();
-            return response()->json([
-                'ok' => 1,
-                'error' => 0,
-                'message' => 'Status das inscrições atualizado com sucesso'
-            ]);
+        $enabled = $this->parseToggleEnabled($request);
+        if ($enabled === null) {
+            $evento->is_inscricoes_bloqueadas = !$evento->is_inscricoes_bloqueadas;
+        } else {
+            $evento->is_inscricoes_bloqueadas = !$enabled;
         }
+        $evento->save();
+        $permitir = !$evento->is_inscricoes_bloqueadas;
         return response()->json([
-            'ok' => 0,
-            'error' => 1,
-            'message' => 'Evento não encontrado'
+            'ok' => 1,
+            'error' => 0,
+            'enabled' => $permitir,
+            'message' => $permitir ? 'Inscrições liberadas!' : 'Inscrições bloqueadas!'
         ]);
     }
-    public function toggleMostrarClassificacao($evento_id)
+    public function toggleMostrarClassificacao(Request $request, $evento_id)
     {
         $user = Auth::user();
         $evento = Evento::find($evento_id);
+        if (!$evento) {
+            return response()->json([
+                'ok' => false,
+                'message' => 'Evento não encontrado'
+            ]);
+        }
         if (
             !$user->hasPermissionGlobal() &&
             !$user->hasPermissionEventByPerfil($evento->id, [4]) &&
@@ -732,21 +749,21 @@ class EventoGerenciarController extends Controller
                 'message' => 'Você não tem permissão para realizar esta ação'
             ]);
         }
-        if ($evento) {
+        $enabled = $this->parseToggleEnabled($request);
+        if ($enabled === null) {
             $evento->mostrar_resultados = !$evento->mostrar_resultados;
-            $evento->save();
-            return response()->json([
-                'ok' => true,
-                'message' => $evento->mostrar_resultados ? 'Resultados liberados com sucesso!' : 'Resultados restritos com sucesso!'
-            ]);
+        } else {
+            $evento->mostrar_resultados = $enabled;
         }
+        $evento->save();
         return response()->json([
-            'ok' => false,
-            'message' => 'Evento não encontrado'
+            'ok' => true,
+            'enabled' => (bool) $evento->mostrar_resultados,
+            'message' => $evento->mostrar_resultados ? 'Resultados liberados com sucesso!' : 'Resultados restritos com sucesso!'
         ]);
     }
 
-    public function toggleEventoClassificavel($evento_id)
+    public function toggleEventoClassificavel(Request $request, $evento_id)
     {
         $user = Auth::user();
         $evento = Evento::find($evento_id);
@@ -761,13 +778,18 @@ class EventoGerenciarController extends Controller
             return response()->json(['ok' => false, 'message' => 'Acesso negado']);
         }
 
-        $evento->classificavel = !$evento->classificavel;
+        $enabled = $this->parseToggleEnabled($request);
+        if ($enabled === null) {
+            $evento->classificavel = !$evento->classificavel;
+        } else {
+            $evento->classificavel = $enabled;
+        }
         $evento->save();
 
         $msg = $evento->classificavel ? 'Classificação geral liberada para este evento!' : 'Classificação geral bloqueada para este evento!';
-        return response()->json(['ok' => true, 'message' => $msg]);
+        return response()->json(['ok' => true, 'enabled' => (bool) $evento->classificavel, 'message' => $msg]);
     }
-    public function toggleClassificacaoManual($evento_id)
+    public function toggleClassificacaoManual(Request $request, $evento_id)
     {
         $user = Auth::user();
         $evento = Evento::find($evento_id);
@@ -782,16 +804,29 @@ class EventoGerenciarController extends Controller
             return response()->json(['ok' => false, 'message' => 'Acesso negado']);
         }
 
-        $evento->e_resultados_manuais = !$evento->e_resultados_manuais;
+        $enabled = $this->parseToggleEnabled($request);
+        if ($enabled === null) {
+            $evento->e_resultados_manuais = !$evento->e_resultados_manuais;
+        } else {
+            $evento->e_resultados_manuais = !$enabled;
+        }
         $evento->save();
 
-        $msg = !$evento->e_resultados_manuais ? 'Resultados automáticos ativados!' : 'Resultados automáticos desativados! Agora os resultados são manuais.';
-        return response()->json(['ok' => true, 'message' => $msg]);
+        $automaticos = !$evento->e_resultados_manuais;
+        $msg = $automaticos ? 'Resultados automáticos ativados!' : 'Resultados automáticos desativados! Agora os resultados são manuais.';
+        return response()->json(['ok' => true, 'enabled' => $automaticos, 'message' => $msg]);
     }
-    public function toggleRating($evento_id)
+    public function toggleRating(Request $request, $evento_id)
     {
         $user = Auth::user();
         $evento = Evento::find($evento_id);
+        if (!$evento) {
+            return response()->json([
+                'ok' => 0,
+                'error' => 1,
+                'message' => 'Evento não encontrado'
+            ]);
+        }
         if (
             !$user->hasPermissionGlobal() &&
             !$user->hasPermissionEventByPerfil($evento->id, [4]) &&
@@ -803,32 +838,42 @@ class EventoGerenciarController extends Controller
                 'message' => 'Você não tem permissão para realizar esta ação'
             ]);
         }
-        if ($evento) {
+        $enabled = $this->parseToggleEnabled($request);
+        if ($enabled === null) {
             $evento->is_rating_calculate_enabled = !$evento->is_rating_calculate_enabled;
-            $evento->save();
-            return response()->json([
-                'ok' => 1,
-                'error' => 0,
-                'message' => 'Status do cálculo de rating atualizado com sucesso'
-            ]);
+        } else {
+            $evento->is_rating_calculate_enabled = $enabled;
         }
+        $evento->save();
         return response()->json([
-            'ok' => 0,
-            'error' => 1,
-            'message' => 'Evento não encontrado'
+            'ok' => 1,
+            'error' => 0,
+            'enabled' => (bool) $evento->is_rating_calculate_enabled,
+            'message' => 'Status do cálculo de rating atualizado com sucesso'
         ]);
     }
-    public function toggleEdicaoInscricao($id)
+    public function toggleEdicaoInscricao(Request $request, $id)
     {
         $evento = Evento::find($id);
         if(!$evento){
             return response()->json(['ok' => false, 'message' => 'Evento não encontrado']);
         }
 
-        $evento->permite_edicao_inscricao = !$evento->permite_edicao_inscricao;
+        $enabled = $this->parseToggleEnabled($request);
+        if ($enabled === null) {
+            $evento->permite_edicao_inscricao = !$evento->permite_edicao_inscricao;
+        } else {
+            $evento->permite_edicao_inscricao = $enabled;
+        }
         $evento->save();
 
-        return response()->json(['ok' => true]);
+        return response()->json([
+            'ok' => true,
+            'enabled' => (bool) $evento->permite_edicao_inscricao,
+            'message' => $evento->permite_edicao_inscricao
+                ? 'Edição de inscrição permitida!'
+                : 'Edição de inscrição bloqueada!',
+        ]);
     }
 
     public function toggleRegistrationPaidConfirmed($evento_id)

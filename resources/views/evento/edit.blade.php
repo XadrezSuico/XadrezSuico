@@ -24,15 +24,22 @@
             display: inline-block;
             width: 40px;
             height: 20px;
+            flex-shrink: 0;
         }
         .form-switch input {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            margin: 0;
             opacity: 0;
-            width: 0;
-            height: 0;
+            cursor: pointer;
+            z-index: 2;
         }
         .form-switch .form-check-input {
             position: absolute;
-            cursor: pointer;
+            pointer-events: none;
             top: 0;
             left: 0;
             right: 0;
@@ -1659,245 +1666,68 @@
 		$(".timeline-datetime").mask("00/00/0000 00:00");
 
 
-        // Handler para o switch de inscrições
-        $('#toggle_inscricoes').change(function() {
-            var isChecked = $(this).prop('checked');
-            var statusText = isChecked ? 'Bloqueado' : 'Liberado';
-            
-            $.ajax({
-                url: "{{url('/evento/'.$evento->id.'/toggleinscricoes')}}",
-                type: 'GET',
-                dataType: 'json',
-                success: function(response) {
-                    if(response.ok) {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Status das inscrições atualizado com sucesso!',
-                            toast: true,
-                            position: 'top-end',
-                            showConfirmButton: false,
-                            timer: 3000,
-                            timerProgressBar: true
-                        });
-                    } else {
-                        // Reverte o switch se houver erro
-                        $('#toggle_inscricoes').prop('checked', !isChecked);
-                        Swal.fire({
-                            icon: 'error',
-                            title: response.message || 'Erro ao atualizar status das inscrições',
-                            toast: true,
-                            position: 'top-end',
-                            showConfirmButton: false,
-                            timer: 3000,
-                            timerProgressBar: true
-                        });
-                    }
-                },
-                error: function() {
-                    // Reverte o switch em caso de erro
-                    $('#toggle_inscricoes').prop('checked', !isChecked);
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Erro ao comunicar com o servidor',
-                        toast: true,
-                        position: 'top-end',
-                        showConfirmButton: false,
-                        timer: 3000,
-                        timerProgressBar: true
-                    });
-                }
-            });
-        });
+        function eventToggleOk(response) {
+            return response.ok === true || response.ok === 1 || response.ok === '1';
+        }
 
-        // Handler para o switch de edição de inscrição
-        $('#toggle_edicao_inscricao').change(function() {
-            var isChecked = $(this).prop('checked');
-            
-            $.ajax({
-                url: "{{url('/evento/'.$evento->id.'/toggleedicaoinscricao')}}",
-                type: 'GET',
-                dataType: 'json',
-                success: function(response) {
-                    if(response.ok) {
-                        Swal.fire({
-                            icon: 'success',
-                            title: response.message || 'Status da edição de inscrição atualizado com sucesso!',
-                            toast: true,
-                            position: 'top-end',
-                            showConfirmButton: false,
-                            timer: 3000,
-                            timerProgressBar: true
-                        });
-                    } else {
-                        // Reverte o switch se houver erro
-                        $('#toggle_edicao_inscricao').prop('checked', !isChecked);
-                        Swal.fire({
-                            icon: 'error',
-                            title: response.message || 'Erro ao atualizar status da edição de inscrição',
-                            toast: true,
-                            position: 'top-end',
-                            showConfirmButton: false,
-                            timer: 3000,
-                            timerProgressBar: true
-                        });
-                    }
-                },
-                error: function(xhr) {
-                    // Reverte o switch em caso de erro
-                    $('#toggle_edicao_inscricao').prop('checked', !isChecked);
-                    let msg = 'Erro ao comunicar com o servidor';
-                    if(xhr.responseJSON && xhr.responseJSON.message) {
-                        msg = xhr.responseJSON.message;
-                    }
-                    Swal.fire({
-                        icon: 'error',
-                        title: msg,
-                        toast: true,
-                        position: 'top-end',
-                        showConfirmButton: false,
-                        timer: 3000,
-                        timerProgressBar: true
-                    });
+        function applyEventToggleSwitch($input, response, previousChecked) {
+            if (eventToggleOk(response)) {
+                if (typeof response.enabled !== 'undefined') {
+                    $input.prop('checked', !!response.enabled);
                 }
-            });
-        });
+                return true;
+            }
+            $input.prop('checked', previousChecked);
+            return false;
+        }
 
-        // Handler para o switch de classificação geral
-        $('#toggle_classificavel').change(function() {
-            var isChecked = $(this).prop('checked');
-            
-            $.ajax({
-                url: "{{url('/evento/'.$evento->id.'/toggleclassificavel')}}",
-                type: 'GET',
-                dataType: 'json',
-                success: function(response) {
-                    if(response.ok) {
-                        Swal.fire({
-                            icon: 'success',
-                            title: response.message || 'Status da classificação geral atualizado com sucesso!',
-                            toast: true,
-                            position: 'top-end',
-                            showConfirmButton: false,
-                            timer: 3000,
-                            timerProgressBar: true
-                        });
-                    } else {
-                        // Reverte o switch se houver erro
-                        $('#toggle_classificavel').prop('checked', !isChecked);
-                        Swal.fire({
-                            icon: 'error',
-                            title: response.message || 'Erro ao atualizar status da classificação geral',
-                            toast: true,
-                            position: 'top-end',
-                            showConfirmButton: false,
-                            timer: 3000,
-                            timerProgressBar: true
-                        });
-                    }
-                },
-                error: function(xhr) {
-                    // Reverte o switch em caso de erro
-                    $('#toggle_classificavel').prop('checked', !isChecked);
-                    let msg = 'Erro ao comunicar com o servidor';
-                    if(xhr.responseJSON && xhr.responseJSON.message) {
-                        msg = xhr.responseJSON.message;
-                    }
-                    Swal.fire({
-                        icon: 'error',
-                        title: msg,
-                        toast: true,
-                        position: 'top-end',
-                        showConfirmButton: false,
-                        timer: 3000,
-                        timerProgressBar: true
-                    });
-                }
-            });
-        });
+        function bindEventToggleSwitch(selector, url, options) {
+            options = options || {};
+            $(selector).change(function() {
+                var $input = $(this);
+                var previousChecked = ! $input.prop('checked');
+                var isChecked = $input.prop('checked');
 
-        // Handler para o switch de Resultados Automáticos
-        $('#toggle_resultados_automaticos').change(function() {
-            var isChecked = $(this).prop('checked');
-            $.ajax({
-                url: "{{url('/evento/'.$evento->id.'/togglemanual')}}",
-                type: 'GET',
-                dataType: 'json',
-                success: function(response) {
-                    if(response.ok) {
-                        Swal.fire({
-                            icon: 'success',
-                            title: response.message || 'Status dos resultados atualizado com sucesso!',
-                            toast: true,
-                            position: 'top-end',
-                            showConfirmButton: false,
-                            timer: 3000,
-                            timerProgressBar: true
-                        });
-                    } else {
-                        // Reverte o switch se houver erro
-                        $('#toggle_resultados_automaticos').prop('checked', !isChecked);
-                        Swal.fire({
-                            icon: 'error',
-                            title: response.message || 'Erro ao atualizar status dos resultados',
-                            toast: true,
-                            position: 'top-end',
-                            showConfirmButton: false,
-                            timer: 3000,
-                            timerProgressBar: true
-                        });
-                    }
-                },
-                error: function(xhr) {
-                    // Reverte o switch em caso de erro
-                    $('#toggle_resultados_automaticos').prop('checked', !isChecked);
-                    let msg = 'Erro ao comunicar com o servidor';
-                    if(xhr.responseJSON && xhr.responseJSON.message) {
-                        msg = xhr.responseJSON.message;
-                    }
-                    Swal.fire({
-                        icon: 'error',
-                        title: msg,
-                        toast: true,
-                        position: 'top-end',
-                        showConfirmButton: false,
-                        timer: 3000,
-                        timerProgressBar: true
-                    });
-                }
-            });
-        });
-
-        // Handler para o switch de rating
-        $('#toggle_rating').change(function() {
-            var isChecked = $(this).prop('checked');
-            
-            $.ajax({
-                url: "{{url('/evento/'.$evento->id.'/togglerating')}}",
-                type: 'GET',
-                dataType: 'json',
-                success: function(response) {
-                    if(response.ok) {
-                        if(isChecked) {
-                            $('#toggle_rating_status_container').show();
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    dataType: 'json',
+                    data: { enabled: isChecked ? 1 : 0 },
+                    success: function(response) {
+                        if (applyEventToggleSwitch($input, response, previousChecked)) {
+                            if (options.onEnabled && typeof response.enabled !== 'undefined') {
+                                options.onEnabled(!!response.enabled);
+                            }
+                            Swal.fire({
+                                icon: 'success',
+                                title: response.message || options.successMessage || 'Atualizado com sucesso!',
+                                toast: true,
+                                position: 'top-end',
+                                showConfirmButton: false,
+                                timer: 3000,
+                                timerProgressBar: true
+                            });
                         } else {
-                            $('#toggle_rating_status_container').hide();
+                            Swal.fire({
+                                icon: 'error',
+                                title: response.message || options.errorMessage || 'Erro ao atualizar',
+                                toast: true,
+                                position: 'top-end',
+                                showConfirmButton: false,
+                                timer: 3000,
+                                timerProgressBar: true
+                            });
                         }
-                        
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Status do cálculo de rating atualizado com sucesso!',
-                            toast: true,
-                            position: 'top-end',
-                            showConfirmButton: false,
-                            timer: 3000,
-                            timerProgressBar: true
-                        });
-                    } else {
-                        // Reverte o switch se houver erro
-                        $('#toggle_rating').prop('checked', !isChecked);
+                    },
+                    error: function(xhr) {
+                        $input.prop('checked', previousChecked);
+                        var msg = options.errorMessage || 'Erro ao comunicar com o servidor';
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            msg = xhr.responseJSON.message;
+                        }
                         Swal.fire({
                             icon: 'error',
-                            title: response.message || 'Erro ao atualizar status do cálculo de rating',
+                            title: msg,
                             toast: true,
                             position: 'top-end',
                             showConfirmButton: false,
@@ -1905,71 +1735,34 @@
                             timerProgressBar: true
                         });
                     }
-                },
-                error: function() {
-                    // Reverte o switch em caso de erro
-                    $('#toggle_rating').prop('checked', !isChecked);
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Erro ao atualizar status do cálculo de rating',
-                        toast: true,
-                        position: 'top-end',
-                        showConfirmButton: false,
-                        timer: 3000,
-                        timerProgressBar: true
-                    });
-                }
+                });
             });
+        }
+
+        bindEventToggleSwitch('#toggle_inscricoes', "{{url('/evento/'.$evento->id.'/toggleinscricoes')}}", {
+            successMessage: 'Status das inscrições atualizado com sucesso!'
         });
 
-        // Handler para o switch de Resultados
-        $('#toggle_resultados').change(function() {
-            var isChecked = $(this).prop('checked');
-            
-            $.ajax({
-                url: "{{url('/evento/'.$evento->id.'/toggleresultados')}}",
-                type: 'GET',
-                dataType: 'json',
-                success: function(response) {
-                    if(response.ok) {
-                        Swal.fire({
-                            icon: 'success',
-                            title: response.message,
-                            toast: true,
-                            position: 'top-end',
-                            showConfirmButton: false,
-                            timer: 3000,
-                            timerProgressBar: true
-                        });
-                    } else {
-                        // Reverte o switch se houver erro
-                        $('#toggle_resultados').prop('checked', !isChecked);
-                        Swal.fire({
-                            icon: 'error',
-                            title: response.message || 'Erro ao atualizar status dos resultados',
-                            toast: true,
-                            position: 'top-end',
-                            showConfirmButton: false,
-                            timer: 3000,
-                            timerProgressBar: true
-                        });
-                    }
-                },
-                error: function() {
-                    // Reverte o switch em caso de erro
-                    $('#toggle_resultados').prop('checked', !isChecked);
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Erro ao atualizar status dos resultados',
-                        toast: true,
-                        position: 'top-end',
-                        showConfirmButton: false,
-                        timer: 3000,
-                        timerProgressBar: true
-                    });
-                }
-            });
+        bindEventToggleSwitch('#toggle_edicao_inscricao', "{{url('/evento/'.$evento->id.'/toggleedicaoinscricao')}}", {
+            successMessage: 'Status da edição de inscrição atualizado com sucesso!'
         });
+
+        bindEventToggleSwitch('#toggle_classificavel', "{{url('/evento/'.$evento->id.'/toggleclassificavel')}}");
+
+        bindEventToggleSwitch('#toggle_resultados_automaticos', "{{url('/evento/'.$evento->id.'/togglemanual')}}");
+
+        bindEventToggleSwitch('#toggle_rating', "{{url('/evento/'.$evento->id.'/togglerating')}}", {
+            successMessage: 'Status do cálculo de rating atualizado com sucesso!',
+            onEnabled: function(enabled) {
+                if (enabled) {
+                    $('#toggle_rating_status_container').show();
+                } else {
+                    $('#toggle_rating_status_container').hide();
+                }
+            }
+        });
+
+        bindEventToggleSwitch('#toggle_resultados', "{{url('/evento/'.$evento->id.'/toggleresultados')}}");
   });
 
 	function buscaEstados(buscaCidade,callback){
