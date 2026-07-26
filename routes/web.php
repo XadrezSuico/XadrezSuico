@@ -349,6 +349,13 @@ Route::group(["prefix"=>"evento"],function(){
         });
     });
 
+    Route::group(["prefix"=>"{evento_id}/timeline"],function(){
+        Route::post('/add', 'EventTimelineItemController@add')->name('evento.timeline.add');
+        Route::get('/edit/{item_id}', 'EventTimelineItemController@edit')->name('evento.timeline.edit');
+        Route::post('/edit/{item_id}', 'EventTimelineItemController@edit_post')->name('evento.timeline.edit.post');
+        Route::get('/remove/{item_id}', 'EventTimelineItemController@remove')->name('evento.timeline.remove');
+    });
+
     Route::group(["prefix"=>"{evento_id}/campos"],function(){
         Route::post('/new', 'CampoPersonalizadoEventoController@new_post')->name('evento.campos.new.post');
         Route::get('/dashboard/{id}', 'CampoPersonalizadoEventoController@dashboard')->name('evento.campos.dashboard');

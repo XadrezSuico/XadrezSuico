@@ -92,6 +92,7 @@
 			<li role="presentation"><a id="tab_resume" href="#resume" aria-controls="resume" role="tab" data-toggle="tab">Resumo</a></li>
 			<li role="presentation"><a id="tab_editar_evento" href="#editar_evento" aria-controls="editar_evento" role="tab" data-toggle="tab">Editar Evento</a></li>
 			<li role="presentation"><a id="tab_pagina" href="#pagina" aria-controls="pagina" role="tab" data-toggle="tab">Página</a></li>
+			<li role="presentation"><a id="tab_timeline" href="#timeline" aria-controls="timeline" role="tab" data-toggle="tab">Timeline</a></li>
 			<li role="presentation"><a id="tab_criterio_desempate" href="#criterio_desempate" aria-controls="criterio_desempate" role="tab" data-toggle="tab">Critério de Desempate</a></li>
 			@if(
 				\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
@@ -769,6 +770,22 @@
 					@endif
 					</div>
 				</section>
+			</div>
+			<div role="tabpanel" class="tab-pane" id="timeline">
+				@php
+					$timeline_items = $evento->timeline_items()->orderBy('order', 'ASC')->get();
+					$timeline_max_order = $timeline_items->max('order');
+					$timeline_next_order = ($timeline_max_order !== null ? (int) $timeline_max_order : 0) + 1;
+					$timeline_add_url = url('/evento/'.$evento->id.'/timeline/add');
+					$timeline_edit_url_prefix = url('/evento/'.$evento->id.'/timeline/edit');
+					$timeline_remove_url_prefix = url('/evento/'.$evento->id.'/timeline/remove');
+					$can_edit_timeline = (
+						\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
+						\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id, [4]) ||
+						\Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
+					);
+				@endphp
+				@include('partials.event_timeline_tab')
 			</div>
 			<div role="tabpanel" class="tab-pane" id="criterio_desempate">
 				<br/>
@@ -1970,6 +1987,7 @@
 		$("#evento_data_limite_inscricoes_abertas").mask("00/00/0000 00:00");
 		$("#confirmacao_publica_inicio").mask("00/00/0000 00:00");
 		$("#confirmacao_publica_final").mask("00/00/0000 00:00");
+		$(".timeline-datetime").mask("00/00/0000 00:00");
 
 
         // Handler para o switch de inscrições

@@ -9,8 +9,9 @@ use DateTime;
 class EventTimelineItem extends Model
 {
     //
-    public function event(){
-        $this->belongsTo("App\Evento","event_id","id");
+    public function event()
+    {
+        return $this->belongsTo("App\Evento", "event_id", "id");
     }
 
     public function getDateTime()
