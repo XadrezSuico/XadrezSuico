@@ -14,6 +14,9 @@
         <span class="hidden-xs">&nbsp;·&nbsp;</span>
         <br class="visible-xs"/>
         <i class="fa fa-toggle-on"></i> Os interruptores são salvos automaticamente ao alterar.
+        <span class="hidden-xs">&nbsp;·&nbsp;</span>
+        <br class="visible-xs"/>
+        <i class="fa fa-bar-chart"></i> Métricas detalhadas na aba <a href="{{ url('/evento/dashboard/' . $evento->id) }}?tab=resume">Resumo</a>.
     </p>
 </div>
 

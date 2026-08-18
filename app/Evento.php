@@ -1018,6 +1018,310 @@ class Evento extends Model
         return false;
     }
 
+    protected $dashboardStatsCache = null;
+
+    public function getDashboardStats(): array
+    {
+        if ($this->dashboardStatsCache !== null) {
+            return $this->dashboardStatsCache;
+        }
+
+        $totals = [
+            'inscritos' => 0,
+            'confirmados' => 0,
+            'presentes' => 0,
+            'resultados' => 0,
+            'emparceiramentos' => 0,
+            'clubes' => 0,
+        ];
+
+        $payment = [
+            'paid' => ['total' => 0, 'confirmados' => 0, 'presentes' => 0, 'resultados' => 0],
+            'free' => ['total' => 0, 'confirmados' => 0, 'presentes' => 0, 'resultados' => 0],
+            'not_paid' => ['total' => 0, 'confirmados' => 0, 'presentes' => 0, 'resultados' => 0],
+        ];
+
+        $categorias_free_ids = [];
+        $categorias_paid_ids = [];
+        if ($this->isPaid()) {
+            $categorias_free_ids = $this->categorias()->whereNull("xadrezsuicopag_uuid")->pluck("categoria_id")->toArray();
+            $categorias_paid_ids = $this->categorias()->whereNotNull("xadrezsuicopag_uuid")->pluck("categoria_id")->toArray();
+        }
+
+        $torneios_stats = [];
+        $clubes_ids = [];
+        $bigger_tournament = ['status' => false, 'tournament' => null, 'total' => 0, 'name' => '-- Sem Torneios --'];
+
+        foreach ($this->torneios as $torneio) {
+            $t_inscritos = 0;
+            $t_confirmados = 0;
+            $t_presentes = 0;
+
+            foreach ($torneio->inscricoes as $inscricao) {
+                $totals['inscritos']++;
+                $t_inscritos++;
+
+                $is_confirmado = (bool) $inscricao->confirmado;
+                $is_wo = (bool) $inscricao->desconsiderar_pontuacao_geral;
+                $is_presente = $is_confirmado && !$is_wo;
+                $has_resultados = $is_confirmado && $inscricao->pontos !== null;
+
+                if ($is_confirmado) {
+                    $totals['confirmados']++;
+                    $t_confirmados++;
+                }
+                if ($is_presente) {
+                    $totals['presentes']++;
+                    $t_presentes++;
+                    if ($inscricao->clube_id && !in_array($inscricao->clube_id, $clubes_ids, true)) {
+                        $clubes_ids[] = $inscricao->clube_id;
+                    }
+                }
+                if ($has_resultados) {
+                    $totals['resultados']++;
+                }
+
+                if ($this->isPaid()) {
+                    $cat_id = $inscricao->categoria_id;
+                    $in_free_cat = in_array($cat_id, $categorias_free_ids, true);
+                    $in_paid_cat = in_array($cat_id, $categorias_paid_ids, true);
+
+                    if ($inscricao->paid) {
+                        $payment['paid']['total']++;
+                        if ($is_confirmado) {
+                            $payment['paid']['confirmados']++;
+                        }
+                        if ($is_presente) {
+                            $payment['paid']['presentes']++;
+                            $payment['paid']['resultados']++;
+                        }
+                    }
+
+                    if ($in_free_cat) {
+                        $payment['free']['total']++;
+                        if ($is_confirmado) {
+                            $payment['free']['confirmados']++;
+                        }
+                        if ($is_presente) {
+                            $payment['free']['presentes']++;
+                            $payment['free']['resultados']++;
+                        }
+                    }
+
+                    if (!$inscricao->paid && $in_paid_cat) {
+                        $payment['not_paid']['total']++;
+                        if ($is_confirmado) {
+                            $payment['not_paid']['confirmados']++;
+                        }
+                        if ($is_presente) {
+                            $payment['not_paid']['presentes']++;
+                            $payment['not_paid']['resultados']++;
+                        }
+                    }
+                }
+            }
+
+            if ($torneio->relationLoaded('rodadas')) {
+                foreach ($torneio->rodadas as $rodada) {
+                    if ($rodada->relationLoaded('emparceiramentos')) {
+                        foreach ($rodada->emparceiramentos as $emparceiramento) {
+                            if (!$emparceiramento->is_wo_a && !$emparceiramento->is_wo_b) {
+                                $totals['emparceiramentos']++;
+                            }
+                        }
+                    }
+                }
+            }
+
+            $torneios_stats[] = [
+                'id' => $torneio->id,
+                'name' => $torneio->name,
+                'inscritos' => $t_inscritos,
+                'confirmados' => $t_confirmados,
+                'presentes' => $t_presentes,
+            ];
+
+            if ($t_inscritos > $bigger_tournament['total']) {
+                $bigger_tournament = [
+                    'status' => true,
+                    'tournament' => $torneio,
+                    'total' => $t_inscritos,
+                    'name' => $torneio->name,
+                ];
+            }
+        }
+
+        if (!$bigger_tournament['status']) {
+            $bigger_tournament['tournament'] = '-- Sem Torneios --';
+        }
+
+        $totals['clubes'] = count($clubes_ids);
+
+        $limits = null;
+        if ($this->hasLimits()) {
+            $limit = (int) $this->maximo_inscricoes_evento;
+            $pct = $limit > 0 ? min(100, (int) round(100 * $totals['inscritos'] / $limit)) : 0;
+            $limits = [
+                'total' => $totals['inscritos'],
+                'limit' => $limit,
+                'pct' => $pct,
+            ];
+        }
+
+        $this->dashboardStatsCache = [
+            'totals' => $totals,
+            'payment' => $payment,
+            'torneios' => $torneios_stats,
+            'limits' => $limits,
+            'bigger_tournament' => $bigger_tournament,
+        ];
+
+        return $this->dashboardStatsCache;
+    }
+
+    public function getRegistrationStatus(): array
+    {
+        if ($this->is_inscricoes_bloqueadas) {
+            return ['label' => 'Bloqueadas', 'level' => 'danger'];
+        }
+
+        $stats = $this->getDashboardStats();
+        if ($this->hasLimits() && $stats['limits']['pct'] >= 100) {
+            return ['label' => 'Lotado', 'level' => 'danger'];
+        }
+
+        $datetime_fim = DateTime::createFromFormat('Y-m-d H:i:s', $this->data_fim . " 23:59:59");
+        if ($datetime_fim && $datetime_fim->getTimestamp() <= time()) {
+            return ['label' => 'Evento encerrado', 'level' => 'danger'];
+        }
+
+        if (!$this->ja_abriu_as_inscricoes()) {
+            return ['label' => 'Ainda não abriram', 'level' => 'default'];
+        }
+
+        if ($this->inscricoes_encerradas()) {
+            return ['label' => 'Encerradas', 'level' => 'warning'];
+        }
+
+        if ($this->hasLimits() && $stats['limits']['pct'] >= 85) {
+            return ['label' => 'Abertas (quase lotado)', 'level' => 'warning'];
+        }
+
+        return ['label' => 'Abertas', 'level' => 'success'];
+    }
+
+    public function getUpcomingTimelineItems(int $limit = 3): array
+    {
+        $now = time();
+        $upcoming = [];
+
+        foreach ($this->getTimelineItems() as $item) {
+            $datetime = DateTime::createFromFormat('d/m/Y H:i', $item['datetime']);
+            if (!$datetime) {
+                $datetime = DateTime::createFromFormat('d/m/Y', $item['datetime']);
+            }
+            if ($datetime && $datetime->getTimestamp() >= $now) {
+                $upcoming[] = $item;
+            }
+        }
+
+        usort($upcoming, function ($a, $b) {
+            $da = DateTime::createFromFormat('d/m/Y H:i', $a['datetime']) ?: DateTime::createFromFormat('d/m/Y', $a['datetime']);
+            $db = DateTime::createFromFormat('d/m/Y H:i', $b['datetime']) ?: DateTime::createFromFormat('d/m/Y', $b['datetime']);
+            if (!$da || !$db) {
+                return 0;
+            }
+            return $da->getTimestamp() <=> $db->getTimestamp();
+        });
+
+        return array_slice($upcoming, 0, $limit);
+    }
+
+    public function getDashboardAlerts(): array
+    {
+        $stats = $this->getDashboardStats();
+        $totals = $stats['totals'];
+        $alerts = [];
+        $dashboard_url = url('/evento/dashboard/' . $this->id);
+
+        if ($this->torneios->count() === 0) {
+            $alerts[] = [
+                'level' => 'warning',
+                'message' => 'Nenhum torneio cadastrado neste evento.',
+                'action_url' => $dashboard_url . '?tab=torneio',
+                'action_label' => 'Cadastrar torneio',
+            ];
+        }
+
+        if ($this->is_inscricoes_bloqueadas) {
+            $alerts[] = [
+                'level' => 'warning',
+                'message' => 'As inscrições estão bloqueadas manualmente.',
+                'action_url' => $dashboard_url . '#funcoes',
+                'action_label' => 'Ir para Funções',
+            ];
+        }
+
+        if ($this->hasLimits() && $stats['limits']['pct'] >= 100) {
+            $alerts[] = [
+                'level' => 'danger',
+                'message' => 'O evento atingiu o limite máximo de inscrições.',
+                'action_url' => url('/evento/' . $this->id . '/inscricoes/list'),
+                'action_label' => 'Ver inscritos',
+            ];
+        }
+
+        if ($totals['confirmados'] > 0 && $totals['emparceiramentos'] === 0) {
+            $alerts[] = [
+                'level' => 'info',
+                'message' => 'Há inscritos confirmados, mas nenhum emparceiramento foi importado.',
+                'action_url' => $dashboard_url . '#funcoes',
+                'action_label' => 'Emparceiramento',
+            ];
+        }
+
+        if ($this->isPaid() && $stats['payment']['not_paid']['total'] > 0) {
+            $alerts[] = [
+                'level' => 'warning',
+                'message' => 'Existem inscrições em categorias pagas ainda não quitadas.',
+                'action_url' => $dashboard_url . '?tab=resume',
+                'action_label' => 'Ver pagamentos',
+            ];
+        }
+
+        $datetime_fim = DateTime::createFromFormat('Y-m-d H:i:s', $this->data_fim . " 23:59:59");
+        $evento_encerrado = $datetime_fim && $datetime_fim->getTimestamp() <= time();
+
+        if (!$this->mostrar_resultados && $totals['presentes'] > 0 && !$evento_encerrado) {
+            $alerts[] = [
+                'level' => 'info',
+                'message' => 'A visualização pública dos resultados está desativada.',
+                'action_url' => $dashboard_url . '#funcoes',
+                'action_label' => 'Ativar resultados',
+            ];
+        }
+
+        if ($this->tipo_rating && $this->is_rating_calculate_enabled && !$this->consegueCalcularRating()) {
+            $alerts[] = [
+                'level' => 'warning',
+                'message' => 'O cálculo de rating está habilitado, mas ainda não há emparceiramentos importados.',
+                'action_url' => $dashboard_url . '#funcoes',
+                'action_label' => 'Ir para Funções',
+            ];
+        }
+
+        if ($evento_encerrado) {
+            $alerts[] = [
+                'level' => 'info',
+                'message' => 'A data de término do evento já passou.',
+                'action_url' => $dashboard_url . '?tab=editar_evento',
+                'action_label' => 'Ver evento',
+            ];
+        }
+
+        return $alerts;
+    }
+
     public function getTournamentWithMoreRegistrations()
     {
         $total = 0;

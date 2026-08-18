@@ -58,7 +58,10 @@ class EventoGerenciarController extends Controller
     public function edit($id, Request $request)
     {
         $user = Auth::user();
-        $evento = Evento::find($id);
+        $evento = Evento::with([
+            'torneios.inscricoes',
+            'torneios.rodadas.emparceiramentos',
+        ])->find($id);
         if (
             !$user->hasPermissionGlobal() &&
             !$user->hasPermissionEventByPerfil($id, [3, 4]) &&
@@ -66,6 +69,9 @@ class EventoGerenciarController extends Controller
         ) {
             return redirect("/");
         }
+
+        $dashboard_stats = $evento->getDashboardStats();
+        $dashboard_alerts = $evento->getDashboardAlerts();
 
         $categorias = Categoria::where([
             ["evento_id", "=", $evento->id],
@@ -103,7 +109,9 @@ class EventoGerenciarController extends Controller
                                             "softwares",
                                             "tipos_rating",
                                             "tab",
-                                            "xadrezsuicopag_controller"
+                                            "xadrezsuicopag_controller",
+                                            "dashboard_stats",
+                                            "dashboard_alerts"
                                     )
         );
     }

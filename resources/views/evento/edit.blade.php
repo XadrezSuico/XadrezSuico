@@ -73,6 +73,78 @@
             margin-left: 10px;
             vertical-align: middle;
         }
+        .event-overview-strip {
+            border-top: 3px solid #3c8dbc;
+        }
+        .event-overview-kpi-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 4px 8px;
+        }
+        .event-overview-kpi {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: flex-start;
+            min-width: 70px;
+        }
+        .event-overview-kpi-value {
+            font-size: 20px;
+            font-weight: 700;
+            line-height: 1.1;
+        }
+        .event-overview-kpi-label {
+            font-size: 11px;
+            color: #777;
+            text-transform: uppercase;
+        }
+        .event-overview-kpi-sep {
+            color: #ccc;
+            font-size: 18px;
+            line-height: 1;
+        }
+        .dashboard-alerts-compact {
+            margin-top: 12px;
+        }
+        .dashboard-alert-item {
+            padding: 8px 12px;
+            margin-bottom: 8px;
+        }
+        .event-overview-link {
+            margin-top: 8px;
+        }
+        @media (min-width: 992px) {
+            .event-overview-link {
+                margin-top: 0;
+            }
+            .event-overview-kpis {
+                border-left: 1px solid #eee;
+                border-right: 1px solid #eee;
+                padding-left: 15px;
+                padding-right: 15px;
+            }
+        }
+        @media (max-width: 991px) {
+            .event-overview-meta,
+            .event-overview-kpis,
+            .event-overview-link {
+                margin-bottom: 10px;
+            }
+            .event-overview-link {
+                text-align: left !important;
+            }
+        }
+        a.small-box-link {
+            color: inherit;
+            display: block;
+        }
+        a.small-box-link:hover {
+            color: inherit;
+            text-decoration: none;
+        }
+        a.small-box-link:hover .small-box {
+            opacity: 0.92;
+        }
 	</style>
 @endsection
 
@@ -90,6 +162,9 @@
   <li role="presentation"><a href="/grupoevento/dashboard/{{$evento->grupo_evento->id}}">Voltar a Dashboard de Grupo de Evento</a></li>
 @endif
 </ul>
+
+@include('evento._partials.overview_strip')
+
 <div class="row">
   <!-- Left col -->
 	<div>
