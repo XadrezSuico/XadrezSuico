@@ -36,21 +36,21 @@
 						<input name="name" id="name" class="form-control" type="text" value="{{$categoria->name}}" />
 					</div>
 					<div class="form-group">
-						<label for="name">Idade Mínima (Em anos)</label>
-						<input name="idade_minima" id="idade_minima" class="form-control" type="text" value="{{$categoria->idade_minima}}" />
+						<label for="idade_minima">Idade Mínima (Em anos)</label>
+						<input name="idade_minima" id="idade_minima" class="form-control" type="number" step="1" min="0" value="{{$categoria->idade_minima}}" />
 					</div>
 					<div class="form-group">
-						<label for="name">Idade Máxima (Em anos)</label>
-						<input name="idade_maxima" id="idade_maxima" class="form-control" type="text" value="{{$categoria->idade_maxima}}" />
+						<label for="idade_maxima">Idade Máxima (Em anos)</label>
+						<input name="idade_maxima" id="idade_maxima" class="form-control" type="number" step="1" min="0" value="{{$categoria->idade_maxima}}" />
 					</div>
 					<div class="form-group">
-						<label for="name">Código Categoria (Padrão Swiss-Manager)</label>
-						<input name="cat_code" id="cat_code" class="form-control" type="text" value="{{$categoria->cat_code}}" />
+						<label for="cat_code">Código Categoria (Padrão Swiss-Manager)</label>
+						<input name="cat_code" id="cat_code" class="form-control" type="text" maxlength="10" value="{{$categoria->cat_code}}" />
 						<small>Exemplo: Para Sub-08, utilizar <strong>U08</strong>.</small>
 					</div>
 					<div class="form-group">
-						<label for="name">Código Grupo (Deve ser único em cada evento, para evitar problemas de processamento do resultado)</label>
-						<input name="code" id="code" class="form-control" type="text" value="{{$categoria->code}}" />
+						<label for="code">Código Grupo (Deve ser único em cada evento, para evitar problemas de processamento do resultado)</label>
+						<input name="code" id="code" class="form-control" type="text" maxlength="10" value="{{$categoria->code}}" />
 						<small>Este código pode ser diferente de acordo com a sua forma de controle. Mas vale saber: é esta a informação que será utilizada para identificação da categoria quando ocorrer o processamento do resultado, e por isso é importante que esteja preenchida no Swiss-Manager e também que seja única para cada categoria.</small>
 					</div>
 					<div class="form-group">
