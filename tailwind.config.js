@@ -5,6 +5,8 @@ module.exports = {
         './resources/views/components/v2/**/*.blade.php',
         './resources/views/home/**/*.blade.php',
         './resources/views/home2.blade.php',
+        './resources/views/auth/login.blade.php',
+        './resources/views/layouts/v2/guest.blade.php',
     ],
     theme: {
         extend: {
