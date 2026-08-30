@@ -17,69 +17,81 @@
     $iconMissing = '<svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="h-full w-full"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z"/></svg>';
 @endphp
 
-<div class="min-w-[10rem] space-y-1.5">
-    <div class="flex flex-wrap items-center gap-1">
-        @include('components.v2.stat-badge', [
-            'value' => $total . ($max ? '/' . $max : ''),
-            'tooltip' => $max ? 'Total de inscritos / vagas do evento' : 'Total de inscritos',
-            'tone' => 'brand',
-            'icon' => $iconUsers,
-        ])
+<div class="min-w-[10rem] space-y-2">
+    <div>
+        <p class="mb-1 text-[0.65rem] font-semibold uppercase tracking-wide text-gray-400">Total</p>
+        <div class="flex flex-wrap items-center gap-1">
+            @include('components.v2.stat-badge', [
+                'value' => $total . ($max ? '/' . $max : ''),
+                'tooltip' => $max ? 'Total de inscritos / vagas do evento' : 'Total de inscritos',
+                'tone' => 'brand',
+                'icon' => $iconUsers,
+            ])
+        </div>
     </div>
 
     @if($showDetails)
-        <div class="flex flex-wrap items-center gap-1">
-            @include('components.v2.stat-badge', [
-                'value' => $evento->quantosInscritosConfirmados(),
-                'tooltip' => 'Inscrições confirmadas',
-                'tone' => 'green',
-                'icon' => $iconCheck,
-            ])
-            @include('components.v2.stat-badge', [
-                'value' => $evento->quantosInscritosPresentes(),
-                'tooltip' => 'Inscritos presentes no evento',
-                'tone' => 'blue',
-                'icon' => $iconPresent,
-            ])
+        <div>
+            <p class="mb-1 text-[0.65rem] font-semibold uppercase tracking-wide text-gray-400">Situação</p>
+            <div class="flex flex-wrap items-center gap-1">
+                @include('components.v2.stat-badge', [
+                    'value' => $evento->quantosInscritosConfirmados(),
+                    'tooltip' => 'Inscrições confirmadas',
+                    'tone' => 'green',
+                    'icon' => $iconCheck,
+                ])
+                @include('components.v2.stat-badge', [
+                    'value' => $evento->quantosInscritosPresentes(),
+                    'tooltip' => 'Inscritos presentes no evento',
+                    'tone' => 'blue',
+                    'icon' => $iconPresent,
+                ])
+            </div>
         </div>
 
         @if($evento->is_lichess_integration)
-            <div class="flex flex-wrap items-center gap-1">
-                @include('components.v2.stat-badge', [
-                    'value' => $evento->quantosInscritosConfirmadosLichess(),
-                    'tooltip' => 'Inscritos no torneio Lichess.org',
-                    'tone' => 'violet',
-                    'icon' => $iconLichess,
-                ])
-                @include('components.v2.stat-badge', [
-                    'value' => $evento->quantosInscritosFaltamLichess(),
-                    'tooltip' => 'Confirmados ainda não inscritos no Lichess',
-                    'tone' => 'amber',
-                    'icon' => $iconMissing,
-                ])
+            <div>
+                <p class="mb-1 text-[0.65rem] font-semibold uppercase tracking-wide text-gray-400">Lichess</p>
+                <div class="flex flex-wrap items-center gap-1">
+                    @include('components.v2.stat-badge', [
+                        'value' => $evento->quantosInscritosConfirmadosLichess(),
+                        'tooltip' => 'Inscritos no torneio Lichess.org',
+                        'tone' => 'violet',
+                        'icon' => $iconLichess,
+                    ])
+                    @include('components.v2.stat-badge', [
+                        'value' => $evento->quantosInscritosFaltamLichess(),
+                        'tooltip' => 'Confirmados ainda não inscritos no Lichess',
+                        'tone' => 'amber',
+                        'icon' => $iconMissing,
+                    ])
+                </div>
             </div>
         @endif
 
         @if($evento->xadrezsuicopag_uuid)
-            <div class="flex flex-wrap items-center gap-1">
-                @include('components.v2.stat-badge', [
-                    'value' => $evento->howManyPaid(),
-                    'tooltip' => 'Inscrições com pagamento confirmado',
-                    'tone' => 'green',
-                    'icon' => $iconPaid,
-                ])
-                @include('components.v2.stat-badge', [
-                    'value' => $evento->howManyNotPaid(),
-                    'tooltip' => 'Inscrições com pagamento pendente',
-                    'tone' => 'amber',
-                    'icon' => $iconPending,
-                ])
-                @include('components.v2.stat-badge', [
-                    'value' => $evento->howManyFree(),
-                    'tooltip' => 'Inscrições gratuitas (categorias sem cobrança)',
-                    'tone' => 'gray',
-                    'icon' => $iconFree,
-                ])
+            <div>
+                <p class="mb-1 text-[0.65rem] font-semibold uppercase tracking-wide text-gray-400">Pagamento</p>
+                <div class="flex flex-wrap items-center gap-1">
+                    @include('components.v2.stat-badge', [
+                        'value' => $evento->howManyPaid(),
+                        'tooltip' => 'Inscrições com pagamento confirmado',
+                        'tone' => 'green',
+                        'icon' => $iconPaid,
+                    ])
+                    @include('components.v2.stat-badge', [
+                        'value' => $evento->howManyNotPaid(),
+                        'tooltip' => 'Inscrições com pagamento pendente',
+                        'tone' => 'amber',
+                        'icon' => $iconPending,
+                    ])
+                    @include('components.v2.stat-badge', [
+                        'value' => $evento->howManyFree(),
+                        'tooltip' => 'Inscrições gratuitas (categorias sem cobrança)',
+                        'tone' => 'gray',
+                        'icon' => $iconFree,
+                    ])
+                </div>
             </div>
         @endif
     @endif
