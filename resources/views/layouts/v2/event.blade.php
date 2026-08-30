@@ -3,8 +3,7 @@
 @section('title', 'Dashboard de Evento')
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('vendor/adminlte/vendor/select2/dist/css/select2.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('vendor/adminlte/vendor/bootstrap/dist/css/bootstrap.min.css') }}">
+    @include('layouts.v2.partials.event-legacy-plugins-styles')
     <style>
         .v2-legacy-tab .box { margin-bottom: 1rem; }
         .v2-legacy-tab .btn-app { margin: 0.25rem; }
@@ -29,8 +28,5 @@
 @endsection
 
 @push('scripts')
-    <script src="{{ asset('vendor/adminlte/vendor/bootstrap/dist/js/bootstrap.min.js') }}"></script>
-    <script src="{{ asset('vendor/adminlte/vendor/select2/dist/js/select2.full.min.js') }}"></script>
-    <script src="{{ asset('vendor/adminlte/plugins/sweetalert2/sweetalert2.all.min.js') }}"></script>
-    <script src="{{ asset('vendor/adminlte/plugins/input-mask/jquery.inputmask.bundle.min.js') }}"></script>
+    @include('layouts.v2.partials.event-legacy-plugins-scripts')
 @endpush
