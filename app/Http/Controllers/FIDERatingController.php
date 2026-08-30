@@ -3,14 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Enxadrista;
-use App\Http\Util\Util;
-use GuzzleHttp\Client;
-use Psr\Http\Client\ClientExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
-
-
+use App\Pais;
+use App\PlayerTitle;
+use App\Sexo;
+use App\Title;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\BrowserKit\HttpBrowser;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\HttpClient\HttpClient;
@@ -236,123 +233,68 @@ class FIDERatingController extends Controller
     //     }
     //     if ($show_text) echo "<hr/>";
     // }
+    private const FIDE_ENTITY_ID = 1;
+
+    private const FIDE_TITLE_MAP = [
+        'Grandmaster' => 'GM',
+        'International Master' => 'IM',
+        'FIDE Master' => 'FM',
+        'Candidate Master' => 'CM',
+        'Woman Grandmaster' => 'WGM',
+        'Woman International Master' => 'WIM',
+        'Woman FIDE Master' => 'WFM',
+        'Woman Candidate Master' => 'WCM',
+    ];
+
     public static function getRating($enxadrista, $show_text = true, $return_enxadrista = false, $save_rating = true)
     {
         $codigo_organizacao = 0;
-
-        $client = HttpClient::create();
-        $browser = new HttpBrowser($client);
-
         $url = "https://ratings.fide.com/profile/" . $enxadrista->fide_id;
 
-        echo "{$url} <br/>";
+        Log::debug("FIDERatingController::getRating - '{$enxadrista->fide_id}' - {$url}");
+        if ($show_text) {
+            echo "Enxadrista #{$enxadrista->id} - {$enxadrista->name} ({$enxadrista->fide_id})<br/>{$url}<br/>";
+        }
 
         try {
+            $client = HttpClient::create([
+                'headers' => [
+                    'User-Agent' => 'Mozilla/5.0 (compatible; XadrezSuico/1.0)',
+                ],
+            ]);
+            $browser = new HttpBrowser($client);
             $crawler = $browser->request('GET', $url);
             $statusCode = $browser->getInternalResponse()->getStatusCode();
+            $html = $browser->getInternalResponse()->getContent();
 
-            if ($statusCode !== 200) {
-                if ($save_rating) {
-                    $enxadrista->deleteRating($codigo_organizacao, 0);
-                    $enxadrista->deleteRating($codigo_organizacao, 1);
-                    $enxadrista->deleteRating($codigo_organizacao, 2);
-                    $enxadrista->fide_last_update = date("Y-m-d H:i:s");
-                    $enxadrista->encontrado_fide = false;
-                    $enxadrista->save();
+            if ($statusCode !== 200 || self::isPlayerNotFound($crawler, $html)) {
+                Log::debug("FIDERatingController::getRating - '{$enxadrista->fide_id}' - jogador não encontrado (status {$statusCode})");
+                if ($show_text) {
+                    echo "Jogador FIDE não encontrado<br/>";
                 }
-                if ($show_text) echo 'Erro ao acessar a página: código de status ' . $statusCode;
+                self::markNotFound($enxadrista, $codigo_organizacao, $save_rating);
 
-                if($return_enxadrista){
-                    return $enxadrista;
-                }
-
-                return; // Early return to stop further processing
-            } else {
-                if ($show_text) echo 'Carregamento OK (200 OK) <br/> ';
+                return $return_enxadrista ? $enxadrista : null;
             }
 
-            // Obtém o HTML da resposta
-            // $htmlContent = $browser->getInternalResponse()->getContent();
-            // echo "<h3>HTML Obtido:</h3>";
-            // echo "<pre>" . htmlspecialchars($htmlContent) . "</pre>";
+            $name = self::extractName($crawler);
+            $ratings = self::extractRatings($crawler);
 
-            // Extrai o nome do enxadrista
-            $name = $crawler->filter('.profile-top-title')->first()->text();
-            if ($show_text) echo "Nome do enxadrista: " . $name . "<br/>";
-
-            // Extrai os ratings
-            $ratings = [];
-            $crawler->filter('.profile-top-rating-dataCont .profile-top-rating-data')->each(function (Crawler $node) use (&$ratings) {
-                $desc = $node->filter('.profile-top-rating-dataDesc')->text();
-                $ratingText = trim($node->text());
-
-
-                $parts = explode(' ', trim($ratingText), 2);
-
-
-                if (count($parts) === 2) {
-
-                    // Tratar "Not rated" como rating não existente
-                    if ($parts[0] === 'Not rated') {
-                        $ratingValue = null;
-                    } else {
-                        $ratingValue = intval($parts[1]);
-                    }
-                }else{
-                    $ratingValue = null;
-                }
-
-                // echo $desc."<br/>";
-                // echo "<pre>{$ratingText}</pre><br/>";
-                // echo $ratingValue . "<br/>";
-                // echo "<br/>";
-                // echo "<br/>";
-                // echo "<br/>";
-
-                // Mapear rating para o tipo correspondente
-                switch ($desc) {
-                    case 'std':
-                        $ratings['standard'] = $ratingValue;
-                        break;
-                    case 'rapid':
-                        $ratings['rapid'] = $ratingValue;
-                        break;
-                    case 'blitz':
-                        $ratings['blitz'] = $ratingValue;
-                        break;
-                }
-            });
-
+            Log::debug("FIDERatingController::getRating - '{$enxadrista->fide_id}' - {$name} STD:" . ($ratings['standard'] ?? 'null') . " RPD:" . ($ratings['rapid'] ?? 'null') . " BTZ:" . ($ratings['blitz'] ?? 'null'));
             if ($show_text) {
-                echo "Ratings:<br/>";
-                echo "STD: " . ($ratings['standard'] ?? 'Not Found') . "<br/>";
-                echo "RPD: " . ($ratings['rapid'] ?? 'Not Found') . "<br/>";
-                echo "BTZ: " . ($ratings['blitz'] ?? 'Not Found') . "<br/>";
+                echo "Nome FIDE: {$name}<br/>";
+                echo "STD: " . ($ratings['standard'] ?? 'Not rated') . "<br/>";
+                echo "RPD: " . ($ratings['rapid'] ?? 'Not rated') . "<br/>";
+                echo "BTZ: " . ($ratings['blitz'] ?? 'Not rated') . "<br/>";
             }
 
-            // Atualiza o enxadrista com os ratings
             $enxadrista->encontrado_fide = true;
             $enxadrista->fide_name = $name;
 
-            if ($ratings['standard'] !== null) {
-                if ($save_rating) $enxadrista->setRating($codigo_organizacao, 0, $ratings['standard']);
-            } else {
-                if ($save_rating) $enxadrista->deleteRating($codigo_organizacao, 0);
-            }
-
-            if ($ratings['rapid'] !== null) {
-                if ($save_rating) $enxadrista->setRating($codigo_organizacao, 1, $ratings['rapid']);
-            } else {
-                if ($save_rating) $enxadrista->deleteRating($codigo_organizacao, 1);
-            }
-
-            if ($ratings['blitz'] !== null) {
-                if ($save_rating) $enxadrista->setRating($codigo_organizacao, 2, $ratings['blitz']);
-            } else {
-                if ($save_rating) $enxadrista->deleteRating($codigo_organizacao, 2);
-            }
+            self::applyRatings($enxadrista, $codigo_organizacao, $ratings, $save_rating);
 
             if ($save_rating) {
+                self::syncMetadata($enxadrista, $crawler);
                 $enxadrista->fide_last_update = date("Y-m-d H:i:s");
                 $enxadrista->save();
             }
@@ -361,13 +303,189 @@ class FIDERatingController extends Controller
                 return $enxadrista;
             }
         } catch (\Exception $e) {
-            echo 'Erro ao acessar a página: ' . $e->getMessage();
+            Log::debug("FIDERatingController::getRating - '{$enxadrista->fide_id}' - erro: " . $e->getMessage());
+            if ($show_text) {
+                echo "Erro ao acessar a página: " . $e->getMessage() . "<br/>";
+            }
+            self::markNotFound($enxadrista, $codigo_organizacao, $save_rating);
+
+            return $return_enxadrista ? $enxadrista : null;
         }
 
-        if ($show_text) echo "Enxadrista #" . $enxadrista->id . " - " . $enxadrista->name . " (" . $enxadrista->fide_id . ")<br/>";
-        if ($show_text) echo "<hr/>";
+        if ($show_text) {
+            echo "<hr/>";
+        }
     }
 
+    private static function isPlayerNotFound(Crawler $crawler, string $html): bool
+    {
+        if (stripos($html, 'No record found') !== false) {
+            return true;
+        }
+
+        return $crawler->filter('h1.player-title')->count() === 0;
+    }
+
+    private static function markNotFound(Enxadrista $enxadrista, int $codigo_organizacao, bool $save_rating): void
+    {
+        $enxadrista->encontrado_fide = false;
+        $enxadrista->fide_name = null;
+
+        if (!$save_rating) {
+            return;
+        }
+
+        $enxadrista->deleteRating($codigo_organizacao, 0);
+        $enxadrista->deleteRating($codigo_organizacao, 1);
+        $enxadrista->deleteRating($codigo_organizacao, 2);
+        $enxadrista->fide_last_update = date("Y-m-d H:i:s");
+        $enxadrista->save();
+    }
+
+    private static function extractName(Crawler $crawler): string
+    {
+        return trim($crawler->filter('h1.player-title')->first()->text());
+    }
+
+    private static function extractRatings(Crawler $crawler): array
+    {
+        $selectors = [
+            'standard' => '.profile-standart.profile-game',
+            'rapid' => '.profile-rapid.profile-game',
+            'blitz' => '.profile-blitz.profile-game',
+        ];
+
+        $ratings = [];
+        foreach ($selectors as $key => $selector) {
+            $ratings[$key] = $crawler->filter($selector)->count() > 0
+                ? self::parseRatingValue($crawler->filter($selector)->first())
+                : null;
+        }
+
+        return $ratings;
+    }
+
+    private static function parseRatingValue(Crawler $gameNode): ?int
+    {
+        if ($gameNode->filter('p')->count() === 0) {
+            return null;
+        }
+
+        $text = trim($gameNode->filter('p')->first()->text());
+        if ($text === '' || stripos($text, 'Not rated') !== false) {
+            return null;
+        }
+
+        return is_numeric($text) ? (int) $text : null;
+    }
+
+    private static function applyRatings(Enxadrista $enxadrista, int $codigo_organizacao, array $ratings, bool $save_rating): void
+    {
+        $modalidades = [
+            'standard' => 0,
+            'rapid' => 1,
+            'blitz' => 2,
+        ];
+
+        foreach ($modalidades as $key => $modalidade) {
+            if (!$save_rating) {
+                continue;
+            }
+
+            if (($ratings[$key] ?? null) !== null) {
+                $enxadrista->setRating($codigo_organizacao, $modalidade, $ratings[$key]);
+            } else {
+                $enxadrista->deleteRating($codigo_organizacao, $modalidade);
+            }
+        }
+    }
+
+    private static function syncMetadata(Enxadrista $enxadrista, Crawler $crawler): void
+    {
+        self::syncFideTitle($enxadrista, self::extractText($crawler, '.profile-info-title p'));
+
+        if ($enxadrista->pais_id === null) {
+            $federation = self::extractText($crawler, '.profile-info-country');
+            if ($federation !== null) {
+                $pais = Pais::where('nome_ingles', $federation)->first();
+                if ($pais) {
+                    $enxadrista->pais_id = $pais->id;
+                }
+            }
+        }
+
+        if ($enxadrista->born === null) {
+            $birthYear = self::extractText($crawler, '.profile-info-byear');
+            if ($birthYear !== null && is_numeric($birthYear)) {
+                $enxadrista->born = intval($birthYear) . '-01-01';
+            }
+        }
+
+        if ($enxadrista->sexos_id === null) {
+            $sex = self::extractText($crawler, '.profile-info-sex');
+            if ($sex !== null) {
+                $sexo = Sexo::where('sex_from_import', $sex)->first();
+                if (!$sexo && $sex === 'Male') {
+                    $sexo = Sexo::where('abbr', 'M')->first();
+                } elseif (!$sexo && $sex === 'Female') {
+                    $sexo = Sexo::where('abbr', 'F')->first();
+                }
+                if ($sexo) {
+                    $enxadrista->sexos_id = $sexo->id;
+                }
+            }
+        }
+    }
+
+    private static function extractText(Crawler $crawler, string $selector): ?string
+    {
+        if ($crawler->filter($selector)->count() === 0) {
+            return null;
+        }
+
+        $text = trim($crawler->filter($selector)->first()->text());
+        return $text === '' ? null : $text;
+    }
+
+    private static function syncFideTitle(Enxadrista $enxadrista, ?string $fideTitleText): void
+    {
+        $fideTitleText = $fideTitleText !== null ? trim($fideTitleText) : null;
+
+        if ($fideTitleText === null || strcasecmp($fideTitleText, 'None') === 0) {
+            $enxadrista->titles()->whereHas('title', function ($query) {
+                $query->where('entities_id', self::FIDE_ENTITY_ID);
+            })->delete();
+            return;
+        }
+
+        $abbr = self::FIDE_TITLE_MAP[$fideTitleText] ?? null;
+        if ($abbr === null) {
+            Log::debug("FIDERatingController::syncFideTitle - título FIDE não mapeado: {$fideTitleText}");
+            return;
+        }
+
+        $title = Title::where([
+            ['entities_id', '=', self::FIDE_ENTITY_ID],
+            ['abbr', '=', $abbr],
+        ])->first();
+
+        if (!$title) {
+            Log::debug("FIDERatingController::syncFideTitle - título não encontrado no banco: {$abbr}");
+            return;
+        }
+
+        $enxadrista->titles()->whereHas('title', function ($query) use ($title) {
+            $query->where('entities_id', self::FIDE_ENTITY_ID)
+                ->where('id', '!=', $title->id);
+        })->delete();
+
+        if ($enxadrista->titles()->where('titles_id', $title->id)->count() === 0) {
+            $playerTitle = new PlayerTitle;
+            $playerTitle->players_id = $enxadrista->id;
+            $playerTitle->titles_id = $title->id;
+            $playerTitle->save();
+        }
+    }
 
     private static function getName($html){
         $explode = explode("<td bgcolor=#efefef width=230 height=20>",$html);

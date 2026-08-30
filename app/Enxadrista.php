@@ -824,6 +824,10 @@ class Enxadrista extends Model
             $this->deleteRating($codigo_organizacao,0);
             $this->deleteRating($codigo_organizacao,1);
             $this->deleteRating($codigo_organizacao,2);
+
+            $this->titles()->whereHas("title", function ($query) {
+                $query->where("entities_id", 1);
+            })->delete();
         }
     }
     public function setCBXID($cbx_id = null){
