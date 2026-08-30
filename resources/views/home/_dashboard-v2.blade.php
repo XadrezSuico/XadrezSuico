@@ -55,33 +55,8 @@
                                 @include('components.v2.event-inscricoes-summary', ['evento' => $evento])
                             </td>
                             <td>@if(!$evento->inscricoes_encerradas()) Sim @else <strong>Não</strong> @endif</td>
-                            <td class="space-y-2">
-                                @include('components.v2.btn', [
-                                    'href' => url('/evento/dashboard/' . $evento->id),
-                                    'label' => 'Dashboard',
-                                    'variant' => 'secondary',
-                                    'block' => true,
-                                ])
-                                @if(
-                                    \Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
-                                    \Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id, [4, 5]) ||
-                                    \Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
-                                )
-                                    @include('components.v2.btn', [
-                                        'href' => url('/inscricao/' . $evento->id),
-                                        'label' => 'Nova Inscrição (Interno)',
-                                        'variant' => 'warning',
-                                        'target' => '_blank',
-                                        'block' => true,
-                                    ])
-                                @endif
-                                @include('components.v2.btn', [
-                                    'href' => $evento->getEventPublicLink(),
-                                    'label' => 'Link de Divulgação',
-                                    'variant' => 'success',
-                                    'target' => '_blank',
-                                    'block' => true,
-                                ])
+                            <td>
+                                @include('components.v2.event-table-actions', ['evento' => $evento])
                             </td>
                         </tr>
                     @endif
@@ -137,33 +112,8 @@
                                     <td data-order="{{ $evento->quantosInscritos() }}">
                                         @include('components.v2.event-inscricoes-summary', ['evento' => $evento])
                                     </td>
-                                    <td class="space-y-2">
-                                        @include('components.v2.btn', [
-                                            'href' => url('/evento/dashboard/' . $evento->id),
-                                            'label' => 'Dashboard',
-                                            'variant' => 'secondary',
-                                            'block' => true,
-                                        ])
-                                        @if(
-                                            \Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
-                                            \Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id, [4, 5]) ||
-                                            \Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
-                                        )
-                                            @include('components.v2.btn', [
-                                                'href' => url('/inscricao/' . $evento->id),
-                                                'label' => 'Nova Inscrição (Interno)',
-                                                'variant' => 'warning',
-                                                'target' => '_blank',
-                                                'block' => true,
-                                            ])
-                                        @endif
-                                        @include('components.v2.btn', [
-                                            'href' => $evento->getEventPublicLink(),
-                                            'label' => 'Link de Divulgação',
-                                            'variant' => 'success',
-                                            'target' => '_blank',
-                                            'block' => true,
-                                        ])
+                                    <td>
+                                        @include('components.v2.event-table-actions', ['evento' => $evento])
                                     </td>
                                 </tr>
                             @endif
