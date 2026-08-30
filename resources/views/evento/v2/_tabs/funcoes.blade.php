@@ -24,10 +24,10 @@
     </div>
 @endcomponent
 
-<div class="grid gap-6 lg:grid-cols-2">
+<div class="v2-panel-grid v2-panel-grid--2">
     @component('components.v2.panel', ['title' => 'Inscrições'])
         @if($canInscricao)
-            <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+            <div class="v2-action-grid v2-action-grid--3">
                 @if($evento->layout_version == 2)
                     @include('components.v2.action-card', ['href' => url('/inscricao/' . $evento->id), 'label' => 'Nova Inscrição', 'icon' => $iconPlus, 'variant' => 'success'])
                     @include('components.v2.action-card', ['href' => $evento->getEventPublicLink(), 'label' => 'Link Divulgação', 'icon' => $iconLink, 'variant' => 'primary'])
@@ -81,7 +81,7 @@
 
     @component('components.v2.panel', ['title' => 'Emparceiramento'])
         <p class="mb-4 text-sm text-gray-500">Exporte para o emparceirador ou compartilhe o acompanhamento público.</p>
-        <div class="grid gap-3 sm:grid-cols-2">
+        <div class="v2-action-grid v2-action-grid--2">
             @include('components.v2.action-card', ['href' => url('/evento/' . $evento->id . '/exports/emparceirador'), 'label' => 'Baixar (todas — sem dados)', 'icon' => $iconDownload])
             @include('components.v2.action-card', ['href' => url('/evento/' . $evento->id . '/exports/xadrezsuicoemparceirador/data'), 'label' => 'Baixar (confirmadas — com dados)', 'icon' => $iconDownload])
             @include('components.v2.action-card', ['href' => url('/evento/acompanhar/' . $evento->id), 'label' => 'Acompanhar (público)', 'icon' => $iconEye])
@@ -90,9 +90,9 @@
 </div>
 
 @if($canClassificar)
-    <div class="mt-6 grid gap-6 lg:grid-cols-2">
+    <div class="mt-6 v2-panel-grid v2-panel-grid--2">
         @component('components.v2.panel', ['title' => 'Classificação e resultados'])
-            <div class="grid gap-3 sm:grid-cols-2">
+            <div class="v2-action-grid v2-action-grid--2">
                 @include('components.v2.action-card', ['href' => '/evento/classificar/' . $evento->id, 'label' => 'Classificar Evento', 'icon' => $iconSort, 'variant' => 'success'])
                 @include('components.v2.action-card', ['href' => url('/evento/classificacao/' . $evento->id), 'label' => 'Visualizar Classificação', 'icon' => $iconEye])
             </div>
@@ -104,7 +104,7 @@
                 ])
             </div>
             @if($evento->event_team_awards()->count() > 0)
-                <div class="mt-4 grid gap-3 sm:grid-cols-2">
+                <div class="mt-4 v2-action-grid v2-action-grid--2">
                     @include('components.v2.action-card', ['href' => url('/evento/premiacao_time/classificar/' . $evento->id), 'label' => 'Classificar Times', 'icon' => $iconSort])
                     @include('components.v2.action-card', ['href' => url('/evento/' . $evento->id . '/team_awards/standings'), 'label' => 'Premiações de Times', 'icon' => $iconList])
                 </div>
@@ -148,7 +148,7 @@
 
 @if($canClassificar && ($evento->evento_classificador_id > 0 || $evento->grupo_evento_classificador_id > 0))
     @component('components.v2.panel', ['title' => 'Classificador vinculado'])
-        <div class="grid gap-3 sm:grid-cols-2">
+        <div class="v2-action-grid v2-action-grid--2">
             @if($evento->evento_classificador_id > 0)
                 @include('components.v2.action-card', ['href' => url('/evento/' . $evento->id . '/gerenciamento/torneio_3/import'), 'label' => 'Importar do Evento Classificador', 'icon' => $iconPlus])
             @else
@@ -165,7 +165,7 @@
 
 @if($evento->grupo_evento->hasConfig('is_pr_esporte', true))
     @component('components.v2.panel', ['title' => 'Paraná Esporte'])
-        <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <div class="v2-action-grid v2-action-grid--3">
             @include('components.v2.action-card', ['href' => url('/evento/' . $evento->id . '/imports/ingadigital/file'), 'label' => 'Importar Arquivo', 'icon' => $iconPlus])
             @if($evento->tipo_modalidade == 0)
                 @include('components.v2.action-card', ['href' => url('/evento/' . $evento->id . '/exports/presporte/team'), 'label' => 'Confirmação equipes (.xlsx)', 'icon' => $iconDownload])
@@ -178,7 +178,7 @@
     @endcomponent
 @endif
 
-<div class="mt-6 grid gap-6 lg:grid-cols-2">
+<div class="mt-6 v2-panel-grid v2-panel-grid--2">
     @component('components.v2.panel', ['title' => 'Configurações gerais'])
         <div class="space-y-4">
             @include('components.v2.switch', ['id' => 'toggle_classificavel', 'checked' => $evento->classificavel, 'label' => 'Permitir classificação geral deste evento'])
@@ -187,7 +187,7 @@
     @endcomponent
 
     @component('components.v2.panel', ['title' => 'Relatórios'])
-        <div class="grid gap-3 sm:grid-cols-2">
+        <div class="v2-action-grid v2-action-grid--2">
             @include('components.v2.action-card', ['href' => url('/evento/' . $evento->id . '/relatorios/premiados'), 'label' => 'Enxadristas Premiados', 'icon' => $iconList])
             @if($evento->calcula_cbx || $evento->calcula_fide)
                 @include('components.v2.action-card', ['href' => url('/evento/' . $evento->id . '/relatorios/comparacao-cadastros'), 'label' => 'Comparação de Cadastros', 'icon' => $iconList])

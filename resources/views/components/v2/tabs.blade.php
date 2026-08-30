@@ -3,8 +3,8 @@
     $variant = $variant ?? 'underline';
 @endphp
 
-<nav class="mb-6 border-b border-purple-100" aria-label="Abas">
-    <ul class="-mb-px flex flex-wrap gap-1">
+<nav class="mb-6 overflow-x-auto border-b border-purple-100" aria-label="Abas">
+    <ul class="-mb-px flex min-w-max gap-1">
         @foreach($tabs as $tab)
             <li>
                 <a href="{{ $tab['url'] ?? '#' }}"

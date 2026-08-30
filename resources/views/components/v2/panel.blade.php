@@ -5,6 +5,6 @@
         </div>
     @endif
     <div class="p-4 sm:p-6">
-        {!! $slot ?? '' !!}
+        {{ $slot }}
     </div>
 </div>

@@ -2,8 +2,20 @@
 
 @section('title', 'Dashboard de Evento')
 
+@php
+    $legacyTabIds = [
+        'editar_evento', 'pagina', 'timeline', 'criterio_desempate', 'premiacao_equipe',
+        'categoria', 'categorias_relacionadas', 'evento_filho', 'torneio',
+        'campo_personalizado', 'email_template', 'classificator',
+    ];
+    $isLegacyTab = in_array($tab ?: 'funcoes', $legacyTabIds, true);
+@endphp
+
 @push('styles')
-    @include('layouts.v2.partials.event-legacy-plugins-styles')
+    @if($isLegacyTab)
+        @include('layouts.v2.partials.event-legacy-plugins-styles')
+    @endif
+    @include('layouts.v2.partials.event-v2-native-styles')
     <style>
         .v2-legacy-tab .box { margin-bottom: 1rem; }
         .v2-legacy-tab .btn-app { margin: 0.25rem; }
@@ -28,5 +40,8 @@
 @endsection
 
 @push('scripts')
-    @include('layouts.v2.partials.event-legacy-plugins-scripts')
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    @if($isLegacyTab)
+        @include('layouts.v2.partials.event-legacy-plugins-scripts')
+    @endif
 @endpush

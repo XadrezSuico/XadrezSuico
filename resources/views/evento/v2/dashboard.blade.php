@@ -14,14 +14,14 @@
 @endphp
 
 @section('event-content')
-    @if(isset($v2Tabs[$activeTab]))
-        @include($v2Tabs[$activeTab])
-    @elseif(in_array($activeTab, $legacyTabs, true))
+    @if(in_array($activeTab, $legacyTabs, true))
         <div class="v2-legacy-tab">
             @include('evento._tabs.' . $activeTab)
         </div>
     @else
-        @include('evento.v2._tabs.funcoes')
+        <div class="v2-event-native">
+            @include(isset($v2Tabs[$activeTab]) ? $v2Tabs[$activeTab] : 'evento.v2._tabs.funcoes')
+        </div>
     @endif
 @endsection
 
