@@ -11,7 +11,7 @@
     }
 @endphp
 
-<div class="mb-4 flex flex-wrap items-start justify-between gap-3">
+<div class="v2-event-shell mb-4 flex flex-wrap items-start justify-between gap-3">
     <div>
         @if($evento->parent_event)
             <p class="text-sm text-gray-500">Filho de: {{ $evento->parent_event->name }}</p>

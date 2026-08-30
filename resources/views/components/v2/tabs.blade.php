@@ -3,7 +3,7 @@
     $variant = $variant ?? 'underline';
 @endphp
 
-<nav class="mb-6 overflow-x-auto border-b border-purple-100" aria-label="Abas">
+<nav class="v2-event-shell mb-6 overflow-x-auto border-b border-purple-100" aria-label="Abas">
     <ul class="-mb-px flex min-w-max gap-1">
         @foreach($tabs as $tab)
             <li>

@@ -11,7 +11,7 @@
     $resumeUrl = url('/evento/dashboard/' . $evento->id . '?tab=resume');
 @endphp
 
-<div class="mb-6 overflow-hidden rounded-xl border border-purple-100 bg-white shadow-sm">
+<div class="v2-event-shell mb-6 overflow-hidden rounded-xl border border-purple-100 bg-white shadow-sm">
     <div class="border-t-4 border-brand p-4 sm:p-5">
         <div class="grid gap-4 lg:grid-cols-12 lg:items-center">
             <div class="lg:col-span-4">

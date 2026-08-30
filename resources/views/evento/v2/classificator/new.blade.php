@@ -13,8 +13,6 @@
 @endpush
 
 @push('event-scripts')
-<!-- Morris.js charts -->
-<script type="text/javascript" src="{{url("/js/jquery.mask.min.js")}}"></script>
 <script type="text/javascript">
     $(document).ready(function(){
         $("#event_classificator_id").select2();

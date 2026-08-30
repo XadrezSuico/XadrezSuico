@@ -70,6 +70,25 @@
     }
     @media (min-width: 1024px) {
         .v2-event-native .v2-panel-grid--2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .v2-event-native .v2-panel-grid--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    }
+    .v2-event-native .v2-stat-grid {
+        display: grid;
+        gap: 1rem;
+    }
+    @media (min-width: 640px) {
+        .v2-event-native .v2-stat-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .v2-event-native .v2-btn-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (min-width: 1024px) {
+        .v2-event-native .v2-btn-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    }
+    @media (min-width: 1280px) {
+        .v2-event-native .v2-stat-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    }
+    .v2-event-native .v2-btn-grid {
+        display: grid;
+        gap: 0.75rem;
     }
     .v2-event-native .mt-3 { margin-top: 0.75rem; }
     .v2-event-native .mt-4 { margin-top: 1rem; }

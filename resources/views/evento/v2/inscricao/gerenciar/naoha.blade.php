@@ -16,7 +16,6 @@
 @push('scripts')
     <script src="{{ asset('vendor/adminlte/vendor/jquery/dist/jquery.min.js') }}"></script>
     <script src="{{ asset('vendor/adminlte/vendor/bootstrap/dist/js/bootstrap.min.js') }}"></script>
-    <script type="text/javascript" src="{{ url('/js/jquery.mask.min.js') }}"></script>
     <script type="text/javascript">
         $(document).ready(function () {
             $('#alerts').modal();

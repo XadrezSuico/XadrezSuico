@@ -8,6 +8,29 @@ use Illuminate\Support\Facades\Auth;
 class EventDashboardTabs
 {
     /**
+     * Abas da dashboard que ainda usam markup AdminLTE/Bootstrap legado.
+     *
+     * @return array<int, string>
+     */
+    public static function legacyTabIds(): array
+    {
+        return [
+            'editar_evento',
+            'pagina',
+            'timeline',
+            'criterio_desempate',
+            'premiacao_equipe',
+            'categoria',
+            'categorias_relacionadas',
+            'evento_filho',
+            'torneio',
+            'campo_personalizado',
+            'email_template',
+            'classificator',
+        ];
+    }
+
+    /**
      * @return array<int, array{id: string, label: string, url: string, active: bool}>
      */
     public static function forEvent(Evento $evento, ?string $activeTab = null): array

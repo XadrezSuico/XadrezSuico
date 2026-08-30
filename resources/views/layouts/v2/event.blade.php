@@ -3,24 +3,18 @@
 @section('title', 'Dashboard de Evento')
 
 @php
-    $legacyTabIds = [
-        'editar_evento', 'pagina', 'timeline', 'criterio_desempate', 'premiacao_equipe',
-        'categoria', 'categorias_relacionadas', 'evento_filho', 'torneio',
-        'campo_personalizado', 'email_template', 'classificator',
-    ];
-    $isLegacyTab = in_array($tab ?: 'funcoes', $legacyTabIds, true);
+    use App\Support\EventDashboardTabs;
+
+    $isLegacyTab = in_array($tab ?: 'funcoes', EventDashboardTabs::legacyTabIds(), true);
 @endphp
 
 @push('styles')
     @if($isLegacyTab)
         @include('layouts.v2.partials.event-legacy-plugins-styles')
+        @include('layouts.v2.partials.event-shell-protect-styles')
     @endif
     @include('layouts.v2.partials.event-v2-native-styles')
-    <style>
-        .v2-legacy-tab .box { margin-bottom: 1rem; }
-        .v2-legacy-tab .btn-app { margin: 0.25rem; }
-        .v2-legacy-tab .form-control { max-width: 100%; }
-    </style>
+    @include('layouts.v2.partials.event-legacy-scoped-styles')
 @endpush
 
 @section('content')

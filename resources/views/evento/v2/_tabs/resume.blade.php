@@ -22,7 +22,7 @@
 
 @include('evento.v2._partials.dashboard_alerts', ['compact' => false, 'alert_collapse_id' => 'resume'])
 
-<div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+<div class="v2-stat-grid">
     @foreach([
         ['value' => $totals['inscritos'], 'label' => 'Inscritos', 'tone' => 'aqua', 'icon' => 'users'],
         ['value' => $totals['confirmados'], 'label' => 'Confirmados', 'tone' => 'green', 'icon' => 'check'],
@@ -41,7 +41,7 @@
 </div>
 
 @component('components.v2.panel', ['title' => 'Atalhos rápidos'])
-    <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+    <div class="v2-btn-grid">
         @if(
             \Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
             \Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id, [4, 5]) ||
@@ -62,7 +62,7 @@
     </div>
 @endcomponent
 
-<div class="grid gap-6 lg:grid-cols-3">
+<div class="v2-panel-grid v2-panel-grid--3">
     @component('components.v2.panel', ['title' => 'Funil de inscrições'])
         @if($totals['inscritos'] === 0)
             <p class="text-sm text-gray-500">Nenhum inscrito registrado neste evento.</p>

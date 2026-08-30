@@ -1,20 +1,17 @@
 @extends('layouts.v2.event')
 
 @php
+    use App\Support\EventDashboardTabs;
+
     $activeTab = $tab ?: 'funcoes';
     $v2Tabs = [
         'funcoes' => 'evento.v2._tabs.funcoes',
         'resume' => 'evento.v2._tabs.resume',
     ];
-    $legacyTabs = [
-        'editar_evento', 'pagina', 'timeline', 'criterio_desempate', 'premiacao_equipe',
-        'categoria', 'categorias_relacionadas', 'evento_filho', 'torneio',
-        'campo_personalizado', 'email_template', 'classificator',
-    ];
 @endphp
 
 @section('event-content')
-    @if(in_array($activeTab, $legacyTabs, true))
+    @if(in_array($activeTab, EventDashboardTabs::legacyTabIds(), true))
         <div class="v2-legacy-tab">
             @include('evento._tabs.' . $activeTab)
         </div>

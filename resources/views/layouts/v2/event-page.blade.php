@@ -4,11 +4,9 @@
 
 @push('styles')
     @include('layouts.v2.partials.event-legacy-plugins-styles')
+    @include('layouts.v2.partials.event-shell-protect-styles')
     @include('layouts.v2.partials.event-v2-native-styles')
-    <style>
-        .v2-legacy-content .box { margin-bottom: 1rem; }
-        .v2-legacy-content .form-control { max-width: 100%; }
-    </style>
+    @include('layouts.v2.partials.event-legacy-scoped-styles')
 @endpush
 
 @section('content')
@@ -17,7 +15,7 @@
     @endif
 
     @if(!empty($pageTitle))
-        <h2 class="mb-4 text-lg font-semibold text-brand-dark">{{ $pageTitle }}</h2>
+        <h2 class="v2-event-shell mb-4 text-lg font-semibold text-brand-dark">{{ $pageTitle }}</h2>
     @endif
 
     <div class="v2-legacy-content">
