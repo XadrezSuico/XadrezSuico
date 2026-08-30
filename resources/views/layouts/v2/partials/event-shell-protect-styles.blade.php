@@ -1,5 +1,23 @@
 <style>
-    /* Protege sidebar, topbar e cabeçalho v2 contra resets globais do Bootstrap 3 */
+    /* Reverte efeitos globais de Bootstrap 3 + AdminLTE no shell v2 */
+    html {
+        height: auto !important;
+    }
+
+    body.bg-brand-surface {
+        height: auto !important;
+        min-height: 100%;
+        overflow-x: hidden !important;
+        overflow-y: auto !important;
+        font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
+        font-weight: 400 !important;
+        color: #1f2937 !important;
+    }
+
+    #v2-app {
+        min-height: 100vh;
+    }
+
     #v2-sidebar,
     #v2-sidebar *,
     #v2-app > div > header,
@@ -15,6 +33,12 @@
         text-decoration: none;
     }
 
+    #v2-sidebar .btn,
+    #v2-app > div > header .btn,
+    .v2-event-shell .btn {
+        all: unset;
+    }
+
     .v2-event-shell h1,
     .v2-event-shell h2 {
         margin-top: 0;
@@ -26,5 +50,11 @@
         background-image: none;
         box-shadow: none;
         text-shadow: none;
+    }
+
+    #v2-app > div > main,
+    #v2-app > div > footer {
+        margin-left: 0 !important;
+        z-index: auto;
     }
 </style>

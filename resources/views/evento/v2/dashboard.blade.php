@@ -13,7 +13,9 @@
 @section('event-content')
     @if(in_array($activeTab, EventDashboardTabs::legacyTabIds(), true))
         <div class="v2-legacy-tab">
-            @include('evento._tabs.' . $activeTab)
+            <div class="row">
+                @include('evento._tabs.' . $activeTab)
+            </div>
         </div>
     @else
         <div class="v2-event-native">
