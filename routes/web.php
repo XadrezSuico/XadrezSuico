@@ -43,8 +43,9 @@ Route::post('/register', function(){
 // })->name('register.post');
 
 
+Route::get('/home-legacy', 'HomeController@indexLegacy')->name('home.legacy');
 Route::get('/home', 'HomeController@index')->name('home');
-Route::get('/home2', 'HomeController@indexV2')->name('home2');
+Route::redirect('/home2', '/home', 301);
 Route::get('/cron', 'CronController@index')->name('cron');
 
 

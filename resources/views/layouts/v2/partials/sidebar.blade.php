@@ -7,7 +7,7 @@
 
 <aside id="v2-sidebar" class="fixed inset-y-0 left-0 z-40 w-64 -translate-x-full transform bg-brand-sidebar text-white transition-transform duration-200 lg:translate-x-0">
     <div class="flex h-16 items-center border-b border-white/10 px-4">
-        <a href="{{ url('/home2') }}" class="truncate text-lg font-semibold text-white">
+        <a href="{{ url('/home') }}" class="truncate text-lg font-semibold text-white">
             <span class="lg:hidden">{{ $logoMini }}</span>
             <span class="hidden lg:inline">{{ $logoName }}</span>
             @if($companyHtml)

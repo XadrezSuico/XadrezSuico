@@ -86,11 +86,15 @@ $(document).ready(function () {
         });
     @endif
 
-    @if($evento->classificador && $('#evento_classificador_id').length)
-        $('#evento_classificador_id').val([{{ $evento->classificador->id }}]).change();
+    @if($evento->classificador)
+        if ($('#evento_classificador_id').length) {
+            $('#evento_classificador_id').val([{{ $evento->classificador->id }}]).change();
+        }
     @endif
-    @if($evento->grupo_evento_classificador && $('#grupo_evento_classificador_id').length)
-        $('#grupo_evento_classificador_id').val([{{ $evento->grupo_evento_classificador->id }}]).change();
+    @if($evento->grupo_evento_classificador)
+        if ($('#grupo_evento_classificador_id').length) {
+            $('#grupo_evento_classificador_id').val([{{ $evento->grupo_evento_classificador->id }}]).change();
+        }
     @endif
 
     if ($('#tabela_torneio').length) {

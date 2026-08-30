@@ -17,7 +17,7 @@ class HomeController extends Controller
     }
 
     /**
-     * Show the application dashboard.
+     * Show the application dashboard (layout v2).
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
@@ -27,12 +27,12 @@ class HomeController extends Controller
     }
 
     /**
-     * Show the v2 layout dashboard pilot.
+     * Show the legacy AdminLTE dashboard.
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function indexV2()
+    public function indexLegacy()
     {
-        return view('home2');
+        return view('home-legacy');
     }
 }

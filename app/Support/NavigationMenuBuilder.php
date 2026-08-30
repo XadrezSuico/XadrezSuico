@@ -31,8 +31,8 @@ class NavigationMenuBuilder
 
             $items[] = [
                 'type' => 'link',
-                'label' => 'Dashboard (novo)',
-                'url' => '/home2',
+                'label' => 'Dashboard',
+                'url' => '/home',
                 'icon' => 'dashboard',
             ];
 
