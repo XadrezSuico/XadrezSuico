@@ -163,8 +163,9 @@ class Enxadrista extends Model
         $str = self::removeAccents((string) $text);
         $str = preg_replace('/[^a-z0-9\s]/', ' ', $str);
         $str = preg_replace('/\s+/', ' ', $str);
+        $str = trim($str);
 
-        return mb_strtoupper(trim($str));
+        return mb_convert_case($str, MB_CASE_TITLE, 'UTF-8');
     }
 
     private static function removeAccents($str)
@@ -184,16 +185,23 @@ class Enxadrista extends Model
     {
         $parts = explode(' ', trim($firstname));
         $abbreviated = [];
+        $firstNameKept = false;
 
         foreach ($parts as $part) {
             if ($part === '') {
                 continue;
             }
 
-            if (Util::ePreposicao($part)) {
+            if (Util::ePreposicao(mb_strtoupper($part))) {
                 $abbreviated[] = $part;
+                continue;
+            }
+
+            if (!$firstNameKept) {
+                $abbreviated[] = $part;
+                $firstNameKept = true;
             } else {
-                $abbreviated[] = mb_substr($part, 0, 1);
+                $abbreviated[] = mb_strtoupper(mb_substr($part, 0, 1));
             }
         }
 
