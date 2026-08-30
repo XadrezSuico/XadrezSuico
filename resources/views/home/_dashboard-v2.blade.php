@@ -52,27 +52,7 @@
                                 @endif
                             </td>
                             <td data-order="{{ $evento->quantosInscritos() }}">
-                                Total de Inscritos: {{ $evento->quantosInscritos() }}@if($evento->maximo_inscricoes_evento)/{{ $evento->maximo_inscricoes_evento }}@endif<br/>
-                                @if(
-                                    \Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
-                                    \Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id, [4, 5]) ||
-                                    \Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
-                                )
-                                    Confirmados: {{ $evento->quantosInscritosConfirmados() }}<br/>
-                                    Presentes: {{ $evento->quantosInscritosPresentes() }}
-                                    <hr class="my-2 border-purple-100"/>
-                                    @if($evento->is_lichess_integration)
-                                        <strong>Torneio Lichess.org</strong><br/>
-                                        Inscritos: <strong>{{ $evento->quantosInscritosConfirmadosLichess() }}</strong><br/>
-                                        Não Inscritos: <strong>{{ $evento->quantosInscritosFaltamLichess() }}</strong>
-                                    @endif
-                                    @if($evento->xadrezsuicopag_uuid)
-                                        <strong>Pagamento:</strong><br/>
-                                        Pagos: <strong>{{ $evento->howManyPaid() }}</strong><br/>
-                                        Pagamento Pendente: <strong>{{ $evento->howManyNotPaid() }}</strong><br/>
-                                        Gratuidades (Categorias Gratuitas): <strong>{{ $evento->howManyFree() }}</strong>
-                                    @endif
-                                @endif
+                                @include('components.v2.event-inscricoes-summary', ['evento' => $evento])
                             </td>
                             <td>@if(!$evento->inscricoes_encerradas()) Sim @else <strong>Não</strong> @endif</td>
                             <td class="space-y-2">
@@ -155,21 +135,7 @@
                                         @endif
                                     </td>
                                     <td data-order="{{ $evento->quantosInscritos() }}">
-                                        Total de Inscritos: {{ $evento->quantosInscritos() }}@if($evento->maximo_inscricoes_evento)/{{ $evento->maximo_inscricoes_evento }}@endif<br/>
-                                        @if(
-                                            \Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
-                                            \Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id, [4, 5]) ||
-                                            \Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
-                                        )
-                                            Confirmados: {{ $evento->quantosInscritosConfirmados() }}<br/>
-                                            Presentes: {{ $evento->quantosInscritosPresentes() }}
-                                            <hr class="my-2 border-purple-100"/>
-                                            @if($evento->is_lichess_integration)
-                                                <strong>Torneio Lichess.org</strong><br/>
-                                                Inscritos: <strong>{{ $evento->quantosInscritosConfirmadosLichess() }}</strong><br/>
-                                                Não Inscritos: <strong>{{ $evento->quantosInscritosFaltamLichess() }}</strong>
-                                            @endif
-                                        @endif
+                                        @include('components.v2.event-inscricoes-summary', ['evento' => $evento])
                                     </td>
                                     <td class="space-y-2">
                                         @include('components.v2.btn', [
