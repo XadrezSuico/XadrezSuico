@@ -1,0 +1,16 @@
+@import "tailwindcss";
+
+@source "../../views/layouts/v2/**/*.blade.php";
+@source "../../views/components/v2/**/*.blade.php";
+@source "../../views/home/**/*.blade.php";
+@source "../../views/home2.blade.php";
+
+/* Rebuild: npm run build:v2-css  |  Watch: npm run watch:v2-css */
+
+@theme {
+    --color-brand: #6B21A8;
+    --color-brand-light: #9333EA;
+    --color-brand-dark: #581C87;
+    --color-brand-surface: #F5F3FF;
+    --color-brand-sidebar: #4C1D95;
+}

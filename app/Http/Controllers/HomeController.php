@@ -25,4 +25,14 @@ class HomeController extends Controller
     {
         return view('home');
     }
+
+    /**
+     * Show the v2 layout dashboard pilot.
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function indexV2()
+    {
+        return view('home2');
+    }
 }

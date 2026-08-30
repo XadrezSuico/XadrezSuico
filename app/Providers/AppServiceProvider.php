@@ -2,10 +2,10 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\ServiceProvider;
+use App\Support\NavigationMenuBuilder;
 use Illuminate\Contracts\Events\Dispatcher;
+use Illuminate\Support\ServiceProvider;
 use JeroenNoten\LaravelAdminLte\Events\BuildingMenu;
-use Illuminate\Support\Facades\Auth;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -26,120 +26,28 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(Dispatcher $events)
     {
-        if(env("IS_HTTPS",false)) {
+        if (env('IS_HTTPS', false)) {
             \URL::forceScheme('https');
         }
-		$events->listen(BuildingMenu::class, function (BuildingMenu $event) {
-            $event->menu->add("ACESSO PÚBLICO");
-            if(env("SHOW_RATING",false)){
-                $event->menu->add([
-                    'text' => 'Ratings',
-                    'url'  => '/rating',
-                    'icon' => 'star'
-                ]);
-            }
-            if(Auth::check()){
-                $user = Auth::user();
-                $event->menu->add("ACESSO RESTRITO");
-                if(
-                    $user->hasPermissionGlobal() ||
-                    $user->hasPermissionGlobalbyPerfil([9])
-                ){
-                    $event->menu->add([
-                        'text' => 'Enxadristas',
-                        'url'  => '/enxadrista',
-                        'icon' => 'user'
-                    ]);
-                }
 
-                if(
-                    $user->hasPermissionGlobal() ||
-                    $user->hasPermissionEventsByPerfil([3,4,5]) ||
-                    $user->hasPermissionGroupEventsByPerfil([6,7])
-                ){
-                    $event->menu->add([
-                        'text' => 'Grupos de Evento',
-                        'url'  => '/grupoevento',
-                        'icon' => 'th-large'
-                    ]);
-                }
-                $event->menu->add("ADMINSTRAÇÃO");
-                if(
-                    $user->hasPermissionGlobal() ||
-                    $user->hasPermissionGlobalbyPerfil([8])
-                ){
-                    $event->menu->add([
-                        'text' => 'Cidades',
-                        'url'  => '/cidade',
-                        'icon' => 'map-marker'
-                    ]);
-                    $event->menu->add([
-                        'text' => 'Clubes',
-                        'url'  => '/clube',
-                        'icon' => 'building'
-                    ]);
-                }
-                if(
-                    $user->hasPermissionGlobal()
-                ){
-                    $event->menu->add([
-                        'text' => 'Sexos',
-                        'url'  => '/sexo',
-                        'icon' => 'user'
-                    ]);
-                    $event->menu->add([
-                        'text' => 'Tipo de Rating',
-                        'url'  => '/tiporating',
-                        'icon' => 'star'
-                    ]);
-                    $event->menu->add([
-                        'text' => 'Template de E-mail',
-                        'url'  => '/emailtemplate',
-                        'icon' => 'envelope'
-                    ]);
-                }
-                if(
-                    $user->hasPermissionGlobal() ||
-                    $user->hasPermissionGroupEventsByPerfil([7])
-                ){
-                    $event->menu->add([
-                        'text' => 'Usuários',
-                        'url'  => '/usuario',
-                        'icon' => 'users'
-                    ]);
-                };
-            }
-            if(env("ENTITY_DOMAIN",NULL) == "fexpar.com.br"){
-                $event->menu->add("FEXPAR");
-                if(Auth::check()){
-                    if(
-                        $user->hasPermissionGlobalByPerfil([10])
-                    ){
+        $events->listen(BuildingMenu::class, function (BuildingMenu $event) {
+            $builder = new NavigationMenuBuilder();
+
+            foreach ($builder->build() as $item) {
+                if (is_array($item)) {
+                    if (($item['type'] ?? null) === 'header') {
+                        $event->menu->add($item['label']);
+                        continue;
+                    }
+
+                    if (($item['type'] ?? null) === 'link') {
                         $event->menu->add([
-                            'text' => 'Gerenciar Vínculos',
-                            'url'  => '/fexpar/vinculos',
-                            'icon' => 'id-card'
+                            'text' => $item['label'],
+                            'url' => $item['url'],
+                            'icon' => $item['icon'],
                         ]);
                     }
                 }
-                $event->menu->add([
-                    'text' => 'Enxadristas',
-                    'url'  => '/especiais/fexpar/todos_enxadristas',
-                    'icon' => 'users'
-                ]);
-                $event->menu->add([
-                    'text' => 'Vínculos Federativos',
-                    'url'  => '/especiais/fexpar/vinculos',
-                    'icon' => 'id-card'
-                ]);
-            }
-            if(Auth::check()){
-                $event->menu->add(mb_strtoupper(config("xadrezsuico.name", "XadrezSuíço")));
-                $event->menu->add([
-                    'text' => 'O que há de novo?',
-                    'url'  => '/whatsnew',
-                    'icon' => 'certificate'
-                ]);
             }
         });
     }

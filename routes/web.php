@@ -44,6 +44,7 @@ Route::post('/register', function(){
 
 
 Route::get('/home', 'HomeController@index')->name('home');
+Route::get('/home2', 'HomeController@indexV2')->name('home2');
 Route::get('/cron', 'CronController@index')->name('cron');
 
 
