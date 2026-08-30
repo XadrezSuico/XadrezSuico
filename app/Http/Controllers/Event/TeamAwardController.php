@@ -22,7 +22,7 @@ class TeamAwardController extends Controller
 
         $retornos = array();
         $evento = Evento::find($evento_id);
-        return view("evento.times.classificar", compact("evento"));
+        return view("evento.v2.times.classificar", compact("evento"));
     }
 
     public function classificar_call($evento_id, $time_awards_id, $action)

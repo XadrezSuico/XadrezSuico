@@ -4,6 +4,7 @@
 @source "../../views/components/v2/**/*.blade.php";
 @source "../../views/home/**/*.blade.php";
 @source "../../views/home2.blade.php";
+@source "../../views/evento/v2/**/*.blade.php";
 @source "../../views/auth/login.blade.php";
 
 /* Rebuild: npm run build:v2-css  |  Watch: npm run watch:v2-css */

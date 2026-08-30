@@ -31,7 +31,7 @@ class ClassificateEventController extends Controller
             return redirect("/");
         }
 
-        return view("evento.classificator.new", compact("evento"));
+        return view("evento.v2.classificator.new", compact("evento"));
     }
     public function new_post($event_id, Request $request)
     {
@@ -86,7 +86,7 @@ class ClassificateEventController extends Controller
 
         $event_classificate = $evento->event_classificators()->where([["id", "=", $id]])->first();
 
-        return view("evento.classificator.edit", compact("evento", "event_classificate"));
+        return view("evento.v2.classificator.edit", compact("evento", "event_classificate"));
     }
     public function edit_post($event_id, $id, Request $request)
     {

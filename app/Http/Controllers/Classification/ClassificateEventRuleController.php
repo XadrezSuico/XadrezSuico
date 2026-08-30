@@ -60,7 +60,9 @@ class ClassificateEventRuleController extends Controller
             }
         }
 
-        return view("classificator.rule.new", compact("event_classificates","element"));
+        $evento = $type === "event" ? $element : null;
+
+        return view("evento.v2.classificator.rule.new", compact("event_classificates", "element", "evento"));
     }
     public function new_post($type, $element_id, $event_classificates_id, Request $request)
     {
@@ -180,7 +182,9 @@ class ClassificateEventRuleController extends Controller
 
         $event_classificate_rule = $event_classificates->rules()->where([["id", "=", $id]])->first();
 
-        return view("classificator.rule.edit", compact("event_classificates", "element", "event_classificate_rule"));
+        $evento = $type === "event" ? $element : null;
+
+        return view("evento.v2.classificator.rule.edit", compact("event_classificates", "element", "event_classificate_rule", "evento"));
     }
     public function edit_post($type, $element_id, $event_classificates_id, $id, Request $request)
     {

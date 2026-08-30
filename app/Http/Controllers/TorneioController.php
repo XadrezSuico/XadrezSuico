@@ -73,7 +73,7 @@ class TorneioController extends Controller
 
         $tipos_torneio = TipoTorneio::all();
         $softwares = Software::all();
-        return view('evento.torneio.new', compact("evento", "tipos_torneio","softwares"));
+        return view('evento.v2.torneio.new', compact("evento", "tipos_torneio","softwares"));
     }
     public function new_post($id, Request $request)
     {
@@ -116,7 +116,7 @@ class TorneioController extends Controller
         $tipos_torneio = TipoTorneio::all();
         $softwares = Software::all();
         $categorias = Categoria::whereIn("id", $categorias_id)->get();
-        return view('evento.torneio.edit', compact("torneio", "tipos_torneio", "categorias","softwares"));
+        return view('evento.v2.torneio.edit', compact("torneio", "tipos_torneio", "categorias","softwares", "evento"));
     }
     public function edit_post($id, $torneio_id, Request $request)
     {
@@ -194,7 +194,7 @@ class TorneioController extends Controller
 
         $torneio = Torneio::find($torneio_id);
         $torneios = $torneio->evento->torneios()->where([["id", "!=", $torneio->id]])->get();
-        return view('evento.torneio.union', compact("torneio", "torneios", "evento"));
+        return view('evento.v2.torneio.union', compact("torneio", "torneios", "evento"));
     }
     public function union_post($id, $torneio_id, Request $request)
     {
@@ -256,7 +256,7 @@ class TorneioController extends Controller
         }
 
         $torneio = Torneio::find($torneio_id);
-        return view('evento.torneio.migrate_to_new_event', compact("torneio", "evento"));
+        return view('evento.v2.torneio.migrate_to_new_event', compact("torneio", "evento"));
     }
     public function migrate_to_new_event__execute($id, $torneio_id, Request $request)
     {
@@ -394,7 +394,7 @@ class TorneioController extends Controller
 
         $torneio = Torneio::find($torneio_id);
         $categoria = $torneio->categorias()->where([["id","=",$categoria_id]])->first();
-        return view('evento.torneio.categoria.transfer', compact("torneio", "categoria", "evento"));
+        return view('evento.v2.torneio.categoria.transfer', compact("torneio", "categoria", "evento"));
     }
     public function categoria_transfer_post($id, $torneio_id, $categoria_id, Request $request)
     {

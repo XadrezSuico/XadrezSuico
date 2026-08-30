@@ -34,7 +34,7 @@ class ImportController extends Controller
             return redirect("/evento/dashboard/" . $evento->id);
         }
 
-        return view("evento.import.ingadigital.resultados_send", compact("evento"));
+        return view("evento.v2.import.ingadigital.resultados_send", compact("evento"));
     }
 
     public function importInga($id, Request $request)

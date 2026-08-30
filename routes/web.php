@@ -142,6 +142,7 @@ Route::group(["prefix" => "classificator/{type}/{element_id}"], function () {
 });
 
 Route::group(["prefix"=>"evento"],function(){
+	Route::get('/dashboard-legacy/{id}', 'EventoGerenciarController@editLegacy')->name('evento.dashboard.legacy');
 	Route::get('/dashboard/{id}', 'EventoGerenciarController@edit')->name('evento.dashboard');
 	Route::post('/dashboard/{id}', 'EventoGerenciarController@edit_post')->name('evento.dashboard.post');
 	Route::post('/{id}/pagina', 'EventoGerenciarController@edit_pagina_post')->name('evento.dashboard.pagina.post');

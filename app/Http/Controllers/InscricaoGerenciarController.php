@@ -47,7 +47,7 @@ class InscricaoGerenciarController extends Controller
 
         $torneio = Torneio::find($torneio_id);
         $inscricoes = $torneio->inscricoes->all();
-        return view("evento.torneio.inscricao.index", compact("evento", "torneio", "inscricoes"));
+        return view("evento.v2.torneio.inscricao.index", compact("evento", "torneio", "inscricoes"));
     }
 
     public function edit($id, $torneio_id, $inscricao_id)
@@ -69,7 +69,7 @@ class InscricaoGerenciarController extends Controller
         } else {
             $criterios = $torneio->getCriteriosManuais();
         }
-        return view("evento.torneio.inscricao.edit", compact("evento", "torneio", "inscricao", "criterios"));
+        return view("evento.v2.torneio.inscricao.edit", compact("evento", "torneio", "inscricao", "criterios"));
     }
 
     public function edit_post($id, $torneio_id, $inscricao_id, Request $request)
@@ -1640,9 +1640,9 @@ class InscricaoGerenciarController extends Controller
 
         $sexos = Sexo::all();
         if ($evento) {
-            return view("inscricao.gerenciar.inscricao", compact("evento", "sexos"));
+            return view("evento.v2.inscricao.gerenciar.inscricao", compact("evento", "sexos"));
         } else {
-            return view("inscricao.gerenciar.naoha");
+            return view("evento.v2.inscricao.gerenciar.naoha");
         }
     }
 
@@ -2188,9 +2188,9 @@ class InscricaoGerenciarController extends Controller
         }
 
         if ($evento) {
-            return view("inscricao.gerenciar.confirmar", compact("evento"));
+            return view("evento.v2.inscricao.gerenciar.confirmar", compact("evento"));
         } else {
-            return view("inscricao.gerenciar.naoha");
+            return view("evento.v2.inscricao.gerenciar.naoha");
         }
     }
     public function buscaEnxadristaParaConfirmacao($id, Request $request)

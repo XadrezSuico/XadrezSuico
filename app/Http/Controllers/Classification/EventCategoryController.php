@@ -38,7 +38,7 @@ class EventCategoryController extends Controller
             return redirect("/home")->withErrors($messageBag);
         }
 
-        return view("evento.classificator.category.new", compact("evento"));
+        return view("evento.v2.classificator.category.new", compact("evento"));
     }
     public function new_post($event_id, Request $request)
     {
@@ -113,7 +113,7 @@ class EventCategoryController extends Controller
             return redirect()->back()->withErrors($messageBag);
         }
 
-        return view("evento.classificator.category.edit", compact("evento", "event_classificate_category"));
+        return view("evento.v2.classificator.category.edit", compact("evento", "event_classificate_category"));
     }
     public function edit_post($event_id, $id, Request $request)
     {

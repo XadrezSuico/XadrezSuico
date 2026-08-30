@@ -182,7 +182,8 @@ class EventTeamAwardManageController extends Controller
             return redirect("/evento/dashboard/{$id}?tab=premiacao_equipe");
         }
 
-        return view("team_award.edit", $this->editViewData(
+        return view("evento.v2.team_award.edit", array_merge(
+            $this->editViewData(
             $team_award,
             "evento",
             $evento,
@@ -190,7 +191,7 @@ class EventTeamAwardManageController extends Controller
             $award_id,
             $user,
             $evento->grupo_evento->categorias()->orderBy("name", "ASC")->get()
-        ));
+        ), ['evento' => $evento]));
     }
 
     public function event_edit_post($id, $award_id, Request $request)

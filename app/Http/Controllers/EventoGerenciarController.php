@@ -32,6 +32,7 @@ use App\Enum\ConfigType;
 use App\Exports\EnxadristasInscritosFromView;
 use App\Helper\SingletonValueHelper;
 use App\Helper\NameComparisonHelper;
+use App\Support\EventDashboardTabs;
 use App\Torneio;
 use Log;
 
@@ -58,6 +59,41 @@ class EventoGerenciarController extends Controller
 
     public function edit($id, Request $request)
     {
+        return $this->editV2($id, $request);
+    }
+
+    public function editLegacy($id, Request $request)
+    {
+        return $this->renderDashboard($id, $request, 'evento.edit');
+    }
+
+    public function editV2($id, Request $request)
+    {
+        $data = $this->loadDashboardContext($id, $request);
+
+        if ($data instanceof \Illuminate\Http\RedirectResponse) {
+            return $data;
+        }
+
+        $data['event_tabs'] = EventDashboardTabs::forEvent($data['evento'], $data['tab'] ?: 'funcoes');
+        $data['show_kpi_strip'] = true;
+
+        return view('evento.v2.dashboard', $data);
+    }
+
+    private function renderDashboard($id, Request $request, $view)
+    {
+        $data = $this->loadDashboardContext($id, $request);
+
+        if ($data instanceof \Illuminate\Http\RedirectResponse) {
+            return $data;
+        }
+
+        return view($view, $data);
+    }
+
+    private function loadDashboardContext($id, Request $request)
+    {
         $user = Auth::user();
         $evento = Evento::with([
             'torneios.inscricoes',
@@ -66,7 +102,7 @@ class EventoGerenciarController extends Controller
         if (
             !$user->hasPermissionGlobal() &&
             !$user->hasPermissionEventByPerfil($id, [3, 4]) &&
-            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [6,7])
+            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [6, 7])
         ) {
             return redirect("/");
         }
@@ -85,35 +121,30 @@ class EventoGerenciarController extends Controller
         $tipos_torneio = TipoTorneio::all();
         $softwares = Software::all();
         $tipos_rating = TipoRating::all();
-        if ($request->has("tab")) {
-            $tab = $request->input("tab");
-        } else {
-            $tab = null;
-        }
+        $tab = $request->has("tab") ? $request->input("tab") : null;
         $this->importEmailTemplates($evento->id);
 
         $xadrezsuicopag_controller = null;
-        if(
-            env("XADREZSUICOPAG_URI",null) &&
-            env("XADREZSUICOPAG_SYSTEM_ID",null) &&
-            env("XADREZSUICOPAG_SYSTEM_TOKEN",null) &&
-            $user->hasPermissionGlobalbyPerfil([1,10,11,12])
-        ){
+        if (
+            env("XADREZSUICOPAG_URI", null) &&
+            env("XADREZSUICOPAG_SYSTEM_ID", null) &&
+            env("XADREZSUICOPAG_SYSTEM_TOKEN", null) &&
+            $user->hasPermissionGlobalbyPerfil([1, 10, 11, 12])
+        ) {
             $xadrezsuicopag_controller = XadrezSuicoPagController::getInstance();
         }
 
-        return view('evento.edit', compact(
-                                            "evento",
-                                            "categorias",
-                                            "criterios_desempate",
-                                            "tipos_torneio",
-                                            "softwares",
-                                            "tipos_rating",
-                                            "tab",
-                                            "xadrezsuicopag_controller",
-                                            "dashboard_stats",
-                                            "dashboard_alerts"
-                                    )
+        return compact(
+            "evento",
+            "categorias",
+            "criterios_desempate",
+            "tipos_torneio",
+            "softwares",
+            "tipos_rating",
+            "tab",
+            "xadrezsuicopag_controller",
+            "dashboard_stats",
+            "dashboard_alerts"
         );
     }
 
@@ -1149,7 +1180,7 @@ class EventoGerenciarController extends Controller
                 }
             }
 
-            return view("evento.inscricoes", compact("evento"));
+            return view("evento.v2.inscricoes", compact("evento"));
         }
         return redirect("/evento");
     }
@@ -1270,7 +1301,7 @@ class EventoGerenciarController extends Controller
 
         $evento = Evento::find($id);
         if ($evento) {
-            return view("evento.relatorios.premiados", compact("evento"));
+            return view("evento.v2.relatorios.premiados", compact("evento"));
         }
         return redirect("/evento");
     }
@@ -1339,6 +1370,6 @@ class EventoGerenciarController extends Controller
             });
         }
 
-        return view("evento.relatorios.comparacao_cadastros", compact("evento", "linhas"));
+        return view("evento.v2.relatorios.comparacao_cadastros", compact("evento", "linhas"));
     }
 }

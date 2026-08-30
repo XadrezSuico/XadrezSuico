@@ -39,7 +39,7 @@ class TorneioChaveSemifinalController extends Controller
                         }
                         $tab = null;
 
-                        return view("evento.torneio.gerenciamento.3_chave_semifinal.index",compact("torneio","tab"));
+                        return view("evento.v2.torneio.gerenciamento.3_chave_semifinal.index", compact("torneio", "tab", "evento"));
                     }
                 }
             }

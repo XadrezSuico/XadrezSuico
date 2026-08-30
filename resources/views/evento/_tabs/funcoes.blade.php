@@ -17,6 +17,9 @@
         <span class="hidden-xs">&nbsp;·&nbsp;</span>
         <br class="visible-xs"/>
         <i class="fa fa-bar-chart"></i> Métricas detalhadas na aba <a href="{{ url('/evento/dashboard/' . $evento->id) }}?tab=resume">Resumo</a>.
+        <span class="hidden-xs">&nbsp;·&nbsp;</span>
+        <br class="visible-xs"/>
+        <i class="fa fa-external-link"></i> <a href="{{ url('/evento/dashboard/' . $evento->id) }}">Abrir dashboard no layout novo</a>.
     </p>
 </div>
 

@@ -42,7 +42,7 @@ class Torneio_ImportacaoController extends Controller
 
         $torneio = Torneio::find($torneio_id);
         $evento = $torneio->evento;
-        return view("evento.torneio.resultados", compact("evento", "torneio"));
+        return view("evento.v2.torneio.resultados", compact("evento", "torneio"));
     }
 
 
@@ -76,7 +76,7 @@ class Torneio_ImportacaoController extends Controller
 
         $torneio = Torneio::find($torneio_id);
         $evento = $torneio->evento;
-        return view("evento.torneio.resultados_send", compact("evento", "torneio"));
+        return view("evento.v2.torneio.resultados_send", compact("evento", "torneio"));
     }
 
 
@@ -514,7 +514,7 @@ class Torneio_ImportacaoController extends Controller
         }
         $retornos[] = date("d/m/Y H:i:s") . " - Fim do Processamento";
         $evento = $torneio->evento;
-        return view("evento.torneio.resultadosretorno", compact("retornos", "torneio", "evento"));
+        return view("evento.v2.torneio.resultadosretorno", compact("retornos", "torneio", "evento"));
     }
     private function setResults_tipo_exportacao_1($results, $evento_id, $torneio_id)
     {
@@ -839,7 +839,7 @@ class Torneio_ImportacaoController extends Controller
         }
         $retornos[] = date("d/m/Y H:i:s") . " - Fim do Processamento";
         $evento = $torneio->evento;
-        return view("evento.torneio.resultadosretorno", compact("retornos", "torneio", "evento"));
+        return view("evento.v2.torneio.resultadosretorno", compact("retornos", "torneio", "evento"));
     }
     private function setResults_tipo_exportacao_0_rating($results, $evento_id, $torneio_id)
     {
@@ -1191,7 +1191,7 @@ class Torneio_ImportacaoController extends Controller
         }
         $retornos[] = date("d/m/Y H:i:s") . " - Fim do Processamento";
         $evento = $torneio->evento;
-        return view("evento.torneio.resultadosretorno", compact("retornos", "torneio", "evento"));
+        return view("evento.v2.torneio.resultadosretorno", compact("retornos", "torneio", "evento"));
     }
 
 
@@ -1216,7 +1216,7 @@ class Torneio_ImportacaoController extends Controller
 
         $torneio = Torneio::find($torneio_id);
         $evento = $torneio->evento;
-        return view("evento.torneio.importacao.emparceiramentos", compact("evento", "torneio"));
+        return view("evento.v2.torneio.importacao.emparceiramentos", compact("evento", "torneio"));
     }
 
 
@@ -1461,6 +1461,6 @@ class Torneio_ImportacaoController extends Controller
         }
         $retornos[] = date("d/m/Y H:i:s") . " - Fim do Processamento";
         $evento = $torneio->evento;
-        return view("evento.torneio.importacao.emparceiramentos_retorno", compact("retornos", "torneio", "evento"));
+        return view("evento.v2.torneio.importacao.emparceiramentos_retorno", compact("retornos", "torneio", "evento"));
     }
 }
