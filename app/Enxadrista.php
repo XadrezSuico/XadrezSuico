@@ -151,14 +151,85 @@ class Enxadrista extends Model
     }
     public function getNameSemCaracteresEspeciais()
     {
-        $str = mb_strtolower($this->name);
+        return mb_strtoupper(self::removeAccents($this->name));
+    }
+
+    public static function sanitizeForSwissManager($text)
+    {
+        if ($text === null || $text === '') {
+            return '';
+        }
+
+        $str = self::removeAccents((string) $text);
+        $str = preg_replace('/[^a-z0-9\s]/', ' ', $str);
+        $str = preg_replace('/\s+/', ' ', $str);
+
+        return mb_strtoupper(trim($str));
+    }
+
+    private static function removeAccents($str)
+    {
+        $str = mb_strtolower($str);
         $str = preg_replace('/[áàãâä]/ui', 'a', $str);
         $str = preg_replace('/[éèêë]/ui', 'e', $str);
         $str = preg_replace('/[íìîï]/ui', 'i', $str);
         $str = preg_replace('/[óòõôö]/ui', 'o', $str);
         $str = preg_replace('/[úùûü]/ui', 'u', $str);
         $str = preg_replace('/[ç]/ui', 'c', $str);
-        return mb_strtoupper($str);
+
+        return $str;
+    }
+
+    private static function abbreviateGivenNamesForSwissManager($firstname)
+    {
+        $parts = explode(' ', trim($firstname));
+        $abbreviated = [];
+
+        foreach ($parts as $part) {
+            if ($part === '') {
+                continue;
+            }
+
+            if (Util::ePreposicao($part)) {
+                $abbreviated[] = $part;
+            } else {
+                $abbreviated[] = mb_substr($part, 0, 1);
+            }
+        }
+
+        return implode(' ', $abbreviated);
+    }
+
+    public function getSwissManagerFideName()
+    {
+        if (!$this->firstname || !$this->lastname) {
+            $this->splitName();
+        }
+
+        $fideName = trim((string) $this->fide_name);
+        if ($fideName !== '' && strpos($fideName, ',') !== false) {
+            $parts = explode(',', $fideName, 2);
+            $lastname = trim($parts[0]);
+            $firstname = trim($parts[1]);
+        } else {
+            $lastname = $this->lastname ?? '';
+            $firstname = $this->firstname ?? '';
+        }
+
+        $lastname = self::sanitizeForSwissManager($lastname);
+        $firstname = self::sanitizeForSwissManager($firstname);
+        $full = $lastname . ',' . $firstname;
+
+        if (mb_strlen($full) > 32) {
+            $firstname = self::abbreviateGivenNamesForSwissManager($firstname);
+            $full = $lastname . ',' . $firstname;
+        }
+
+        return [
+            'full' => $full,
+            'lastname' => $lastname,
+            'firstname' => $firstname,
+        ];
     }
 
     public function hasDocument($document_types_id, $document = null){

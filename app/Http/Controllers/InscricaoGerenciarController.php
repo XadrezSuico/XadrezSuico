@@ -1136,10 +1136,15 @@ class InscricaoGerenciarController extends Controller
         usort($inscritos, array("App\Http\Controllers\InscricaoGerenciarController", "cmp_obj"));
 
         foreach ($inscritos as $inscricao) {
-            $explode_fide_name = explode(",",$inscricao->enxadrista->fide_name);
+            if (!$inscricao->enxadrista->firstname || !$inscricao->enxadrista->lastname) {
+                $inscricao->enxadrista->splitName();
+                $inscricao->enxadrista->save();
+            }
+
+            $smNames = $inscricao->enxadrista->getSwissManagerFideName();
 
             $texto .= $i++ . ";";
-            $texto .= $inscricao->enxadrista->name . ";";
+            $texto .= $smNames['full'] . ";";
             if ($inscricao->enxadrista->titles()->count() > 0) {
                 $title = $inscricao->enxadrista->getTitle();
                 $texto .= $title->title->abbr;
@@ -1195,7 +1200,7 @@ class InscricaoGerenciarController extends Controller
                 }
             }
             if($inscricao->enxadrista->sexo->abbr == "F"){
-                $texto .= "f;";
+                $texto .= "F;";
             }else{
                 $texto .= ";";
             }
@@ -1204,19 +1209,14 @@ class InscricaoGerenciarController extends Controller
             $texto .= $inscricao->categoria->code . ";";
             if ($inscricao->clube) {
                 $texto .= $inscricao->clube->id . ";";
-                $texto .= $inscricao->cidade->name . " - " . $inscricao->clube->getName() . ";";
+                $texto .= Enxadrista::sanitizeForSwissManager($inscricao->cidade->name) . " - " . Enxadrista::sanitizeForSwissManager($inscricao->clube->getName()) . ";";
             } else {
                 $texto .= ";";
-                $texto .= $inscricao->cidade->name . ";";
+                $texto .= Enxadrista::sanitizeForSwissManager($inscricao->cidade->name) . ";";
             }
 
-            if (!$inscricao->enxadrista->firstname || !$inscricao->enxadrista->lastname) {
-                $inscricao->enxadrista->splitName();
-                $inscricao->enxadrista->save();
-            }
-
-            $texto .= ((count($explode_fide_name) > 1) ? $explode_fide_name[0] : $inscricao->enxadrista->lastname) . ";";
-            $texto .= ((count($explode_fide_name) > 1) ? $explode_fide_name[1] : $inscricao->enxadrista->firstname) . ";";
+            $texto .= $smNames['lastname'] . ";";
+            $texto .= $smNames['firstname'] . ";";
             $texto .= $inscricao->enxadrista->id . "\r\n";
         }
         return $texto;
@@ -1249,10 +1249,15 @@ class InscricaoGerenciarController extends Controller
         usort($inscritos, array("App\Http\Controllers\InscricaoGerenciarController", "cmp_obj"));
 
         foreach ($inscritos as $inscricao) {
-            $explode_fide_name = explode(",",$inscricao->enxadrista->fide_name);
+            if (!$inscricao->enxadrista->firstname || !$inscricao->enxadrista->lastname) {
+                $inscricao->enxadrista->splitName();
+                $inscricao->enxadrista->save();
+            }
+
+            $smNames = $inscricao->enxadrista->getSwissManagerFideName();
 
             $texto .= $i++ . ";";
-            $texto .= $inscricao->enxadrista->name . ";";
+            $texto .= $smNames['full'] . ";";
             if ($inscricao->enxadrista->titles()->count() > 0) {
                 $title = $inscricao->enxadrista->getTitle();
                 $texto .= $title->title->abbr;
@@ -1308,7 +1313,7 @@ class InscricaoGerenciarController extends Controller
                 }
             }
             if($inscricao->enxadrista->sexo->abbr == "F"){
-                $texto .= "f;";
+                $texto .= "F;";
             }else{
                 $texto .= ";";
             }
@@ -1317,19 +1322,14 @@ class InscricaoGerenciarController extends Controller
             $texto .= $inscricao->categoria->code . ";";
             if ($inscricao->clube) {
                 $texto .= $inscricao->clube->id . ";";
-                $texto .= $inscricao->clube->getName() . ";";
+                $texto .= Enxadrista::sanitizeForSwissManager($inscricao->clube->getName()) . ";";
             } else {
                 $texto .= ";";
                 $texto .= ";";
             }
 
-            if (!$inscricao->enxadrista->firstname || !$inscricao->enxadrista->lastname) {
-                $inscricao->enxadrista->splitName();
-                $inscricao->enxadrista->save();
-            }
-
-            $texto .= ((count($explode_fide_name) > 1) ? $explode_fide_name[0] : $inscricao->enxadrista->lastname) . ";";
-            $texto .= ((count($explode_fide_name) > 1) ? $explode_fide_name[1] : $inscricao->enxadrista->firstname) . ";";
+            $texto .= $smNames['lastname'] . ";";
+            $texto .= $smNames['firstname'] . ";";
             $texto .= $inscricao->enxadrista->id . "\r\n";
         }
         return $texto;
