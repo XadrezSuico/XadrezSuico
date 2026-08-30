@@ -407,6 +407,12 @@
                     <i class="fa fa-file"></i>
                     Enxadristas Premiados neste Evento
                 </a>
+                @if($evento->calcula_cbx || $evento->calcula_fide)
+                <a href="{{url("/evento/".$evento->id."/relatorios/comparacao-cadastros")}}" class="btn btn-app">
+                    <i class="fa fa-exchange"></i>
+                    Comparação de Cadastros
+                </a>
+                @endif
             </div>
         </div>
     </section>
