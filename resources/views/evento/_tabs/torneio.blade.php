@@ -116,7 +116,7 @@
     </div>
 
     @if($can_edit_torneio)
-        <div class="modal fade v2-torneio-modal v2-legacy-tab" id="modalNovoTorneio" tabindex="-1" role="dialog" aria-labelledby="modalNovoTorneioLabel">
+        <div class="modal fade v2-torneio-modal v2-legacy-tab" id="modalNovoTorneio" tabindex="-1" role="dialog" aria-labelledby="modalNovoTorneioLabel" data-backdrop="true" data-keyboard="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <form method="post" action="{{ url('/evento/' . $evento->id . '/torneios/new') }}" id="formNovoTorneio">

@@ -661,7 +661,8 @@
 }
 
 .v2-legacy-content .modal-backdrop,
-.v2-legacy-tab .modal-backdrop {
+.v2-legacy-tab .modal-backdrop,
+.modal-backdrop {
     position: fixed;
     top: 0;
     right: 0;
@@ -669,7 +670,19 @@
     left: 0;
     z-index: 9999;
     background-color: #000;
+}
+
+.modal-backdrop.fade {
+    opacity: 0;
+    transition: opacity 0.15s linear;
+}
+
+.modal-backdrop.in {
     opacity: 0.5;
+}
+
+body.modal-open {
+    overflow: hidden;
 }
 
 .v2-legacy-tab .box,
