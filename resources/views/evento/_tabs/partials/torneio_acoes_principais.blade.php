@@ -1,11 +1,12 @@
-@if(
-    \Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
-    \Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id, [4]) ||
-    \Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
-)
-    <div class="v2-torneio-actions__group">
-        <span class="v2-torneio-actions__label">Gerenciar</span>
-        <div class="v2-torneio-actions__buttons">
+<div class="v2-torneio-actions__group">
+    <span class="v2-torneio-actions__label">Gerenciar</span>
+    <div class="v2-torneio-actions__buttons">
+        <a class="btn btn-default btn-sm" href="{{ url('/evento/' . $evento->id . '/torneios/' . $torneio->id . '/inscricoes') }}">Inscrições</a>
+        @if(
+            \Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
+            \Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id, [4]) ||
+            \Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
+        )
             <a class="btn btn-default btn-sm" href="{{ url('/evento/' . $evento->id . '/torneios/edit/' . $torneio->id) }}">Editar</a>
             @if($torneio->tipo_torneio->id != 3)
                 <a class="btn btn-warning btn-sm" href="{{ url('/evento/' . $evento->id . '/torneios/union/' . $torneio->id) }}">Unir Torneios</a>
@@ -17,9 +18,15 @@
             @if($torneio->tipo_torneio->id == 3)
                 <a class="btn btn-success btn-sm" href="{{ url('/evento/' . $evento->id . '/torneios/' . $torneio->id . '/gerenciamento/torneio_3') }}">Gerenciamento do Torneio</a>
             @endif
-        </div>
+        @endif
     </div>
+</div>
 
+@if(
+    \Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
+    \Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id, [4]) ||
+    \Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
+)
     <div class="v2-torneio-actions__group">
         <span class="v2-torneio-actions__label">Exportar inscrições</span>
         <div class="v2-torneio-actions__buttons">
@@ -42,9 +49,8 @@
 @endif
 
 <div class="v2-torneio-actions__group">
-    <span class="v2-torneio-actions__label">Consultar</span>
+    <span class="v2-torneio-actions__label">Relatórios</span>
     <div class="v2-torneio-actions__buttons">
-        <a class="btn btn-default btn-sm" href="{{ url('/evento/' . $evento->id . '/torneios/' . $torneio->id . '/inscricoes') }}">Inscrições</a>
         <a class="btn btn-info btn-sm" href="{{ url('/evento/' . $evento->id . '/torneios/' . $torneio->id . '/inscricoes/relatorio/inscricoes') }}" target="_blank">Imprimir</a>
         <a class="btn btn-info btn-sm" href="{{ url('/evento/' . $evento->id . '/torneios/' . $torneio->id . '/inscricoes/relatorio/inscricoes/alfabetico') }}" target="_blank">Imprimir (A–Z)</a>
         <a class="btn btn-info btn-sm" href="{{ url('/evento/' . $evento->id . '/torneios/' . $torneio->id . '/inscricoes/relatorio/inscricoes/alfabetico/cidade') }}" target="_blank">Imprimir (Cidade/Clube)</a>
