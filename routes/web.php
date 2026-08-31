@@ -174,6 +174,8 @@ Route::group(["prefix"=>"evento"],function(){
     Route::group(["prefix"=>"{id}/relatorios"],function(){
         Route::get('/premiados', 'EventoGerenciarController@relatorio_premiados')->name('evento.relatorios.premiados');
         Route::get('/comparacao-cadastros', 'EventoGerenciarController@relatorio_comparacao_cadastros')->name('evento.relatorios.comparacao_cadastros');
+        Route::get('/anuidade-cbx', 'EventoGerenciarController@relatorio_anuidade_cbx')->name('evento.relatorios.anuidade_cbx');
+        Route::get('/anuidade-cbx/call/{enxadrista_id}', 'EventoGerenciarController@relatorio_anuidade_cbx_call')->name('evento.relatorios.anuidade_cbx.call');
     });
     Route::group(["prefix"=>"{id}/exports"],function(){
         Route::get('/emparceirador', 'Exports\XadrezSuicoEmparceiradorController@export')->name('evento.exports.xadrezsuicoemparceirador');

@@ -192,6 +192,9 @@
             @if($evento->calcula_cbx || $evento->calcula_fide)
                 @include('components.v2.action-card', ['href' => url('/evento/' . $evento->id . '/relatorios/comparacao-cadastros'), 'label' => 'Comparação de Cadastros', 'icon' => $iconList])
             @endif
+            @if($evento->tipo_modalidade == 0 && ($evento->calcula_cbx || $evento->calcula_fide))
+                @include('components.v2.action-card', ['href' => url('/evento/' . $evento->id . '/relatorios/anuidade-cbx'), 'label' => 'Anuidade CBX', 'icon' => $iconList])
+            @endif
         </div>
     @endcomponent
 </div>

@@ -46,6 +46,70 @@ class RelatorioService
         return $this->sortComparacaoLinhas($linhas);
     }
 
+    public function eventoElegivelAnuidadeCbx(Evento $evento): bool
+    {
+        return (int) $evento->tipo_modalidade === 0
+            && ($evento->calcula_cbx || $evento->calcula_fide);
+    }
+
+    public function buildAnuidadeCbxLinhasEvento(Evento $evento): array
+    {
+        if (!$this->eventoElegivelAnuidadeCbx($evento)) {
+            return [];
+        }
+
+        $inscricoes = Inscricao::with('enxadrista')
+            ->whereHas('torneio', function ($query) use ($evento) {
+                $query->where('evento_id', $evento->id);
+            })
+            ->get();
+
+        $linhas = [];
+        $vistos = [];
+
+        foreach ($inscricoes as $inscricao) {
+            if (!$inscricao->enxadrista || isset($vistos[$inscricao->enxadrista->id])) {
+                continue;
+            }
+
+            $vistos[$inscricao->enxadrista->id] = true;
+            $enxadrista = $inscricao->enxadrista;
+            $cbxId = trim((string) $enxadrista->cbx_id);
+            $temIdCbx = $cbxId !== '' && intval($cbxId) > 0;
+
+            $linhas[] = [
+                'enxadrista_id' => $enxadrista->id,
+                'nome' => $enxadrista->getNomePrivado(),
+                'cbx_id' => $temIdCbx ? $cbxId : '-',
+                'tem_id_cbx' => $temIdCbx,
+                'data_pagto' => '-',
+                'status' => $temIdCbx ? 'aguardando' : 'sem_id',
+                'label' => $temIdCbx ? 'Aguardando' : 'Sem ID CBX',
+                'detalhe' => $temIdCbx ? 'Consulta pendente.' : 'Enxadrista sem ID CBX informado.',
+                'status_ordenacao' => $temIdCbx ? 1 : 2,
+            ];
+        }
+
+        usort($linhas, function ($a, $b) {
+            if ($a['status_ordenacao'] === $b['status_ordenacao']) {
+                return strcasecmp($a['nome'], $b['nome']);
+            }
+
+            return $a['status_ordenacao'] <=> $b['status_ordenacao'];
+        });
+
+        return $linhas;
+    }
+
+    public function enxadristaPertenceAoEvento(Evento $evento, int $enxadristaId): bool
+    {
+        return Inscricao::whereHas('torneio', function ($query) use ($evento) {
+            $query->where('evento_id', $evento->id);
+        })
+            ->where('enxadrista_id', $enxadristaId)
+            ->exists();
+    }
+
     public function buildComparacaoLinhasEvento(Evento $evento): array
     {
         $linhas = [];

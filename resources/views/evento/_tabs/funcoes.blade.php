@@ -416,6 +416,12 @@
                     Comparação de Cadastros
                 </a>
                 @endif
+                @if($evento->tipo_modalidade == 0 && ($evento->calcula_cbx || $evento->calcula_fide))
+                <a href="{{url("/evento/".$evento->id."/relatorios/anuidade-cbx")}}" class="btn btn-app">
+                    <i class="fa fa-money"></i>
+                    Anuidade CBX
+                </a>
+                @endif
             </div>
         </div>
     </section>

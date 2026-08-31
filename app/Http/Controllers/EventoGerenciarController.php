@@ -13,6 +13,7 @@ use App\Cidade;
 use App\CriterioDesempate;
 use App\CriterioDesempateEvento;
 use App\Evento;
+use App\Enxadrista;
 use App\Exports\EnxadristasFromView;
 use App\Inscricao;
 use App\Pagina;
@@ -32,6 +33,7 @@ use App\Enum\ConfigType;
 use App\Exports\EnxadristasInscritosFromView;
 use App\Helper\SingletonValueHelper;
 use App\Services\RelatorioService;
+use App\Services\CBXAnuidadeService;
 use App\Support\EventDashboardTabs;
 use App\Torneio;
 use Log;
@@ -1325,5 +1327,71 @@ class EventoGerenciarController extends Controller
         $linhas = app(RelatorioService::class)->buildComparacaoLinhasEvento($evento);
 
         return view("evento.v2.relatorios.comparacao_cadastros", compact("evento", "linhas"));
+    }
+
+    public function relatorio_anuidade_cbx($id)
+    {
+        $user = Auth::user();
+        $evento = Evento::find($id);
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionEventByPerfil($evento->id, [3, 4, 5]) &&
+            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [6, 7])
+        ) {
+            return redirect("/evento/dashboard/" . $evento->id);
+        }
+
+        if (!$evento) {
+            return redirect("/evento");
+        }
+
+        $relatorioService = app(RelatorioService::class);
+        $linhas = $relatorioService->buildAnuidadeCbxLinhasEvento($evento);
+        $elegivel = $relatorioService->eventoElegivelAnuidadeCbx($evento);
+
+        return view("evento.v2.relatorios.anuidade_cbx", compact("evento", "linhas", "elegivel"));
+    }
+
+    public function relatorio_anuidade_cbx_call($id, $enxadrista_id)
+    {
+        $user = Auth::user();
+        $evento = Evento::find($id);
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionEventByPerfil($evento->id, [3, 4, 5]) &&
+            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [6, 7])
+        ) {
+            return response()->json(["ok" => 0, "error" => 1, "detalhe" => "Sem permissão."]);
+        }
+
+        if (!$evento) {
+            return response()->json(["ok" => 0, "error" => 1, "detalhe" => "Evento não encontrado."]);
+        }
+
+        $relatorioService = app(RelatorioService::class);
+        if (!$relatorioService->eventoElegivelAnuidadeCbx($evento)) {
+            return response()->json(["ok" => 0, "error" => 1, "detalhe" => "Evento não elegível para este relatório."]);
+        }
+
+        if (!$relatorioService->enxadristaPertenceAoEvento($evento, (int) $enxadrista_id)) {
+            return response()->json(["ok" => 0, "error" => 1, "detalhe" => "Enxadrista não pertence ao evento."]);
+        }
+
+        $enxadrista = Enxadrista::find($enxadrista_id);
+        if (!$enxadrista) {
+            return response()->json(["ok" => 0, "error" => 1, "detalhe" => "Enxadrista não encontrado."]);
+        }
+
+        $resultado = app(CBXAnuidadeService::class)->consultarEnxadrista($enxadrista);
+        $ok = $resultado['status'] !== 'erro';
+
+        return response()->json([
+            'ok' => $ok ? 1 : 0,
+            'error' => $ok ? 0 : 1,
+            'status' => $resultado['status'],
+            'label' => $resultado['label'],
+            'data_pagto' => $resultado['data_pagto'],
+            'detalhe' => $resultado['detalhe'],
+        ]);
     }
 }
