@@ -114,31 +114,13 @@
                                             @endif
                                         </div>
 
-                                        @if($can_view_stats)
-                                            <div class="v2-torneio-card__section">
-                                                <span class="v2-torneio-card__section-label">Inscritos</span>
-                                                <dl class="v2-torneio-stats">
-                                                    <div><dt>Total</dt><dd>{{ $torneio->getCountInscritos() }}</dd></div>
-                                                    <div><dt>Confirmados</dt><dd>{{ $torneio->getCountInscritosConfirmados() }}</dd></div>
-                                                    <div><dt>Presentes</dt><dd>{{ $torneio->quantosInscritosPresentes() }}</dd></div>
-                                                    <div><dt>Com resultado</dt><dd>{{ $torneio->getCountInscritosResultados() }}</dd></div>
-                                                    @if($evento->xadrezsuicopag_uuid)
-                                                        <div><dt>Pagos</dt><dd>{{ $torneio->howManyPaid() }}</dd></div>
-                                                        <div><dt>Pendente</dt><dd>{{ $torneio->howManyNotPaid() }}</dd></div>
-                                                        <div><dt>Gratuidades</dt><dd>{{ $torneio->howManyFree() }}</dd></div>
-                                                    @endif
-                                                    @if($evento->is_lichess_integration)
-                                                        <div><dt>Lichess inscritos</dt><dd>{{ $torneio->getCountLichessConfirmadosnoTorneio() }}</dd></div>
-                                                        <div><dt>Lichess pendentes</dt><dd>{{ $torneio->getCountInscritos() - $torneio->getCountLichessConfirmadosnoTorneio() }}</dd></div>
-                                                    @endif
-                                                </dl>
-                                            </div>
-                                        @else
-                                            <div class="v2-torneio-card__section">
-                                                <span class="v2-torneio-card__section-label">Inscritos</span>
-                                                <strong>{{ $torneio->getCountInscritos() }}</strong>
-                                            </div>
-                                        @endif
+                                        <div class="v2-torneio-card__section">
+                                            @include('components.v2.torneio-inscricoes-summary', [
+                                                'evento' => $evento,
+                                                'torneio' => $torneio,
+                                                'showDetails' => $can_view_stats,
+                                            ])
+                                        </div>
                                     </div>
 
                                     <footer class="v2-torneio-card__actions">

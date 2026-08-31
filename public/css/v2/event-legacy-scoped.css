@@ -896,37 +896,6 @@
     gap: 0.35rem;
 }
 
-.v2-legacy-content .v2-torneio-stats,
-.v2-legacy-tab .v2-torneio-stats {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(7rem, 1fr));
-    gap: 0.5rem 1rem;
-    margin: 0;
-}
-
-.v2-legacy-content .v2-torneio-stats > div,
-.v2-legacy-tab .v2-torneio-stats > div {
-    display: flex;
-    flex-direction: column;
-    gap: 0.1rem;
-}
-
-.v2-legacy-content .v2-torneio-stats dt,
-.v2-legacy-tab .v2-torneio-stats dt {
-    margin: 0;
-    font-size: 0.75rem;
-    font-weight: 400;
-    color: #888;
-}
-
-.v2-legacy-content .v2-torneio-stats dd,
-.v2-legacy-tab .v2-torneio-stats dd {
-    margin: 0;
-    font-size: 0.9375rem;
-    font-weight: 600;
-    color: #333;
-}
-
 .v2-legacy-content .v2-torneio-card__actions,
 .v2-legacy-tab .v2-torneio-card__actions {
     display: flex;
