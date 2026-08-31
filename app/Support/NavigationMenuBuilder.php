@@ -43,6 +43,12 @@ class NavigationMenuBuilder
                     'url' => '/enxadrista',
                     'icon' => 'user',
                 ];
+                $items[] = [
+                    'type' => 'link',
+                    'label' => 'Relatórios',
+                    'url' => '/relatorios',
+                    'icon' => 'chart',
+                ];
             }
 
             if (

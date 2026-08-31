@@ -31,7 +31,7 @@ use App\Enum\EmailType;
 use App\Enum\ConfigType;
 use App\Exports\EnxadristasInscritosFromView;
 use App\Helper\SingletonValueHelper;
-use App\Helper\NameComparisonHelper;
+use App\Services\RelatorioService;
 use App\Support\EventDashboardTabs;
 use App\Torneio;
 use Log;
@@ -1322,53 +1322,7 @@ class EventoGerenciarController extends Controller
             return redirect("/evento");
         }
 
-        $linhas = [];
-
-        if ($evento->calcula_cbx || $evento->calcula_fide) {
-            $inscricoes = Inscricao::with('enxadrista')
-                ->whereHas('torneio', function ($query) use ($evento) {
-                    $query->where('evento_id', $evento->id);
-                })
-                ->get();
-
-            foreach ($inscricoes as $inscricao) {
-                if (!$inscricao->enxadrista) {
-                    continue;
-                }
-
-                $cbx = $evento->calcula_cbx
-                    ? NameComparisonHelper::compareEntity($inscricao->enxadrista, 'cbx')
-                    : null;
-                $fide = $evento->calcula_fide
-                    ? NameComparisonHelper::compareEntity($inscricao->enxadrista, 'fide')
-                    : null;
-
-                $niveis = [];
-                if ($cbx !== null) {
-                    $niveis[] = $cbx['nivel'];
-                }
-                if ($fide !== null) {
-                    $niveis[] = $fide['nivel'];
-                }
-
-                $linhas[] = [
-                    'inscricao_id' => $inscricao->id,
-                    'enxadrista_id' => $inscricao->enxadrista->id,
-                    'nome' => $inscricao->enxadrista->getNomePrivado(),
-                    'cbx' => $cbx,
-                    'fide' => $fide,
-                    'nivel_ordenacao' => count($niveis) > 0 ? min($niveis) : 999,
-                ];
-            }
-
-            usort($linhas, function ($a, $b) {
-                if ($a['nivel_ordenacao'] === $b['nivel_ordenacao']) {
-                    return strcasecmp($a['nome'], $b['nome']);
-                }
-
-                return $a['nivel_ordenacao'] <=> $b['nivel_ordenacao'];
-            });
-        }
+        $linhas = app(RelatorioService::class)->buildComparacaoLinhasEvento($evento);
 
         return view("evento.v2.relatorios.comparacao_cadastros", compact("evento", "linhas"));
     }

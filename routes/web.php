@@ -420,6 +420,12 @@ Route::group(["prefix"=>"clube"],function(){
 	Route::get('/api/searchList', 'ClubeController@searchList')->name('clube.api.list');
 });
 
+Route::group(["prefix" => "relatorios"], function () {
+	Route::get('/', 'RelatorioController@index')->name('relatorios.index');
+	Route::get('/comparacao-cadastros/{modo}', 'RelatorioController@comparacaoCadastros')->name('relatorios.comparacao_cadastros');
+	Route::get('/resumo-integracao/{entidade}', 'RelatorioController@resumoIntegracao')->name('relatorios.resumo_integracao');
+});
+
 Route::group(["prefix"=>"enxadrista"],function(){
 	Route::get('/', 'EnxadristaController@index')->name('enxadrista.index');
 	Route::get('/new', 'EnxadristaController@new')->name('enxadrista.new');
