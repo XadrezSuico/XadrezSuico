@@ -116,24 +116,25 @@
     </div>
 
     @if($can_edit_torneio)
-        <div class="modal fade" id="modalNovoTorneio" tabindex="-1" role="dialog" aria-labelledby="modalNovoTorneioLabel">
+        <div class="modal fade v2-torneio-modal v2-legacy-tab" id="modalNovoTorneio" tabindex="-1" role="dialog" aria-labelledby="modalNovoTorneioLabel">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <form method="post" action="{{ url('/evento/' . $evento->id . '/torneios/new') }}" id="formNovoTorneio">
                         <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <h4 class="modal-title" id="modalNovoTorneioLabel">Novo Torneio</h4>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
                                 <span aria-hidden="true">&times;</span>
                             </button>
-                            <h4 class="modal-title" id="modalNovoTorneioLabel">Novo Torneio</h4>
                         </div>
                         <div class="modal-body">
+                            <p class="modal-body__intro">Informe os dados básicos do torneio. Categorias e demais configurações podem ser ajustadas depois em Editar.</p>
                             <div class="form-group">
                                 <label for="novo_torneio_name">Nome</label>
-                                <input name="name" id="novo_torneio_name" class="form-control" type="text" required />
+                                <input name="name" id="novo_torneio_name" class="form-control" type="text" required autofocus />
                             </div>
                             <div class="form-group">
                                 <label for="novo_torneio_tipo_torneio_id">Tipo de Torneio</label>
-                                <select id="novo_torneio_tipo_torneio_id" name="tipo_torneio_id" class="form-control width-100">
+                                <select id="novo_torneio_tipo_torneio_id" name="tipo_torneio_id" class="form-control width-100" required>
                                     <option value="">-- Selecione --</option>
                                     @foreach(\App\TipoTorneio::all() as $tipo_torneio)
                                         <option value="{{ $tipo_torneio->id }}">{{ $tipo_torneio->name }}</option>
@@ -142,7 +143,7 @@
                             </div>
                             <div class="form-group">
                                 <label for="novo_torneio_softwares_id">Software</label>
-                                <select id="novo_torneio_softwares_id" name="softwares_id" class="form-control width-100">
+                                <select id="novo_torneio_softwares_id" name="softwares_id" class="form-control width-100" required>
                                     <option value="">-- Selecione --</option>
                                     @foreach(\App\Software::all() as $software)
                                         <option value="{{ $software->id }}">{{ $software->name }}</option>
@@ -151,8 +152,8 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-                            <button type="submit" class="btn btn-success">Enviar</button>
+                            <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-success btn-sm">Criar torneio</button>
                             <input type="hidden" name="_token" value="{{ csrf_token() }}">
                         </div>
                     </form>

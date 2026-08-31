@@ -34,6 +34,9 @@ $(document).ready(function () {
 
     if ($('#modalNovoTorneio').length) {
         var $modalNovoTorneio = $('#modalNovoTorneio');
+        if (!$modalNovoTorneio.parent().is('body')) {
+            $modalNovoTorneio.appendTo('body');
+        }
         var novoTorneioSelect2Fields = ['#novo_torneio_tipo_torneio_id', '#novo_torneio_softwares_id'];
 
         function initNovoTorneioSelect2() {
@@ -52,7 +55,10 @@ $(document).ready(function () {
             });
         }
 
-        $modalNovoTorneio.on('shown.bs.modal', initNovoTorneioSelect2);
+        $modalNovoTorneio.on('shown.bs.modal', function () {
+            initNovoTorneioSelect2();
+            $('#novo_torneio_name').trigger('focus');
+        });
         $modalNovoTorneio.on('hidden.bs.modal', function () {
             novoTorneioSelect2Fields.forEach(function (selector) {
                 var $field = $(selector);

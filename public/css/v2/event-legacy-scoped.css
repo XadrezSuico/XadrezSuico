@@ -54,8 +54,8 @@
     align-items: flex-start;
 }
 
-.v2-legacy-tab > .row > .col-xs-12 > :not([class*="col-"]):not(.row),
-.v2-legacy-content > .row > .col-xs-12 > :not([class*="col-"]):not(.row) {
+.v2-legacy-tab > .row > .col-xs-12 > :not([class*="col-"]):not(.row):not(.modal),
+.v2-legacy-content > .row > .col-xs-12 > :not([class*="col-"]):not(.row):not(.modal) {
     flex: 0 0 100%;
     max-width: 100%;
     width: 100%;
@@ -496,7 +496,8 @@
 }
 
 .v2-legacy-content .modal,
-.v2-legacy-tab .modal {
+.v2-legacy-tab .modal,
+.v2-legacy-tab.modal {
     position: fixed;
     top: 0;
     right: 0;
@@ -509,7 +510,8 @@
 }
 
 .v2-legacy-content .modal.in,
-.v2-legacy-tab .modal.in {
+.v2-legacy-tab .modal.in,
+.v2-legacy-tab.modal.in {
     display: block;
 }
 
@@ -535,19 +537,127 @@
 .v2-legacy-content .modal-footer,
 .v2-legacy-tab .modal-header,
 .v2-legacy-tab .modal-body,
-.v2-legacy-tab .modal-footer {
+.v2-legacy-tab .modal-footer,
+.v2-legacy-tab.modal .modal-header,
+.v2-legacy-tab.modal .modal-body,
+.v2-legacy-tab.modal .modal-footer {
     padding: 15px;
 }
 
 .v2-legacy-content .modal-header,
-.v2-legacy-tab .modal-header {
+.v2-legacy-tab .modal-header,
+.v2-legacy-tab.modal .modal-header {
     border-bottom: 1px solid #e5e5e5;
 }
 
 .v2-legacy-content .modal-footer,
-.v2-legacy-tab .modal-footer {
+.v2-legacy-tab .modal-footer,
+.v2-legacy-tab.modal .modal-footer {
     border-top: 1px solid #e5e5e5;
     text-align: right;
+}
+
+.v2-legacy-content .modal-header,
+.v2-legacy-tab .modal-header,
+.v2-legacy-tab.modal .modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    min-height: 0;
+}
+
+.v2-legacy-content .modal-title,
+.v2-legacy-tab .modal-title,
+.v2-legacy-tab.modal .modal-title {
+    margin: 0;
+    font-size: 1.125rem;
+    font-weight: 600;
+    line-height: 1.3;
+    color: #222;
+}
+
+.v2-legacy-content .modal-header .close,
+.v2-legacy-tab .modal-header .close,
+.v2-legacy-tab.modal .modal-header .close {
+    float: none;
+    order: 2;
+    margin: 0;
+    padding: 0.25rem;
+    border: 0;
+    background: transparent;
+    font-size: 1.5rem;
+    font-weight: 400;
+    line-height: 1;
+    color: #6b7280;
+    opacity: 1;
+    cursor: pointer;
+    text-shadow: none;
+}
+
+.v2-legacy-content .modal-header .close:hover,
+.v2-legacy-tab .modal-header .close:hover,
+.v2-legacy-tab.modal .modal-header .close:hover {
+    color: #111827;
+}
+
+.v2-legacy-content .modal-footer .btn + .btn,
+.v2-legacy-tab .modal-footer .btn + .btn,
+.v2-legacy-tab.modal .modal-footer .btn + .btn {
+    margin-left: 0.5rem;
+}
+
+.v2-legacy-content .v2-torneio-modal .modal-dialog,
+.v2-legacy-tab.v2-torneio-modal .modal-dialog,
+.v2-legacy-tab .v2-torneio-modal .modal-dialog {
+    width: calc(100% - 2rem);
+    max-width: 28rem;
+    margin: 4rem auto 1.75rem;
+}
+
+.v2-legacy-content .v2-torneio-modal .modal-content,
+.v2-legacy-tab.v2-torneio-modal .modal-content,
+.v2-legacy-tab .v2-torneio-modal .modal-content {
+    border: 0;
+    border-radius: 0.75rem;
+    box-shadow: 0 20px 40px rgba(15, 23, 42, 0.18);
+    overflow: hidden;
+}
+
+.v2-legacy-content .v2-torneio-modal .modal-header,
+.v2-legacy-tab.v2-torneio-modal .modal-header,
+.v2-legacy-tab .v2-torneio-modal .modal-header {
+    padding: 1rem 1.25rem;
+    background: #f9fafb;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.v2-legacy-content .v2-torneio-modal .modal-body,
+.v2-legacy-tab.v2-torneio-modal .modal-body,
+.v2-legacy-tab .v2-torneio-modal .modal-body {
+    padding: 1.25rem;
+}
+
+.v2-legacy-content .v2-torneio-modal .modal-body .form-group:last-child,
+.v2-legacy-tab.v2-torneio-modal .modal-body .form-group:last-child,
+.v2-legacy-tab .v2-torneio-modal .modal-body .form-group:last-child {
+    margin-bottom: 0;
+}
+
+.v2-legacy-content .v2-torneio-modal .modal-body__intro,
+.v2-legacy-tab.v2-torneio-modal .modal-body__intro,
+.v2-legacy-tab .v2-torneio-modal .modal-body__intro {
+    margin: 0 0 1rem;
+    color: #6b7280;
+    font-size: 0.875rem;
+}
+
+.v2-legacy-content .v2-torneio-modal .modal-footer,
+.v2-legacy-tab.v2-torneio-modal .modal-footer,
+.v2-legacy-tab .v2-torneio-modal .modal-footer {
+    padding: 0.875rem 1.25rem;
+    background: #fff;
+    border-top: 1px solid #e5e7eb;
 }
 
 .v2-legacy-content .modal-backdrop,
