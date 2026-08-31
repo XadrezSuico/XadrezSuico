@@ -11,6 +11,7 @@
 </title>
 
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
+@stack('styles-before-v2')
 @if(file_exists(public_path('css/app-v2.css')))
     <link rel="stylesheet" href="{{ asset('css/app-v2.css') }}?v={{ filemtime(public_path('css/app-v2.css')) }}">
 @endif
