@@ -741,6 +741,34 @@
     margin-bottom: 0;
 }
 
+.v2-legacy-content .v2-categorias-relacionadas-panels > [class*="col-"],
+.v2-legacy-tab .v2-categorias-relacionadas-panels > [class*="col-"] {
+    display: flex;
+}
+
+.v2-legacy-content .v2-categorias-relacionadas-panels > [class*="col-"] > .box,
+.v2-legacy-tab .v2-categorias-relacionadas-panels > [class*="col-"] > .box {
+    width: 100%;
+}
+
+.v2-legacy-content .v2-categorias-relacionadas-empty,
+.v2-legacy-tab .v2-categorias-relacionadas-empty {
+    margin: 0;
+    padding: 0.5rem 0;
+}
+
+.v2-legacy-content .v2-categorias-relacionadas-table,
+.v2-legacy-tab .v2-categorias-relacionadas-table {
+    margin-bottom: 0;
+}
+
+.v2-legacy-content .v2-categorias-relacionadas-pag,
+.v2-legacy-tab .v2-categorias-relacionadas-pag {
+    max-width: 14rem;
+    word-break: break-all;
+    font-size: 0.8125rem;
+}
+
 .v2-legacy-content .table-responsive,
 .v2-legacy-tab .table-responsive {
     width: 100%;
