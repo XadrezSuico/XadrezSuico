@@ -626,14 +626,29 @@
     background-color: #777;
 }
 
+.v2-legacy-content .label-primary,
+.v2-legacy-tab .label-primary {
+    background-color: #337ab7;
+}
+
 .v2-legacy-content .label-success,
 .v2-legacy-tab .label-success {
     background-color: #5cb85c;
 }
 
+.v2-legacy-content .label-info,
+.v2-legacy-tab .label-info {
+    background-color: #5bc0de;
+}
+
 .v2-legacy-content .label-warning,
 .v2-legacy-tab .label-warning {
     background-color: #f0ad4e;
+}
+
+.v2-legacy-content .label-danger,
+.v2-legacy-tab .label-danger {
+    background-color: #d9534f;
 }
 
 .v2-legacy-content .list-unstyled,
