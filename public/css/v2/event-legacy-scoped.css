@@ -884,13 +884,21 @@
     grid-template-columns: 1fr;
     gap: 1rem;
     padding: 1rem;
+    align-items: start;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 992px) {
     .v2-legacy-content .v2-torneio-card__body,
     .v2-legacy-tab .v2-torneio-card__body {
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr) minmax(0, 1fr);
     }
+}
+
+.v2-legacy-content .v2-torneio-card__section--acoes,
+.v2-legacy-tab .v2-torneio-card__section--acoes {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
 }
 
 .v2-legacy-content .v2-torneio-card__section-label,
@@ -919,6 +927,13 @@
     padding: 0.875rem 1rem;
     background: #fafafa;
     border-top: 1px solid #e5e7eb;
+}
+
+.v2-legacy-content .v2-torneio-card__actions--extras,
+.v2-legacy-tab .v2-torneio-card__actions--extras {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: flex-start;
 }
 
 .v2-legacy-content .v2-torneio-actions__group,

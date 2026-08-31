@@ -84,6 +84,15 @@
 
                         <div class="v2-torneio-cards">
                             @foreach($grupo as $torneio)
+                                @php
+                                    $show_extra_acoes = (
+                                        ($can_edit_torneio && $torneio->isDeletavel()) ||
+                                        (\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() && $evento->torneios()->count() > 1) ||
+                                        $evento->is_lichess_integration ||
+                                        $torneio->software->isChessCom() ||
+                                        $evento->grupo_evento->hasConfig('is_pr_esporte', true)
+                                    );
+                                @endphp
                                 <article class="v2-torneio-card">
                                     <header class="v2-torneio-card__header">
                                         <div class="v2-torneio-card__title-wrap">
@@ -121,11 +130,17 @@
                                                 'showDetails' => $can_view_stats,
                                             ])
                                         </div>
+
+                                        <div class="v2-torneio-card__section v2-torneio-card__section--acoes">
+                                            @include('evento._tabs.partials.torneio_acoes_principais', compact('evento', 'torneio'))
+                                        </div>
                                     </div>
 
-                                    <footer class="v2-torneio-card__actions">
-                                        @include('evento._tabs.partials.torneio_acoes', compact('evento', 'torneio'))
-                                    </footer>
+                                    @if($show_extra_acoes)
+                                        <footer class="v2-torneio-card__actions v2-torneio-card__actions--extras">
+                                            @include('evento._tabs.partials.torneio_acoes_extras', compact('evento', 'torneio'))
+                                        </footer>
+                                    @endif
                                 </article>
                             @endforeach
                         </div>
