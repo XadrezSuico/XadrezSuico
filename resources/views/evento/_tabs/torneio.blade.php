@@ -23,51 +23,16 @@
 @endphp
 
 <div class="v2-torneio-tab">
-    @if($can_edit_torneio)
-        <div class="row v2-torneio-panels">
-            <section class="col-lg-4 connectedSortable">
-                <div class="box box-primary">
-                    <div class="box-header">
-                        <h3 class="box-title">Novo Torneio</h3>
-                    </div>
-                    <form method="post" action="{{ url('/evento/' . $evento->id . '/torneios/new') }}">
-                        <div class="box-body">
-                            <div class="form-group">
-                                <label for="torneio_name">Nome</label>
-                                <input name="name" id="torneio_name" class="form-control" type="text" />
-                            </div>
-                            <div class="form-group">
-                                <label for="tipo_torneio_id">Tipo de Torneio</label>
-                                <select id="tipo_torneio_id" name="tipo_torneio_id" class="form-control">
-                                    <option value="">-- Selecione --</option>
-                                    @foreach(\App\TipoTorneio::all() as $tipo_torneio)
-                                        <option value="{{ $tipo_torneio->id }}">{{ $tipo_torneio->name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="torneio_softwares_id">Software</label>
-                                <select id="torneio_softwares_id" name="softwares_id" class="form-control">
-                                    <option value="">-- Selecione --</option>
-                                    @foreach(\App\Software::all() as $software)
-                                        <option value="{{ $software->id }}">{{ $software->name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                        <div class="box-footer">
-                            <button type="submit" class="btn btn-success">Enviar</button>
-                            <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                        </div>
-                    </form>
-                </div>
-            </section>
-        </div>
-    @endif
-
     <div class="box box-primary v2-torneio-list-box">
         <div class="box-header">
             <h3 class="box-title">Torneios</h3>
+            @if($can_edit_torneio)
+                <div class="pull-right box-tools">
+                    <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modalNovoTorneio">
+                        <i class="fa fa-plus"></i> Novo Torneio
+                    </button>
+                </div>
+            @endif
         </div>
         <div class="box-body">
             @if($torneios_agrupados->isEmpty())
@@ -149,4 +114,50 @@
             @endif
         </div>
     </div>
+
+    @if($can_edit_torneio)
+        <div class="modal fade" id="modalNovoTorneio" tabindex="-1" role="dialog" aria-labelledby="modalNovoTorneioLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <form method="post" action="{{ url('/evento/' . $evento->id . '/torneios/new') }}" id="formNovoTorneio">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                            <h4 class="modal-title" id="modalNovoTorneioLabel">Novo Torneio</h4>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label for="novo_torneio_name">Nome</label>
+                                <input name="name" id="novo_torneio_name" class="form-control" type="text" required />
+                            </div>
+                            <div class="form-group">
+                                <label for="novo_torneio_tipo_torneio_id">Tipo de Torneio</label>
+                                <select id="novo_torneio_tipo_torneio_id" name="tipo_torneio_id" class="form-control width-100">
+                                    <option value="">-- Selecione --</option>
+                                    @foreach(\App\TipoTorneio::all() as $tipo_torneio)
+                                        <option value="{{ $tipo_torneio->id }}">{{ $tipo_torneio->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="novo_torneio_softwares_id">Software</label>
+                                <select id="novo_torneio_softwares_id" name="softwares_id" class="form-control width-100">
+                                    <option value="">-- Selecione --</option>
+                                    @foreach(\App\Software::all() as $software)
+                                        <option value="{{ $software->id }}">{{ $software->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-success">Enviar</button>
+                            <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    @endif
 </div>

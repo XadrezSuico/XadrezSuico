@@ -23,7 +23,7 @@ $(document).ready(function () {
     var select2Fields = [
         '#torneio_template_id', '#tipo_modalidade', '#layout_version', '#exportacao_sm_modelo',
         '#categoria_id', '#category_xadrezsuicopag_uuid', '#criterio_desempate_id',
-        '#criterio_desempate_geral_id', '#tipo_torneio_id', '#torneio_softwares_id', '#tipo_ratings_id',
+        '#criterio_desempate_geral_id', '#tipo_torneio_id', '#tipo_ratings_id',
         '#evento_classificador_id', '#grupo_evento_classificador_id', '#estados_id', '#cidade_id',
     ];
     select2Fields.forEach(function (selector) {
@@ -31,6 +31,39 @@ $(document).ready(function () {
             $(selector).select2();
         }
     });
+
+    if ($('#modalNovoTorneio').length) {
+        var $modalNovoTorneio = $('#modalNovoTorneio');
+        var novoTorneioSelect2Fields = ['#novo_torneio_tipo_torneio_id', '#novo_torneio_softwares_id'];
+
+        function initNovoTorneioSelect2() {
+            novoTorneioSelect2Fields.forEach(function (selector) {
+                var $field = $(selector);
+                if (!$field.length) {
+                    return;
+                }
+                if ($field.hasClass('select2-hidden-accessible')) {
+                    $field.select2('destroy');
+                }
+                $field.select2({
+                    dropdownParent: $modalNovoTorneio,
+                    width: '100%',
+                });
+            });
+        }
+
+        $modalNovoTorneio.on('shown.bs.modal', initNovoTorneioSelect2);
+        $modalNovoTorneio.on('hidden.bs.modal', function () {
+            novoTorneioSelect2Fields.forEach(function (selector) {
+                var $field = $(selector);
+                if ($field.hasClass('select2-hidden-accessible')) {
+                    $field.select2('destroy');
+                }
+                $field.val('').trigger('change');
+            });
+            $('#novo_torneio_name').val('');
+        });
+    }
 
     if ($('#tipo_modalidade').length) {
         $('#tipo_modalidade').val([{{ $evento->tipo_modalidade }}]).change();

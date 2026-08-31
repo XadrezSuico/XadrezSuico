@@ -147,6 +147,13 @@
     font-weight: 500;
 }
 
+.v2-legacy-content .box-tools,
+.v2-legacy-tab .box-tools {
+    position: absolute;
+    right: 10px;
+    top: 5px;
+}
+
 .v2-legacy-content .box-body,
 .v2-legacy-tab .box-body {
     border-top-left-radius: 0;
@@ -803,7 +810,7 @@
 
 .v2-legacy-content .v2-torneio-list-box,
 .v2-legacy-tab .v2-torneio-list-box {
-    margin-top: 1rem;
+    margin-top: 0;
 }
 
 .v2-legacy-content .v2-torneio-empty,
