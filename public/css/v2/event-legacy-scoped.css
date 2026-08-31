@@ -677,3 +677,46 @@
 .v2-legacy-tab .v2-timeline-panels > [class*="col-"] > .box {
     width: 100%;
 }
+
+.v2-legacy-content .v2-criterio-desempate-panels > [class*="col-"],
+.v2-legacy-tab .v2-criterio-desempate-panels > [class*="col-"] {
+    display: flex;
+}
+
+.v2-legacy-content .v2-criterio-desempate-panels > [class*="col-"] > .box,
+.v2-legacy-tab .v2-criterio-desempate-panels > [class*="col-"] > .box {
+    width: 100%;
+}
+
+.v2-legacy-content .v2-criterio-group + .v2-criterio-group,
+.v2-legacy-tab .v2-criterio-group + .v2-criterio-group {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #eee;
+}
+
+.v2-legacy-content .v2-criterio-group__title,
+.v2-legacy-tab .v2-criterio-group__title {
+    margin: 0 0 0.75rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #444;
+}
+
+.v2-legacy-content .v2-criterio-group__table,
+.v2-legacy-tab .v2-criterio-group__table {
+    margin-bottom: 0;
+}
+
+.v2-legacy-content .v2-criterio-empty,
+.v2-legacy-tab .v2-criterio-empty {
+    margin: 0;
+    padding: 0.5rem 0;
+}
+
+.v2-legacy-content .table-responsive,
+.v2-legacy-tab .table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    min-height: 0.01%;
+}

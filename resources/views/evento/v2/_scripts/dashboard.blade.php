@@ -129,9 +129,6 @@ $(document).ready(function () {
     if ($('#tabela_categoria').length) {
         $('#tabela_categoria').DataTable({ responsive: true });
     }
-    if ($('#tabela_criterio_desempate').length) {
-        $('#tabela_criterio_desempate').DataTable({ responsive: true, ordering: false });
-    }
     if ($('#tabela_criterio_desempate_geral').length) {
         $('#tabela_criterio_desempate_geral').DataTable({ responsive: true, ordering: false });
     }
