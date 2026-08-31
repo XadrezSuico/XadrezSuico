@@ -16,6 +16,7 @@
     flex-wrap: wrap;
     margin-left: -15px;
     margin-right: -15px;
+    align-items: flex-start;
 }
 
 .v2-legacy-content > .row::before,
@@ -50,6 +51,21 @@
 .v2-legacy-content > .row > .col-xs-12 {
     display: flex;
     flex-wrap: wrap;
+    align-items: flex-start;
+}
+
+.v2-legacy-tab > .row > .col-xs-12 > :not([class*="col-"]):not(.row),
+.v2-legacy-content > .row > .col-xs-12 > :not([class*="col-"]):not(.row) {
+    flex: 0 0 100%;
+    max-width: 100%;
+    width: 100%;
+}
+
+.v2-legacy-tab > .row > .col-xs-12 > .row,
+.v2-legacy-content > .row > .col-xs-12 > .row {
+    flex: 0 0 100%;
+    max-width: 100%;
+    width: 100%;
 }
 
 @media (min-width: 768px) {
@@ -542,4 +558,122 @@
 .v2-legacy-tab .box,
 .v2-legacy-content .box {
     max-width: 100%;
+}
+
+.v2-legacy-content .box-default,
+.v2-legacy-tab .box-default {
+    border-top-color: #d2d6de;
+}
+
+.v2-legacy-content .box-success,
+.v2-legacy-tab .box-success {
+    border-top-color: #00a65a;
+}
+
+.v2-legacy-content .with-border,
+.v2-legacy-tab .with-border {
+    border-bottom: 1px solid #f4f4f4;
+}
+
+.v2-legacy-content .help-block,
+.v2-legacy-tab .help-block {
+    display: block;
+    margin-top: 5px;
+    margin-bottom: 10px;
+    color: #737373;
+    font-size: 85%;
+}
+
+.v2-legacy-content .checkbox,
+.v2-legacy-tab .checkbox {
+    position: relative;
+    display: block;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.v2-legacy-content .checkbox label,
+.v2-legacy-tab .checkbox label {
+    min-height: 20px;
+    padding-left: 20px;
+    margin-bottom: 0;
+    font-weight: 400;
+    cursor: pointer;
+}
+
+.v2-legacy-content .btn-block,
+.v2-legacy-tab .btn-block {
+    display: block;
+    width: 100%;
+}
+
+.v2-legacy-content .label,
+.v2-legacy-tab .label {
+    display: inline;
+    padding: 0.2em 0.6em 0.3em;
+    font-size: 75%;
+    font-weight: 700;
+    line-height: 1;
+    color: #fff;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: 0.25em;
+}
+
+.v2-legacy-content .label-default,
+.v2-legacy-tab .label-default {
+    background-color: #777;
+}
+
+.v2-legacy-content .label-success,
+.v2-legacy-tab .label-success {
+    background-color: #5cb85c;
+}
+
+.v2-legacy-content .label-warning,
+.v2-legacy-tab .label-warning {
+    background-color: #f0ad4e;
+}
+
+.v2-legacy-content .list-unstyled,
+.v2-legacy-tab .list-unstyled {
+    padding-left: 0;
+    list-style: none;
+}
+
+.v2-legacy-content .text-right,
+.v2-legacy-tab .text-right {
+    text-align: right;
+}
+
+.v2-legacy-content .table-hover > tbody > tr:hover,
+.v2-legacy-tab .table-hover > tbody > tr:hover {
+    background-color: #f5f5f5;
+}
+
+.v2-legacy-content .v2-timeline-tab__intro,
+.v2-legacy-tab .v2-timeline-tab__intro {
+    margin-bottom: 1rem;
+}
+
+.v2-legacy-content .v2-timeline-auto-list li + li,
+.v2-legacy-tab .v2-timeline-auto-list li + li {
+    margin-top: 0.5rem;
+}
+
+.v2-legacy-content .v2-timeline-empty,
+.v2-legacy-tab .v2-timeline-empty {
+    padding: 15px;
+    margin: 0;
+}
+
+.v2-legacy-content .v2-timeline-panels > [class*="col-"],
+.v2-legacy-tab .v2-timeline-panels > [class*="col-"] {
+    display: flex;
+}
+
+.v2-legacy-content .v2-timeline-panels > [class*="col-"] > .box,
+.v2-legacy-tab .v2-timeline-panels > [class*="col-"] > .box {
+    width: 100%;
 }
