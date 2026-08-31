@@ -8,13 +8,13 @@
     $isLegacyTab = in_array($tab ?: 'funcoes', EventDashboardTabs::legacyTabIds(), true);
 @endphp
 
-@push('styles-before-v2')
+@push('styles-after-v2')
     @if($isLegacyTab)
         @include('layouts.v2.partials.event-legacy-plugins-styles')
         @include('layouts.v2.partials.event-shell-protect-styles')
+        @include('layouts.v2.partials.event-legacy-scoped-styles')
     @endif
     @include('layouts.v2.partials.event-v2-native-styles')
-    @include('layouts.v2.partials.event-legacy-scoped-styles')
 @endpush
 
 @section('content')

@@ -11,7 +11,7 @@
 						\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4]) ||
 						\Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])
 					)
-						<form method="post">
+						<form method="post" action="{{ url('/evento/dashboard/' . $evento->id) }}">
 					@endif
 							<div class="box-body">
 								<div class="form-group">

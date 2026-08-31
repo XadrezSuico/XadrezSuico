@@ -105,3 +105,86 @@
 .v2-legacy-tab input[name="name"] {
     background-image: none !important;
 }
+
+.v2-legacy-content .btn,
+.v2-legacy-tab .btn {
+    display: inline-block;
+    margin-bottom: 0;
+    font-weight: 400;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    touch-action: manipulation;
+    cursor: pointer;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    padding: 6px 12px;
+    font-size: 14px;
+    line-height: 1.42857143;
+}
+
+.v2-legacy-content .btn-success,
+.v2-legacy-tab .btn-success {
+    color: #fff;
+    background-color: #00a65a;
+    border-color: #008d4c;
+}
+
+.v2-legacy-content label,
+.v2-legacy-tab label {
+    display: inline-block;
+    max-width: 100%;
+    margin-bottom: 5px;
+    font-weight: 700;
+}
+
+.v2-legacy-content textarea.form-control,
+.v2-legacy-tab textarea.form-control {
+    height: auto;
+    min-height: 80px;
+}
+
+.v2-legacy-content hr,
+.v2-legacy-tab hr {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    border: 0;
+    border-top: 1px solid #eee;
+}
+
+.v2-legacy-content small,
+.v2-legacy-tab small {
+    font-size: 85%;
+    color: #737373;
+}
+
+.v2-legacy-content .select2-container,
+.v2-legacy-tab .select2-container {
+    z-index: 1;
+}
+
+.v2-legacy-content .select2-dropdown,
+.v2-legacy-tab .select2-dropdown {
+    z-index: 9999;
+}
+
+@media (min-width: 1200px) {
+    .v2-legacy-content .col-lg-12,
+    .v2-legacy-tab .col-lg-12 {
+        float: left;
+        width: 100%;
+    }
+}
+
+.v2-legacy-content > .row::before,
+.v2-legacy-content > .row::after,
+.v2-legacy-tab > .row::before,
+.v2-legacy-tab > .row::after {
+    display: table;
+    content: " ";
+}
+
+.v2-legacy-content > .row::after,
+.v2-legacy-tab > .row::after {
+    clear: both;
+}

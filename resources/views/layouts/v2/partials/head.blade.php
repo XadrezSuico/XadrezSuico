@@ -15,6 +15,7 @@
 @if(file_exists(public_path('css/app-v2.css')))
     <link rel="stylesheet" href="{{ asset('css/app-v2.css') }}?v={{ filemtime(public_path('css/app-v2.css')) }}">
 @endif
+@stack('styles-after-v2')
 
 <link rel="stylesheet" href="{{ asset('vendor/datatables/datatables.min.css') }}">
 <link rel="stylesheet" href="{{ asset('vendor/datatables/Responsive-2.2.2/css/responsive.dataTables.min.css') }}">

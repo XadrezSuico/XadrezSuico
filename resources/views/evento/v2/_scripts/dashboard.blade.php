@@ -59,6 +59,32 @@ $(document).ready(function () {
         });
     }
 
+    if ($('#pais_id').length) {
+        $('#pais_id').on('select2:select', function () {
+            if (typeof Loading !== 'undefined') {
+                Loading.enable(loading_default_animation, 10000);
+            }
+            buscaEstados(false, function () {
+                if (typeof Loading !== 'undefined') {
+                    Loading.destroy();
+                }
+            });
+        });
+    }
+
+    if ($('#estados_id').length) {
+        $('#estados_id').on('select2:select', function () {
+            if (typeof Loading !== 'undefined') {
+                Loading.enable(loading_default_animation, 10000);
+            }
+            buscaCidades(function () {
+                if (typeof Loading !== 'undefined') {
+                    Loading.destroy();
+                }
+            });
+        });
+    }
+
     @if($evento->cidade && $evento->cidade->estado && $evento->cidade->estado->pais)
         if (typeof Loading !== 'undefined') {
             Loading.enable(loading_default_animation, 10000);
@@ -117,13 +143,24 @@ $(document).ready(function () {
         $('.select2').css('width', '100%');
     }, 1000);
 
-    $('#evento_data_inicio').mask('00/00/0000');
-    $('#evento_data_fim').mask('00/00/0000');
-    $('#date_start_registration').mask('00/00/0000 00:00');
-    $('#evento_data_limite_inscricoes_abertas').mask('00/00/0000 00:00');
-    $('#confirmacao_publica_inicio').mask('00/00/0000 00:00');
-    $('#confirmacao_publica_final').mask('00/00/0000 00:00');
-    $('.timeline-datetime').mask('00/00/0000 00:00');
+    var maskFields = {
+        '#evento_data_inicio': '00/00/0000',
+        '#evento_data_fim': '00/00/0000',
+        '#date_start_registration': '00/00/0000 00:00',
+        '#evento_data_limite_inscricoes_abertas': '00/00/0000 00:00',
+        '#confirmacao_publica_inicio': '00/00/0000 00:00',
+        '#confirmacao_publica_final': '00/00/0000 00:00',
+    };
+    Object.keys(maskFields).forEach(function (selector) {
+        if ($(selector).length && typeof $.fn.mask === 'function') {
+            $(selector).mask(maskFields[selector]);
+        }
+    });
+    if (typeof $.fn.mask === 'function') {
+        $('.timeline-datetime').each(function () {
+            $(this).mask('00/00/0000 00:00');
+        });
+    }
 
     function eventToggleOk(response) {
         return response.ok === true || response.ok === 1 || response.ok === '1';
