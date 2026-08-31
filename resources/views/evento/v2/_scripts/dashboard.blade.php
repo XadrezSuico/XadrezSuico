@@ -123,9 +123,6 @@ $(document).ready(function () {
         }
     @endif
 
-    if ($('#tabela_torneio').length) {
-        $('#tabela_torneio').DataTable({ responsive: true, dom: 'Bfrtip', buttons: ['copy', 'csv', 'excel', 'pdf', 'print'] });
-    }
     if ($('#tabela_categoria').length) {
         $('#tabela_categoria').DataTable({ responsive: true });
     }

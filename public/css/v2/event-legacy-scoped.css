@@ -775,3 +775,193 @@
     overflow-x: auto;
     min-height: 0.01%;
 }
+
+.v2-legacy-content .v2-torneio-panels > [class*="col-"],
+.v2-legacy-tab .v2-torneio-panels > [class*="col-"] {
+    display: flex;
+}
+
+.v2-legacy-content .v2-torneio-panels > [class*="col-"] > .box,
+.v2-legacy-tab .v2-torneio-panels > [class*="col-"] > .box {
+    width: 100%;
+}
+
+.v2-legacy-content .v2-torneio-list-box,
+.v2-legacy-tab .v2-torneio-list-box {
+    margin-top: 1rem;
+}
+
+.v2-legacy-content .v2-torneio-empty,
+.v2-legacy-tab .v2-torneio-empty {
+    margin: 0;
+    padding: 0.5rem 0;
+}
+
+.v2-legacy-content .v2-torneio-group + .v2-torneio-group,
+.v2-legacy-tab .v2-torneio-group + .v2-torneio-group {
+    margin-top: 1.75rem;
+    padding-top: 1.75rem;
+    border-top: 1px solid #eee;
+}
+
+.v2-legacy-content .v2-torneio-group__title,
+.v2-legacy-tab .v2-torneio-group__title {
+    margin: 0 0 1rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #444;
+}
+
+.v2-legacy-content .v2-torneio-cards,
+.v2-legacy-tab .v2-torneio-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.v2-legacy-content .v2-torneio-card,
+.v2-legacy-tab .v2-torneio-card {
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    background: #fff;
+    overflow: hidden;
+}
+
+.v2-legacy-content .v2-torneio-card__header,
+.v2-legacy-tab .v2-torneio-card__header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.875rem 1rem;
+    background: #f9fafb;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.v2-legacy-content .v2-torneio-card__title-wrap,
+.v2-legacy-tab .v2-torneio-card__title-wrap {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 0;
+}
+
+.v2-legacy-content .v2-torneio-card__title,
+.v2-legacy-tab .v2-torneio-card__title {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #333;
+}
+
+.v2-legacy-content .v2-torneio-card__badges,
+.v2-legacy-tab .v2-torneio-card__badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+}
+
+.v2-legacy-content .v2-torneio-card__body,
+.v2-legacy-tab .v2-torneio-card__body {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    padding: 1rem;
+}
+
+@media (min-width: 768px) {
+    .v2-legacy-content .v2-torneio-card__body,
+    .v2-legacy-tab .v2-torneio-card__body {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+.v2-legacy-content .v2-torneio-card__section-label,
+.v2-legacy-tab .v2-torneio-card__section-label {
+    display: block;
+    margin-bottom: 0.35rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: #888;
+}
+
+.v2-legacy-content .v2-torneio-card__tags,
+.v2-legacy-tab .v2-torneio-card__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+}
+
+.v2-legacy-content .v2-torneio-stats,
+.v2-legacy-tab .v2-torneio-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(7rem, 1fr));
+    gap: 0.5rem 1rem;
+    margin: 0;
+}
+
+.v2-legacy-content .v2-torneio-stats > div,
+.v2-legacy-tab .v2-torneio-stats > div {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+}
+
+.v2-legacy-content .v2-torneio-stats dt,
+.v2-legacy-tab .v2-torneio-stats dt {
+    margin: 0;
+    font-size: 0.75rem;
+    font-weight: 400;
+    color: #888;
+}
+
+.v2-legacy-content .v2-torneio-stats dd,
+.v2-legacy-tab .v2-torneio-stats dd {
+    margin: 0;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: #333;
+}
+
+.v2-legacy-content .v2-torneio-card__actions,
+.v2-legacy-tab .v2-torneio-card__actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 0.875rem 1rem;
+    background: #fafafa;
+    border-top: 1px solid #e5e7eb;
+}
+
+.v2-legacy-content .v2-torneio-actions__group,
+.v2-legacy-tab .v2-torneio-actions__group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.v2-legacy-content .v2-torneio-actions__label,
+.v2-legacy-tab .v2-torneio-actions__label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: #888;
+}
+
+.v2-legacy-content .v2-torneio-actions__buttons,
+.v2-legacy-tab .v2-torneio-actions__buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+}
+
+.v2-legacy-content .v2-torneio-actions__error,
+.v2-legacy-tab .v2-torneio-actions__error {
+    margin: 0;
+    font-size: 0.875rem;
+}
