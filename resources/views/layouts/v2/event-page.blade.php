@@ -4,9 +4,8 @@
 
 @push('styles-after-v2')
     @include('layouts.v2.partials.event-legacy-plugins-styles')
-    @include('layouts.v2.partials.event-shell-protect-styles')
     @include('layouts.v2.partials.event-legacy-scoped-styles')
-    @include('layouts.v2.partials.event-v2-native-styles')
+    @include('layouts.v2.partials.event-shell-protect-styles')
 @endpush
 
 @section('content')

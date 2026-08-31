@@ -56,3 +56,9 @@ body.bg-brand-surface {
     margin-left: 0 !important;
     z-index: auto;
 }
+
+#v2-app > div > main .v2-legacy-tab,
+#v2-app > div > main .v2-legacy-content {
+    flex: 1 1 auto;
+    align-self: stretch;
+}
