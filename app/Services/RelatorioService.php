@@ -58,7 +58,7 @@ class RelatorioService
             return [];
         }
 
-        $inscricoes = Inscricao::with('enxadrista')
+        $inscricoes = Inscricao::with(['enxadrista', 'cidade.estado.pais', 'clube'])
             ->whereHas('torneio', function ($query) use ($evento) {
                 $query->where('evento_id', $evento->id);
             })
@@ -80,6 +80,8 @@ class RelatorioService
             $linhas[] = [
                 'enxadrista_id' => $enxadrista->id,
                 'nome' => $enxadrista->getNomePrivado(),
+                'cidade' => $inscricao->cidade ? $inscricao->getCidade() : '-',
+                'clube' => $inscricao->clube ? $inscricao->clube->getName() : '-',
                 'cbx_id' => $temIdCbx ? $cbxId : '-',
                 'tem_id_cbx' => $temIdCbx,
                 'data_pagto' => '-',

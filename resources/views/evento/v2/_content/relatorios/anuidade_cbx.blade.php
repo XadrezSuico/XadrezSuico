@@ -53,6 +53,8 @@
                             <th class="display-none">Ordem</th>
                             <th>ID Enxadrista</th>
                             <th>Nome do Enxadrista</th>
+                            <th>Cidade</th>
+                            <th>Clube</th>
                             <th>ID CBX</th>
                             <th>Data Pagto. (CBX)</th>
                             <th>Status</th>
@@ -71,6 +73,8 @@
                                 <td class="display-none">{{ $linha['status_ordenacao'] }}</td>
                                 <td>{{ $linha['enxadrista_id'] }}</td>
                                 <td>{{ $linha['nome'] }}</td>
+                                <td>{{ $linha['cidade'] }}</td>
+                                <td>{{ $linha['clube'] }}</td>
                                 <td>{{ $linha['cbx_id'] }}</td>
                                 <td class="col-data-pagto">{{ $linha['data_pagto'] }}</td>
                                 <td class="col-status">
