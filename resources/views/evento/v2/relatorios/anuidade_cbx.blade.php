@@ -88,7 +88,7 @@
     @php($j = 0)
     @php($k = 0)
     @foreach($linhas as $linha)
-        @if($linha['tem_id_cbx'])
+        @if($linha['tem_id_cbx'] && $linha['requer_consulta'])
             enxadristasConsulta[{{ $k++ }}] = {{ $linha['enxadrista_id'] }};
         @endif
         enxadristas[{{ $j++ }}] = {{ $linha['enxadrista_id'] }};

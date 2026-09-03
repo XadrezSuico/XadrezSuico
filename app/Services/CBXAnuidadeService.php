@@ -4,11 +4,14 @@ namespace App\Services;
 
 use App\Enxadrista;
 use GuzzleHttp\Client;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\DomCrawler\Crawler;
 
 class CBXAnuidadeService
 {
+    const CACHE_TTL_DAYS = 7;
+
     public function consultarEnxadrista(Enxadrista $enxadrista): array
     {
         if ($enxadrista->hasConfig('united_to')) {
@@ -23,11 +26,31 @@ class CBXAnuidadeService
         return $this->consultarPorCbxId($cbxId);
     }
 
+    public function obterDoCache(string $cbxId): ?array
+    {
+        $cbxId = trim($cbxId);
+        if (!(intval($cbxId) > 0)) {
+            return null;
+        }
+
+        $cached = Cache::get($this->getCacheKey($cbxId));
+        if (!is_array($cached) || ($cached['status'] ?? '') !== 'pago') {
+            return null;
+        }
+
+        return $cached;
+    }
+
     public function consultarPorCbxId(string $cbxId): array
     {
         $cbxId = trim($cbxId);
         if (!(intval($cbxId) > 0)) {
             return $this->resultadoSemId();
+        }
+
+        $cached = $this->obterDoCache($cbxId);
+        if ($cached !== null) {
+            return $cached;
         }
 
         try {
@@ -52,7 +75,13 @@ class CBXAnuidadeService
                 return $this->resultadoErro('Jogador não encontrado na CBX.');
             }
 
-            return $this->resolveStatus($dataPagto);
+            $resultado = $this->resolveStatus($dataPagto);
+
+            if ($resultado['status'] === 'pago') {
+                $this->armazenarCache($cbxId, $resultado);
+            }
+
+            return $resultado;
         } catch (\Throwable $e) {
             Log::debug("CBXAnuidadeService::consultarPorCbxId - exceção para ID {$cbxId}: " . $e->getMessage());
 
@@ -141,5 +170,19 @@ class CBXAnuidadeService
             'data_pagto' => '-',
             'detalhe' => $detalhe,
         ];
+    }
+
+    private function getCacheKey(string $cbxId): string
+    {
+        return 'cbx_anuidade_pago:' . $cbxId . ':' . date('Y');
+    }
+
+    private function armazenarCache(string $cbxId, array $resultado): void
+    {
+        Cache::put(
+            $this->getCacheKey($cbxId),
+            $resultado,
+            now()->addDays(self::CACHE_TTL_DAYS)
+        );
     }
 }

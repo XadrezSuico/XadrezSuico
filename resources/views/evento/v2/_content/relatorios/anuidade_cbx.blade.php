@@ -67,6 +67,8 @@
                                 $classeBadge = 'anuidade-aguardando';
                                 if ($linha['status'] === 'sem_id') {
                                     $classeBadge = 'anuidade-sem-id';
+                                } elseif ($linha['status'] === 'pago') {
+                                    $classeBadge = 'anuidade-pago';
                                 }
                             @endphp
                             <tr id="linha_{{ $linha['enxadrista_id'] }}" data-status-ordenacao="{{ $linha['status_ordenacao'] }}">
@@ -84,7 +86,11 @@
                                 </td>
                                 <td>
                                     @if($linha['tem_id_cbx'])
-                                        <i id="enxadrista_{{ $linha['enxadrista_id'] }}_icon" style="display:none;" class="fa fa-spinner anuidade-icon"></i>
+                                        @if($linha['requer_consulta'])
+                                            <i id="enxadrista_{{ $linha['enxadrista_id'] }}_icon" style="display:none;" class="fa fa-spinner anuidade-icon"></i>
+                                        @else
+                                            <i class="fa fa-check anuidade-icon" title="Resultado em cache"></i>
+                                        @endif
                                     @else
                                         <i class="fa fa-minus anuidade-icon" title="Sem ID CBX"></i>
                                     @endif

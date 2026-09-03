@@ -66,6 +66,7 @@ class RelatorioService
 
         $linhas = [];
         $vistos = [];
+        $cbxAnuidadeService = app(CBXAnuidadeService::class);
 
         foreach ($inscricoes as $inscricao) {
             if (!$inscricao->enxadrista || isset($vistos[$inscricao->enxadrista->id])) {
@@ -77,18 +78,56 @@ class RelatorioService
             $cbxId = trim((string) $enxadrista->cbx_id);
             $temIdCbx = $cbxId !== '' && intval($cbxId) > 0;
 
+            if (!$temIdCbx) {
+                $linhas[] = [
+                    'enxadrista_id' => $enxadrista->id,
+                    'nome' => $enxadrista->getNomePrivado(),
+                    'cidade' => $inscricao->cidade ? $inscricao->getCidade() : '-',
+                    'clube' => $inscricao->clube ? $inscricao->clube->getName() : '-',
+                    'cbx_id' => '-',
+                    'tem_id_cbx' => false,
+                    'requer_consulta' => false,
+                    'data_pagto' => '-',
+                    'status' => 'sem_id',
+                    'label' => 'Sem ID CBX',
+                    'detalhe' => 'Enxadrista sem ID CBX informado.',
+                    'status_ordenacao' => 2,
+                ];
+                continue;
+            }
+
+            $cached = $cbxAnuidadeService->obterDoCache($cbxId);
+            if ($cached !== null) {
+                $linhas[] = [
+                    'enxadrista_id' => $enxadrista->id,
+                    'nome' => $enxadrista->getNomePrivado(),
+                    'cidade' => $inscricao->cidade ? $inscricao->getCidade() : '-',
+                    'clube' => $inscricao->clube ? $inscricao->clube->getName() : '-',
+                    'cbx_id' => $cbxId,
+                    'tem_id_cbx' => true,
+                    'requer_consulta' => false,
+                    'data_pagto' => $cached['data_pagto'],
+                    'status' => $cached['status'],
+                    'label' => $cached['label'],
+                    'detalhe' => ($cached['detalhe'] ?? '') . ' (cache de ' . CBXAnuidadeService::CACHE_TTL_DAYS . ' dias)',
+                    'status_ordenacao' => 2,
+                ];
+                continue;
+            }
+
             $linhas[] = [
                 'enxadrista_id' => $enxadrista->id,
                 'nome' => $enxadrista->getNomePrivado(),
                 'cidade' => $inscricao->cidade ? $inscricao->getCidade() : '-',
                 'clube' => $inscricao->clube ? $inscricao->clube->getName() : '-',
-                'cbx_id' => $temIdCbx ? $cbxId : '-',
-                'tem_id_cbx' => $temIdCbx,
+                'cbx_id' => $cbxId,
+                'tem_id_cbx' => true,
+                'requer_consulta' => true,
                 'data_pagto' => '-',
-                'status' => $temIdCbx ? 'aguardando' : 'sem_id',
-                'label' => $temIdCbx ? 'Aguardando' : 'Sem ID CBX',
-                'detalhe' => $temIdCbx ? 'Consulta pendente.' : 'Enxadrista sem ID CBX informado.',
-                'status_ordenacao' => $temIdCbx ? 1 : 2,
+                'status' => 'aguardando',
+                'label' => 'Aguardando',
+                'detalhe' => 'Consulta pendente.',
+                'status_ordenacao' => 1,
             ];
         }
 
