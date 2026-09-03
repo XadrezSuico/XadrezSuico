@@ -4,7 +4,10 @@
 
 @section('content')
     <div id="v2-event-chrome">
-        @include('layouts.v2.partials.event-header', ['evento' => $evento])
+        @include('layouts.v2.partials.event-header', [
+            'evento' => $evento,
+            'isEventDashboard' => true,
+        ])
 
         @if(!empty($show_kpi_strip))
             @include('components.v2.kpi-strip', [

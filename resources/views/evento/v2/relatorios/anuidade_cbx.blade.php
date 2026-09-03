@@ -1,4 +1,4 @@
-@extends('layouts.v2.event-page')
+@extends('layouts.v2.event-page', ['pageTitle' => 'Anuidade CBX - ' . $evento->name])
 
 @section('event-page-content')
     @include('evento.v2._content.relatorios.anuidade_cbx')

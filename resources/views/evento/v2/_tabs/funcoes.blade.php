@@ -188,12 +188,12 @@
 
     @component('components.v2.panel', ['title' => 'Relatórios'])
         <div class="v2-action-grid v2-action-grid--2">
-            @include('components.v2.action-card', ['href' => url('/evento/' . $evento->id . '/relatorios/premiados'), 'label' => 'Enxadristas Premiados', 'icon' => $iconList])
+            @include('components.v2.action-card', ['href' => url('/evento/' . $evento->id . '/relatorios/premiados?from_tab=funcoes'), 'label' => 'Enxadristas Premiados', 'icon' => $iconList])
             @if($evento->calcula_cbx || $evento->calcula_fide)
-                @include('components.v2.action-card', ['href' => url('/evento/' . $evento->id . '/relatorios/comparacao-cadastros'), 'label' => 'Comparação de Cadastros', 'icon' => $iconList])
+                @include('components.v2.action-card', ['href' => url('/evento/' . $evento->id . '/relatorios/comparacao-cadastros?from_tab=funcoes'), 'label' => 'Comparação de Cadastros', 'icon' => $iconList])
             @endif
             @if($evento->tipo_modalidade == 0 && ($evento->calcula_cbx || $evento->calcula_fide))
-                @include('components.v2.action-card', ['href' => url('/evento/' . $evento->id . '/relatorios/anuidade-cbx'), 'label' => 'Anuidade CBX', 'icon' => $iconList])
+                @include('components.v2.action-card', ['href' => url('/evento/' . $evento->id . '/relatorios/anuidade-cbx?from_tab=funcoes'), 'label' => 'Anuidade CBX', 'icon' => $iconList])
             @endif
         </div>
     @endcomponent

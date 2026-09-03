@@ -1,13 +1,27 @@
 @php
-    $backUrl = null;
-    $backLabel = null;
+    use App\Support\EventDashboardTabs;
 
-    if ($evento->parent_event) {
-        $backUrl = url('/evento/dashboard/' . $evento->parent_event->id . '?tab=evento_filho');
-        $backLabel = 'Voltar ao evento pai';
-    } else {
-        $backUrl = url('/grupoevento/dashboard/' . $evento->grupo_evento->id);
-        $backLabel = 'Voltar ao grupo de evento';
+    $resolvedBackUrl = $backUrl ?? null;
+    $resolvedBackLabel = $backLabel ?? null;
+
+    if (!$resolvedBackUrl) {
+        if ($evento->parent_event && !empty($isEventDashboard)) {
+            $resolvedBackUrl = url('/evento/dashboard/' . $evento->parent_event->id . '?tab=evento_filho');
+            $resolvedBackLabel = 'Voltar ao evento pai';
+        } elseif (!empty($isEventDashboard)) {
+            $resolvedBackUrl = url('/grupoevento/dashboard/' . $evento->grupo_evento->id);
+            $resolvedBackLabel = 'Voltar ao grupo de evento';
+        } elseif ($fromTab = request('from_tab')) {
+            $resolvedBackUrl = url('/evento/dashboard/' . $evento->id . '?tab=' . urlencode($fromTab));
+            $resolvedBackLabel = 'Voltar à aba ' . EventDashboardTabs::labelFor($fromTab);
+        } else {
+            $resolvedBackUrl = url('/evento/dashboard/' . $evento->id);
+            $resolvedBackLabel = 'Voltar ao evento';
+        }
+    }
+
+    if (!$resolvedBackLabel) {
+        $resolvedBackLabel = 'Voltar';
     }
 @endphp
 
@@ -21,8 +35,8 @@
     </div>
     <div class="flex flex-wrap gap-2">
         @include('components.v2.btn', [
-            'href' => $backUrl,
-            'label' => $backLabel,
+            'href' => $resolvedBackUrl,
+            'label' => $resolvedBackLabel,
             'variant' => 'secondary',
             'size' => 'sm',
         ])

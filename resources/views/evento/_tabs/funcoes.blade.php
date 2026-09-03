@@ -406,18 +406,18 @@
                 <h3 class="box-title"><i class="fa fa-file-text-o"></i> Relatórios</h3>
             </div>
             <div class="box-body">
-                <a href="{{url("/evento/".$evento->id."/relatorios/premiados")}}" class="btn btn-app">
+                <a href="{{url("/evento/".$evento->id."/relatorios/premiados?from_tab=funcoes")}}" class="btn btn-app">
                     <i class="fa fa-file"></i>
                     Enxadristas Premiados neste Evento
                 </a>
                 @if($evento->calcula_cbx || $evento->calcula_fide)
-                <a href="{{url("/evento/".$evento->id."/relatorios/comparacao-cadastros")}}" class="btn btn-app">
+                <a href="{{url("/evento/".$evento->id."/relatorios/comparacao-cadastros?from_tab=funcoes")}}" class="btn btn-app">
                     <i class="fa fa-exchange"></i>
                     Comparação de Cadastros
                 </a>
                 @endif
                 @if($evento->tipo_modalidade == 0 && ($evento->calcula_cbx || $evento->calcula_fide))
-                <a href="{{url("/evento/".$evento->id."/relatorios/anuidade-cbx")}}" class="btn btn-app">
+                <a href="{{url("/evento/".$evento->id."/relatorios/anuidade-cbx?from_tab=funcoes")}}" class="btn btn-app">
                     <i class="fa fa-money"></i>
                     Anuidade CBX
                 </a>

@@ -9,7 +9,12 @@
 
 @section('content')
     @if(!empty($evento))
-        @include('layouts.v2.partials.event-header', ['evento' => $evento])
+        @include('layouts.v2.partials.event-header', [
+            'evento' => $evento,
+            'isEventDashboard' => false,
+            'backUrl' => $backUrl ?? null,
+            'backLabel' => $backLabel ?? null,
+        ])
     @endif
 
     @if(!empty($pageTitle))

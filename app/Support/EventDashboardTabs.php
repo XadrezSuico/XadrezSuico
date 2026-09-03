@@ -31,6 +31,40 @@ class EventDashboardTabs
     }
 
     /**
+     * @return array<int, array{id: string, label: string}>
+     */
+    private static function baseTabDefinitions(): array
+    {
+        return [
+            ['id' => 'funcoes', 'label' => 'Funções'],
+            ['id' => 'resume', 'label' => 'Resumo'],
+            ['id' => 'editar_evento', 'label' => 'Editar Evento'],
+            ['id' => 'pagina', 'label' => 'Página'],
+            ['id' => 'timeline', 'label' => 'Timeline'],
+            ['id' => 'criterio_desempate', 'label' => 'Critério de Desempate'],
+            ['id' => 'premiacao_equipe', 'label' => 'Premiação por Equipes'],
+            ['id' => 'categoria', 'label' => 'Categorias'],
+            ['id' => 'categorias_relacionadas', 'label' => 'Categorias Relacionadas'],
+            ['id' => 'evento_filho', 'label' => 'Eventos Filhos'],
+            ['id' => 'torneio', 'label' => 'Torneios'],
+            ['id' => 'campo_personalizado', 'label' => 'Campos'],
+            ['id' => 'email_template', 'label' => 'E-mail'],
+            ['id' => 'classificator', 'label' => 'Classificador'],
+        ];
+    }
+
+    public static function labelFor(string $tabId): string
+    {
+        foreach (self::baseTabDefinitions() as $tab) {
+            if ($tab['id'] === $tabId) {
+                return $tab['label'];
+            }
+        }
+
+        return ucfirst(str_replace('_', ' ', $tabId));
+    }
+
+    /**
      * @return array<int, array{id: string, label: string, url: string, active: bool}>
      */
     public static function forEvent(Evento $evento, ?string $activeTab = null): array
