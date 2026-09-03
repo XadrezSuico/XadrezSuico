@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enxadrista;
+use App\Helper\FideFederationHelper;
 use App\Pais;
 use App\PlayerTitle;
 use App\Sexo;
@@ -330,6 +331,7 @@ class FIDERatingController extends Controller
     {
         $enxadrista->encontrado_fide = false;
         $enxadrista->fide_name = null;
+        $enxadrista->fide_federation = null;
 
         if (!$save_rating) {
             return;
@@ -404,13 +406,21 @@ class FIDERatingController extends Controller
     {
         self::syncFideTitle($enxadrista, self::extractText($crawler, '.profile-info-title p'));
 
-        if ($enxadrista->pais_id === null) {
-            $federation = self::extractText($crawler, '.profile-info-country');
+        $federation = self::extractText($crawler, '.profile-info-country');
+        $fideFederation = self::extractFederationCode($crawler, $federation);
+        if ($fideFederation !== null) {
+            $enxadrista->fide_federation = $fideFederation;
+        } else {
+            $enxadrista->fide_federation = null;
             if ($federation !== null) {
-                $pais = Pais::where('nome_ingles', $federation)->first();
-                if ($pais) {
-                    $enxadrista->pais_id = $pais->id;
-                }
+                Log::debug("FIDERatingController::syncMetadata - federação FIDE não mapeada: {$federation}");
+            }
+        }
+
+        if ($enxadrista->pais_id === null && $federation !== null) {
+            $pais = Pais::where('nome_ingles', $federation)->first();
+            if ($pais) {
+                $enxadrista->pais_id = $pais->id;
             }
         }
 
@@ -445,6 +455,20 @@ class FIDERatingController extends Controller
 
         $text = trim($crawler->filter($selector)->first()->text());
         return $text === '' ? null : $text;
+    }
+
+    private static function extractFederationCode(Crawler $crawler, ?string $federationName): ?string
+    {
+        $alpha2 = null;
+
+        if ($crawler->filter('.profile-info-country img')->count() > 0) {
+            $src = $crawler->filter('.profile-info-country img')->first()->attr('src');
+            if ($src !== null && preg_match('/flags\/([a-z]{2})\.svg/i', $src, $matches)) {
+                $alpha2 = $matches[1];
+            }
+        }
+
+        return FideFederationHelper::resolve($alpha2, $federationName);
     }
 
     private static function syncFideTitle(Enxadrista $enxadrista, ?string $fideTitleText): void

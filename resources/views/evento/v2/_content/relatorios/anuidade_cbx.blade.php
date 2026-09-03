@@ -38,6 +38,7 @@
                 <p style="margin-top: 10px; margin-bottom: 0;">
                     Consulta a coluna "Data Pagto." no site da CBX para cada jogador inscrito com ID CBX.
                     Anuidade considerada paga quando há data de pagamento do ano atual.
+                    Enxadristas com ID FIDE de federação estrangeira (bandeira diferente de BRA) são omitidos deste relatório.
                 </p>
             </div>
         </div>

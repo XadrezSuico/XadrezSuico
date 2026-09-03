@@ -75,6 +75,11 @@ class RelatorioService
 
             $vistos[$inscricao->enxadrista->id] = true;
             $enxadrista = $inscricao->enxadrista;
+
+            if (!$this->requerAnuidadeCbx($enxadrista)) {
+                continue;
+            }
+
             $cbxId = trim((string) $enxadrista->cbx_id);
             $temIdCbx = $cbxId !== '' && intval($cbxId) > 0;
 
@@ -140,6 +145,24 @@ class RelatorioService
         });
 
         return $linhas;
+    }
+
+    public function requerAnuidadeCbx(Enxadrista $enxadrista): bool
+    {
+        $fideId = trim((string) $enxadrista->fide_id);
+        $temFideId = $fideId !== '' && intval($fideId) > 0;
+
+        if (!$temFideId) {
+            return true;
+        }
+
+        $federacao = strtoupper(trim((string) $enxadrista->fide_federation));
+
+        if ($federacao === '') {
+            return true;
+        }
+
+        return $federacao === 'BRA';
     }
 
     public function enxadristaPertenceAoEvento(Evento $evento, int $enxadristaId): bool

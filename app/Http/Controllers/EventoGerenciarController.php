@@ -1382,6 +1382,10 @@ class EventoGerenciarController extends Controller
             return response()->json(["ok" => 0, "error" => 1, "detalhe" => "Enxadrista não encontrado."]);
         }
 
+        if (!$relatorioService->requerAnuidadeCbx($enxadrista)) {
+            return response()->json(["ok" => 0, "error" => 1, "detalhe" => "Enxadrista com federação FIDE estrangeira — consulta CBX não aplicável."]);
+        }
+
         $resultado = app(CBXAnuidadeService::class)->consultarEnxadrista($enxadrista);
         $ok = $resultado['status'] !== 'erro';
 

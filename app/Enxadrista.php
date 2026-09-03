@@ -816,6 +816,7 @@ class Enxadrista extends Model
         if($this->getOriginal("fide_id") != $fide_id || $this->fide_id != $fide_id){
             $this->fide_id = $fide_id;
             $this->fide_name = null;
+            $this->fide_federation = null;
             $this->fide_last_update = null;
             $this->encontrado_fide = false;
 
