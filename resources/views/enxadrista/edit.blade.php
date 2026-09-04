@@ -39,8 +39,28 @@
 		.select2{
 			width: 100% !important;
 		}
-		.input-group .btn {
-			height: 34px;
+		.input-group .btn-sync-entidade {
+			min-width: 38px;
+			padding: 6px 10px;
+			border-color: #3c8dbc;
+			background-color: #3c8dbc;
+			color: #fff;
+		}
+		.input-group .btn-sync-entidade:hover:not(:disabled),
+		.input-group .btn-sync-entidade:focus:not(:disabled) {
+			background-color: #367fa9;
+			border-color: #367fa9;
+			color: #fff;
+		}
+		.input-group .btn-sync-entidade:disabled {
+			opacity: 0.55;
+			cursor: not-allowed;
+			background-color: #b8c7ce;
+			border-color: #b8c7ce;
+			color: #fff;
+		}
+		.input-group .btn-sync-entidade .fa {
+			font-size: 14px;
 		}
 	</style>
 @endsection
@@ -209,8 +229,8 @@
                                             <input name="cbx_id" id="cbx_id" class="form-control" type="text" value="{{$enxadrista->cbx_id}}" @if(!$permitido_edicao) disabled="disabled" @endif />
                                             @if($permitido_edicao)
                                             <span class="input-group-btn">
-                                                <button type="button" id="sync_cbx_btn" class="btn btn-default" disabled title="Atualizar CBX">
-                                                    <i class="fa fa-sync"></i>
+                                                <button type="button" id="sync_cbx_btn" class="btn btn-sync-entidade" disabled title="Atualizar CBX">
+                                                    <i class="fa fa-refresh"></i>
                                                 </button>
                                             </span>
                                             @endif
@@ -224,8 +244,8 @@
                                             <input name="fide_id" id="fide_id" class="form-control" type="text" value="{{$enxadrista->fide_id}}" @if(!$permitido_edicao) disabled="disabled" @endif />
                                             @if($permitido_edicao)
                                             <span class="input-group-btn">
-                                                <button type="button" id="sync_fide_btn" class="btn btn-default" disabled title="Atualizar FIDE">
-                                                    <i class="fa fa-sync"></i>
+                                                <button type="button" id="sync_fide_btn" class="btn btn-sync-entidade" disabled title="Atualizar FIDE">
+                                                    <i class="fa fa-refresh"></i>
                                                 </button>
                                             </span>
                                             @endif
