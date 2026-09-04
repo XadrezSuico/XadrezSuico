@@ -891,4 +891,64 @@ class EnxadristaController extends Controller
 
         return response()->json(["ok" => 1, "error" => 0]);
     }
+
+    public function sync_entidade($id, $entidade, Request $request)
+    {
+        $user = Auth::user();
+        if (!($user->hasPermissionGlobal() || $user->hasPermissionGlobalbyPerfil([9]))) {
+            return response()->json(["ok" => 0, "message" => "Sem permissão para fazer esta ação."]);
+        }
+
+        if (!in_array($entidade, ['cbx', 'fide'], true)) {
+            return response()->json(["ok" => 0, "message" => "Entidade inválida."]);
+        }
+
+        $enxadrista = Enxadrista::find($id);
+        if (!$enxadrista) {
+            return response()->json(["ok" => 0, "message" => "Enxadrista não encontrado."]);
+        }
+
+        if ($enxadrista->hasConfig("united_to")) {
+            return response()->json(["ok" => 0, "message" => "Este cadastro foi unido a outro e não permite atualização."]);
+        }
+
+        $field = $entidade . '_id';
+        if (!$enxadrista->{$field}) {
+            return response()->json(["ok" => 0, "message" => "ID " . strtoupper($entidade) . " não informado no cadastro. Salve o enxadrista antes de atualizar."]);
+        }
+
+        if ($request->has($field) && (string) $request->input($field) !== (string) $enxadrista->{$field}) {
+            return response()->json(["ok" => 0, "message" => "O ID informado não corresponde ao valor salvo. Salve o cadastro antes de atualizar."]);
+        }
+
+        $codigo_organizacao = $entidade === 'cbx' ? 1 : 0;
+        $encontrado_field = 'encontrado_' . $entidade;
+        $name_field = $entidade . '_name';
+
+        if ($entidade === 'cbx') {
+            $enxadrista = CBXRatingController::getRating($enxadrista, false, true);
+        } else {
+            $enxadrista = FIDERatingController::getRating($enxadrista, false, true);
+        }
+
+        if (!$enxadrista || !$enxadrista->{$encontrado_field}) {
+            return response()->json([
+                "ok" => 0,
+                "message" => "Enxadrista não encontrado na " . strtoupper($entidade) . ".",
+            ]);
+        }
+
+        return response()->json([
+            "ok" => 1,
+            "message" => strtoupper($entidade) . " atualizada com sucesso!",
+            "data" => [
+                "name" => $enxadrista->{$name_field},
+                "ratings" => [
+                    "std" => $enxadrista->showRating($codigo_organizacao, 0) ?: null,
+                    "rpd" => $enxadrista->showRating($codigo_organizacao, 1) ?: null,
+                    "btz" => $enxadrista->showRating($codigo_organizacao, 2) ?: null,
+                ],
+            ],
+        ]);
+    }
 }

@@ -39,6 +39,9 @@
 		.select2{
 			width: 100% !important;
 		}
+		.input-group .btn {
+			height: 34px;
+		}
 	</style>
 @endsection
 
@@ -148,6 +151,7 @@
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         <label>CBX</label><br/>
+                                        <span id="cbx_info_display">
                                         @if($enxadrista->cbx_id)
                                             Nome: @if($enxadrista->encontrado_cbx) <u>{{$enxadrista->cbx_name}}</u> @else <strong>ENXADRISTA NÃO ENCONTRADO</strong> @endif<br/>
                                             @if($enxadrista->encontrado_cbx)
@@ -159,11 +163,13 @@
                                         @else
                                             <strong>ID não informado.</strong>
                                         @endif
+                                        </span>
                                     </div>
                                 </div>
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         <label>FIDE</label><br/>
+                                        <span id="fide_info_display">
                                         @if($enxadrista->fide_id)
                                             Nome: @if($enxadrista->encontrado_fide) <u>{{$enxadrista->fide_name}}</u> @else <strong>ENXADRISTA NÃO ENCONTRADO</strong> @endif<br/>
                                             @if($enxadrista->encontrado_fide)
@@ -175,6 +181,7 @@
                                         @else
                                             <strong>ID não informado.</strong>
                                         @endif
+                                        </span>
                                     </div>
                                 </div>
                                 <div class="col-md-4">
@@ -198,13 +205,31 @@
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         <label for="cbx_id">ID CBX</label>
-                                        <input name="cbx_id" id="cbx_id" class="form-control" type="text" value="{{$enxadrista->cbx_id}}" @if(!$permitido_edicao) disabled="disabled" @endif />
+                                        <div class="input-group">
+                                            <input name="cbx_id" id="cbx_id" class="form-control" type="text" value="{{$enxadrista->cbx_id}}" @if(!$permitido_edicao) disabled="disabled" @endif />
+                                            @if($permitido_edicao)
+                                            <span class="input-group-btn">
+                                                <button type="button" id="sync_cbx_btn" class="btn btn-default" disabled title="Atualizar CBX">
+                                                    <i class="fa fa-sync"></i>
+                                                </button>
+                                            </span>
+                                            @endif
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         <label for="fide_id">ID FIDE</label>
-                                        <input name="fide_id" id="fide_id" class="form-control" type="text" value="{{$enxadrista->fide_id}}" @if(!$permitido_edicao) disabled="disabled" @endif />
+                                        <div class="input-group">
+                                            <input name="fide_id" id="fide_id" class="form-control" type="text" value="{{$enxadrista->fide_id}}" @if(!$permitido_edicao) disabled="disabled" @endif />
+                                            @if($permitido_edicao)
+                                            <span class="input-group-btn">
+                                                <button type="button" id="sync_fide_btn" class="btn btn-default" disabled title="Atualizar FIDE">
+                                                    <i class="fa fa-sync"></i>
+                                                </button>
+                                            </span>
+                                            @endif
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="col-md-4">
@@ -548,6 +573,101 @@
         });
 
         listTitles();
+
+        @if($permitido_edicao)
+        var savedCbxId = "{{ $enxadrista->cbx_id ?? '' }}";
+        var savedFideId = "{{ $enxadrista->fide_id ?? '' }}";
+
+        function formatRating(value) {
+            return (value === null || value === false || value === '') ? '-' : value;
+        }
+
+        function renderEntidadeInfo(data) {
+            var html = 'Nome: <u>' + data.name + '</u><br/>';
+            html += '<label>Rating</label><br/>';
+            html += 'STD: ' + formatRating(data.ratings.std) + '<br/>';
+            html += 'RPD: ' + formatRating(data.ratings.rpd) + '<br/>';
+            html += 'BTZ: ' + formatRating(data.ratings.btz) + '<br/>';
+            return html;
+        }
+
+        function updateSyncButtonState($input, $btn, savedValue) {
+            var current = $.trim($input.val());
+            var saved = $.trim(String(savedValue));
+            $btn.prop('disabled', current === '' || current !== saved || $btn.data('loading') === true);
+        }
+
+        function showSyncError(message) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Erro',
+                text: message
+            });
+        }
+
+        function showSyncSuccess(message) {
+            Swal.fire({
+                icon: 'success',
+                title: message,
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true
+            });
+        }
+
+        function setupSyncButton($btn, $input, entidade, savedValue, $display) {
+            $input.on('input change', function() {
+                updateSyncButtonState($input, $btn, savedValue);
+            });
+
+            $btn.on('click', function() {
+                if ($btn.prop('disabled')) {
+                    return;
+                }
+
+                var $icon = $btn.find('i');
+                $btn.data('loading', true).prop('disabled', true);
+                $icon.addClass('fa-spin');
+
+                $.ajax({
+                    type: 'POST',
+                    url: "{{ url('/enxadrista/' . $enxadrista->id . '/sync') }}/" + entidade,
+                    data: {
+                        _token: "{{ csrf_token() }}",
+                        [entidade + '_id']: $input.val()
+                    },
+                    dataType: 'json',
+                    success: function(data) {
+                        if (data.ok == 1) {
+                            $display.html(renderEntidadeInfo(data.data));
+                            showSyncSuccess(data.message);
+                        } else {
+                            showSyncError(data.message || 'Erro ao atualizar.');
+                        }
+                    },
+                    error: function(xhr) {
+                        var msg = 'Erro ao comunicar com o servidor.';
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            msg = xhr.responseJSON.message;
+                        }
+                        showSyncError(msg);
+                    },
+                    complete: function() {
+                        $icon.removeClass('fa-spin');
+                        $btn.data('loading', false);
+                        updateSyncButtonState($input, $btn, savedValue);
+                    }
+                });
+            });
+
+            updateSyncButtonState($input, $btn, savedValue);
+        }
+
+        setupSyncButton($('#sync_cbx_btn'), $('#cbx_id'), 'cbx', savedCbxId, $('#cbx_info_display'));
+        setupSyncButton($('#sync_fide_btn'), $('#fide_id'), 'fide', savedFideId, $('#fide_info_display'));
+        @endif
   	});
 
 

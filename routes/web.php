@@ -436,6 +436,7 @@ Route::group(["prefix"=>"enxadrista"],function(){
 	Route::get('/edit/{id}', 'EnxadristaController@edit')->name('enxadrista.edit');
 	Route::post('/edit/{id}', 'EnxadristaController@edit_post')->name('enxadrista.edit.post');
 	Route::post('/unite/{id}', 'EnxadristaController@unite_post')->name('enxadrista.unite.post');
+	Route::post('/{id}/sync/{entidade}', 'EnxadristaController@sync_entidade')->where('entidade', 'cbx|fide')->name('enxadrista.sync.entidade');
 	Route::get('/delete/{id}', 'EnxadristaController@delete')->name('enxadrista.delete');
 	Route::get('/download', 'EnxadristaController@downloadBaseCompleta')->name('enxadrista.download');
 	Route::get('/splits', 'EnxadristaController@updateAllnames')->name('enxadrista.splits');
