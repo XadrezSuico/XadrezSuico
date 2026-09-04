@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Categoria;
 use App\Enxadrista;
 use App\Evento;
 use App\Helper\NameComparisonHelper;
@@ -372,5 +373,119 @@ class RelatorioService
         return $this->hasValidEntityId($enxadrista, $entidade)
             && $enxadrista->{"encontrado_{$entidade}"}
             && trim((string) $enxadrista->{"{$entidade}_name"}) !== '';
+    }
+
+    public function buildParticipacaoCategoriasLinhasEvento(Evento $evento): array
+    {
+        $comPagamento = (bool) $evento->xadrezsuicopag_uuid;
+
+        $categoriasPagasIds = [];
+        if ($comPagamento) {
+            $categoriasPagasIds = $evento->categorias()
+                ->whereNotNull('xadrezsuicopag_uuid')
+                ->pluck('categoria_id')
+                ->toArray();
+        }
+
+        $statsPorCategoria = Inscricao::whereHas('torneio', function ($query) use ($evento) {
+                $query->where('evento_id', $evento->id);
+            })
+            ->selectRaw('
+                categoria_id,
+                COUNT(*) as inscritos,
+                SUM(confirmado) as confirmados,
+                SUM(CASE WHEN confirmado = 1 AND desconsiderar_pontuacao_geral = 0 THEN 1 ELSE 0 END) as presentes,
+                SUM(CASE WHEN paid = 1 THEN 1 ELSE 0 END) as pagos,
+                SUM(CASE WHEN paid = 0 THEN 1 ELSE 0 END) as pendentes
+            ')
+            ->groupBy('categoria_id')
+            ->get()
+            ->keyBy('categoria_id');
+
+        $linhas = [];
+        $vistos = [];
+
+        foreach ($evento->categorias()->with('categoria')->orderBy('categoria_id')->get() as $categoriaEvento) {
+            $categoriaId = $categoriaEvento->categoria_id;
+            $vistos[$categoriaId] = true;
+            $linhas[] = $this->buildLinhaParticipacaoCategoria(
+                $categoriaEvento->categoria,
+                $statsPorCategoria->get($categoriaId),
+                $comPagamento,
+                in_array($categoriaId, $categoriasPagasIds, true)
+            );
+        }
+
+        foreach ($statsPorCategoria as $categoriaId => $stats) {
+            if (isset($vistos[$categoriaId])) {
+                continue;
+            }
+
+            $linhas[] = $this->buildLinhaParticipacaoCategoria(
+                Categoria::find($categoriaId),
+                $stats,
+                $comPagamento,
+                in_array($categoriaId, $categoriasPagasIds, true)
+            );
+        }
+
+        usort($linhas, function ($a, $b) {
+            return strcmp($a['categoria'], $b['categoria']);
+        });
+
+        $totais = [
+            'inscritos' => 0,
+            'pagos' => 0,
+            'pendentes' => 0,
+            'confirmados' => 0,
+            'presentes' => 0,
+        ];
+
+        foreach ($linhas as $linha) {
+            $totais['inscritos'] += $linha['inscritos'];
+            $totais['confirmados'] += $linha['confirmados'];
+            $totais['presentes'] += $linha['presentes'];
+
+            if ($comPagamento && $linha['categoria_paga']) {
+                $totais['pagos'] += $linha['pagos'];
+                $totais['pendentes'] += $linha['pendentes'];
+            }
+        }
+
+        return [
+            'linhas' => $linhas,
+            'totais' => $totais,
+            'com_pagamento' => $comPagamento,
+        ];
+    }
+
+    private function buildLinhaParticipacaoCategoria(
+        ?Categoria $categoria,
+        $stats,
+        bool $comPagamento,
+        bool $categoriaPaga
+    ): array {
+        $inscritos = $stats ? (int) $stats->inscritos : 0;
+        $confirmados = $stats ? (int) $stats->confirmados : 0;
+        $presentes = $stats ? (int) $stats->presentes : 0;
+
+        $pagos = null;
+        $pendentes = null;
+
+        if ($comPagamento && $categoriaPaga) {
+            $pagos = $stats ? (int) $stats->pagos : 0;
+            $pendentes = $stats ? (int) $stats->pendentes : 0;
+        }
+
+        return [
+            'categoria_id' => $categoria ? $categoria->id : null,
+            'categoria' => $categoria ? $categoria->name : '—',
+            'inscritos' => $inscritos,
+            'pagos' => $pagos,
+            'pendentes' => $pendentes,
+            'confirmados' => $confirmados,
+            'presentes' => $presentes,
+            'categoria_paga' => $categoriaPaga,
+        ];
     }
 }

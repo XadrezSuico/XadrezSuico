@@ -172,6 +172,7 @@ Route::group(["prefix"=>"evento"],function(){
         Route::get('/calculate', 'EventoGerenciarController@calcular_rating')->name('evento.rating.calculate');
     });
     Route::group(["prefix"=>"{id}/relatorios"],function(){
+        Route::get('/participacao-categorias', 'EventoGerenciarController@relatorio_participacao_categorias')->name('evento.relatorios.participacao_categorias');
         Route::get('/premiados', 'EventoGerenciarController@relatorio_premiados')->name('evento.relatorios.premiados');
         Route::get('/comparacao-cadastros', 'EventoGerenciarController@relatorio_comparacao_cadastros')->name('evento.relatorios.comparacao_cadastros');
         Route::get('/anuidade-cbx', 'EventoGerenciarController@relatorio_anuidade_cbx')->name('evento.relatorios.anuidade_cbx');

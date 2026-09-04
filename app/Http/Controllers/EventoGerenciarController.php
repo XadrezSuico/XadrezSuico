@@ -1352,6 +1352,32 @@ class EventoGerenciarController extends Controller
         return view("evento.v2.relatorios.anuidade_cbx", compact("evento", "linhas", "elegivel"));
     }
 
+    public function relatorio_participacao_categorias($id)
+    {
+        $user = Auth::user();
+        $evento = Evento::find($id);
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionEventByPerfil($evento->id, [3, 4, 5]) &&
+            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [6, 7])
+        ) {
+            return redirect("/evento/dashboard/" . $evento->id);
+        }
+
+        if (!$evento) {
+            return redirect("/evento");
+        }
+
+        $relatorio = app(RelatorioService::class)->buildParticipacaoCategoriasLinhasEvento($evento);
+
+        return view("evento.v2.relatorios.participacao_categorias", [
+            'evento' => $evento,
+            'linhas' => $relatorio['linhas'],
+            'totais' => $relatorio['totais'],
+            'com_pagamento' => $relatorio['com_pagamento'],
+        ]);
+    }
+
     public function relatorio_anuidade_cbx_call($id, $enxadrista_id)
     {
         $user = Auth::user();
