@@ -23,7 +23,7 @@
                 <label for="categoria_id">Categoria</label>
                 <select id="categoria_id" name="categoria_id" class="form-control">
                     <option value=""> -- Selecione uma Categoria antes de acessar a Lista de Resultados --</option>
-                    @foreach($evento->categorias->all() as $categoria)
+                    @foreach($evento->categorias_classificaveis->all() as $categoria)
                         <option value="{{$categoria->categoria->id}}">{{$categoria->categoria->name}}</option>
                     @endforeach
                 </select>

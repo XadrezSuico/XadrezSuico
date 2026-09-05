@@ -108,6 +108,14 @@ class Evento extends Model
         return $this->hasMany("App\CategoriaEvento", "evento_id", "id");
     }
 
+    public function categorias_classificaveis()
+    {
+        return $this->hasMany("App\CategoriaEvento", "evento_id", "id")
+            ->whereHas("categoria", function ($query) {
+                $query->where("nao_classificar", false);
+            });
+    }
+
     public function torneios()
     {
         return $this->hasMany("App\Torneio", "evento_id", "id");

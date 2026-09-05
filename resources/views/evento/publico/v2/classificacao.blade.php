@@ -50,9 +50,12 @@
             <input type="hidden" id="evento_id" value="{{$evento->id}}" />
             <input type="hidden" id="evento_name" value="{{$evento->name}}" />
             <h4><strong>Categorias:</strong></h4>
+            @if($evento->categorias_classificaveis->isEmpty())
+                <p class="text-muted">Nenhuma categoria configurada para classificação neste evento.</p>
+            @else
             <ul class="nav nav-tabs" role="tablist">
                 @php($i = 0)
-                @foreach($evento->categorias->all() as $categoria)
+                @foreach($evento->categorias_classificaveis->all() as $categoria)
                     <li role="presentation" class=" @if($i++ == 0) active @endif" data-tournament-name="{{$categoria->categoria->name}}"><a id="tab_categoria_{{$categoria->categoria->id}}" href="#categoria_{{$categoria->categoria->id}}" aria-controls="categoria_{{$categoria->categoria->id}}" role="tab" data-toggle="tab" data-id="{{$categoria->categoria->id}}" class="tab-category-item">{{$categoria->categoria->name}}</a></li>
                 @endforeach
             </ul>
@@ -60,7 +63,7 @@
 
             <div class="tab-content">
                 @php($i = 0)
-                @foreach($evento->categorias->all() as $categoria)
+                @foreach($evento->categorias_classificaveis->all() as $categoria)
                     <div role="tabpanel" class="tab-pane @if($i++ == 0) active @endif" id="categoria_{{$categoria->categoria->id}}"  data-tournament-name="{{$categoria->categoria->name}}">
                         <div class="icon-loading">
                             <i class="fa fa-refresh fa-spin fa-5x" aria-hidden="true"></i>
@@ -71,6 +74,7 @@
                     </div>
                 @endforeach
             </div>
+            @endif
 		</div>
 	</div>
 @endsection
@@ -171,8 +175,8 @@
         category_selected_id = id;
     }
 
-    @if($evento->categorias()->count() > 0)
-        selectCategory({{$evento->categorias->first()->categoria->id}})
+    @if($evento->categorias_classificaveis()->count() > 0)
+        selectCategory({{$evento->categorias_classificaveis->first()->categoria->id}})
     @endif
 </script>
 @endsection

@@ -31,6 +31,9 @@ class EventoController extends Controller
     {
         $evento = Evento::find($evento_id);
         $categoria = Categoria::find($categoria_id);
+        if (!$categoria || $categoria->nao_classificar) {
+            return abort(404);
+        }
         $torneio = $categoria->getTorneioByEvento($evento);
         if ($evento->is_lichess_integration) {
             $inscricoes = Inscricao::where([
@@ -119,6 +122,9 @@ class EventoController extends Controller
 
 
         $categoria = Categoria::find($categoria_id);
+        if (!$categoria || $categoria->nao_classificar) {
+            return abort(404);
+        }
         $torneio = $categoria->getTorneioByEvento($evento);
         if ($evento->is_lichess_integration) {
             $inscricoes = Inscricao::where([
