@@ -637,7 +637,7 @@
             });
         }
 
-        function setupSyncButton($btn, $input, entidade, savedValue, $display) {
+        function setupSyncButton($btn, $input, entidade, savedValue, $display, onSuccess) {
             $input.on('input change', function() {
                 updateSyncButtonState($input, $btn, savedValue);
             });
@@ -662,6 +662,9 @@
                     success: function(data) {
                         if (data.ok == 1) {
                             $display.html(renderEntidadeInfo(data.data));
+                            if (typeof onSuccess === 'function') {
+                                onSuccess(data);
+                            }
                             showSyncSuccess(data.message);
                         } else {
                             showSyncError(data.message || 'Erro ao atualizar.');
@@ -685,7 +688,14 @@
             updateSyncButtonState($input, $btn, savedValue);
         }
 
-        setupSyncButton($('#sync_cbx_btn'), $('#cbx_id'), 'cbx', savedCbxId, $('#cbx_info_display'));
+        setupSyncButton($('#sync_cbx_btn'), $('#cbx_id'), 'cbx', savedCbxId, $('#cbx_info_display'), function(data) {
+            if (data.data.fide_importada && data.data.fide) {
+                $('#fide_id').val(data.data.fide.fide_id);
+                $('#fide_info_display').html(renderEntidadeInfo(data.data.fide));
+                savedFideId = data.data.fide.fide_id;
+                updateSyncButtonState($('#fide_id'), $('#sync_fide_btn'), savedFideId);
+            }
+        });
         setupSyncButton($('#sync_fide_btn'), $('#fide_id'), 'fide', savedFideId, $('#fide_info_display'));
         @endif
   	});

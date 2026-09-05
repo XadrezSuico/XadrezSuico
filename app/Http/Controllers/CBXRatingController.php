@@ -180,13 +180,63 @@ class CBXRatingController extends Controller
             $enxadrista->deleteRating($codigo_organizacao,2);
         }
 
-        if($save_rating) $enxadrista->cbx_last_update = date("Y-m-d H:i:s");
-        if($return_enxadrista){
-            return $enxadrista;
-        }else{
+        if ($save_rating) {
+            $enxadrista->cbx_last_update = date("Y-m-d H:i:s");
+        }
+
+        if ($save_rating && $enxadrista->encontrado_cbx) {
+            self::importFideIdFromCbxIfMissing($enxadrista, $html, $save_rating, $show_text);
+        }
+
+        if ($save_rating) {
             $enxadrista->save();
         }
-        if($show_text) echo "<hr/>";
+
+        if ($return_enxadrista) {
+            return $enxadrista;
+        }
+
+        if ($show_text) {
+            echo "<hr/>";
+        }
+    }
+
+    public static function importFideIdFromCbxIfMissing(Enxadrista $enxadrista, string $html, bool $save = true, bool $show_text = false): bool
+    {
+        $fideIdFromCbx = self::getFideId($html);
+        if (!$fideIdFromCbx) {
+            return false;
+        }
+
+        $currentFideId = trim((string) ($enxadrista->fide_id ?? ''));
+        if ($currentFideId !== '' && intval($currentFideId) > 0) {
+            return false;
+        }
+
+        Log::debug("CBXRatingController::importFideIdFromCbxIfMissing - importando FIDE ID {$fideIdFromCbx} da CBX para enxadrista #{$enxadrista->id}");
+
+        if ($show_text) {
+            echo "Importando ID FIDE {$fideIdFromCbx} da CBX...<br/>";
+        }
+
+        if ($save) {
+            $enxadrista->setFIDEID($fideIdFromCbx);
+        } else {
+            $enxadrista->fide_id = $fideIdFromCbx;
+        }
+
+        FIDERatingController::getRating($enxadrista, $show_text, true, $save);
+
+        return true;
+    }
+
+    private static function getFideId(string $html): ?string
+    {
+        if (preg_match('/ID FIDE:\s*<strong>(\d+)<\/strong>/i', $html, $matches)) {
+            return $matches[1];
+        }
+
+        return null;
     }
 
     private static function getName($html){

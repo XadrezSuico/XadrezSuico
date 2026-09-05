@@ -924,6 +924,7 @@ class EnxadristaController extends Controller
         $codigo_organizacao = $entidade === 'cbx' ? 1 : 0;
         $encontrado_field = 'encontrado_' . $entidade;
         $name_field = $entidade . '_name';
+        $fideIdAntes = trim((string) ($enxadrista->fide_id ?? ''));
 
         if ($entidade === 'cbx') {
             $enxadrista = CBXRatingController::getRating($enxadrista, false, true);
@@ -938,17 +939,42 @@ class EnxadristaController extends Controller
             ]);
         }
 
+        $fideImportada = $entidade === 'cbx'
+            && ($fideIdAntes === '' || intval($fideIdAntes) <= 0)
+            && trim((string) ($enxadrista->fide_id ?? '')) !== ''
+            && intval($enxadrista->fide_id) > 0;
+
+        $responseData = [
+            "name" => $enxadrista->{$name_field},
+            "ratings" => [
+                "std" => $enxadrista->showRating($codigo_organizacao, 0) ?: null,
+                "rpd" => $enxadrista->showRating($codigo_organizacao, 1) ?: null,
+                "btz" => $enxadrista->showRating($codigo_organizacao, 2) ?: null,
+            ],
+        ];
+
+        if ($fideImportada) {
+            $responseData['fide_importada'] = true;
+            $responseData['fide'] = [
+                'fide_id' => $enxadrista->fide_id,
+                'name' => $enxadrista->fide_name,
+                'ratings' => [
+                    'std' => $enxadrista->showRating(0, 0) ?: null,
+                    'rpd' => $enxadrista->showRating(0, 1) ?: null,
+                    'btz' => $enxadrista->showRating(0, 2) ?: null,
+                ],
+            ];
+        }
+
+        $message = strtoupper($entidade) . " atualizada com sucesso!";
+        if ($fideImportada) {
+            $message .= " ID FIDE {$enxadrista->fide_id} importado da CBX e integrado.";
+        }
+
         return response()->json([
             "ok" => 1,
-            "message" => strtoupper($entidade) . " atualizada com sucesso!",
-            "data" => [
-                "name" => $enxadrista->{$name_field},
-                "ratings" => [
-                    "std" => $enxadrista->showRating($codigo_organizacao, 0) ?: null,
-                    "rpd" => $enxadrista->showRating($codigo_organizacao, 1) ?: null,
-                    "btz" => $enxadrista->showRating($codigo_organizacao, 2) ?: null,
-                ],
-            ],
+            "message" => $message,
+            "data" => $responseData,
         ]);
     }
 }
