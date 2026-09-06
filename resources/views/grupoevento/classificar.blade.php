@@ -98,6 +98,7 @@
     erro = false;
     classificaPorCategoria = {{ $grupo_evento->classificaIndividualPorCategoria() ? 'true' : 'false' }};
     classificaGeral = {{ $grupo_evento->classificaIndividualGeral() ? 'true' : 'false' }};
+    geralAbortado = false;
 
     @php($j = 0)
     @if($grupo_evento->classificaIndividualPorCategoria())
@@ -113,6 +114,16 @@
             start();
         },1000);
     });
+
+    function marcarIcone(id, sucesso){
+        var $icone = $("#".concat(id));
+        $icone.show(200);
+        $icone.removeClass('fa-spinner fa-check fa-times');
+        $icone.addClass(sucesso ? 'fa-check' : 'fa-times');
+        if(!sucesso){
+            erro = true;
+        }
+    }
 
     function start(){
         if (classificaPorCategoria && categorias.length > 0) {
@@ -134,92 +145,114 @@
             case 1:
             case 2:
                 $("#categoria_".concat(categorias[i]).concat("_").concat(action).concat("_icon")).show(200);
-                $.getJSON('{{url("/grupoevento/classificar/".$grupo_evento->id."/call")}}'.concat('/').concat(categorias[i]).concat('/').concat(action),function(data){
-                    if(data.ok == 1){
-                        $("#categoria_".concat(categorias[i]).concat("_").concat(action).concat("_icon")).removeClass('fa-spinner');
-                        $("#categoria_".concat(categorias[i]).concat("_").concat(action).concat("_icon")).addClass('fa-check');
-                    }else{
-                        $("#categoria_".concat(categorias[i]).concat("_").concat(action).concat("_icon")).removeClass('fa-spinner');
-                        $("#categoria_".concat(categorias[i]).concat("_").concat(action).concat("_icon")).addClass('fa-times');
-                        erro = true;
-                    }
-                    execute(i,action + 1);
-                });
+                $.getJSON('{{url("/grupoevento/classificar/".$grupo_evento->id."/call")}}'.concat('/').concat(categorias[i]).concat('/').concat(action))
+                    .done(function(data){
+                        marcarIcone("categoria_".concat(categorias[i]).concat("_").concat(action).concat("_icon"), data.ok == 1);
+                        execute(i,action + 1);
+                    })
+                    .fail(function(){
+                        marcarIcone("categoria_".concat(categorias[i]).concat("_").concat(action).concat("_icon"), false);
+                        execute(i,action + 1);
+                    });
                 break;
             case 3:
-                $("#categoria_".concat(categorias[i]).concat("_").concat(3).concat("_icon")).show(200);
-                $.getJSON('{{url("/grupoevento/classificar/".$grupo_evento->id."/call")}}'.concat('/').concat(categorias[i]).concat('/').concat(action),function(data){
-                    if(data.ok == 1){
-                        $("#categoria_".concat(categorias[i]).concat("_").concat(3).concat("_icon")).removeClass('fa-spinner');
-                        $("#categoria_".concat(categorias[i]).concat("_").concat(3).concat("_icon")).addClass('fa-check');
-                    }else{
-                        $("#categoria_".concat(categorias[i]).concat("_").concat(3).concat("_icon")).removeClass('fa-spinner');
-                        $("#categoria_".concat(categorias[i]).concat("_").concat(3).concat("_icon")).addClass('fa-times');
-                        erro = true;
-                    }
+                $("#categoria_".concat(categorias[i]).concat("_3_icon")).show(200);
+                $.getJSON('{{url("/grupoevento/classificar/".$grupo_evento->id."/call")}}'.concat('/').concat(categorias[i]).concat('/').concat(action))
+                    .done(function(data){
+                        marcarIcone("categoria_".concat(categorias[i]).concat("_3_icon"), data.ok == 1);
 
-                    setTimeout(function(){
-                        if(
-                            $("#categoria_".concat(categorias[i]).concat("_1_icon")).hasClass('fa-check') &&
-                            $("#categoria_".concat(categorias[i]).concat("_2_icon")).hasClass('fa-check') &&
-                            $("#categoria_".concat(categorias[i]).concat("_3_icon")).hasClass('fa-check')
-                        ){
-                            $("#categoria_".concat(categorias[i]).concat("_icon")).removeClass('fa-spinner');
-                            $("#categoria_".concat(categorias[i]).concat("_icon")).addClass('fa-check');
-                        }else{
-                            $("#categoria_".concat(categorias[i]).concat("_icon")).removeClass('fa-spinner');
-                            $("#categoria_".concat(categorias[i]).concat("_icon")).addClass('fa-times');
-                            erro = true;
-                        }
+                        setTimeout(function(){
+                            if(
+                                $("#categoria_".concat(categorias[i]).concat("_1_icon")).hasClass('fa-check') &&
+                                $("#categoria_".concat(categorias[i]).concat("_2_icon")).hasClass('fa-check') &&
+                                $("#categoria_".concat(categorias[i]).concat("_3_icon")).hasClass('fa-check')
+                            ){
+                                marcarIcone("categoria_".concat(categorias[i]).concat("_icon"), true);
+                            }else{
+                                marcarIcone("categoria_".concat(categorias[i]).concat("_icon"), false);
+                            }
 
-                        if((i+1) < categorias.length){
-                            proxima_categoria(i+1);
-                        }else if(classificaGeral){
-                            execute_geral(1);
-                        }else{
-                            muda_alerta();
-                        }
-                    },700);
-                });
+                            if((i+1) < categorias.length){
+                                proxima_categoria(i+1);
+                            }else if(classificaGeral){
+                                execute_geral(1);
+                            }else{
+                                muda_alerta();
+                            }
+                        },700);
+                    })
+                    .fail(function(){
+                        marcarIcone("categoria_".concat(categorias[i]).concat("_3_icon"), false);
+                        marcarIcone("categoria_".concat(categorias[i]).concat("_icon"), false);
+                        setTimeout(function(){
+                            if((i+1) < categorias.length){
+                                proxima_categoria(i+1);
+                            }else if(classificaGeral){
+                                execute_geral(1);
+                            }else{
+                                muda_alerta();
+                            }
+                        },700);
+                    });
         }
     }
 
     function execute_geral(action){
+        if(geralAbortado){
+            return;
+        }
+
         if(action === 1){
             $("#geral_icon").show(200);
         }
-        $("#geral_".concat(action).concat("_icon")).show(200);
-        $.getJSON('{{url("/grupoevento/classificar/".$grupo_evento->id."/call/geral")}}'.concat('/').concat(action),function(data){
-            if(data.ok == 1){
-                $("#geral_".concat(action).concat("_icon")).removeClass('fa-spinner');
-                $("#geral_".concat(action).concat("_icon")).addClass('fa-check');
-            }else{
-                $("#geral_".concat(action).concat("_icon")).removeClass('fa-spinner');
-                $("#geral_".concat(action).concat("_icon")).addClass('fa-times');
-                erro = true;
-            }
 
-            if(action < 4){
-                execute_geral(action + 1);
+        $("#geral_".concat(action).concat("_icon")).show(200);
+        $("#geral_".concat(action).concat("_icon")).removeClass('fa-check fa-times').addClass('fa-spinner');
+
+        $.getJSON('{{url("/grupoevento/classificar/".$grupo_evento->id."/call/geral")}}'.concat('/').concat(action))
+            .done(function(data){
+                marcarIcone("geral_".concat(action).concat("_icon"), data.ok == 1);
+
+                if(data.ok != 1){
+                    abortarGeral(action);
+                    return;
+                }
+
+                if(action < 4){
+                    execute_geral(action + 1);
+                }else{
+                    finalizarGeral();
+                }
+            })
+            .fail(function(){
+                marcarIcone("geral_".concat(action).concat("_icon"), false);
+                abortarGeral(action);
+            });
+    }
+
+    function abortarGeral(ultimoAction){
+        geralAbortado = true;
+        for(var a = ultimoAction + 1; a <= 4; a++){
+            $("#geral_".concat(a).concat("_icon")).hide();
+        }
+        marcarIcone("geral_icon", false);
+        muda_alerta();
+    }
+
+    function finalizarGeral(){
+        setTimeout(function(){
+            if(
+                $("#geral_1_icon").hasClass('fa-check') &&
+                $("#geral_2_icon").hasClass('fa-check') &&
+                $("#geral_3_icon").hasClass('fa-check') &&
+                $("#geral_4_icon").hasClass('fa-check')
+            ){
+                marcarIcone("geral_icon", true);
             }else{
-                setTimeout(function(){
-                    if(
-                        $("#geral_1_icon").hasClass('fa-check') &&
-                        $("#geral_2_icon").hasClass('fa-check') &&
-                        $("#geral_3_icon").hasClass('fa-check') &&
-                        $("#geral_4_icon").hasClass('fa-check')
-                    ){
-                        $("#geral_icon").removeClass('fa-spinner');
-                        $("#geral_icon").addClass('fa-check');
-                    }else{
-                        $("#geral_icon").removeClass('fa-spinner');
-                        $("#geral_icon").addClass('fa-times');
-                        erro = true;
-                    }
-                    muda_alerta();
-                },700);
+                marcarIcone("geral_icon", false);
             }
-        });
+            muda_alerta();
+        },700);
     }
 
     function muda_alerta(){

@@ -550,7 +550,7 @@ class GrupoEventoController extends Controller
                         break;
                 }
                 return response()->json(["ok" => 1, "error" => 0]);
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 return response()->json(["ok" => 0, "error" => 1]);
             }
         }
@@ -574,10 +574,12 @@ class GrupoEventoController extends Controller
                         CategoriaController::classificar_enxadristas_geral($grupo_evento, $categoria);
                 }
                 return response()->json(["ok" => 1, "error" => 0]);
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 return response()->json(["ok" => 0, "error" => 1]);
             }
         }
+
+        return response()->json(["ok" => 0, "error" => 1]);
     }
 
     public function evento_new($id, Request $request)
