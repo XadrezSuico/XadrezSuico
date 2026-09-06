@@ -525,7 +525,7 @@ class GrupoEventoController extends Controller
     {
         $user = Auth::user();
         if (!$user->hasPermissionGlobal() && !$user->hasPermissionGroupEventByPerfil($grupo_evento_id,[7])) {
-            return redirect("/grupoevento");
+            return response()->json(["ok" => 0, "error" => 1], 403);
         }
 
         $grupo_evento = GrupoEvento::find($grupo_evento_id);

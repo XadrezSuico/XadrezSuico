@@ -30,7 +30,6 @@ class CategoriaController extends Controller
 
 
         $categoria = Categoria::find($categoria_id);
-        echo '<br/><br/> Categoria: ' . $categoria->name;
         $inscritos = array();
         $inscricoes_count = Inscricao::where([
             ["categoria_id", "=", $categoria->id],
@@ -53,7 +52,6 @@ class CategoriaController extends Controller
         })
         ->orderBy("pontos", "DESC")
         ->get();
-        echo $inscricoes_count;
         foreach ($inscricoes as $inscricao) {
             $inscricao->is_draw = false;
 
@@ -108,13 +106,9 @@ class CategoriaController extends Controller
         } else {
             $criterios = $inscrito_a->torneio->getCriteriosTotal();
 
-
-
-            echo "[" . count((array) $criterios) . "]";
             foreach ($criterios as $criterio) {
                 $desempate = $criterio->criterio->sort_desempate($inscrito_a, $inscrito_b, $criterio->prioridade);
                 if ($desempate != 0) {
-                    echo $criterio->criterio->name. " - Res(".$desempate.")---<br/>";
                     return $desempate;
                 }
             }
