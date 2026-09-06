@@ -474,6 +474,7 @@ Route::group(["prefix"=>"grupoevento"],function(){
 	Route::post('/new', 'GrupoEventoController@new_post')->name('grupoevento.new.post');
 	Route::get('/dashboard/{id}', 'GrupoEventoController@edit')->name('grupoevento.dashboard');
 	Route::post('/dashboard/{id}', 'GrupoEventoController@edit_post')->name('grupoevento.dashboard.post');
+	Route::post('/{id}/configuracoes', 'GrupoEventoController@configuracoes_post')->name('grupoevento.configuracoes.post');
 	Route::get('/clone/{id}', 'GrupoEventoController@clone')->name('grupoevento.clone');
     Route::get('/clone/{id}/event/{evento_id}', 'GrupoEventoController@evento_clone')->name('grupoevento.clone.event');
 	Route::get('/delete/{id}', 'GrupoEventoController@delete')->name('grupoevento.delete');

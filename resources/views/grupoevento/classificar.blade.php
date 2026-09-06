@@ -48,24 +48,45 @@
     <div class="box">
         <div class="box-body">
             <ul>
-                @foreach($grupo_evento->categorias->all() as $categoria)
-                    @if(!$categoria->nao_classificar)
-                        <li>
-                            <h3>Categoria: {{$categoria->name}} <i id="categoria_{{$categoria->id}}_icon" style="display:none;" class="fa fa-spinner"></i></h3>
-                            <ul>
-                                <li>
-                                    <h5>Somar Pontuações das Etapas <i id="categoria_{{$categoria->id}}_1_icon" style="display:none;" class="fa fa-spinner"></i></h5>
-                                </li>
-                                <li>
-                                    <h5>Geração de Critérios de Desempate <i id="categoria_{{$categoria->id}}_2_icon" style="display:none;" class="fa fa-spinner"></i></h5>
-                                </li>
-                                <li>
-                                    <h5>Classificação da Categoria <i id="categoria_{{$categoria->id}}_3_icon" style="display:none;" class="fa fa-spinner"></i></h5>
-                                </li>
-                            </ul>
-                        </li>
-                    @endif
-                @endforeach
+                @if($grupo_evento->classificaIndividualGeral())
+                    <li>
+                        <h3>Classificação Geral (cross-categoria) <i id="geral_icon" style="display:none;" class="fa fa-spinner"></i></h3>
+                        <ul>
+                            <li>
+                                <h5>Recalcular pontos das etapas <i id="geral_1_icon" style="display:none;" class="fa fa-spinner"></i></h5>
+                            </li>
+                            <li>
+                                <h5>Somar Pontuações das Etapas <i id="geral_2_icon" style="display:none;" class="fa fa-spinner"></i></h5>
+                            </li>
+                            <li>
+                                <h5>Geração de Critérios de Desempate <i id="geral_3_icon" style="display:none;" class="fa fa-spinner"></i></h5>
+                            </li>
+                            <li>
+                                <h5>Classificação Geral <i id="geral_4_icon" style="display:none;" class="fa fa-spinner"></i></h5>
+                            </li>
+                        </ul>
+                    </li>
+                @endif
+                @if($grupo_evento->classificaIndividualPorCategoria())
+                    @foreach($grupo_evento->categorias->all() as $categoria)
+                        @if(!$categoria->nao_classificar)
+                            <li>
+                                <h3>Categoria: {{$categoria->name}} <i id="categoria_{{$categoria->id}}_icon" style="display:none;" class="fa fa-spinner"></i></h3>
+                                <ul>
+                                    <li>
+                                        <h5>Somar Pontuações das Etapas <i id="categoria_{{$categoria->id}}_1_icon" style="display:none;" class="fa fa-spinner"></i></h5>
+                                    </li>
+                                    <li>
+                                        <h5>Geração de Critérios de Desempate <i id="categoria_{{$categoria->id}}_2_icon" style="display:none;" class="fa fa-spinner"></i></h5>
+                                    </li>
+                                    <li>
+                                        <h5>Classificação da Categoria <i id="categoria_{{$categoria->id}}_3_icon" style="display:none;" class="fa fa-spinner"></i></h5>
+                                    </li>
+                                </ul>
+                            </li>
+                        @endif
+                    @endforeach
+                @endif
             </ul>
         </div>
     </div>
@@ -75,24 +96,32 @@
 <script type="text/javascript">
     categorias = [];
     erro = false;
+    classificaPorCategoria = {{ $grupo_evento->classificaIndividualPorCategoria() ? 'true' : 'false' }};
+    classificaGeral = {{ $grupo_evento->classificaIndividualGeral() ? 'true' : 'false' }};
+
     @php($j = 0)
-    @foreach($grupo_evento->categorias->all() as $categoria)
-        @if(!$categoria->nao_classificar)
-            categorias[{{$j++}}] = {{$categoria->id}};
-        @endif
-    @endforeach
+    @if($grupo_evento->classificaIndividualPorCategoria())
+        @foreach($grupo_evento->categorias->all() as $categoria)
+            @if(!$categoria->nao_classificar)
+                categorias[{{$j++}}] = {{$categoria->id}};
+            @endif
+        @endforeach
+    @endif
 
     $(document).ready(function(){
-        $("#tabela").DataTable({
-            responsive: true,
-        });
         setTimeout(function(){
             start();
         },1000);
     });
 
     function start(){
-        proxima_categoria(0);
+        if (classificaPorCategoria && categorias.length > 0) {
+            proxima_categoria(0);
+        } else if (classificaGeral) {
+            execute_geral(1);
+        } else {
+            muda_alerta();
+        }
     }
 
     function proxima_categoria(i){
@@ -112,6 +141,7 @@
                     }else{
                         $("#categoria_".concat(categorias[i]).concat("_").concat(action).concat("_icon")).removeClass('fa-spinner');
                         $("#categoria_".concat(categorias[i]).concat("_").concat(action).concat("_icon")).addClass('fa-times');
+                        erro = true;
                     }
                     execute(i,action + 1);
                 });
@@ -125,6 +155,7 @@
                     }else{
                         $("#categoria_".concat(categorias[i]).concat("_").concat(3).concat("_icon")).removeClass('fa-spinner');
                         $("#categoria_".concat(categorias[i]).concat("_").concat(3).concat("_icon")).addClass('fa-times');
+                        erro = true;
                     }
 
                     setTimeout(function(){
@@ -141,15 +172,54 @@
                             erro = true;
                         }
 
-
                         if((i+1) < categorias.length){
                             proxima_categoria(i+1);
+                        }else if(classificaGeral){
+                            execute_geral(1);
                         }else{
                             muda_alerta();
                         }
                     },700);
                 });
         }
+    }
+
+    function execute_geral(action){
+        if(action === 1){
+            $("#geral_icon").show(200);
+        }
+        $("#geral_".concat(action).concat("_icon")).show(200);
+        $.getJSON('{{url("/grupoevento/classificar/".$grupo_evento->id."/call/geral")}}'.concat('/').concat(action),function(data){
+            if(data.ok == 1){
+                $("#geral_".concat(action).concat("_icon")).removeClass('fa-spinner');
+                $("#geral_".concat(action).concat("_icon")).addClass('fa-check');
+            }else{
+                $("#geral_".concat(action).concat("_icon")).removeClass('fa-spinner');
+                $("#geral_".concat(action).concat("_icon")).addClass('fa-times');
+                erro = true;
+            }
+
+            if(action < 4){
+                execute_geral(action + 1);
+            }else{
+                setTimeout(function(){
+                    if(
+                        $("#geral_1_icon").hasClass('fa-check') &&
+                        $("#geral_2_icon").hasClass('fa-check') &&
+                        $("#geral_3_icon").hasClass('fa-check') &&
+                        $("#geral_4_icon").hasClass('fa-check')
+                    ){
+                        $("#geral_icon").removeClass('fa-spinner');
+                        $("#geral_icon").addClass('fa-check');
+                    }else{
+                        $("#geral_icon").removeClass('fa-spinner');
+                        $("#geral_icon").addClass('fa-times');
+                        erro = true;
+                    }
+                    muda_alerta();
+                },700);
+            }
+        });
     }
 
     function muda_alerta(){

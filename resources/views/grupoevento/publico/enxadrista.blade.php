@@ -31,6 +31,45 @@
                 @if($enxadrista->clube) <strong>Clube:</strong> {{$enxadrista->clube->getName()}}<br/> @endif
         </div>
     </div>
+    @if($grupo_evento->classificaIndividualGeral())
+        @php($pontuacao_geral = $enxadrista->getPontuacaoGeralUnica($grupo_evento->id))
+        <div class="box">
+            <div class="box-header">
+                <h3 class="box-title">Classificação Geral (cross-categoria)</h3>
+            </div>
+            <div class="box-body">
+                <strong>Pontuação Atual:</strong> @if($pontuacao_geral) {{$pontuacao_geral->pontos}} @else - @endif<br/>
+                <strong>Quantidade de Etapas Consideradas para a Pontuação:</strong> @if($pontuacao_geral) {{$pontuacao_geral->inscricoes_calculadas}} @else - @endif<br/>
+                @if($grupo_evento->limite_calculo_geral) <strong>Limite de Etapas Consideradas para a Pontuação neste Grupo de Evento:</strong> {{$grupo_evento->limite_calculo_geral}} @endif
+
+                <table class="table-responsive table-condensed table-striped tabela" style="width: 100%">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Evento</th>
+                            <th>Torneio</th>
+                            <th>Categoria</th>
+                            <th>Posição</th>
+                            <th>Pontuação</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($enxadrista->getInscricoesByGrupoEventoGeral($grupo_evento->id) as $inscricao)
+                            <tr>
+                                <td>{{$inscricao->id}}</td>
+                                <td>{{$inscricao->torneio->evento->name}}</td>
+                                <td>{{$inscricao->torneio->name}}</td>
+                                <td>{{$inscricao->categoria->name}}</td>
+                                <td>{{$inscricao->posicao_classificacao_geral ?: '-'}}</td>
+                                <td>@if($inscricao->pontos_classificacao_geral && $inscricao->confirmado && !$inscricao->is_desclassificado && !$inscricao->desconsiderar_pontuacao_geral) {{$inscricao->pontos_classificacao_geral}} @else - @endif</td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    @endif
+    @if($grupo_evento->classificaIndividualPorCategoria())
     @foreach($enxadrista->getCategoriasParticipantesbyGrupoEvento($grupo_evento->id) as $categoria)
         @if(!$categoria->nao_classificar)
             <div class="box">
@@ -73,6 +112,7 @@
             </div>
         @endif
     @endforeach
+    @endif
 @endsection
 
 @section("js")

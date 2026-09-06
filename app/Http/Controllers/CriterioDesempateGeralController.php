@@ -6,6 +6,45 @@ use DateTime;
 
 class CriterioDesempateGeralController extends Controller
 {
+    private function inscricaoMatchesCategoria($inscricao, $categoria)
+    {
+        if ($categoria === null) {
+            return true;
+        }
+        return $inscricao->categoria_id == $categoria->id;
+    }
+
+    private function getPosicaoInscricaoDesempate($inscricao, $categoria)
+    {
+        if ($categoria === null) {
+            return $inscricao->posicao_classificacao_geral;
+        }
+        return $inscricao->posicao;
+    }
+
+    private function getPontosInscricaoDesempate($inscricao, $categoria)
+    {
+        if ($categoria === null) {
+            return $inscricao->pontos_classificacao_geral;
+        }
+        return $inscricao->pontos_geral;
+    }
+
+    private function getInscricoesEnxadristaEvento($evento, $enxadrista, $categoria)
+    {
+        $query = \App\Inscricao::where([
+            ["enxadrista_id", "=", $enxadrista->id],
+        ])->whereHas("torneio", function ($q1) use ($evento) {
+            $q1->where("evento_id", "=", $evento->id);
+        });
+
+        if ($categoria !== null) {
+            $query->where("categoria_id", "=", $categoria->id);
+        }
+
+        return $query->get();
+    }
+
     public function generate($grupo_evento, $enxadrista, $criterio_desempate, $categoria = null)
     {
         switch ($criterio_desempate->internal_code) {
@@ -69,10 +108,9 @@ class CriterioDesempateGeralController extends Controller
         $valor = 0;
 
         foreach ($grupo_evento->eventos->all() as $evento) {
-            $inscricao = $evento->enxadristaInscrito($enxadrista->id);
-            if ($inscricao) {
-                if ($inscricao->categoria_id == $categoria->id) {
-                    if ($inscricao->posicao == 1) {
+            foreach ($this->getInscricoesEnxadristaEvento($evento, $enxadrista, $categoria) as $inscricao) {
+                if ($this->inscricaoMatchesCategoria($inscricao, $categoria)) {
+                    if ($this->getPosicaoInscricaoDesempate($inscricao, $categoria) == 1) {
                         $valor++;
                     }
                 }
@@ -89,14 +127,12 @@ class CriterioDesempateGeralController extends Controller
         $valor = 0;
 
         foreach ($grupo_evento->eventos->all() as $evento) {
-            $inscricao = $evento->enxadristaInscrito($enxadrista->id);
-            if ($inscricao) {
-                if ($inscricao->categoria_id == $categoria->id) {
-                    if ($inscricao->posicao == 2) {
+            foreach ($this->getInscricoesEnxadristaEvento($evento, $enxadrista, $categoria) as $inscricao) {
+                if ($this->inscricaoMatchesCategoria($inscricao, $categoria)) {
+                    if ($this->getPosicaoInscricaoDesempate($inscricao, $categoria) == 2) {
                         $valor++;
                     }
                 }
-
             }
         }
 
@@ -110,14 +146,12 @@ class CriterioDesempateGeralController extends Controller
         $valor = 0;
 
         foreach ($grupo_evento->eventos->all() as $evento) {
-            $inscricao = $evento->enxadristaInscrito($enxadrista->id);
-            if ($inscricao) {
-                if ($inscricao->categoria_id == $categoria->id) {
-                    if ($inscricao->posicao == 3) {
+            foreach ($this->getInscricoesEnxadristaEvento($evento, $enxadrista, $categoria) as $inscricao) {
+                if ($this->inscricaoMatchesCategoria($inscricao, $categoria)) {
+                    if ($this->getPosicaoInscricaoDesempate($inscricao, $categoria) == 3) {
                         $valor++;
                     }
                 }
-
             }
         }
 
@@ -145,14 +179,12 @@ class CriterioDesempateGeralController extends Controller
         $valor = 0;
 
         foreach ($grupo_evento->eventos->all() as $evento) {
-            $inscricao = $evento->enxadristaInscrito($enxadrista->id);
-            if ($inscricao) {
-                if ($inscricao->categoria_id == $categoria->id) {
+            foreach ($this->getInscricoesEnxadristaEvento($evento, $enxadrista, $categoria) as $inscricao) {
+                if ($this->inscricaoMatchesCategoria($inscricao, $categoria)) {
                     if ($inscricao->isPresent()) {
-                        if ($inscricao->pontos_geral) {
-                            if ($inscricao->pontos_geral > 0) {
-                                $valor += $inscricao->pontos_geral;
-                            }
+                        $pontos = $this->getPontosInscricaoDesempate($inscricao, $categoria);
+                        if ($pontos && $pontos > 0) {
+                            $valor += $pontos;
                         }
                     }
                 }
@@ -170,15 +202,12 @@ class CriterioDesempateGeralController extends Controller
         $pontuacoes = array();
 
         foreach ($grupo_evento->eventos->all() as $evento) {
-            $inscricao = $evento->enxadristaInscrito($enxadrista->id);
-            if ($inscricao) {
-                if ($inscricao->categoria_id == $categoria->id) {
+            foreach ($this->getInscricoesEnxadristaEvento($evento, $enxadrista, $categoria) as $inscricao) {
+                if ($this->inscricaoMatchesCategoria($inscricao, $categoria)) {
                     if ($inscricao->isPresent()) {
-                        if ($inscricao->pontos_geral) {
-                            if ($inscricao->pontos_geral > 0) {
-                                $pontuacoes[] = $inscricao->pontos_geral;
-                            }
-
+                        $pontos = $this->getPontosInscricaoDesempate($inscricao, $categoria);
+                        if ($pontos && $pontos > 0) {
+                            $pontuacoes[] = $pontos;
                         }
                     }
                 }
@@ -206,15 +235,12 @@ class CriterioDesempateGeralController extends Controller
         $pontuacoes = array();
 
         foreach ($grupo_evento->eventos->all() as $evento) {
-            $inscricao = $evento->enxadristaInscrito($enxadrista->id);
-            if ($inscricao) {
-                if ($inscricao->categoria_id == $categoria->id) {
+            foreach ($this->getInscricoesEnxadristaEvento($evento, $enxadrista, $categoria) as $inscricao) {
+                if ($this->inscricaoMatchesCategoria($inscricao, $categoria)) {
                     if ($inscricao->isPresent()) {
-                        if ($inscricao->pontos_geral) {
-                            if ($inscricao->pontos_geral > 0) {
-                                $pontuacoes[] = $inscricao->pontos_geral;
-                            }
-
+                        $pontos = $this->getPontosInscricaoDesempate($inscricao, $categoria);
+                        if ($pontos && $pontos > 0) {
+                            $pontuacoes[] = $pontos;
                         }
                     }
                 }
@@ -248,6 +274,10 @@ class CriterioDesempateGeralController extends Controller
         $pontuacao_total = $this->generate_g5($grupo_evento, $enxadrista, $categoria);
         $total_etapas = $grupo_evento->eventos()->where([["classificavel","=",true]])->count();
 
+        if ($total_etapas == 0) {
+            return number_format(0, 2, '.', '');
+        }
+
         return number_format($pontuacao_total / $total_etapas, 2, '.', '');
     }
 
@@ -259,16 +289,22 @@ class CriterioDesempateGeralController extends Controller
         $pontuacoes = array();
 
         $pontuacao_total = $this->generate_g5($grupo_evento, $enxadrista, $categoria);
-        $total_etapas_participadas = $grupo_evento->eventos()->whereHas("torneios", function ($q1) use ($enxadrista) {
-            $q1->whereHas("inscricoes", function ($q2) use ($enxadrista,$categoria) {
+        $total_etapas_participadas = $grupo_evento->eventos()->whereHas("torneios", function ($q1) use ($enxadrista, $categoria) {
+            $q1->whereHas("inscricoes", function ($q2) use ($enxadrista, $categoria) {
                 $q2->where([
                     ["enxadrista_id", "=", $enxadrista->id],
-                    ["categoria_id", "=", $categoria->id],
                     ["confirmado", "=", true],
                     ["desconsiderar_pontuacao_geral", "=", false],
                 ]);
+                if ($categoria !== null) {
+                    $q2->where("categoria_id", "=", $categoria->id);
+                }
             });
         })->count();
+
+        if ($total_etapas_participadas == 0) {
+            return number_format(0, 2, '.', '');
+        }
 
         return number_format($pontuacao_total / $total_etapas_participadas, 2, '.', '');
     }
@@ -282,6 +318,10 @@ class CriterioDesempateGeralController extends Controller
 
     public function getEtapasValidas($grupo_evento, $categoria)
     {
+        if ($categoria === null) {
+            return $grupo_evento->eventos()->where([["classificavel", "=", true]])->orderBy('data_inicio', 'asc')->get()->all();
+        }
+
         $etapas = [];
         $eventos = $grupo_evento->eventos()->orderBy('data_inicio', 'asc')->get();
         foreach ($eventos as $evento) {
@@ -314,10 +354,12 @@ class CriterioDesempateGeralController extends Controller
         $etapas = $this->getEtapasValidas($grupo_evento, $categoria);
         if (count($etapas) > $etapa_index) {
             $evento = $etapas[$etapa_index];
-            $inscricao = $evento->enxadristaInscrito($enxadrista->id);
-            if ($inscricao && $inscricao->categoria_id == $categoria->id) {
-                if ($inscricao->isPresent() && $inscricao->posicao > 0) {
-                    return $inscricao->posicao;
+            foreach ($this->getInscricoesEnxadristaEvento($evento, $enxadrista, $categoria) as $inscricao) {
+                if ($this->inscricaoMatchesCategoria($inscricao, $categoria)) {
+                    $posicao = $this->getPosicaoInscricaoDesempate($inscricao, $categoria);
+                    if ($inscricao->isPresent() && $posicao > 0) {
+                        return $posicao;
+                    }
                 }
             }
         }
@@ -366,10 +408,11 @@ class CriterioDesempateGeralController extends Controller
         $valor = 0;
         $etapas = $this->getEtapasValidas($grupo_evento, $categoria);
         foreach ($etapas as $evento) {
-            $inscricao = $evento->enxadristaInscrito($enxadrista->id);
-            if ($inscricao && $inscricao->categoria_id == $categoria->id) {
-                if ($inscricao->isPresent()) {
-                    $valor++;
+            foreach ($this->getInscricoesEnxadristaEvento($evento, $enxadrista, $categoria) as $inscricao) {
+                if ($this->inscricaoMatchesCategoria($inscricao, $categoria)) {
+                    if ($inscricao->isPresent()) {
+                        $valor++;
+                    }
                 }
             }
         }

@@ -326,4 +326,201 @@ class CategoriaController extends Controller
             return strnatcmp($pontuacao_a->enxadrista->getName(), $pontuacao_b->enxadrista->getName());
         }
     }
+
+    public static function classificar_geral_unico($grupo_evento_id)
+    {
+        $retornos = array();
+        $grupo_evento = GrupoEvento::find($grupo_evento_id);
+        $retornos[] = date("d/m/Y H:i:s") . " - Início do Processamento da Classificação Geral do Grupo de Evento '" . $grupo_evento->name . "'";
+        $retornos[] = "<hr/>";
+
+        $retornos = array_merge($retornos, CategoriaController::recalcular_pontos_etapas_geral($grupo_evento));
+        $retornos[] = "<hr/>";
+        $retornos = array_merge($retornos, CategoriaController::somar_pontos_geral_unico($grupo_evento));
+        $retornos[] = "<hr/>";
+        $retornos = array_merge($retornos, CategoriaController::gerar_criterios_desempate_geral_unico($grupo_evento));
+        $retornos[] = "<hr/>";
+        $retornos = array_merge($retornos, CategoriaController::classificar_enxadristas_geral_unico($grupo_evento));
+        $retornos[] = "<hr/>";
+        $retornos[] = date("d/m/Y H:i:s") . " - Fim do Processamento da Classificação Geral do Grupo de Evento '" . $grupo_evento->name . "'";
+
+        return $retornos;
+    }
+
+    public static function recalcular_pontos_etapas_geral($grupo_evento)
+    {
+        $retornos = array();
+        $retornos[] = date("d/m/Y H:i:s") . " - Recálculo de pontos das etapas (classificação geral cross-categoria)";
+
+        $eventos_ids = $grupo_evento->eventos()->where([["classificavel", "=", true]])->pluck("id");
+
+        Inscricao::whereHas("torneio", function ($q1) use ($eventos_ids) {
+            $q1->whereIn("evento_id", $eventos_ids);
+        })->update([
+            "pontos_classificacao_geral" => null,
+            "posicao_classificacao_geral" => null,
+        ]);
+
+        foreach ($grupo_evento->eventos()->where([["classificavel", "=", true]])->get() as $evento) {
+            $retornos[] = date("d/m/Y H:i:s") . " - Etapa: " . $evento->name;
+            $inscritos = array();
+            $inscricoes = Inscricao::whereHas("torneio", function ($q1) use ($evento) {
+                $q1->where([["evento_id", "=", $evento->id]]);
+            })->get();
+
+            foreach ($inscricoes as $inscricao) {
+                $inscricao->is_draw = false;
+                if ($inscricao->pontos != null && $inscricao->confirmado) {
+                    $inscritos[] = $inscricao;
+                }
+            }
+
+            usort($inscritos, array("\App\Http\Controllers\CategoriaController", "sort_classificacao_etapa"));
+            $i = 1;
+            $j = 1;
+            $peso = $evento->getClassificacaoGeralPeso();
+
+            foreach ($inscritos as $inscricao) {
+                if (!$inscricao->is_desclassificado) {
+                    if (!$inscricao->desconsiderar_pontuacao_geral) {
+                        $inscricao->posicao_classificacao_geral = $j;
+                        if ($evento->grupo_evento->e_pontuacao_resultado_para_geral) {
+                            $base = $inscricao->pontos;
+                        } else {
+                            $base = Pontuacao::getPontuacaoByEvento($evento->id, $j);
+                        }
+                        $inscricao->pontos_classificacao_geral = round($base * $peso, 2);
+                        $j++;
+                    } else {
+                        $inscricao->pontos_classificacao_geral = null;
+                        $inscricao->posicao_classificacao_geral = null;
+                    }
+                } else {
+                    $inscricao->pontos_classificacao_geral = null;
+                    $inscricao->posicao_classificacao_geral = null;
+                }
+                $inscricao->save();
+                $i++;
+            }
+        }
+
+        $retornos[] = date("d/m/Y H:i:s") . " - Fim do recálculo de pontos das etapas";
+        return $retornos;
+    }
+
+    public static function somar_pontos_geral_unico($grupo_evento)
+    {
+        $retornos = array();
+        $retornos[] = date("d/m/Y H:i:s") . " - Função de Soma de Pontos (Classificação Geral)";
+
+        foreach (PontuacaoEnxadrista::where([
+            ["grupo_evento_id", "=", $grupo_evento->id],
+        ])->whereNull("categoria_id")->get() as $pontuacao) {
+            $pontuacao->delete();
+        }
+
+        $eventos_id = $grupo_evento->eventos()->where([["classificavel", "=", true]])->pluck("id");
+
+        $inscricoes = Inscricao::where([
+            ["pontos_classificacao_geral", "!=", null],
+            ["pontos_classificacao_geral", ">", 0],
+        ])
+            ->orderBy("enxadrista_id", "DESC")
+            ->orderBy("pontos_classificacao_geral", "DESC")
+            ->whereHas("torneio", function ($q1) use ($eventos_id) {
+                $q1->whereIn("evento_id", $eventos_id);
+            })
+            ->get();
+
+        $retornos[] = date("d/m/Y H:i:s") . " - Total de inscrições encontradas: " . $inscricoes->count();
+
+        foreach ($inscricoes as $inscricao) {
+            $pontos_geral = PontuacaoEnxadrista::where([
+                ["enxadrista_id", "=", $inscricao->enxadrista->id],
+                ["grupo_evento_id", "=", $grupo_evento->id],
+            ])->whereNull("categoria_id")->first();
+
+            if (!$pontos_geral) {
+                $pontos_geral = new PontuacaoEnxadrista;
+                $pontos_geral->enxadrista_id = $inscricao->enxadrista->id;
+                $pontos_geral->grupo_evento_id = $grupo_evento->id;
+                $pontos_geral->categoria_id = null;
+                $pontos_geral->pontos = 0;
+                $pontos_geral->inscricoes_calculadas = 0;
+            }
+
+            if ($grupo_evento->limite_calculo_geral) {
+                if ($grupo_evento->limite_calculo_geral > $pontos_geral->inscricoes_calculadas) {
+                    $pontos_geral->pontos += $inscricao->pontos_classificacao_geral;
+                    $pontos_geral->inscricoes_calculadas++;
+                }
+            } else {
+                $pontos_geral->pontos += $inscricao->pontos_classificacao_geral;
+                $pontos_geral->inscricoes_calculadas++;
+            }
+            $pontos_geral->save();
+        }
+
+        $retornos[] = date("d/m/Y H:i:s") . " - Finalizada a Função de Soma de Pontos (Classificação Geral)";
+        return $retornos;
+    }
+
+    public static function gerar_criterios_desempate_geral_unico($grupo_evento)
+    {
+        $retornos = array();
+        $retornos[] = date("d/m/Y H:i:s") . " - Função de geração de Critérios de Desempate (Classificação Geral)";
+
+        foreach (EnxadristaCriterioDesempateGeral::where([
+            ["grupo_evento_id", "=", $grupo_evento->id],
+        ])->whereNull("categoria_id")->get() as $criterio_existente) {
+            $criterio_existente->delete();
+        }
+
+        $criterios = $grupo_evento->getCriteriosDesempateGerais();
+        $enxadristas = Enxadrista::getComInscricaoConfirmadaGeral($grupo_evento->id);
+        $gerador = new CriterioDesempateGeralController;
+
+        foreach ($enxadristas as $enxadrista) {
+            foreach ($criterios as $criterio) {
+                $enxadrista_criterio = new EnxadristaCriterioDesempateGeral;
+                $enxadrista_criterio->enxadrista_id = $enxadrista->id;
+                $enxadrista_criterio->grupo_evento_id = $grupo_evento->id;
+                $enxadrista_criterio->categoria_id = null;
+                $enxadrista_criterio->criterio_desempate_id = $criterio->criterio->id;
+                $enxadrista_criterio->valor = $gerador->generate($grupo_evento, $enxadrista, $criterio->criterio, null);
+                $enxadrista_criterio->save();
+            }
+        }
+
+        $retornos[] = date("d/m/Y H:i:s") . " - Fim da Função de geração de Critérios de Desempate (Classificação Geral)";
+        return $retornos;
+    }
+
+    public static function classificar_enxadristas_geral_unico($grupo_evento)
+    {
+        $retornos = array();
+        $retornos[] = date("d/m/Y H:i:s") . " - Função de classificação dos enxadristas (Classificação Geral)";
+
+        $pontuacoes_enxadristas = PontuacaoEnxadrista::where([
+            ["grupo_evento_id", "=", $grupo_evento->id],
+        ])->whereNull("categoria_id")->get();
+
+        $pontuacoes = array();
+        foreach ($pontuacoes_enxadristas as $pontuacao) {
+            if ($pontuacao->pontos > 0) {
+                $pontuacoes[] = $pontuacao;
+            }
+        }
+
+        usort($pontuacoes, array("\App\Http\Controllers\CategoriaController", "sort_classificacao_geral"));
+        $i = 1;
+        foreach ($pontuacoes as $pontuacao) {
+            $pontuacao->posicao = $i;
+            $pontuacao->save();
+            $i++;
+        }
+
+        $retornos[] = date("d/m/Y H:i:s") . " - Fim da Função de classificação dos enxadristas (Classificação Geral)";
+        return $retornos;
+    }
 }

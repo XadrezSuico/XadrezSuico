@@ -28,6 +28,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 use App\Enum\EmailType;
+use App\Enum\ConfigType;
 use Illuminate\Support\MessageBag;
 
 class GrupoEventoController extends Controller
@@ -305,6 +306,39 @@ class GrupoEventoController extends Controller
         }
         return redirect("/grupoevento/dashboard/" . $grupo_evento->id);
     }
+
+    public function configuracoes_post($id, Request $request)
+    {
+        $user = Auth::user();
+        if (!$user->hasPermissionGlobal() && !$user->hasPermissionGroupEventByPerfil($id, [7])) {
+            return redirect("/grupoevento");
+        }
+
+        $grupo_evento = GrupoEvento::find($id);
+        $por_categoria = $request->has('classificacao_individual_por_categoria');
+        $geral = $request->has('classificacao_individual_geral');
+
+        if (!$por_categoria && !$geral) {
+            return redirect("/grupoevento/dashboard/" . $id . "?tab=configuracoes")
+                ->withErrors(['classificacao' => 'É necessário ativar ao menos um modo de classificação individual.']);
+        }
+
+        if ($por_categoria) {
+            $grupo_evento->removeConfig('classificacao_individual_por_categoria');
+        } else {
+            $grupo_evento->setConfig('classificacao_individual_por_categoria', ConfigType::Boolean, false);
+        }
+
+        if ($geral) {
+            $grupo_evento->setConfig('classificacao_individual_geral', ConfigType::Boolean, true);
+        } else {
+            $grupo_evento->removeConfig('classificacao_individual_geral');
+        }
+
+        return redirect("/grupoevento/dashboard/" . $id . "?tab=configuracoes")
+            ->with('status', 'Configurações salvas com sucesso.');
+    }
+
     public function delete($id)
     {
         $user = Auth::user();
@@ -478,8 +512,12 @@ class GrupoEventoController extends Controller
             return redirect("/grupoevento");
         }
 
-        $retornos = array();
         $grupo_evento = GrupoEvento::find($grupo_evento_id);
+        if (!$grupo_evento->temClassificacaoIndividualAtiva()) {
+            return redirect("/grupoevento/dashboard/" . $grupo_evento_id . "?tab=configuracoes")
+                ->withErrors(['classificacao' => 'Nenhum modo de classificação individual está ativo para este grupo de evento.']);
+        }
+
         return view("grupoevento.classificar", compact("grupo_evento"));
     }
 
@@ -490,8 +528,38 @@ class GrupoEventoController extends Controller
             return redirect("/grupoevento");
         }
 
-        $retornos = array();
         $grupo_evento = GrupoEvento::find($grupo_evento_id);
+
+        if ($categoria_id === 'geral') {
+            if (!$grupo_evento->classificaIndividualGeral()) {
+                return response()->json(["ok" => 0, "error" => 1]);
+            }
+            try {
+                switch ((int) $action) {
+                    case 1:
+                        CategoriaController::recalcular_pontos_etapas_geral($grupo_evento);
+                        break;
+                    case 2:
+                        CategoriaController::somar_pontos_geral_unico($grupo_evento);
+                        break;
+                    case 3:
+                        CategoriaController::gerar_criterios_desempate_geral_unico($grupo_evento);
+                        break;
+                    case 4:
+                        CategoriaController::classificar_enxadristas_geral_unico($grupo_evento);
+                        break;
+                }
+                return response()->json(["ok" => 1, "error" => 0]);
+            } catch (Exception $e) {
+                return response()->json(["ok" => 0, "error" => 1]);
+            }
+        }
+
+        if (!$grupo_evento->classificaIndividualPorCategoria()) {
+            return response()->json(["ok" => 0, "error" => 1]);
+        }
+
+        $retornos = array();
         $categoria = Categoria::find($categoria_id);
         if ($grupo_evento && $categoria) {
             try {

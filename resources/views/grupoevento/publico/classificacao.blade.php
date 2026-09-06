@@ -20,15 +20,20 @@
     <div class="box">
         <div class="box-body">
 			<div class="form-group">
-                <label for="categoria_id">Categoria</label>
+                <label for="categoria_id">Classificação</label>
                 <select id="categoria_id" name="categoria_id" class="form-control">
-                    <option value=""> -- Selecione uma Categoria antes de acessar a Lista de Resultados Gerais --</option>
-                    @foreach($grupo_evento->categorias()->where([["nao_classificar","=",0]])->get() as $categoria)
-                        @if(!$categoria->nao_classificar) <option value="{{$categoria->id}}">{{$categoria->name}}</option> @endif
-                    @endforeach
+                    <option value=""> -- Selecione uma classificação antes de acessar a Lista de Resultados --</option>
+                    @if($grupo_evento->classificaIndividualGeral())
+                        <option value="geral">Geral (cross-categoria)</option>
+                    @endif
+                    @if($grupo_evento->classificaIndividualPorCategoria())
+                        @foreach($grupo_evento->categorias()->where([["nao_classificar","=",0]])->get() as $categoria)
+                            @if(!$categoria->nao_classificar) <option value="{{$categoria->id}}">{{$categoria->name}}</option> @endif
+                        @endforeach
+                    @endif
                 </select>
             </div>
-            <button id="acessar" type="button" class="btn btn-success">Acessar Lista de Resultados Gerais</button>
+            <button id="acessar" type="button" class="btn btn-success">Acessar Lista de Resultados</button>
             <input type="hidden" name="_token" value="{{ csrf_token() }}">
 		</div>
 	</div>
@@ -37,13 +42,16 @@
 <script type="text/javascript">
     $(document).ready(function(){
         $("#categoria_id").select2();
+        @if($grupo_evento->classificaIndividualGeral() && !$grupo_evento->classificaIndividualPorCategoria())
+            $("#categoria_id").val('geral').trigger('change');
+        @endif
     });
     $("#acessar").on("click",function(){
-        @if(\Illuminate\Support\Facades\Auth::check())
-            location.href = "{{url("/grupoevento/".$grupo_evento->id."/resultados")}}/".concat($("#categoria_id").val());
-        @else
-            location.href = "{{url("/grupoevento/".$grupo_evento->id."/resultados")}}/".concat($("#categoria_id").val());
-        @endif
+        var selecionado = $("#categoria_id").val();
+        if(!selecionado){
+            return;
+        }
+        location.href = "{{url("/grupoevento/".$grupo_evento->id."/resultados")}}/".concat(selecionado);
     });
 </script>
 @endsection

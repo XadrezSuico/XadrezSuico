@@ -1,9 +1,9 @@
 @extends('adminlte::page')
 
-@section('title', 'Grupo de Evento #'.$grupo_evento->id.' ('.$grupo_evento->name.') - Resultados da Categoria "'.$categoria->name.'"')
+@section('title', 'Grupo de Evento #'.$grupo_evento->id.' ('.$grupo_evento->name.') - Resultados' . ($modo_geral ? ' Gerais' : ' da Categoria "'.$categoria->name.'"'))
 
 @section('content_header')
-    <h1>Grupo de Evento #{{$grupo_evento->id}} ({{$grupo_evento->name}}) - Resultados da Categoria #{{$categoria->id}} ({{$categoria->name}})</h1>
+    <h1>Grupo de Evento #{{$grupo_evento->id}} ({{$grupo_evento->name}}) - Resultados @if($modo_geral) Gerais @else da Categoria #{{$categoria->id}} ({{$categoria->name}}) @endif</h1>
 @stop
 
 @section('content')
@@ -49,22 +49,31 @@
                             <td>{{$pontuacao->enxadrista->cidade->name}}</td>
                             <td>@if($pontuacao->enxadrista->clube) {{$pontuacao->enxadrista->clube->getName()}} @else Sem Clube @endif</td>
                             @foreach($eventos as $evento)
-                                @php($inscricao = $evento->enxadristaInscrito($pontuacao->enxadrista->id))
-                                @if($inscricao)
-                                    @if($inscricao->pontos_geral)
-                                        <td>{{$inscricao->pontos_geral}}</td>
+                                @if($modo_geral)
+                                    @php($pontos_etapa = $evento->getPontosClassificacaoGeralEnxadrista($pontuacao->enxadrista->id))
+                                    @if($pontos_etapa > 0)
+                                        <td>{{$pontos_etapa}}</td>
                                     @else
                                         <td>-</td>
                                     @endif
                                 @else
-                                    <td>-</td>
+                                    @php($inscricao = $evento->enxadristaInscrito($pontuacao->enxadrista->id))
+                                    @if($inscricao)
+                                        @if($inscricao->pontos_geral)
+                                            <td>{{$inscricao->pontos_geral}}</td>
+                                        @else
+                                            <td>-</td>
+                                        @endif
+                                    @else
+                                        <td>-</td>
+                                    @endif
                                 @endif
                             @endforeach
                             <td>{{$pontuacao->pontos}}</td>
                             @foreach($criterios as $criterio)
                                 <td>
-                                    @if($criterio->criterio->valor_desempate_geral($pontuacao->enxadrista->id,$grupo_evento->id,$categoria->id))
-                                        {{$criterio->criterio->valor_desempate_geral($pontuacao->enxadrista->id,$grupo_evento->id,$categoria->id)->valor}}
+                                    @if($criterio->criterio->valor_desempate_geral($pontuacao->enxadrista->id,$grupo_evento->id,$modo_geral ? null : $categoria->id))
+                                        {{$criterio->criterio->valor_desempate_geral($pontuacao->enxadrista->id,$grupo_evento->id,$modo_geral ? null : $categoria->id)->valor}}
                                     @else
                                         -
                                     @endif

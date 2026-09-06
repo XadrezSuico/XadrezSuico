@@ -55,6 +55,7 @@
 				<li role="presentation"><a id="tab_template_torneio" href="#template_torneio" aria-controls="template_torneio" role="tab" data-toggle="tab">Template de Torneio</a></li>
 				<li role="presentation"><a id="tab_criterio_desempate" href="#criterio_desempate" aria-controls="criterio_desempate" role="tab" data-toggle="tab">Critério de Desempate</a></li>
 				<li role="presentation"><a id="tab_criterio_desempate_geral" href="#criterio_desempate_geral" aria-controls="criterio_desempate_geral" role="tab" data-toggle="tab">Critério de Desempate Geral</a></li>
+				<li role="presentation"><a id="tab_configuracoes" href="#configuracoes" aria-controls="configuracoes" role="tab" data-toggle="tab">Configurações</a></li>
 				<li role="presentation"><a id="tab_categoria" href="#categoria" aria-controls="categoria" role="tab" data-toggle="tab">Categoria</a></li>
 				<li role="presentation"><a id="tab_pontuacao" href="#pontuacao" aria-controls="pontuacao" role="tab" data-toggle="tab">Pontuação</a></li>
 				<li role="presentation"><a id="tab_premiacao_equipe" href="#premiacao_equipe" aria-controls="premiacao_equipe" role="tab" data-toggle="tab">Premiação por Equipes</a></li>
@@ -548,6 +549,10 @@
 								<!-- /.box-body -->
 						</div>
 					</section>
+				</div>
+				<div role="tabpanel" class="tab-pane" id="configuracoes">
+					<br/>
+					@include('grupoevento._tabs.configuracoes')
 				</div>
 				<div role="tabpanel" class="tab-pane" id="categoria">
 					<br/>

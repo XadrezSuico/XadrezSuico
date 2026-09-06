@@ -52,6 +52,21 @@
                     </tr>
                 </thead>
                 <tbody>
+                    @if($grupo_evento->classificaIndividualGeral())
+                        @foreach($grupo_evento->pontuacoes_enxadrista()->whereNull('categoria_id')->orderBy('posicao','ASC')->get() as $pontuacao_enxadrista)
+                            <tr>
+                                <td>Geral</td>
+                                <td>{{$pontuacao_enxadrista->posicao}}</td>
+                                <td>{{$pontuacao_enxadrista->enxadrista->id}}</td>
+                                <td>{{$pontuacao_enxadrista->enxadrista->getNomePrivado()}}</td>
+                                <td>{{$pontuacao_enxadrista->enxadrista->cidade->getName()}}</td>
+                                <td>@if($pontuacao_enxadrista->enxadrista->clube) {{$pontuacao_enxadrista->enxadrista->clube->getName()}} @else - @endif</td>
+                                <td>{{$pontuacao_enxadrista->enxadrista->email}}</td>
+                                <td>({{$pontuacao_enxadrista->enxadrista->pais_celular->codigo_iso}}) {{$pontuacao_enxadrista->enxadrista->celular}}</td>
+                            </tr>
+                        @endforeach
+                    @endif
+                    @if($grupo_evento->classificaIndividualPorCategoria())
                     @foreach($grupo_evento->categorias->all() as $categoria)
                         @foreach($grupo_evento->pontuacoes_enxadrista()->where([["categoria_id",$categoria->id]])->orderBy("posicao","ASC")->limit($categoria->getHowManyStandingPlaces())->get() as $pontuacao_enxadrista)
                             <tr>
@@ -66,6 +81,7 @@
                             </tr>
                         @endforeach
                     @endforeach
+                    @endif
                 </tbody>
             </table>
 		</div>

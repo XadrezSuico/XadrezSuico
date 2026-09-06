@@ -538,6 +538,19 @@ class Evento extends Model
         return false;
     }
 
+    public function getPontosClassificacaoGeralEnxadrista($enxadrista_id)
+    {
+        return Inscricao::where([
+            ["enxadrista_id", "=", $enxadrista_id],
+        ])
+            ->whereHas("torneio", function ($q1) {
+                $q1->where("evento_id", "=", $this->id);
+            })
+            ->whereNotNull("pontos_classificacao_geral")
+            ->where("pontos_classificacao_geral", ">", 0)
+            ->sum("pontos_classificacao_geral");
+    }
+
     public function enxadristaInscrito($enxadrista_id)
     {
         $total = 0;

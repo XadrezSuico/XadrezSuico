@@ -99,13 +99,18 @@ class CriterioDesempate extends Model
 
     public function valor_desempate_geral($enxadrista_id, $grupo_evento_id, $categoria_id)
     {
-        // echo $enxadrista_id, $grupo_evento_id, $categoria_id,$this->id;
-        $desempate = EnxadristaCriterioDesempateGeral::where([
+        $query = EnxadristaCriterioDesempateGeral::where([
             ["enxadrista_id", "=", $enxadrista_id],
             ["grupo_evento_id", "=", $grupo_evento_id],
-            ["categoria_id", "=", $categoria_id],
             ["criterio_desempate_id", "=", $this->id],
-        ])->first();
+        ]);
+
+        if ($categoria_id === null) {
+            $desempate = $query->whereNull("categoria_id")->first();
+        } else {
+            $desempate = $query->where("categoria_id", "=", $categoria_id)->first();
+        }
+
         if ($desempate) {
             return $desempate;
         }

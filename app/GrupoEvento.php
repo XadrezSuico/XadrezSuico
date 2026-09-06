@@ -348,4 +348,25 @@ class GrupoEvento extends Model
 
         return ["ok" => 1, "error" => 0];
     }
+
+    public function classificaIndividualPorCategoria(): bool
+    {
+        if (!$this->hasConfig('classificacao_individual_por_categoria')) {
+            return true;
+        }
+        return (bool) $this->getConfig('classificacao_individual_por_categoria', true);
+    }
+
+    public function classificaIndividualGeral(): bool
+    {
+        if (!$this->hasConfig('classificacao_individual_geral')) {
+            return false;
+        }
+        return (bool) $this->getConfig('classificacao_individual_geral', true);
+    }
+
+    public function temClassificacaoIndividualAtiva(): bool
+    {
+        return $this->classificaIndividualPorCategoria() || $this->classificaIndividualGeral();
+    }
 }

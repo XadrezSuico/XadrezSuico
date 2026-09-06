@@ -631,6 +631,20 @@ class Enxadrista extends Model
             ->get();
     }
 
+    public static function getComInscricaoConfirmadaGeral($grupo_evento_id)
+    {
+        return Enxadrista::whereHas("inscricoes", function ($q1) use ($grupo_evento_id) {
+            $q1->whereHas("torneio", function ($q2) use ($grupo_evento_id) {
+                $q2->whereHas("evento", function ($q3) use ($grupo_evento_id) {
+                    $q3->where([
+                        ["grupo_evento_id", "=", $grupo_evento_id],
+                    ]);
+                });
+            });
+        })
+            ->get();
+    }
+
     public static function getComPontuacaoGeral($grupo_evento_id, $categoria_id)
     {
         return Enxadrista::whereHas("pontuacoes_gerais", function ($q1) use ($grupo_evento_id, $categoria_id) {
@@ -648,6 +662,28 @@ class Enxadrista extends Model
             ["categoria_id", "=", $categoria_id],
             ["grupo_evento_id", "=", $grupo_evento_id],
         ])->first();
+    }
+
+    public function getPontuacaoGeralUnica($grupo_evento_id)
+    {
+        return $this->pontuacoes_gerais()->where([
+            ["grupo_evento_id", "=", $grupo_evento_id],
+        ])->whereNull("categoria_id")->first();
+    }
+
+    public function getInscricoesByGrupoEventoGeral($grupo_evento_id)
+    {
+        return $this->inscricoes()
+            ->whereHas("torneio", function ($q1) use ($grupo_evento_id) {
+                $q1->whereHas("evento", function ($q2) use ($grupo_evento_id) {
+                    $q2->where([
+                        ["grupo_evento_id", "=", $grupo_evento_id],
+                        ["classificavel", "=", true],
+                    ]);
+                });
+            })
+            ->orderBy("torneio_id", "ASC")
+            ->get();
     }
 
     public function getInscricoesByGrupoEventoECategoria($grupo_evento_id, $categoria_id)
