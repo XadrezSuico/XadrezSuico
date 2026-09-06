@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Categoria;
 use App\Enxadrista;
 use App\Evento;
+use App\EventoAnuidadeCbxComprovante;
 use App\Helper\NameComparisonHelper;
 use App\Inscricao;
 use Carbon\Carbon;
@@ -68,6 +69,7 @@ class RelatorioService
         $linhas = [];
         $vistos = [];
         $cbxAnuidadeService = app(CBXAnuidadeService::class);
+        $comprovantes = $this->obterComprovantesAnuidadeCbxEvento($evento);
 
         foreach ($inscricoes as $inscricao) {
             if (!$inscricao->enxadrista || isset($vistos[$inscricao->enxadrista->id])) {
@@ -85,7 +87,7 @@ class RelatorioService
             $temIdCbx = $cbxId !== '' && intval($cbxId) > 0;
 
             if (!$temIdCbx) {
-                $linhas[] = [
+                $linhas[] = $this->linhaAnuidadeCbxComComprovante([
                     'enxadrista_id' => $enxadrista->id,
                     'nome' => $enxadrista->getNomePrivado(),
                     'cidade' => $inscricao->cidade ? $inscricao->getCidade() : '-',
@@ -98,13 +100,13 @@ class RelatorioService
                     'label' => 'Sem ID CBX',
                     'detalhe' => 'Enxadrista sem ID CBX informado.',
                     'status_ordenacao' => 2,
-                ];
+                ], $comprovantes);
                 continue;
             }
 
             $cached = $cbxAnuidadeService->obterDoCache($cbxId);
             if ($cached !== null) {
-                $linhas[] = [
+                $linhas[] = $this->linhaAnuidadeCbxComComprovante([
                     'enxadrista_id' => $enxadrista->id,
                     'nome' => $enxadrista->getNomePrivado(),
                     'cidade' => $inscricao->cidade ? $inscricao->getCidade() : '-',
@@ -117,11 +119,11 @@ class RelatorioService
                     'label' => $cached['label'],
                     'detalhe' => ($cached['detalhe'] ?? '') . ' (cache de ' . CBXAnuidadeService::CACHE_TTL_DAYS . ' dias)',
                     'status_ordenacao' => 2,
-                ];
+                ], $comprovantes);
                 continue;
             }
 
-            $linhas[] = [
+            $linhas[] = $this->linhaAnuidadeCbxComComprovante([
                 'enxadrista_id' => $enxadrista->id,
                 'nome' => $enxadrista->getNomePrivado(),
                 'cidade' => $inscricao->cidade ? $inscricao->getCidade() : '-',
@@ -134,7 +136,7 @@ class RelatorioService
                 'label' => 'Aguardando',
                 'detalhe' => 'Consulta pendente.',
                 'status_ordenacao' => 1,
-            ];
+            ], $comprovantes);
         }
 
         usort($linhas, function ($a, $b) {
@@ -146,6 +148,92 @@ class RelatorioService
         });
 
         return $linhas;
+    }
+
+    public function obterComprovantesAnuidadeCbxEvento(Evento $evento): array
+    {
+        $comprovantes = [];
+
+        foreach (
+            EventoAnuidadeCbxComprovante::where('evento_id', $evento->id)
+                ->where('comprovante_recebido', true)
+                ->pluck('enxadrista_id') as $enxadristaId
+        ) {
+            $comprovantes[(int) $enxadristaId] = true;
+        }
+
+        return $comprovantes;
+    }
+
+    public function obterComprovanteAnuidadeCbx(Evento $evento, int $enxadristaId): bool
+    {
+        return EventoAnuidadeCbxComprovante::where('evento_id', $evento->id)
+            ->where('enxadrista_id', $enxadristaId)
+            ->where('comprovante_recebido', true)
+            ->exists();
+    }
+
+    public function salvarComprovanteAnuidadeCbx(Evento $evento, int $enxadristaId, bool $recebido): array
+    {
+        if (!$this->enxadristaPertenceAoEvento($evento, $enxadristaId)) {
+            return [
+                'ok' => false,
+                'enabled' => false,
+                'message' => 'Enxadrista não pertence ao evento.',
+            ];
+        }
+
+        $enxadrista = Enxadrista::find($enxadristaId);
+        if (!$enxadrista) {
+            return [
+                'ok' => false,
+                'enabled' => false,
+                'message' => 'Enxadrista não encontrado.',
+            ];
+        }
+
+        if (!$this->requerAnuidadeCbx($enxadrista)) {
+            return [
+                'ok' => false,
+                'enabled' => false,
+                'message' => 'Enxadrista com federação FIDE estrangeira — comprovante não aplicável.',
+            ];
+        }
+
+        $resultado = app(CBXAnuidadeService::class)->consultarEnxadrista($enxadrista);
+        if (!in_array($resultado['status'], ['pendente', 'erro'], true)) {
+            return [
+                'ok' => false,
+                'enabled' => false,
+                'message' => 'Comprovante só pode ser marcado para anuidades pendentes ou com erro de consulta.',
+            ];
+        }
+
+        EventoAnuidadeCbxComprovante::updateOrCreate(
+            [
+                'evento_id' => $evento->id,
+                'enxadrista_id' => $enxadristaId,
+            ],
+            [
+                'comprovante_recebido' => $recebido,
+            ]
+        );
+
+        return [
+            'ok' => true,
+            'enabled' => $recebido,
+            'message' => $recebido
+                ? 'Comprovante de anuidade registrado para este evento.'
+                : 'Registro de comprovante removido.',
+        ];
+    }
+
+    private function linhaAnuidadeCbxComComprovante(array $linha, array $comprovantes): array
+    {
+        $enxadristaId = (int) $linha['enxadrista_id'];
+        $linha['comprovante_recebido'] = !empty($comprovantes[$enxadristaId]);
+
+        return $linha;
     }
 
     public function requerAnuidadeCbx(Enxadrista $enxadrista): bool

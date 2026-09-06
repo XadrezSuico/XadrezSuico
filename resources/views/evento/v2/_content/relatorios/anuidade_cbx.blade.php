@@ -40,6 +40,11 @@
                     Anuidade considerada paga quando há data de pagamento do ano atual.
                     Enxadristas com ID FIDE de federação estrangeira (bandeira diferente de BRA) são omitidos deste relatório.
                 </p>
+                <p style="margin-top: 10px; margin-bottom: 0;">
+                    Para jogadores com status <strong>Pendente</strong> ou <strong>Erro</strong>, use a coluna
+                    <strong>Comprovante</strong> para indicar que o comprovante de pagamento da anuidade foi recebido.
+                    A marcação é exclusiva deste evento e salva automaticamente.
+                </p>
             </div>
         </div>
 
@@ -59,6 +64,7 @@
                             <th>ID CBX</th>
                             <th>Data Pagto. (CBX)</th>
                             <th>Status</th>
+                            <th>Comprovante</th>
                             <th>Consulta</th>
                         </tr>
                     </thead>
@@ -84,6 +90,18 @@
                                     <span class="anuidade-badge {{ $classeBadge }}" title="{{ $linha['detalhe'] }}">
                                         {{ $linha['label'] }}
                                     </span>
+                                </td>
+                                <td class="col-comprovante">
+                                    @if(in_array($linha['status'], ['pendente', 'erro'], true))
+                                        <label class="anuidade-comprovante-label" title="Comprovante de pagamento recebido">
+                                            <input type="checkbox"
+                                                class="anuidade-comprovante-check"
+                                                id="comprovante_{{ $linha['enxadrista_id'] }}"
+                                                data-enxadrista-id="{{ $linha['enxadrista_id'] }}"
+                                                @if($linha['comprovante_recebido']) checked @endif>
+                                            Recebido
+                                        </label>
+                                    @endif
                                 </td>
                                 <td>
                                     @if($linha['tem_id_cbx'])

@@ -64,6 +64,18 @@
         .fa-times {
             color: red;
         }
+
+        .anuidade-comprovante-label {
+            margin: 0;
+            font-weight: normal;
+            white-space: nowrap;
+            cursor: pointer;
+        }
+
+        .anuidade-comprovante-check {
+            margin-right: 4px;
+            vertical-align: middle;
+        }
     </style>
 @endpush
 
@@ -95,6 +107,7 @@
     @endforeach
 
     var callUrlBase = '{{ url("/evento/" . $evento->id . "/relatorios/anuidade-cbx/call") }}';
+    var comprovanteUrlBase = '{{ url("/evento/" . $evento->id . "/relatorios/anuidade-cbx/comprovante") }}';
     var badgeClasses = {
         pago: 'anuidade-pago',
         pendente: 'anuidade-pendente',
@@ -102,6 +115,34 @@
         aguardando: 'anuidade-aguardando',
         erro: 'anuidade-erro'
     };
+
+    function statusPermiteComprovante(status) {
+        return status === 'pendente' || status === 'erro';
+    }
+
+    function atualizarComprovante(enxadristaId, status, recebido) {
+        var $cell = $('#linha_' + enxadristaId).find('.col-comprovante');
+        var checked = !!recebido;
+
+        if (!statusPermiteComprovante(status)) {
+            $cell.empty();
+            return;
+        }
+
+        if ($cell.find('.anuidade-comprovante-check').length === 0) {
+            $cell.html(
+                '<label class="anuidade-comprovante-label" title="Comprovante de pagamento recebido">' +
+                    '<input type="checkbox" class="anuidade-comprovante-check" ' +
+                    'id="comprovante_' + enxadristaId + '" ' +
+                    'data-enxadrista-id="' + enxadristaId + '"> Recebido' +
+                '</label>'
+            );
+        }
+
+        $cell.find('.anuidade-comprovante-check')
+            .prop('checked', checked)
+            .prop('disabled', false);
+    }
 
     function atualizarLinha(enxadristaId, data) {
         var $row = $('#linha_' + enxadristaId);
@@ -114,6 +155,7 @@
             '<span class="anuidade-badge ' + classe + '" title="' + (data.detalhe || '') + '">' + label + '</span>'
         );
         $row.attr('data-status-ordenacao', statusOrdenacao(status));
+        atualizarComprovante(enxadristaId, status, data.comprovante_recebido);
     }
 
     function statusOrdenacao(status) {
@@ -202,6 +244,39 @@
     }
 
     $(document).ready(function() {
+        $(document).on('change', '.anuidade-comprovante-check', function() {
+            var $input = $(this);
+            var enxadristaId = $input.data('enxadrista-id');
+            var previousChecked = !$input.prop('checked');
+            var isChecked = $input.prop('checked');
+
+            $input.prop('disabled', true);
+
+            $.ajax({
+                url: comprovanteUrlBase + '/' + enxadristaId,
+                type: 'GET',
+                dataType: 'json',
+                data: { enabled: isChecked ? 1 : 0 },
+                success: function(response) {
+                    if (response.ok) {
+                        $input.prop('checked', !!response.enabled);
+                    } else {
+                        $input.prop('checked', previousChecked);
+                        if (response.message) {
+                            alert(response.message);
+                        }
+                    }
+                },
+                error: function() {
+                    $input.prop('checked', previousChecked);
+                    alert('Falha ao salvar o comprovante.');
+                },
+                complete: function() {
+                    $input.prop('disabled', false);
+                }
+            });
+        });
+
         setTimeout(function() {
             start();
         }, 1000);

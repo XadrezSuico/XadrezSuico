@@ -1457,6 +1457,38 @@ class EventoGerenciarController extends Controller
             'label' => $resultado['label'],
             'data_pagto' => $resultado['data_pagto'],
             'detalhe' => $resultado['detalhe'],
+            'comprovante_recebido' => $relatorioService->obterComprovanteAnuidadeCbx($evento, (int) $enxadrista_id),
         ]);
+    }
+
+    public function relatorio_anuidade_cbx_comprovante(Request $request, $id, $enxadrista_id)
+    {
+        $user = Auth::user();
+        $evento = Evento::find($id);
+        if (!$evento) {
+            return response()->json(['ok' => false, 'enabled' => false, 'message' => 'Evento não encontrado.']);
+        }
+
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionEventByPerfil($evento->id, [3, 4, 5]) &&
+            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [6, 7])
+        ) {
+            return response()->json(['ok' => false, 'enabled' => false, 'message' => 'Sem permissão.']);
+        }
+
+        $relatorioService = app(RelatorioService::class);
+        if (!$relatorioService->eventoElegivelAnuidadeCbx($evento)) {
+            return response()->json(['ok' => false, 'enabled' => false, 'message' => 'Evento não elegível para este relatório.']);
+        }
+
+        $enabled = $this->parseToggleEnabled($request);
+        if ($enabled === null) {
+            return response()->json(['ok' => false, 'enabled' => false, 'message' => 'Parâmetro enabled é obrigatório.']);
+        }
+
+        $resultado = $relatorioService->salvarComprovanteAnuidadeCbx($evento, (int) $enxadrista_id, $enabled);
+
+        return response()->json($resultado);
     }
 }
