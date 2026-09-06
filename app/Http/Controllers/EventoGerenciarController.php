@@ -492,6 +492,35 @@ class EventoGerenciarController extends Controller
         return redirect("/evento/dashboard/" . $id . "?tab=pagina");
     }
 
+    public function configuracoes_post($id, Request $request)
+    {
+        $user = Auth::user();
+        $evento = Evento::find($id);
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionEventByPerfil($evento->id, [4]) &&
+            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
+        ) {
+            return redirect("/evento/dashboard/" . $evento->id);
+        }
+
+        $peso_input = $request->input('classificacao_geral_peso');
+
+        if ($peso_input === null || $peso_input === '') {
+            $evento->removeConfig('classificacao_geral_peso');
+        } elseif (!is_numeric($peso_input) || (float) $peso_input <= 0) {
+            return redirect("/evento/dashboard/" . $id . "?tab=configuracoes")
+                ->withErrors(['classificacao_geral_peso' => 'O peso deve ser um número maior que zero.']);
+        } elseif ((float) $peso_input == 1.0) {
+            $evento->removeConfig('classificacao_geral_peso');
+        } else {
+            $evento->setConfig('classificacao_geral_peso', ConfigType::Float, (float) $peso_input);
+        }
+
+        return redirect("/evento/dashboard/" . $id . "?tab=configuracoes")
+            ->with('status', 'Configurações salvas com sucesso.');
+    }
+
     public function delete($id)
     {
         $user = Auth::user();

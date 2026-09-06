@@ -184,6 +184,13 @@
 				\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4]) ||
 				\Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])
 			)
+			<li role="presentation"><a id="tab_configuracoes" href="#configuracoes" aria-controls="configuracoes" role="tab" data-toggle="tab">Configurações</a></li>
+			@endif
+			@if(
+				\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
+				\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4]) ||
+				\Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])
+			)
 			<li role="presentation"><a id="tab_premiacao_equipe" href="#premiacao_equipe" aria-controls="premiacao_equipe" role="tab" data-toggle="tab">Premiação por Equipes</a></li>
 			@endif
 			<li role="presentation"><a id="tab_categoria" href="#categoria" aria-controls="categoria" role="tab" data-toggle="tab">Categoria: Cadastro</a></li>
@@ -217,6 +224,9 @@
 			</div>
 			<div role="tabpanel" class="tab-pane" id="criterio_desempate">
                 @include("evento._tabs.criterio_desempate")
+			</div>
+			<div role="tabpanel" class="tab-pane" id="configuracoes">
+                @include("evento._tabs.configuracoes")
 			</div>
 			<div role="tabpanel" class="tab-pane" id="premiacao_equipe">
                 @include("evento._tabs.premiacao_equipe")

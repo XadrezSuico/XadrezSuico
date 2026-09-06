@@ -66,6 +66,7 @@ class CategoriaController extends Controller
         usort($inscritos, array("\App\Http\Controllers\CategoriaController", "sort_classificacao_etapa"));
         $i = 1;
         $j = 1;
+        $peso = $evento->getClassificacaoGeralPeso();
         foreach ($inscritos as $inscricao) {
             Log::debug("Posição ".$i.": ".$inscricao->id);
             $inscricao->posicao = $i;
@@ -74,10 +75,11 @@ class CategoriaController extends Controller
                 if (!$inscricao->desconsiderar_pontuacao_geral) {
                     $inscricao->posicao_geral = $j;
                     if ($evento->grupo_evento->e_pontuacao_resultado_para_geral) {
-                        $inscricao->pontos_geral = $inscricao->pontos;
+                        $base = $inscricao->pontos;
                     } else {
-                        $inscricao->pontos_geral = Pontuacao::getPontuacaoByEvento($evento->id, $j);
+                        $base = Pontuacao::getPontuacaoByEvento($evento->id, $j);
                     }
+                    $inscricao->pontos_geral = round($base * $peso, 2);
                     $j++;
                 } else {
                     $inscricao->pontos_geral = null;

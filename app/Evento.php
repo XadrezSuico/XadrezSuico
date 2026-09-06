@@ -1578,6 +1578,15 @@ class Evento extends Model
         return ["ok"=>1,"error"=>0];
     }
 
+    public function getClassificacaoGeralPeso(): float
+    {
+        $peso = $this->getConfig('classificacao_geral_peso', true);
+        if ($peso === null || !is_numeric($peso) || (float) $peso <= 0) {
+            return 1.0;
+        }
+        return (float) $peso;
+    }
+
     public function getCacheKey($type = "registration_public_list"){
         return "event_" . ($this->uuid ? $this->uuid : $this->id) . "_".$type;
     }

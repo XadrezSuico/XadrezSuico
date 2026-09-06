@@ -19,6 +19,7 @@ class EventDashboardTabs
             'pagina',
             'timeline',
             'criterio_desempate',
+            'configuracoes',
             'premiacao_equipe',
             'categoria',
             'categorias_relacionadas',
@@ -42,6 +43,7 @@ class EventDashboardTabs
             ['id' => 'pagina', 'label' => 'Página'],
             ['id' => 'timeline', 'label' => 'Timeline'],
             ['id' => 'criterio_desempate', 'label' => 'Critério de Desempate'],
+            ['id' => 'configuracoes', 'label' => 'Configurações'],
             ['id' => 'premiacao_equipe', 'label' => 'Premiação por Equipes'],
             ['id' => 'categoria', 'label' => 'Categorias'],
             ['id' => 'categorias_relacionadas', 'label' => 'Categorias Relacionadas'],
@@ -81,6 +83,14 @@ class EventDashboardTabs
             ['id' => 'timeline', 'label' => 'Timeline'],
             ['id' => 'criterio_desempate', 'label' => 'Critério de Desempate'],
         ];
+
+        if (
+            $user->hasPermissionGlobal() ||
+            $user->hasPermissionEventByPerfil($evento->id, [4]) ||
+            $user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
+        ) {
+            $tabs[] = ['id' => 'configuracoes', 'label' => 'Configurações'];
+        }
 
         if (
             $user->hasPermissionGlobal() ||
