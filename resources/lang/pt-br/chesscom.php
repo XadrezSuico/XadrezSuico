@@ -31,5 +31,7 @@ return [
         'field_slug' => 'Slug',
         'field_request_url' => 'URL da requisição',
         'field_response_body' => 'Corpo da resposta',
+        'field_response_preview' => 'Visualização da resposta (HTML)',
+        'preview_image_unavailable' => 'Não foi possível gerar a imagem neste servidor. Exibindo a renderização em HTML abaixo.',
     ],
 ];

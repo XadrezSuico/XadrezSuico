@@ -15,6 +15,7 @@ use App\CriterioDesempate;
 use DateTime;
 use Log;
 use Illuminate\Support\Facades\Storage;
+use App\Services\Integration\ChessComApiErrorPreviewService;
 
 class Torneio extends Model
 {
@@ -256,7 +257,40 @@ class Torneio extends Model
             json_encode($payload, JSON_UNESCAPED_UNICODE)
         );
 
+        $previewService = new ChessComApiErrorPreviewService();
+        $previewService->ensurePreviewFiles($relativePath, $payload);
+
         $this->setConfig("chesscom_last_api_error", ConfigType::String, $relativePath);
+    }
+
+    public function chesscom_getLastApiErrorStoragePath(): ?string
+    {
+        if (!$this->hasConfig("chesscom_last_api_error")) {
+            return null;
+        }
+
+        $raw = $this->getConfig("chesscom_last_api_error", true);
+        if (!is_string($raw) || $raw === "" || (isset($raw[0]) && $raw[0] === "{")) {
+            return null;
+        }
+
+        return $raw;
+    }
+
+    public function chesscom_ensureLastApiErrorPreview(): void
+    {
+        $jsonPath = $this->chesscom_getLastApiErrorStoragePath();
+        if ($jsonPath === null) {
+            return;
+        }
+
+        $error = $this->chesscom_getLastApiError();
+        if ($error === null) {
+            return;
+        }
+
+        $previewService = new ChessComApiErrorPreviewService();
+        $previewService->ensurePreviewFiles($jsonPath, $error);
     }
 
     /**
@@ -303,9 +337,8 @@ class Torneio extends Model
 
         $raw = $this->getConfig("chesscom_last_api_error", true);
         if (is_string($raw) && $raw !== "" && (!isset($raw[0]) || $raw[0] !== "{")) {
-            if (Storage::disk("chesscom_api_errors")->exists($raw)) {
-                Storage::disk("chesscom_api_errors")->delete($raw);
-            }
+            $previewService = new ChessComApiErrorPreviewService();
+            $previewService->deletePreviewFiles($raw);
         }
 
         $this->removeConfig("chesscom_last_api_error");

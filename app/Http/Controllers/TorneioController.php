@@ -33,6 +33,7 @@ use App\Http\Controllers\CriterioDesempateController;
 
 use App\Imports\ChessComResultsImport;
 use App\PerfilUser;
+use App\Services\Integration\ChessComApiErrorPreviewService;
 use Log;
 use Storage;
 use Excel;
@@ -959,7 +960,7 @@ class TorneioController extends Controller
         return $this->chesscomRedirectDashboard($evento, "success", $this->chesscomTrans("get_results.success"));
     }
 
-    public function chesscom__last_error($id, $torneio_id)
+    private function chesscomAuthorizedEventAndTorneio($id, $torneio_id)
     {
         $evento = Evento::find($id);
         $user = Auth::user();
@@ -976,9 +977,44 @@ class TorneioController extends Controller
             return redirect("/evento/dashboard/" . $evento->id . "/?tab=torneio");
         }
 
+        return [$evento, $torneio];
+    }
+
+    public function chesscom__last_error($id, $torneio_id)
+    {
+        $resolved = $this->chesscomAuthorizedEventAndTorneio($id, $torneio_id);
+        if ($resolved instanceof \Illuminate\Http\RedirectResponse) {
+            return $resolved;
+        }
+
+        /** @var Evento $evento */
+        /** @var Torneio $torneio */
+        list($evento, $torneio) = $resolved;
+
         $error = $torneio->chesscom_getLastApiError();
         if ($error === null) {
             return $this->chesscomRedirectDashboard($evento, "warning", $this->chesscomTrans("last_error.none_saved"));
+        }
+
+        $torneio->chesscom_ensureLastApiErrorPreview();
+
+        $previewImageUrl = null;
+        $previewHtmlUrl = null;
+        $jsonPath = $torneio->chesscom_getLastApiErrorStoragePath();
+        if ($jsonPath !== null) {
+            $previewService = new ChessComApiErrorPreviewService();
+            if ($previewService->previewImageExists($jsonPath)) {
+                $previewImageUrl = route("evento.torneios.chesscom.chesscom__last_error_preview_image", [
+                    "id" => $evento->id,
+                    "torneio_id" => $torneio->id,
+                ]);
+            }
+            if ($previewService->previewHtmlExists($jsonPath)) {
+                $previewHtmlUrl = route("evento.torneios.chesscom.chesscom__last_error_preview_html", [
+                    "id" => $evento->id,
+                    "torneio_id" => $torneio->id,
+                ]);
+            }
         }
 
         $messageKey = isset($error["message_key"]) ? (string) $error["message_key"] : "tournament_not_found";
@@ -996,6 +1032,8 @@ class TorneioController extends Controller
             "error" => $error,
             "errorMessage" => $errorMessage,
             "actionLabel" => $actionLabel,
+            "previewImageUrl" => $previewImageUrl,
+            "previewHtmlUrl" => $previewHtmlUrl,
             "fieldLabels" => [
                 "action" => $this->chesscomTrans("last_error.field_action"),
                 "occurred_at" => $this->chesscomTrans("last_error.field_occurred_at"),
@@ -1005,8 +1043,69 @@ class TorneioController extends Controller
                 "slug" => $this->chesscomTrans("last_error.field_slug"),
                 "request_url" => $this->chesscomTrans("last_error.field_request_url"),
                 "response_body" => $this->chesscomTrans("last_error.field_response_body"),
+                "response_preview" => $this->chesscomTrans("last_error.field_response_preview"),
             ],
+            "previewImageUnavailable" => $this->chesscomTrans("last_error.preview_image_unavailable"),
             "pageTitle" => $this->chesscomTrans("last_error.page_title"),
+        ]);
+    }
+
+    public function chesscom__last_error_preview_image($id, $torneio_id)
+    {
+        $resolved = $this->chesscomAuthorizedEventAndTorneio($id, $torneio_id);
+        if ($resolved instanceof \Illuminate\Http\RedirectResponse) {
+            return $resolved;
+        }
+
+        /** @var Torneio $torneio */
+        list($evento, $torneio) = $resolved;
+
+        $jsonPath = $torneio->chesscom_getLastApiErrorStoragePath();
+        if ($jsonPath === null) {
+            abort(404);
+        }
+
+        $torneio->chesscom_ensureLastApiErrorPreview();
+
+        $previewService = new ChessComApiErrorPreviewService();
+        $pngPath = $previewService->jsonPathToPngPath($jsonPath);
+        if (!Storage::disk("chesscom_api_errors")->exists($pngPath)) {
+            abort(404);
+        }
+
+        return response(Storage::disk("chesscom_api_errors")->get($pngPath), 200, [
+            "Content-Type" => "image/png",
+            "Content-Disposition" => "inline; filename=\"chesscom-error-preview.png\"",
+        ]);
+    }
+
+    public function chesscom__last_error_preview_html($id, $torneio_id)
+    {
+        $resolved = $this->chesscomAuthorizedEventAndTorneio($id, $torneio_id);
+        if ($resolved instanceof \Illuminate\Http\RedirectResponse) {
+            return $resolved;
+        }
+
+        /** @var Torneio $torneio */
+        list($evento, $torneio) = $resolved;
+
+        $jsonPath = $torneio->chesscom_getLastApiErrorStoragePath();
+        if ($jsonPath === null) {
+            abort(404);
+        }
+
+        $torneio->chesscom_ensureLastApiErrorPreview();
+
+        $previewService = new ChessComApiErrorPreviewService();
+        $htmlPath = $previewService->jsonPathToHtmlPath($jsonPath);
+        if (!Storage::disk("chesscom_api_errors")->exists($htmlPath)) {
+            abort(404);
+        }
+
+        return response(Storage::disk("chesscom_api_errors")->get($htmlPath), 200, [
+            "Content-Type" => "text/html; charset=UTF-8",
+            "Content-Disposition" => "inline; filename=\"chesscom-error-preview.html\"",
+            "X-Frame-Options" => "SAMEORIGIN",
         ]);
     }
 

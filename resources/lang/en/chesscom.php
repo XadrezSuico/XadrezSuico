@@ -31,5 +31,7 @@ return [
         'field_slug' => 'Slug',
         'field_request_url' => 'Request URL',
         'field_response_body' => 'Response body',
+        'field_response_preview' => 'Response preview (HTML)',
+        'preview_image_unavailable' => 'Could not generate an image on this server. Showing the HTML render below.',
     ],
 ];

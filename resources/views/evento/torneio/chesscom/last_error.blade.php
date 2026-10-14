@@ -55,6 +55,18 @@
                 </tbody>
             </table>
 
+            @if(!empty($previewImageUrl) || !empty($previewHtmlUrl))
+                <h4>{{ $fieldLabels['response_preview'] }}</h4>
+                @if(!empty($previewImageUrl))
+                    <p>
+                        <img src="{{ $previewImageUrl }}" alt="{{ $fieldLabels['response_preview'] }}" class="img-responsive" style="max-width: 100%; border: 1px solid #ddd;">
+                    </p>
+                @elseif(!empty($previewHtmlUrl))
+                    <p class="text-muted">{{ $previewImageUnavailable }}</p>
+                    <iframe src="{{ $previewHtmlUrl }}" title="{{ $fieldLabels['response_preview'] }}" style="width: 100%; height: 480px; border: 1px solid #ddd;"></iframe>
+                @endif
+            @endif
+
             <h4>{{ $fieldLabels['response_body'] }}</h4>
             <pre style="max-height: 480px; overflow: auto; white-space: pre-wrap; word-break: break-word;">{{ isset($error['response_body']) && $error['response_body'] !== '' ? $error['response_body'] : '-' }}</pre>
         </div>
