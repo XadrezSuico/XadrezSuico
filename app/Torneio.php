@@ -225,6 +225,59 @@ class Torneio extends Model
 
         return date("d/m/Y H:i:s",$this->getConfig("chesscom_last_players_list_update",true));
     }
+
+    /**
+     * @param array<string, mixed> $retorno
+     */
+    public function chesscom_saveLastApiError(string $action, array $retorno, ?int $userId = null): void
+    {
+        $responseBody = "";
+        if (isset($retorno["response_body"])) {
+            $responseBody = mb_substr((string) $retorno["response_body"], 0, 100000);
+        }
+
+        $payload = [
+            "action" => $action,
+            "message_key" => isset($retorno["message_key"]) ? (string) $retorno["message_key"] : "tournament_not_found",
+            "status_code" => isset($retorno["status_code"]) ? (int) $retorno["status_code"] : null,
+            "request_url" => isset($retorno["request_url"]) ? (string) $retorno["request_url"] : null,
+            "slug" => isset($retorno["slug"]) ? (string) $retorno["slug"] : null,
+            "response_body" => $responseBody,
+            "occurred_at" => time(),
+            "user_id" => $userId,
+        ];
+
+        $this->setConfig("chesscom_last_api_error", ConfigType::String, json_encode($payload, JSON_UNESCAPED_UNICODE));
+    }
+
+    /**
+     * @return array<string, mixed>|null
+     */
+    public function chesscom_getLastApiError(): ?array
+    {
+        if (!$this->hasConfig("chesscom_last_api_error")) {
+            return null;
+        }
+
+        $raw = $this->getConfig("chesscom_last_api_error", true);
+        if (!is_string($raw) || $raw === "") {
+            return null;
+        }
+
+        $decoded = json_decode($raw, true);
+        if (!is_array($decoded)) {
+            return null;
+        }
+
+        return $decoded;
+    }
+
+    public function chesscom_clearLastApiError(): void
+    {
+        if ($this->hasConfig("chesscom_last_api_error")) {
+            $this->removeConfig("chesscom_last_api_error");
+        }
+    }
     public function findByTagCategoria($tag)
     {
         return Torneio::whereHas("categorias", function ($q0) use ($tag) {

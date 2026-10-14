@@ -15,4 +15,21 @@ return [
     'admin_details' => [
         'suffix' => 'Detalhes (administrador): HTTP :code | Slug: :slug | URL: :url | Resposta: :body',
     ],
+    'last_error' => [
+        'page_title' => 'Último erro da integração Chess.com',
+        'view_button' => 'Ver último erro da integração Chess.com',
+        'none_saved' => 'Não há registro de erro recente da integração Chess.com para este torneio.',
+        'view_details' => 'Consulte o registro completo em: :url',
+        'flash_with_link' => ':message Detalhes completos: :url',
+        'action_check_players_in' => 'Conferir inscrições',
+        'action_get_results' => 'Importar resultados',
+        'field_action' => 'Ação',
+        'field_occurred_at' => 'Data/hora',
+        'field_user_id' => 'Usuário (ID)',
+        'field_message' => 'Mensagem',
+        'field_http_status' => 'HTTP',
+        'field_slug' => 'Slug',
+        'field_request_url' => 'URL da requisição',
+        'field_response_body' => 'Corpo da resposta',
+    ],
 ];

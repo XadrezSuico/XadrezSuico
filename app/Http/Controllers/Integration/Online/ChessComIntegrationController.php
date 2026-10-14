@@ -24,7 +24,7 @@ class ChessComIntegrationController extends Controller
             "status_code" => $statusCode,
             "request_url" => $requestUrl,
             "slug" => $slug,
-            "response_body" => mb_substr($bodyPreview, 0, 300),
+            "response_body" => mb_substr($bodyPreview, 0, 100000),
         ];
     }
 

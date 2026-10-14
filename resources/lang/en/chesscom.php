@@ -15,4 +15,21 @@ return [
     'admin_details' => [
         'suffix' => 'Details (administrator): HTTP :code | Slug: :slug | URL: :url | Response: :body',
     ],
+    'last_error' => [
+        'page_title' => 'Latest Chess.com integration error',
+        'view_button' => 'View latest Chess.com integration error',
+        'none_saved' => 'There is no recent Chess.com integration error recorded for this tournament.',
+        'view_details' => 'See the full log at: :url',
+        'flash_with_link' => ':message Full details: :url',
+        'action_check_players_in' => 'Check registrations',
+        'action_get_results' => 'Import results',
+        'field_action' => 'Action',
+        'field_occurred_at' => 'Date/time',
+        'field_user_id' => 'User (ID)',
+        'field_message' => 'Message',
+        'field_http_status' => 'HTTP',
+        'field_slug' => 'Slug',
+        'field_request_url' => 'Request URL',
+        'field_response_body' => 'Response body',
+    ],
 ];

@@ -258,6 +258,7 @@ Route::group(["prefix"=>"evento"],function(){
         Route::group(["prefix"=>"{torneio_id}/chesscom"],function(){
 	        Route::get('/check_players_in', 'TorneioController@chesscom__check_players_in')->name('evento.torneios.chesscom.chesscom__check_players_in');
 	        Route::get('/get_results', 'TorneioController@chesscom__get_results')->name('evento.torneios.chesscom.chesscom__get_results');
+	        Route::get('/last_error', 'TorneioController@chesscom__last_error')->name('evento.torneios.chesscom.chesscom__last_error');
 	    });
 
         Route::group(["prefix"=>"{torneio_id}/categoria"],function(){

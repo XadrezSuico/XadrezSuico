@@ -798,30 +798,37 @@ class TorneioController extends Controller
         return $fullKey;
     }
 
+    private function chesscomLastErrorUrl(Evento $evento, Torneio $torneio): string
+    {
+        return url("/evento/" . $evento->id . "/torneios/" . $torneio->id . "/chesscom/last_error");
+    }
+
     /**
      * @param array<string, mixed> $retorno
      */
-    private function chesscomFormatApiErrorMessage($user, array $retorno): string
+    private function chesscomHandleApiError(Evento $evento, Torneio $torneio, $user, string $action, array $retorno)
     {
+        $torneio->chesscom_saveLastApiError($action, $retorno, $user->id);
+
         $messageKey = isset($retorno["message_key"]) ? (string) $retorno["message_key"] : "tournament_not_found";
         $message = $this->chesscomTrans($messageKey);
 
-        if (!$user->hasPermissionGlobal()) {
-            return $message;
+        if ($user->hasPermissionGlobal() && isset($retorno["status_code"], $retorno["request_url"], $retorno["slug"])) {
+            $responseBody = isset($retorno["response_body"]) ? (string) $retorno["response_body"] : "";
+            $message .= " " . $this->chesscomTrans("admin_details.suffix", [
+                "code" => $retorno["status_code"],
+                "slug" => $retorno["slug"],
+                "url" => $retorno["request_url"],
+                "body" => mb_substr($responseBody !== "" ? $responseBody : "-", 0, 300),
+            ]);
         }
 
-        if (!isset($retorno["status_code"], $retorno["request_url"], $retorno["slug"])) {
-            return $message;
-        }
-
-        $responseBody = isset($retorno["response_body"]) ? (string) $retorno["response_body"] : "";
-
-        return $message . " " . $this->chesscomTrans("admin_details.suffix", [
-            "code" => $retorno["status_code"],
-            "slug" => $retorno["slug"],
-            "url" => $retorno["request_url"],
-            "body" => $responseBody !== "" ? $responseBody : "-",
+        $flashMessage = $this->chesscomTrans("last_error.flash_with_link", [
+            "message" => $message,
+            "url" => $this->chesscomLastErrorUrl($evento, $torneio),
         ]);
+
+        return $this->chesscomRedirectDashboard($evento, "danger", $flashMessage);
     }
 
     public function chesscom__check_players_in($id, $torneio_id)
@@ -850,13 +857,10 @@ class TorneioController extends Controller
         $chesscom_integration_controller = new ChessComIntegrationController;
         $retorno = $chesscom_integration_controller->getTournament($torneio->getConfig("chesscom_tournament_slug", true));
         if ($retorno["ok"] != 1) {
-            return $this->chesscomRedirectDashboard(
-                $evento,
-                "danger",
-                $this->chesscomFormatApiErrorMessage($user, $retorno)
-            );
+            return $this->chesscomHandleApiError($evento, $torneio, $user, "check_players_in", $retorno);
         }
 
+        $torneio->chesscom_clearLastApiError();
         $torneio->chesscom_setAllRegistrationsNotFound();
         $chesscom_tournament_data = json_decode($retorno["data"]);
         if ($chesscom_tournament_data->status != "finished") {
@@ -932,12 +936,10 @@ class TorneioController extends Controller
         $chesscom_integration_controller = new ChessComIntegrationController;
         $retorno = $chesscom_integration_controller->getResults($torneio->getConfig("chesscom_tournament_slug", true));
         if ($retorno["ok"] != 1) {
-            return $this->chesscomRedirectDashboard(
-                $evento,
-                "danger",
-                $this->chesscomFormatApiErrorMessage($user, $retorno)
-            );
+            return $this->chesscomHandleApiError($evento, $torneio, $user, "get_results", $retorno);
         }
+
+        $torneio->chesscom_clearLastApiError();
 
         $csv = $retorno["data"];
 
@@ -955,6 +957,57 @@ class TorneioController extends Controller
         $torneio->save();
 
         return $this->chesscomRedirectDashboard($evento, "success", $this->chesscomTrans("get_results.success"));
+    }
+
+    public function chesscom__last_error($id, $torneio_id)
+    {
+        $evento = Evento::find($id);
+        $user = Auth::user();
+        if (
+            !$user->hasPermissionGlobal() &&
+            !$user->hasPermissionEventByPerfil($evento->id, [4]) &&
+            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
+        ) {
+            return redirect("/evento/dashboard/" . $evento->id);
+        }
+
+        $torneio = Torneio::find($torneio_id);
+        if (!$torneio || !$torneio->software->isChessCom()) {
+            return redirect("/evento/dashboard/" . $evento->id . "/?tab=torneio");
+        }
+
+        $error = $torneio->chesscom_getLastApiError();
+        if ($error === null) {
+            return $this->chesscomRedirectDashboard($evento, "warning", $this->chesscomTrans("last_error.none_saved"));
+        }
+
+        $messageKey = isset($error["message_key"]) ? (string) $error["message_key"] : "tournament_not_found";
+        $errorMessage = $this->chesscomTrans($messageKey);
+
+        $actionKey = isset($error["action"]) ? (string) $error["action"] : "check_players_in";
+        $actionLabel = $this->chesscomTrans("last_error.action_" . $actionKey);
+        if ($actionLabel === "chesscom.last_error.action_" . $actionKey) {
+            $actionLabel = $actionKey;
+        }
+
+        return view("evento.torneio.chesscom.last_error", [
+            "evento" => $evento,
+            "torneio" => $torneio,
+            "error" => $error,
+            "errorMessage" => $errorMessage,
+            "actionLabel" => $actionLabel,
+            "fieldLabels" => [
+                "action" => $this->chesscomTrans("last_error.field_action"),
+                "occurred_at" => $this->chesscomTrans("last_error.field_occurred_at"),
+                "user_id" => $this->chesscomTrans("last_error.field_user_id"),
+                "message" => $this->chesscomTrans("last_error.field_message"),
+                "http_status" => $this->chesscomTrans("last_error.field_http_status"),
+                "slug" => $this->chesscomTrans("last_error.field_slug"),
+                "request_url" => $this->chesscomTrans("last_error.field_request_url"),
+                "response_body" => $this->chesscomTrans("last_error.field_response_body"),
+            ],
+            "pageTitle" => $this->chesscomTrans("last_error.page_title"),
+        ]);
     }
 
 

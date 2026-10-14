@@ -1324,6 +1324,9 @@
                                                             @if($torneio->evento->data_inicio <= date("Y-m-d"))
                                                                 <a class="btn btn-success" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/chesscom/get_results")}}" role="button">Importar Resultados do Torneio do Chess.com</a><br/>
                                                             @endif
+                                                            @if($torneio->hasConfig("chesscom_last_api_error"))
+                                                                <a class="btn btn-warning" href="{{ url('/evento/'.$evento->id.'/torneios/'.$torneio->id.'/chesscom/last_error') }}" role="button">{{ __('chesscom.last_error.view_button') }}</a><br/>
+                                                            @endif
                                                         @else
                                                             <strong>Erro!</strong> O torneio ainda não possui a configuração do slug do torneio no Chess.com configurada. Edite este torneio e a configure para ser possível prosseguir.
                                                         @endif
