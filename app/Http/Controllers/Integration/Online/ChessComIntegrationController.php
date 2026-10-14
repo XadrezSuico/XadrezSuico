@@ -20,7 +20,7 @@ class ChessComIntegrationController extends Controller
         return [
             "ok" => 0,
             "error" => 1,
-            "message" => __("chesscom.tournament_not_found"),
+            "message_key" => "tournament_not_found",
             "status_code" => $statusCode,
             "request_url" => $requestUrl,
             "slug" => $slug,

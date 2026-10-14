@@ -772,11 +772,39 @@ class TorneioController extends Controller
     }
 
     /**
+     * @param array<string, string|int> $replace
+     */
+    private function chesscomTrans(string $key, array $replace = []): string
+    {
+        $fullKey = "chesscom." . $key;
+        $locales = array_unique([
+            config("app.locale"),
+            "pt-br",
+            "pt-BR",
+            config("app.fallback_locale"),
+            "en",
+        ]);
+
+        foreach ($locales as $locale) {
+            if ($locale === null || $locale === "") {
+                continue;
+            }
+            $translated = trans($fullKey, $replace, $locale);
+            if ($translated !== $fullKey) {
+                return $translated;
+            }
+        }
+
+        return $fullKey;
+    }
+
+    /**
      * @param array<string, mixed> $retorno
      */
     private function chesscomFormatApiErrorMessage($user, array $retorno): string
     {
-        $message = isset($retorno["message"]) ? (string) $retorno["message"] : __("chesscom.tournament_not_found");
+        $messageKey = isset($retorno["message_key"]) ? (string) $retorno["message_key"] : "tournament_not_found";
+        $message = $this->chesscomTrans($messageKey);
 
         if (!$user->hasPermissionGlobal()) {
             return $message;
@@ -788,7 +816,7 @@ class TorneioController extends Controller
 
         $responseBody = isset($retorno["response_body"]) ? (string) $retorno["response_body"] : "";
 
-        return $message . " " . __("chesscom.admin_details.suffix", [
+        return $message . " " . $this->chesscomTrans("admin_details.suffix", [
             "code" => $retorno["status_code"],
             "slug" => $retorno["slug"],
             "url" => $retorno["request_url"],
@@ -810,11 +838,11 @@ class TorneioController extends Controller
 
         $torneio = Torneio::find($torneio_id);
         if (!$torneio || !$torneio->software->isChessCom()) {
-            return $this->chesscomRedirectDashboard($evento, "danger", __("chesscom.not_chesscom_software"));
+            return $this->chesscomRedirectDashboard($evento, "danger", $this->chesscomTrans("not_chesscom_software"));
         }
 
         if (!$torneio->hasConfig("chesscom_tournament_slug")) {
-            return $this->chesscomRedirectDashboard($evento, "danger", __("chesscom.slug_not_configured"));
+            return $this->chesscomRedirectDashboard($evento, "danger", $this->chesscomTrans("slug_not_configured"));
         }
 
         $players_not_found = array();
@@ -832,7 +860,7 @@ class TorneioController extends Controller
         $torneio->chesscom_setAllRegistrationsNotFound();
         $chesscom_tournament_data = json_decode($retorno["data"]);
         if ($chesscom_tournament_data->status != "finished") {
-            return $this->chesscomRedirectDashboard($evento, "warning", __("chesscom.tournament_not_finished"));
+            return $this->chesscomRedirectDashboard($evento, "warning", $this->chesscomTrans("tournament_not_finished"));
         }
 
         foreach ($chesscom_tournament_data->players as $chesscom_tournament_player) {
@@ -872,11 +900,11 @@ class TorneioController extends Controller
             return $this->chesscomRedirectDashboard(
                 $evento,
                 "warning",
-                __("chesscom.check_players_in.success_with_not_found", ["users" => implode(", ", $players_not_found)])
+                $this->chesscomTrans("check_players_in.success_with_not_found", ["users" => implode(", ", $players_not_found)])
             );
         }
 
-        return $this->chesscomRedirectDashboard($evento, "success", __("chesscom.check_players_in.success"));
+        return $this->chesscomRedirectDashboard($evento, "success", $this->chesscomTrans("check_players_in.success"));
     }
 
 
@@ -894,11 +922,11 @@ class TorneioController extends Controller
 
         $torneio = Torneio::find($torneio_id);
         if (!$torneio || !$torneio->software->isChessCom()) {
-            return $this->chesscomRedirectDashboard($evento, "danger", __("chesscom.not_chesscom_software"));
+            return $this->chesscomRedirectDashboard($evento, "danger", $this->chesscomTrans("not_chesscom_software"));
         }
 
         if (!$torneio->hasConfig("chesscom_tournament_slug")) {
-            return $this->chesscomRedirectDashboard($evento, "danger", __("chesscom.slug_not_configured"));
+            return $this->chesscomRedirectDashboard($evento, "danger", $this->chesscomTrans("slug_not_configured"));
         }
 
         $chesscom_integration_controller = new ChessComIntegrationController;
@@ -926,7 +954,7 @@ class TorneioController extends Controller
         $torneio->setConfig("chesscom_last_result_import_update", ConfigType::Integer, time());
         $torneio->save();
 
-        return $this->chesscomRedirectDashboard($evento, "success", __("chesscom.get_results.success"));
+        return $this->chesscomRedirectDashboard($evento, "success", $this->chesscomTrans("get_results.success"));
     }
 
 
