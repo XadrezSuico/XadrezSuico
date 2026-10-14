@@ -762,6 +762,15 @@ class TorneioController extends Controller
      * CHESS.COM INTEGRATION
      *
      */
+    private function chesscomRedirectDashboard(Evento $evento, string $type, string $alerta)
+    {
+        $messageBag = new MessageBag;
+        $messageBag->add("type", $type);
+        $messageBag->add("alerta", $alerta);
+
+        return redirect("/evento/dashboard/" . $evento->id . "/?tab=torneio")->withErrors($messageBag);
+    }
+
     public function chesscom__check_players_in($id, $torneio_id)
     {
         $evento = Evento::find($id);
@@ -775,55 +784,72 @@ class TorneioController extends Controller
         }
 
         $torneio = Torneio::find($torneio_id);
-        if($torneio->software->isChessCom()){
-            if($torneio->hasConfig("chesscom_tournament_slug")){
-                $players_not_found = array();
+        if (!$torneio || !$torneio->software->isChessCom()) {
+            return $this->chesscomRedirectDashboard($evento, "danger", __("chesscom.not_chesscom_software"));
+        }
 
-                $chesscom_integration_controller = new ChessComIntegrationController;
-                $retorno = $chesscom_integration_controller->getTournament($torneio->getConfig("chesscom_tournament_slug",true));
-                if($retorno["ok"] == 1){
-                    $torneio->chesscom_setAllRegistrationsNotFound();
-                    $chesscom_tournament_data = json_decode($retorno["data"]);
-                    if($chesscom_tournament_data->status != "finished"){
-                        return redirect()->back();
-                    }
-                    foreach($chesscom_tournament_data->players as $chesscom_tournament_player){
-                        if($chesscom_tournament_player->username){
-                            $inscricao_count = $torneio->inscricoes()->whereHas("configs",function($q1) use ($chesscom_tournament_player){
-                                $q1->where([
-                                    ["key","=","chesscom_username"],
-                                    ["value_type","=",ConfigType::String],
-                                    ["string","=",mb_strtolower($chesscom_tournament_player->username)]
-                                ]);
-                            })->count();
-                            if($inscricao_count > 0){
-                                $inscricao = $torneio->inscricoes()->whereHas("configs",function($q1) use ($chesscom_tournament_player){
-                                    $q1->where([
-                                        ["key","=","chesscom_username"],
-                                        ["value_type","=",ConfigType::String],
-                                        ["string","=",mb_strtolower($chesscom_tournament_player->username)]
-                                    ]);
-                                })->first();
+        if (!$torneio->hasConfig("chesscom_tournament_slug")) {
+            return $this->chesscomRedirectDashboard($evento, "danger", __("chesscom.slug_not_configured"));
+        }
 
-                                $inscricao->setConfig("chesscom_registration_found",ConfigType::Boolean,true);
-                            }else{
-                                $players_not_found[] = $chesscom_tournament_player->username;
-                            }
-                        }
-                    }
+        $players_not_found = array();
+
+        $chesscom_integration_controller = new ChessComIntegrationController;
+        $retorno = $chesscom_integration_controller->getTournament($torneio->getConfig("chesscom_tournament_slug", true));
+        if ($retorno["ok"] != 1) {
+            $message = isset($retorno["message"]) ? $retorno["message"] : __("chesscom.tournament_not_found");
+
+            return $this->chesscomRedirectDashboard($evento, "danger", $message);
+        }
+
+        $torneio->chesscom_setAllRegistrationsNotFound();
+        $chesscom_tournament_data = json_decode($retorno["data"]);
+        if ($chesscom_tournament_data->status != "finished") {
+            return $this->chesscomRedirectDashboard($evento, "warning", __("chesscom.tournament_not_finished"));
+        }
+
+        foreach ($chesscom_tournament_data->players as $chesscom_tournament_player) {
+            if ($chesscom_tournament_player->username) {
+                $inscricao_count = $torneio->inscricoes()->whereHas("configs", function ($q1) use ($chesscom_tournament_player) {
+                    $q1->where([
+                        ["key", "=", "chesscom_username"],
+                        ["value_type", "=", ConfigType::String],
+                        ["string", "=", mb_strtolower($chesscom_tournament_player->username)],
+                    ]);
+                })->count();
+                if ($inscricao_count > 0) {
+                    $inscricao = $torneio->inscricoes()->whereHas("configs", function ($q1) use ($chesscom_tournament_player) {
+                        $q1->where([
+                            ["key", "=", "chesscom_username"],
+                            ["value_type", "=", ConfigType::String],
+                            ["string", "=", mb_strtolower($chesscom_tournament_player->username)],
+                        ]);
+                    })->first();
+
+                    $inscricao->setConfig("chesscom_registration_found", ConfigType::Boolean, true);
+                } else {
+                    $players_not_found[] = $chesscom_tournament_player->username;
                 }
-                $torneio->setConfig("chesscom_last_players_list_update",ConfigType::Integer,time());
-                $torneio->save();
-
-                activity()
-                    ->performedOn($torneio)
-                    ->causedBy(Auth::user())
-                    ->log("Chess.com - Não encontrados como inscritos: ".json_encode($players_not_found));
-
             }
         }
 
-        return redirect("/evento/dashboard/" . $evento->id . "/?tab=torneio");
+        $torneio->setConfig("chesscom_last_players_list_update", ConfigType::Integer, time());
+        $torneio->save();
+
+        activity()
+            ->performedOn($torneio)
+            ->causedBy(Auth::user())
+            ->log("Chess.com - Não encontrados como inscritos: " . json_encode($players_not_found));
+
+        if (count($players_not_found) > 0) {
+            return $this->chesscomRedirectDashboard(
+                $evento,
+                "warning",
+                __("chesscom.check_players_in.success_with_not_found", ["users" => implode(", ", $players_not_found)])
+            );
+        }
+
+        return $this->chesscomRedirectDashboard($evento, "success", __("chesscom.check_players_in.success"));
     }
 
 
@@ -840,33 +866,38 @@ class TorneioController extends Controller
         }
 
         $torneio = Torneio::find($torneio_id);
-        if($torneio->software->isChessCom()){
-            if($torneio->hasConfig("chesscom_tournament_slug")){
-                $players_not_found = array();
-
-                $chesscom_integration_controller = new ChessComIntegrationController;
-                $retorno = $chesscom_integration_controller->getResults($torneio->getConfig("chesscom_tournament_slug",true));
-                if($retorno["ok"] == 1){
-
-                    $csv = $retorno["data"];
-
-                    $filename = "chesscom_results_csv_".$torneio->id."_".time().".csv";
-
-                    Storage::disk("imports_chess_com")->put($filename,$csv);
-
-                    // import excel
-                    Excel::import(
-                        new ChessComResultsImport($torneio->evento->id,$torneio->id),
-                        Storage::disk("imports_chess_com")->path($filename)
-                    );
-                }
-                $torneio->setConfig("chesscom_last_players_list_update",ConfigType::Integer,time());
-                $torneio->setConfig("chesscom_last_result_import_update",ConfigType::Integer,time());
-                $torneio->save();
-            }
+        if (!$torneio || !$torneio->software->isChessCom()) {
+            return $this->chesscomRedirectDashboard($evento, "danger", __("chesscom.not_chesscom_software"));
         }
 
-        return redirect("/evento/dashboard/" . $evento->id . "/?tab=torneio");
+        if (!$torneio->hasConfig("chesscom_tournament_slug")) {
+            return $this->chesscomRedirectDashboard($evento, "danger", __("chesscom.slug_not_configured"));
+        }
+
+        $chesscom_integration_controller = new ChessComIntegrationController;
+        $retorno = $chesscom_integration_controller->getResults($torneio->getConfig("chesscom_tournament_slug", true));
+        if ($retorno["ok"] != 1) {
+            $message = isset($retorno["message"]) ? $retorno["message"] : __("chesscom.tournament_not_found");
+
+            return $this->chesscomRedirectDashboard($evento, "danger", $message);
+        }
+
+        $csv = $retorno["data"];
+
+        $filename = "chesscom_results_csv_" . $torneio->id . "_" . time() . ".csv";
+
+        Storage::disk("imports_chess_com")->put($filename, $csv);
+
+        Excel::import(
+            new ChessComResultsImport($torneio->evento->id, $torneio->id),
+            Storage::disk("imports_chess_com")->path($filename)
+        );
+
+        $torneio->setConfig("chesscom_last_players_list_update", ConfigType::Integer, time());
+        $torneio->setConfig("chesscom_last_result_import_update", ConfigType::Integer, time());
+        $torneio->save();
+
+        return $this->chesscomRedirectDashboard($evento, "success", __("chesscom.get_results.success"));
     }
 
 
