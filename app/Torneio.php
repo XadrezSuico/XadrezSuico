@@ -14,6 +14,7 @@ use App\CriterioDesempate;
 
 use DateTime;
 use Log;
+use Illuminate\Support\Facades\Storage;
 
 class Torneio extends Model
 {
@@ -231,9 +232,11 @@ class Torneio extends Model
      */
     public function chesscom_saveLastApiError(string $action, array $retorno, ?int $userId = null): void
     {
+        $this->chesscom_clearLastApiError();
+
         $responseBody = "";
         if (isset($retorno["response_body"])) {
-            $responseBody = mb_substr((string) $retorno["response_body"], 0, 100000);
+            $responseBody = (string) $retorno["response_body"];
         }
 
         $payload = [
@@ -247,7 +250,13 @@ class Torneio extends Model
             "user_id" => $userId,
         ];
 
-        $this->setConfig("chesscom_last_api_error", ConfigType::String, json_encode($payload, JSON_UNESCAPED_UNICODE));
+        $relativePath = $this->id . "/" . time() . "_" . Str::random(8) . ".json";
+        Storage::disk("chesscom_api_errors")->put(
+            $relativePath,
+            json_encode($payload, JSON_UNESCAPED_UNICODE)
+        );
+
+        $this->setConfig("chesscom_last_api_error", ConfigType::String, $relativePath);
     }
 
     /**
@@ -264,7 +273,21 @@ class Torneio extends Model
             return null;
         }
 
-        $decoded = json_decode($raw, true);
+        if (isset($raw[0]) && $raw[0] === "{") {
+            $decoded = json_decode($raw, true);
+            if (is_array($decoded)) {
+                return $decoded;
+            }
+
+            return null;
+        }
+
+        if (!Storage::disk("chesscom_api_errors")->exists($raw)) {
+            return null;
+        }
+
+        $content = Storage::disk("chesscom_api_errors")->get($raw);
+        $decoded = json_decode($content, true);
         if (!is_array($decoded)) {
             return null;
         }
@@ -274,9 +297,18 @@ class Torneio extends Model
 
     public function chesscom_clearLastApiError(): void
     {
-        if ($this->hasConfig("chesscom_last_api_error")) {
-            $this->removeConfig("chesscom_last_api_error");
+        if (!$this->hasConfig("chesscom_last_api_error")) {
+            return;
         }
+
+        $raw = $this->getConfig("chesscom_last_api_error", true);
+        if (is_string($raw) && $raw !== "" && (!isset($raw[0]) || $raw[0] !== "{")) {
+            if (Storage::disk("chesscom_api_errors")->exists($raw)) {
+                Storage::disk("chesscom_api_errors")->delete($raw);
+            }
+        }
+
+        $this->removeConfig("chesscom_last_api_error");
     }
     public function findByTagCategoria($tag)
     {

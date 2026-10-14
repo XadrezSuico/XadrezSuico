@@ -74,6 +74,11 @@ return [
             'driver' => 'local',
             'root' => storage_path('imports/chesscom'),
         ],
+
+        'chesscom_api_errors' => [
+            'driver' => 'local',
+            'root' => storage_path('app/chesscom/api_errors'),
+        ],
     ],
 
 ];
