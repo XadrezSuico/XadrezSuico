@@ -12,4 +12,7 @@ return [
     'get_results' => [
         'success' => 'Resultados do torneio Chess.com importados com sucesso.',
     ],
+    'admin_details' => [
+        'suffix' => 'Detalhes (administrador): HTTP :code | Slug: :slug | URL: :url | Resposta: :body',
+    ],
 ];

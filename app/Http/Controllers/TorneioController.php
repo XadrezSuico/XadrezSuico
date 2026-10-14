@@ -771,6 +771,31 @@ class TorneioController extends Controller
         return redirect("/evento/dashboard/" . $evento->id . "/?tab=torneio")->withErrors($messageBag);
     }
 
+    /**
+     * @param array<string, mixed> $retorno
+     */
+    private function chesscomFormatApiErrorMessage($user, array $retorno): string
+    {
+        $message = isset($retorno["message"]) ? (string) $retorno["message"] : __("chesscom.tournament_not_found");
+
+        if (!$user->hasPermissionGlobal()) {
+            return $message;
+        }
+
+        if (!isset($retorno["status_code"], $retorno["request_url"], $retorno["slug"])) {
+            return $message;
+        }
+
+        $responseBody = isset($retorno["response_body"]) ? (string) $retorno["response_body"] : "";
+
+        return $message . " " . __("chesscom.admin_details.suffix", [
+            "code" => $retorno["status_code"],
+            "slug" => $retorno["slug"],
+            "url" => $retorno["request_url"],
+            "body" => $responseBody !== "" ? $responseBody : "-",
+        ]);
+    }
+
     public function chesscom__check_players_in($id, $torneio_id)
     {
         $evento = Evento::find($id);
@@ -797,9 +822,11 @@ class TorneioController extends Controller
         $chesscom_integration_controller = new ChessComIntegrationController;
         $retorno = $chesscom_integration_controller->getTournament($torneio->getConfig("chesscom_tournament_slug", true));
         if ($retorno["ok"] != 1) {
-            $message = isset($retorno["message"]) ? $retorno["message"] : __("chesscom.tournament_not_found");
-
-            return $this->chesscomRedirectDashboard($evento, "danger", $message);
+            return $this->chesscomRedirectDashboard(
+                $evento,
+                "danger",
+                $this->chesscomFormatApiErrorMessage($user, $retorno)
+            );
         }
 
         $torneio->chesscom_setAllRegistrationsNotFound();
@@ -877,9 +904,11 @@ class TorneioController extends Controller
         $chesscom_integration_controller = new ChessComIntegrationController;
         $retorno = $chesscom_integration_controller->getResults($torneio->getConfig("chesscom_tournament_slug", true));
         if ($retorno["ok"] != 1) {
-            $message = isset($retorno["message"]) ? $retorno["message"] : __("chesscom.tournament_not_found");
-
-            return $this->chesscomRedirectDashboard($evento, "danger", $message);
+            return $this->chesscomRedirectDashboard(
+                $evento,
+                "danger",
+                $this->chesscomFormatApiErrorMessage($user, $retorno)
+            );
         }
 
         $csv = $retorno["data"];

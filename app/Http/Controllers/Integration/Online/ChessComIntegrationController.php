@@ -10,13 +10,32 @@ use Log;
 
 class ChessComIntegrationController extends Controller
 {
+    /**
+     * @return array<string, mixed>
+     */
+    private function apiErrorResponse(string $requestUrl, string $slug, int $statusCode, string $body): array
+    {
+        $bodyPreview = trim(preg_replace('/\s+/', ' ', $body) ?? '');
+
+        return [
+            "ok" => 0,
+            "error" => 1,
+            "message" => __("chesscom.tournament_not_found"),
+            "status_code" => $statusCode,
+            "request_url" => $requestUrl,
+            "slug" => $slug,
+            "response_body" => mb_substr($bodyPreview, 0, 300),
+        ];
+    }
+
     public function getTournament($slug){
         if(env("APP_ENV","local") == "local"){
             $client = new Client(['http_errors' => false, "verify"=>false]);
         }else{
             $client = new Client(['http_errors' => false]);
         }
-        $response = $client->get("https://api.chess.com/pub/tournament/".$slug);
+        $requestUrl = "https://api.chess.com/pub/tournament/".$slug;
+        $response = $client->get($requestUrl);
         $html = (string) $response->getBody();
         if($response->getStatusCode() == 200){
             $json = json_decode($html);
@@ -44,7 +63,8 @@ class ChessComIntegrationController extends Controller
 
             return array("ok"=>1,"error"=>0,"data"=>json_encode($json_array));
         }
-        return array("ok"=>0,"error"=>1,"message"=>"Torneio não encontrado.");
+
+        return $this->apiErrorResponse($requestUrl, $slug, $response->getStatusCode(), $html);
     }
     public function getResults($slug){
         if(env("APP_ENV","local") == "local"){
@@ -52,11 +72,13 @@ class ChessComIntegrationController extends Controller
         }else{
             $client = new Client(['http_errors' => false]);
         }
-        $response = $client->get("https://www.chess.com/tournament/live/".$slug."/download-results");
+        $requestUrl = "https://www.chess.com/tournament/live/".$slug."/download-results";
+        $response = $client->get($requestUrl);
         $html = (string) $response->getBody();
         if($response->getStatusCode() == 200){
             return array("ok"=>1,"error"=>0,"data"=>$html);
         }
-        return array("ok"=>0,"error"=>1,"message"=>"Torneio não encontrado.");
+
+        return $this->apiErrorResponse($requestUrl, $slug, $response->getStatusCode(), $html);
     }
 }
