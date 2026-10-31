@@ -1,6 +1,8 @@
 <?php
 
 return [
+    'players_download_failed' => 'The Chess.com registrations could not be retrieved automatically.',
+    'invalid_tournament_json' => 'Chess.com did not return a valid tournament JSON file.',
     'results_download_failed' => 'The Chess.com results could not be downloaded automatically.',
     'invalid_results_csv' => 'Chess.com did not return a valid results CSV file.',
     'not_chesscom_software' => 'This tournament is not configured for Chess.com integration.',
