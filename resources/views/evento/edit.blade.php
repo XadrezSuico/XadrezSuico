@@ -1322,7 +1322,7 @@
                                                             <a class="btn btn-success" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/chesscom/check_players_in")}}" role="button">Conferir Inscrições no Torneio do Chess.com</a><br/>
                                                             Última Atualização: {{$torneio->getLastChessComPlayersUpdate()}}<br/>
                                                             @if($torneio->evento->data_inicio <= date("Y-m-d"))
-                                                                <a class="btn btn-success" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/chesscom/get_results")}}" role="button">Importar Resultados do Torneio do Chess.com</a><br/>
+                                                                <a class="btn btn-success" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/chesscom/get_results")}}" role="button">Tentar baixar e importar resultados do Chess.com</a><br/>
                                                             @endif
                                                             @if($torneio->hasConfig("chesscom_last_api_error"))
                                                                 <a class="btn btn-warning" href="{{ url('/evento/'.$evento->id.'/torneios/'.$torneio->id.'/chesscom/last_error') }}" role="button">{{ __('chesscom.last_error.view_button') }}</a><br/>

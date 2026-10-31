@@ -256,6 +256,8 @@ Route::group(["prefix"=>"evento"],function(){
 	        Route::get('/remove_lichess_players_not_found', 'TorneioController@remove_lichess_players_not_found')->name('evento.torneios.lichess.remove_lichess_players_not_found');
         });
         Route::group(["prefix"=>"{torneio_id}/chesscom"],function(){
+            Route::get('/results/file', 'TorneioController@chesscom__results_file')->name('evento.torneios.chesscom.results.file');
+            Route::post('/results/file', 'TorneioController@chesscom__upload_results')->name('evento.torneios.chesscom.results.upload');
 	        Route::get('/check_players_in', 'TorneioController@chesscom__check_players_in')->name('evento.torneios.chesscom.chesscom__check_players_in');
 	        Route::get('/get_results', 'TorneioController@chesscom__get_results')->name('evento.torneios.chesscom.chesscom__get_results');
 	        Route::get('/last_error', 'TorneioController@chesscom__last_error')->name('evento.torneios.chesscom.chesscom__last_error');

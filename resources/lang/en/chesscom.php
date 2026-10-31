@@ -1,6 +1,8 @@
 <?php
 
 return [
+    'results_download_failed' => 'The Chess.com results could not be downloaded automatically.',
+    'invalid_results_csv' => 'Chess.com did not return a valid results CSV file.',
     'not_chesscom_software' => 'This tournament is not configured for Chess.com integration.',
     'slug_not_configured' => 'Enter the Chess.com tournament slug in the tournament settings before running this action.',
     'tournament_not_found' => 'Tournament not found on Chess.com. Check the slug provided.',

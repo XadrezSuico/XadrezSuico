@@ -34,6 +34,8 @@ use App\Http\Controllers\CriterioDesempateController;
 use App\Imports\ChessComResultsImport;
 use App\PerfilUser;
 use App\Services\Integration\ChessComApiErrorPreviewService;
+use App\Services\Integration\ChessComResultsCsvValidator;
+use Illuminate\Support\Facades\DB;
 use Log;
 use Storage;
 use Excel;
@@ -915,20 +917,12 @@ class TorneioController extends Controller
 
     public function chesscom__get_results($id, $torneio_id)
     {
-        $evento = Evento::find($id);
+        $resolved = $this->chesscomAuthorizedEventAndTorneio($id, $torneio_id);
+        if (!is_array($resolved)) {
+            return $resolved;
+        }
+        list($evento, $torneio) = $resolved;
         $user = Auth::user();
-        if (
-            !$user->hasPermissionGlobal() &&
-            !$user->hasPermissionEventByPerfil($evento->id, [4]) &&
-            !$user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7])
-        ) {
-            return redirect("/evento/dashboard/" . $evento->id);
-        }
-
-        $torneio = Torneio::find($torneio_id);
-        if (!$torneio || !$torneio->software->isChessCom()) {
-            return $this->chesscomRedirectDashboard($evento, "danger", $this->chesscomTrans("not_chesscom_software"));
-        }
 
         if (!$torneio->hasConfig("chesscom_tournament_slug")) {
             return $this->chesscomRedirectDashboard($evento, "danger", $this->chesscomTrans("slug_not_configured"));
@@ -936,33 +930,107 @@ class TorneioController extends Controller
 
         $chesscom_integration_controller = new ChessComIntegrationController;
         $retorno = $chesscom_integration_controller->getResults($torneio->getConfig("chesscom_tournament_slug", true));
+        if ($retorno["ok"] == 1) {
+            try {
+                (new ChessComResultsCsvValidator)->validate($retorno["data"]);
+            } catch (\InvalidArgumentException $exception) {
+                $retorno = [
+                    "ok" => 0,
+                    "message_key" => "invalid_results_csv",
+                    "status_code" => 200,
+                    "slug" => $torneio->getConfig("chesscom_tournament_slug", true),
+                    "request_url" => $chesscom_integration_controller->resultsDownloadUrl($torneio->getConfig("chesscom_tournament_slug", true)),
+                    "response_body" => mb_substr($retorno["data"], 0, 100000),
+                ];
+            }
+        }
         if ($retorno["ok"] != 1) {
-            return $this->chesscomHandleApiError($evento, $torneio, $user, "get_results", $retorno);
+            try {
+                $torneio->chesscom_saveLastApiError("get_results", $retorno, $user->id);
+            } catch (\Throwable $exception) {
+                Log::error("Chess.com: falha ao registrar erro de download", ["exception" => $exception]);
+            }
+            return redirect($this->chesscomUploadUrl($evento, $torneio));
         }
 
+        return $this->chesscomImportResults($evento, $torneio, $retorno["data"]);
+    }
+
+    private function chesscomUploadUrl(Evento $evento, Torneio $torneio): string
+    {
+        return url("/evento/" . $evento->id . "/torneios/" . $torneio->id . "/chesscom/results/file");
+    }
+
+    public function chesscom__results_file($id, $torneio_id)
+    {
+        $resolved = $this->chesscomAuthorizedEventAndTorneio($id, $torneio_id);
+        if (!is_array($resolved)) {
+            return $resolved;
+        }
+        list($evento, $torneio) = $resolved;
+        if (!$torneio->hasConfig("chesscom_tournament_slug")) {
+            return $this->chesscomRedirectDashboard($evento, "danger", $this->chesscomTrans("slug_not_configured"));
+        }
+        $downloadUrl = (new ChessComIntegrationController)->resultsDownloadUrl($torneio->getConfig("chesscom_tournament_slug", true));
+        $uploadUrl = $this->chesscomUploadUrl($evento, $torneio);
+        return view("evento.torneio.chesscom_results_upload", compact("evento", "torneio", "downloadUrl", "uploadUrl"));
+    }
+
+    public function chesscom__upload_results(Request $request, $id, $torneio_id)
+    {
+        $resolved = $this->chesscomAuthorizedEventAndTorneio($id, $torneio_id);
+        if (!is_array($resolved)) {
+            return $resolved;
+        }
+        list($evento, $torneio) = $resolved;
+        if (!$torneio->hasConfig("chesscom_tournament_slug")) {
+            return $this->chesscomRedirectDashboard($evento, "danger", $this->chesscomTrans("slug_not_configured"));
+        }
+        $validator = \Validator::make($request->all(), ["arquivo" => "required|file|max:10240"]);
+        if ($validator->fails()) {
+            return redirect($this->chesscomUploadUrl($evento, $torneio))->withErrors($validator);
+        }
+        $csv = file_get_contents($request->file("arquivo")->getRealPath());
+        if ($csv === false) {
+            return redirect($this->chesscomUploadUrl($evento, $torneio))->withErrors(["arquivo" => "Não foi possível ler o arquivo enviado. Tente novamente."]);
+        }
+        try {
+            (new ChessComResultsCsvValidator)->validate($csv);
+        } catch (\InvalidArgumentException $exception) {
+            return redirect($this->chesscomUploadUrl($evento, $torneio))->withErrors(["arquivo" => $exception->getMessage()]);
+        }
+        return $this->chesscomImportResults($evento, $torneio, $csv);
+    }
+
+    private function chesscomImportResults(Evento $evento, Torneio $torneio, string $csv)
+    {
+        $filename = "chesscom_results_csv_" . $torneio->id . "_" . uniqid() . ".csv";
+        try {
+            if (!Storage::disk("imports_chess_com")->put($filename, $csv)) {
+                throw new \RuntimeException("Não foi possível armazenar o arquivo de resultados.");
+            }
+            DB::transaction(function () use ($evento, $torneio, $filename) {
+                Excel::import(
+                    new ChessComResultsImport($evento->id, $torneio->id),
+                    Storage::disk("imports_chess_com")->path($filename),
+                    null,
+                    \Maatwebsite\Excel\Excel::CSV
+                );
+                $torneio->setConfig("chesscom_last_players_list_update", ConfigType::Integer, time());
+                $torneio->setConfig("chesscom_last_result_import_update", ConfigType::Integer, time());
+                $torneio->save();
+            });
+        } catch (\Throwable $exception) {
+            Log::error("Chess.com: falha ao importar resultados do torneio " . $torneio->id, ["exception" => $exception]);
+            return redirect($this->chesscomUploadUrl($evento, $torneio))->withErrors(["arquivo" => "Não foi possível processar o CSV. Confira o arquivo de resultados e tente novamente."]);
+        }
         $torneio->chesscom_clearLastApiError();
-
-        $csv = $retorno["data"];
-
-        $filename = "chesscom_results_csv_" . $torneio->id . "_" . time() . ".csv";
-
-        Storage::disk("imports_chess_com")->put($filename, $csv);
-
-        Excel::import(
-            new ChessComResultsImport($torneio->evento->id, $torneio->id),
-            Storage::disk("imports_chess_com")->path($filename)
-        );
-
-        $torneio->setConfig("chesscom_last_players_list_update", ConfigType::Integer, time());
-        $torneio->setConfig("chesscom_last_result_import_update", ConfigType::Integer, time());
-        $torneio->save();
-
         return $this->chesscomRedirectDashboard($evento, "success", $this->chesscomTrans("get_results.success"));
     }
 
     private function chesscomAuthorizedEventAndTorneio($id, $torneio_id)
     {
-        $evento = Evento::find($id);
+        $evento = Evento::findOrFail($id);
         $user = Auth::user();
         if (
             !$user->hasPermissionGlobal() &&
@@ -973,7 +1041,7 @@ class TorneioController extends Controller
         }
 
         $torneio = Torneio::find($torneio_id);
-        if (!$torneio || !$torneio->software->isChessCom()) {
+        if (!$torneio || (int) $torneio->evento_id !== (int) $evento->id || !$torneio->software || !$torneio->software->isChessCom()) {
             return redirect("/evento/dashboard/" . $evento->id . "/?tab=torneio");
         }
 
