@@ -87,7 +87,7 @@ class SendEventRegistrationsToPayment extends Command
         $this->info(__('xadrezsuicopag.send_registrations.registrations_to_send', [
             'count' => $total,
         ]));
-        $this->newLine();
+        $this->line('');
 
         $bar = $this->output->createProgressBar($total);
         $bar->setFormat(
@@ -129,7 +129,8 @@ class SendEventRegistrationsToPayment extends Command
 
         $bar->setMessage(__('xadrezsuicopag.send_registrations.done'));
         $bar->finish();
-        $this->newLine(2);
+        $this->line('');
+        $this->line('');
 
         $this->table(
             [
