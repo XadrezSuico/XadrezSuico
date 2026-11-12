@@ -179,6 +179,7 @@
                                     \Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[6,7])
                                 )
                                     <a class="btn btn-default" href="{{url("/evento/".$evento->id."/torneios/".$inscricao->torneio->id."/inscricoes/edit/".$inscricao->id)}}" role="button" target="_blank">Editar</a>
+                                    @include('evento.torneio.inscricao.delete-paid-button', ['registrationList' => true])
                                     @if($inscricao->isDeletavel())
                                         <a class="btn btn-danger" href="{{url("/evento/".$evento->id."/torneios/".$inscricao->torneio->id."/inscricoes/delete/".$inscricao->id)}}?route=event_registration_list" role="button">Apagar</a>
                                     @else

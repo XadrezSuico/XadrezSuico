@@ -5,6 +5,7 @@
 @endsection
 
 @push('event-scripts')
+@include('evento.torneio.inscricao.delete-paid-script')
 @foreach(array(
     "https://cdn.datatables.net/buttons/1.5.6/js/dataTables.buttons.min.js",
     "https://cdn.datatables.net/buttons/1.5.6/js/buttons.flash.min.js",

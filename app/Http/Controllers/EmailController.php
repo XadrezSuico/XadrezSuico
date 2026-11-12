@@ -27,6 +27,9 @@ class EmailController extends Controller
 
     public static function schedule($email, $object, $email_type, $enxadrista = null)
     {
+        if ($object instanceof \App\Inscricao && $object->status == \App\Enum\RegistrationStatus::Deleted) {
+            return false;
+        }
         // aqui vai a chamada para o Helper
         $emailTemplateHelper = new EmailTemplateHelper;
         $email_template = $emailTemplateHelper->generate($email_type,$object);

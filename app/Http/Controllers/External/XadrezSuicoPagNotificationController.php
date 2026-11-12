@@ -47,7 +47,7 @@ class XadrezSuicoPagNotificationController extends Controller
             return response()->json(["ok"=>0, "error"=>1, "message"=>"Motivo Externo (XadrezSuicoPAG): O system_id informado não é válido.","httpcode"=>400],400);
         }
 
-        if(Inscricao::where([["uuid","=",$uuid]])->whereJsonContains("payment_info->uuid",$registration_uuid)->count() == 0){
+        if(Inscricao::withoutGlobalScope('not_deleted')->where([["uuid","=",$uuid]])->where("payment_info->uuid", $registration_uuid)->count() == 0){
             activity("xadrezsuicopag_notification")
             ->withProperties([
                 'request' => $request->all()
@@ -67,9 +67,15 @@ class XadrezSuicoPagNotificationController extends Controller
             Log::debug("Notification ok = 1 ");
             if ($registration_request->registration->status == "paid"){
                 Log::debug("Notification status = paid ");
-                $inscricao = Inscricao::where([["uuid", "=", $uuid]])->whereJsonContains("payment_info->uuid",$registration_uuid)->first();
+                $inscricao = Inscricao::withoutGlobalScope('not_deleted')->where([["uuid", "=", $uuid]])->where("payment_info->uuid", $registration_uuid)->first();
 
 
+
+                if ($inscricao->status == \App\Enum\RegistrationStatus::Deleted) {
+                    $inscricao->paid = true;
+                    $inscricao->save();
+                    return response()->json(["ok" => 1, "error" => 0]);
+                }
 
                 if($inscricao->torneio->evento->hasConfig("flag__registration_paid_confirmed")){
                     if($inscricao->torneio->evento->getConfig("flag__registration_paid_confirmed",true)){
@@ -109,7 +115,7 @@ class XadrezSuicoPagNotificationController extends Controller
             }else{
 
                 if($registration_request->registration->status == "refunded"){
-                    $inscricao = Inscricao::where([["uuid","=",$uuid]])->whereJsonContains("payment_info->uuid",$registration_uuid)->first();
+                    $inscricao = Inscricao::withoutGlobalScope('not_deleted')->where([["uuid","=",$uuid]])->where("payment_info->uuid", $registration_uuid)->first();
 
 
                     $inscricao->paid = false;

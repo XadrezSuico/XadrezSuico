@@ -10,6 +10,12 @@ use Illuminate\Support\Str;
 class Emparceiramento extends Model
 {
     use LogsActivity;
+    use \App\Scopes\ExcludesDeletedRegistrations;
+
+    protected function registrationColumns()
+    {
+        return ['inscricao_a', 'inscricao_b'];
+    }
 
     protected $fillable = ['*'];
 

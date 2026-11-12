@@ -8,6 +8,12 @@ use Spatie\Activitylog\Traits\LogsActivity;
 class MovimentacaoRating extends Model
 {
     use LogsActivity;
+    use \App\Scopes\ExcludesDeletedRegistrations;
+
+    protected function registrationColumns()
+    {
+        return ['inscricao_id'];
+    }
 
     protected $fillable = ['*'];
 

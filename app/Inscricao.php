@@ -10,6 +10,7 @@ use Spatie\Activitylog\Traits\LogsActivity;
 use Illuminate\Support\Str;
 
 use App\Enum\ConfigType;
+use App\Enum\RegistrationStatus;
 use App\Helper\SingletonValueHelper;
 use Illuminate\Support\Facades\Cache;
 use Log;
@@ -29,10 +30,16 @@ class Inscricao extends Model
     protected $primaryKey = 'id';
     protected $table = 'inscricao';
 
+    protected $attributes = ['status' => RegistrationStatus::Enabled];
+
 
     public static function boot()
     {
         parent::boot();
+
+        static::addGlobalScope('not_deleted', function ($query) {
+            $query->where($query->getModel()->qualifyColumn('status'), '!=', RegistrationStatus::Deleted);
+        });
 
         self::creating(function($model){
             Log::debug("self::creating");
@@ -64,7 +71,9 @@ class Inscricao extends Model
                 }
             }
 
-            $model->needToReplicateInfo();
+            if ($model->status != RegistrationStatus::Deleted) {
+                $model->needToReplicateInfo();
+            }
 
             if (Cache::has($model->torneio->evento->getCacheKey("api_registration_public_list"))) {
                 Cache::forget($model->torneio->evento->getCacheKey("api_registration_public_list"));
@@ -143,7 +152,9 @@ class Inscricao extends Model
             }
 
 
-            $model->needToReplicateInfo();
+            if ($model->status != RegistrationStatus::Deleted) {
+                $model->needToReplicateInfo();
+            }
         });
 
         self::updated(function($model) {
@@ -469,6 +480,9 @@ class Inscricao extends Model
     }
 
     public function isPresent(){
+        if ($this->status == RegistrationStatus::Deleted) {
+            return false;
+        }
         if(!$this->confirmado){
             return false;
         }
@@ -489,6 +503,9 @@ class Inscricao extends Model
     }
 
     public function registerToPayment(){
+        if ($this->status == RegistrationStatus::Deleted) {
+            return;
+        }
         if(
             $this->torneio->evento->isPaid()
         ){

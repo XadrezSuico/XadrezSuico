@@ -325,6 +325,34 @@ class InscricaoGerenciarController extends Controller
         return redirect("/evento/" . $evento->id . "/torneios/" . $torneio->id . "/inscricoes");
     }
 
+    public function delete_paid($id, $torneio_id, $inscricao_id, Request $request)
+    {
+        $user = Auth::user();
+        $evento = Evento::findOrFail($id);
+        abort_unless(
+            $user->hasPermissionGlobal() ||
+            $user->hasPermissionEventByPerfil($evento->id, [4]) ||
+            $user->hasPermissionGroupEventByPerfil($evento->grupo_evento->id, [7]),
+            403
+        );
+        $request->validate(['confirmation' => 'required|in:delete_paid_registration']);
+        $torneio = $evento->torneios()->findOrFail($torneio_id);
+
+        \Illuminate\Support\Facades\DB::transaction(function () use ($torneio, $inscricao_id) {
+            $inscricao = $torneio->inscricoes()->lockForUpdate()->findOrFail($inscricao_id);
+            abort_unless($inscricao->paid || $inscricao->getPaymentInfo('uuid'), 422);
+            $inscricao->status = \App\Enum\RegistrationStatus::Deleted;
+            $inscricao->confirmado = false;
+            $inscricao->save();
+            \App\Services\DeletedRegistrationResults::refresh($inscricao);
+        });
+
+        $url = $request->input('route') == 'event_registration_list'
+            ? '/evento/'.$evento->id.'/inscricoes/list'
+            : '/evento/'.$evento->id.'/torneios/'.$torneio->id.'/inscricoes';
+        return redirect($url)->with('success', 'Inscrição excluída.');
+    }
+
     public function delete_admin($id, $torneio_id, $inscricao_id, Request $request)
     {
         $user = Auth::user();

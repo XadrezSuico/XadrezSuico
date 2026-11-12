@@ -8,6 +8,12 @@ use Spatie\Activitylog\Traits\LogsActivity;
 class InscricaoCriterioDesempate extends Model
 {
     use LogsActivity;
+    use \App\Scopes\ExcludesDeletedRegistrations;
+
+    protected function registrationColumns()
+    {
+        return ['inscricao_id'];
+    }
 
     protected $fillable = ['*'];
 
