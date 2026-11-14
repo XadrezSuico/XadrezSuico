@@ -8,10 +8,9 @@ use App\Pais;
 use App\PlayerTitle;
 use App\Sexo;
 use App\Title;
+use App\Services\FideProfileClient;
 use Illuminate\Support\Facades\Log;
-use Symfony\Component\BrowserKit\HttpBrowser;
 use Symfony\Component\DomCrawler\Crawler;
-use Symfony\Component\HttpClient\HttpClient;
 
 class FIDERatingController extends Controller
 {
@@ -258,24 +257,18 @@ class FIDERatingController extends Controller
         }
 
         try {
-            $client = HttpClient::create([
-                'headers' => [
-                    'User-Agent' => 'Mozilla/5.0 (compatible; XadrezSuico/1.0)',
-                ],
-            ]);
-            $browser = new HttpBrowser($client);
-            $crawler = $browser->request('GET', $url);
-            $statusCode = $browser->getInternalResponse()->getStatusCode();
-            $html = $browser->getInternalResponse()->getContent();
+            $html = app(FideProfileClient::class)->fetch($enxadrista->fide_id);
+            $crawler = new Crawler($html);
 
-            if ($statusCode !== 200 || self::isPlayerNotFound($crawler, $html)) {
-                Log::debug("FIDERatingController::getRating - '{$enxadrista->fide_id}' - jogador não encontrado (status {$statusCode})");
+            if (stripos($html, 'No record found') !== false || stripos($html, 'Player not found') !== false) {
                 if ($show_text) {
                     echo "Jogador FIDE não encontrado<br/>";
                 }
                 self::markNotFound($enxadrista, $codigo_organizacao, $save_rating);
-
                 return $return_enxadrista ? $enxadrista : null;
+            }
+            if (self::isPlayerNotFound($crawler, $html)) {
+                throw new \RuntimeException('Resposta FIDE inválida; dados anteriores preservados.');
             }
 
             $name = self::extractName($crawler);
@@ -306,10 +299,8 @@ class FIDERatingController extends Controller
         } catch (\Exception $e) {
             Log::debug("FIDERatingController::getRating - '{$enxadrista->fide_id}' - erro: " . $e->getMessage());
             if ($show_text) {
-                echo "Erro ao acessar a página: " . $e->getMessage() . "<br/>";
+                echo "Consulta FIDE indisponível. Dados anteriores preservados.<br/>";
             }
-            self::markNotFound($enxadrista, $codigo_organizacao, $save_rating);
-
             return $return_enxadrista ? $enxadrista : null;
         }
 

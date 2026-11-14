@@ -14,6 +14,16 @@ return [
     |
     */
 
+    'fide' => [
+        'proxy_enabled' => env('FIDE_PROXY_ENABLED', false),
+        'proxy_host' => env('FIDE_PROXY_HOST'),
+        'proxy_port' => env('FIDE_PROXY_PORT', 8443),
+        'proxy_token' => env('FIDE_PROXY_TOKEN'),
+        'proxy_ca' => env('FIDE_PROXY_CA'),
+        'timeout' => env('FIDE_HTTP_TIMEOUT', 8),
+        'max_duration' => env('FIDE_HTTP_MAX_DURATION', 25),
+    ],
+
     'mailgun' => [
         'domain' => env('MAILGUN_DOMAIN'),
         'secret' => env('MAILGUN_SECRET'),

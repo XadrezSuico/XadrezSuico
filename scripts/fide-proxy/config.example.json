@@ -1,0 +1,8 @@
+{
+  "bind": "10.100.42.79",
+  "port": 8443,
+  "allowed_ips": ["10.100.40.165"],
+  "token": "REPLACE_WITH_RANDOM_TOKEN_AT_LEAST_32_CHARACTERS",
+  "certificate": "/var/lib/nginx/fide-proxy/server.crt",
+  "private_key": "/var/lib/nginx/fide-proxy/server.key"
+}

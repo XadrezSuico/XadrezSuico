@@ -1,0 +1,9 @@
+config.json
+*.key
+*.crt
+*.csr
+*.srl
+*.log
+*.lock
+__pycache__/
+*.pid
