@@ -3,7 +3,7 @@
 <head>
     @include('layouts.v2.partials.head')
 </head>
-<body class="bg-brand-surface text-gray-800 antialiased">
+<body class="v2-guest bg-brand-surface text-gray-800 antialiased">
     <div class="flex min-h-screen flex-col items-center justify-center px-4 py-8 sm:px-6">
         @yield('content')
 

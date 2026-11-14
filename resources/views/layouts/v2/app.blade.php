@@ -15,7 +15,7 @@
     <div id="v2-app" class="flex min-h-screen">
         @include('layouts.v2.partials.sidebar')
 
-        <div class="flex min-h-screen flex-1 flex-col lg:pl-64">
+        <div class="v2-main-column flex min-h-screen flex-1 flex-col lg:pl-64">
             @include('layouts.v2.partials.topbar')
 
             <main class="flex-1 p-4 sm:p-6 lg:p-8">

@@ -1,0 +1,127 @@
+/* Shared responsive behavior for the v2 shell, native pages and scoped legacy pages. */
+#v2-app, .v2-main-column, #v2-app main, .v2-event-shell,
+.v2-event-native, .v2-legacy-content, .v2-legacy-tab {
+    min-width: 0;
+    max-width: 100%;
+}
+.v2-main-column { width: 100%; }
+#v2-app main { overflow-wrap: anywhere; }
+#v2-app > .v2-main-column > header > div { min-width: 0; }
+#v2-app > .v2-main-column > header > div:first-child { flex: 1 1 auto; }
+#v2-app > .v2-main-column > header > div:last-child,
+#v2-app > .v2-main-column > header button { flex-shrink: 0; }
+#v2-app > .v2-main-column > header > div:first-child > span,
+.v2-user-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.v2-user-name { max-width: clamp(6rem, 20vw, 20rem); }
+#v2-sidebar { max-width: 100vw; height: 100vh; height: 100dvh; }
+#v2-sidebar nav { height: calc(100% - 4rem); overscroll-behavior: contain; }
+body.v2-sidebar-open { overflow: hidden; }
+#v2-app main img, #v2-app main video { max-width: 100%; height: auto; }
+#v2-app main iframe { max-width: 100%; }
+#v2-app main pre { max-width: 100%; overflow-x: auto; white-space: pre; }
+#v2-app main fieldset { min-width: 0; }
+#v2-app main input:not([type="checkbox"]):not([type="radio"]),
+#v2-app main select, #v2-app main textarea,
+#v2-app main .select2-container { max-width: 100%; }
+.v2-event-shell > div, .v2-event-native .v2-action-card,
+.v2-event-native .v2-panel-grid > *, .v2-event-native .v2-stat-grid > * { min-width: 0; }
+.v2-event-shell a[role="button"] { max-width: 100%; white-space: normal; }
+.v2-table-scroll { width: 100%; max-width: 100%; min-width: 0; overflow-x: auto; overscroll-behavior-x: contain; }
+.v2-table-scroll:focus-visible { outline: 2px solid #7c3aed; outline-offset: 2px; }
+/* table-responsive on a table alone cannot provide an independent scroll container. */
+#v2-app main .v2-table-scroll > table.table-responsive { display: table; overflow: visible; }
+#v2-app main .dataTables_wrapper { min-width: 0; max-width: 100%; }
+#v2-app main .dataTables_wrapper .dataTables_filter input { max-width: min(100%, 16rem); }
+#v2-app main .dataTables_wrapper .dt-buttons { display: flex; flex-wrap: wrap; gap: .25rem; max-width: 100%; }
+#v2-app main .dataTables_wrapper .pagination { display: flex; flex-wrap: wrap; }
+.v2-legacy-content .btn, .v2-legacy-tab .btn { max-width: 100%; white-space: normal; overflow-wrap: anywhere; }
+/* Complete the Bootstrap grid locally, without importing global legacy styles. */
+.v2-legacy-content [class*="col-"], .v2-legacy-tab [class*="col-"] {
+    min-width: 0; width: 100%; max-width: 100%; flex: 0 0 100%;
+}
+.v2-legacy-content .col-xs-1, .v2-legacy-tab .col-xs-1 { width: 8.33333333%; max-width: 8.33333333%; flex-basis: 8.33333333%; }
+.v2-legacy-content .col-xs-2, .v2-legacy-tab .col-xs-2 { width: 16.66666667%; max-width: 16.66666667%; flex-basis: 16.66666667%; }
+.v2-legacy-content .col-xs-3, .v2-legacy-tab .col-xs-3 { width: 25%; max-width: 25%; flex-basis: 25%; }
+.v2-legacy-content .col-xs-4, .v2-legacy-tab .col-xs-4 { width: 33.33333333%; max-width: 33.33333333%; flex-basis: 33.33333333%; }
+.v2-legacy-content .col-xs-5, .v2-legacy-tab .col-xs-5 { width: 41.66666667%; max-width: 41.66666667%; flex-basis: 41.66666667%; }
+.v2-legacy-content .col-xs-6, .v2-legacy-tab .col-xs-6 { width: 50%; max-width: 50%; flex-basis: 50%; }
+.v2-legacy-content .col-xs-7, .v2-legacy-tab .col-xs-7 { width: 58.33333333%; max-width: 58.33333333%; flex-basis: 58.33333333%; }
+.v2-legacy-content .col-xs-8, .v2-legacy-tab .col-xs-8 { width: 66.66666667%; max-width: 66.66666667%; flex-basis: 66.66666667%; }
+.v2-legacy-content .col-xs-9, .v2-legacy-tab .col-xs-9 { width: 75%; max-width: 75%; flex-basis: 75%; }
+.v2-legacy-content .col-xs-10, .v2-legacy-tab .col-xs-10 { width: 83.33333333%; max-width: 83.33333333%; flex-basis: 83.33333333%; }
+.v2-legacy-content .col-xs-11, .v2-legacy-tab .col-xs-11 { width: 91.66666667%; max-width: 91.66666667%; flex-basis: 91.66666667%; }
+.v2-legacy-content .col-xs-12, .v2-legacy-tab .col-xs-12 { width: 100%; max-width: 100%; flex-basis: 100%; }
+@media (min-width: 768px) {
+.v2-legacy-content .col-sm-1, .v2-legacy-tab .col-sm-1 { width: 8.33333333%; max-width: 8.33333333%; flex-basis: 8.33333333%; }
+.v2-legacy-content .col-sm-2, .v2-legacy-tab .col-sm-2 { width: 16.66666667%; max-width: 16.66666667%; flex-basis: 16.66666667%; }
+.v2-legacy-content .col-sm-3, .v2-legacy-tab .col-sm-3 { width: 25%; max-width: 25%; flex-basis: 25%; }
+.v2-legacy-content .col-sm-4, .v2-legacy-tab .col-sm-4 { width: 33.33333333%; max-width: 33.33333333%; flex-basis: 33.33333333%; }
+.v2-legacy-content .col-sm-5, .v2-legacy-tab .col-sm-5 { width: 41.66666667%; max-width: 41.66666667%; flex-basis: 41.66666667%; }
+.v2-legacy-content .col-sm-6, .v2-legacy-tab .col-sm-6 { width: 50%; max-width: 50%; flex-basis: 50%; }
+.v2-legacy-content .col-sm-7, .v2-legacy-tab .col-sm-7 { width: 58.33333333%; max-width: 58.33333333%; flex-basis: 58.33333333%; }
+.v2-legacy-content .col-sm-8, .v2-legacy-tab .col-sm-8 { width: 66.66666667%; max-width: 66.66666667%; flex-basis: 66.66666667%; }
+.v2-legacy-content .col-sm-9, .v2-legacy-tab .col-sm-9 { width: 75%; max-width: 75%; flex-basis: 75%; }
+.v2-legacy-content .col-sm-10, .v2-legacy-tab .col-sm-10 { width: 83.33333333%; max-width: 83.33333333%; flex-basis: 83.33333333%; }
+.v2-legacy-content .col-sm-11, .v2-legacy-tab .col-sm-11 { width: 91.66666667%; max-width: 91.66666667%; flex-basis: 91.66666667%; }
+.v2-legacy-content .col-sm-12, .v2-legacy-tab .col-sm-12 { width: 100%; max-width: 100%; flex-basis: 100%; }
+}
+@media (min-width: 992px) {
+.v2-legacy-content .col-md-1, .v2-legacy-tab .col-md-1 { width: 8.33333333%; max-width: 8.33333333%; flex-basis: 8.33333333%; }
+.v2-legacy-content .col-md-2, .v2-legacy-tab .col-md-2 { width: 16.66666667%; max-width: 16.66666667%; flex-basis: 16.66666667%; }
+.v2-legacy-content .col-md-3, .v2-legacy-tab .col-md-3 { width: 25%; max-width: 25%; flex-basis: 25%; }
+.v2-legacy-content .col-md-4, .v2-legacy-tab .col-md-4 { width: 33.33333333%; max-width: 33.33333333%; flex-basis: 33.33333333%; }
+.v2-legacy-content .col-md-5, .v2-legacy-tab .col-md-5 { width: 41.66666667%; max-width: 41.66666667%; flex-basis: 41.66666667%; }
+.v2-legacy-content .col-md-6, .v2-legacy-tab .col-md-6 { width: 50%; max-width: 50%; flex-basis: 50%; }
+.v2-legacy-content .col-md-7, .v2-legacy-tab .col-md-7 { width: 58.33333333%; max-width: 58.33333333%; flex-basis: 58.33333333%; }
+.v2-legacy-content .col-md-8, .v2-legacy-tab .col-md-8 { width: 66.66666667%; max-width: 66.66666667%; flex-basis: 66.66666667%; }
+.v2-legacy-content .col-md-9, .v2-legacy-tab .col-md-9 { width: 75%; max-width: 75%; flex-basis: 75%; }
+.v2-legacy-content .col-md-10, .v2-legacy-tab .col-md-10 { width: 83.33333333%; max-width: 83.33333333%; flex-basis: 83.33333333%; }
+.v2-legacy-content .col-md-11, .v2-legacy-tab .col-md-11 { width: 91.66666667%; max-width: 91.66666667%; flex-basis: 91.66666667%; }
+.v2-legacy-content .col-md-12, .v2-legacy-tab .col-md-12 { width: 100%; max-width: 100%; flex-basis: 100%; }
+}
+@media (min-width: 1200px) {
+.v2-legacy-content .col-lg-1, .v2-legacy-tab .col-lg-1 { width: 8.33333333%; max-width: 8.33333333%; flex-basis: 8.33333333%; }
+.v2-legacy-content .col-lg-2, .v2-legacy-tab .col-lg-2 { width: 16.66666667%; max-width: 16.66666667%; flex-basis: 16.66666667%; }
+.v2-legacy-content .col-lg-3, .v2-legacy-tab .col-lg-3 { width: 25%; max-width: 25%; flex-basis: 25%; }
+.v2-legacy-content .col-lg-4, .v2-legacy-tab .col-lg-4 { width: 33.33333333%; max-width: 33.33333333%; flex-basis: 33.33333333%; }
+.v2-legacy-content .col-lg-5, .v2-legacy-tab .col-lg-5 { width: 41.66666667%; max-width: 41.66666667%; flex-basis: 41.66666667%; }
+.v2-legacy-content .col-lg-6, .v2-legacy-tab .col-lg-6 { width: 50%; max-width: 50%; flex-basis: 50%; }
+.v2-legacy-content .col-lg-7, .v2-legacy-tab .col-lg-7 { width: 58.33333333%; max-width: 58.33333333%; flex-basis: 58.33333333%; }
+.v2-legacy-content .col-lg-8, .v2-legacy-tab .col-lg-8 { width: 66.66666667%; max-width: 66.66666667%; flex-basis: 66.66666667%; }
+.v2-legacy-content .col-lg-9, .v2-legacy-tab .col-lg-9 { width: 75%; max-width: 75%; flex-basis: 75%; }
+.v2-legacy-content .col-lg-10, .v2-legacy-tab .col-lg-10 { width: 83.33333333%; max-width: 83.33333333%; flex-basis: 83.33333333%; }
+.v2-legacy-content .col-lg-11, .v2-legacy-tab .col-lg-11 { width: 91.66666667%; max-width: 91.66666667%; flex-basis: 91.66666667%; }
+.v2-legacy-content .col-lg-12, .v2-legacy-tab .col-lg-12 { width: 100%; max-width: 100%; flex-basis: 100%; }
+}
+@media (max-width: 767px) {
+    .v2-legacy-content .box-header, .v2-legacy-tab .box-header { display: flex; flex-wrap: wrap; gap: .5rem; }
+    .v2-legacy-content .box-header .box-tools, .v2-legacy-tab .box-header .box-tools { position: static; margin-left: auto; }
+    .v2-legacy-content .modal-dialog, .v2-legacy-tab .modal-dialog, .v2-legacy-tab.modal .modal-dialog {
+        width: auto; max-width: calc(100% - 1rem); margin: .5rem auto;
+    }
+    .v2-legacy-content .modal-body, .v2-legacy-tab .modal-body { overflow-wrap: anywhere; }
+    #v2-app main .dataTables_wrapper .dataTables_filter,
+    #v2-app main .dataTables_wrapper .dataTables_length { float: none; text-align: left; white-space: normal; }
+    #v2-app main .dataTables_wrapper .dataTables_filter label { display: flex; flex-wrap: wrap; align-items: center; gap: .25rem; }
+    #v2-app main .dataTables_wrapper .dataTables_filter input { width: auto; min-width: 0; flex: 1 1 8rem; margin-left: 0; }
+    #v2-app main .dataTables_wrapper .dataTables_info,
+    #v2-app main .dataTables_wrapper .dataTables_paginate { float: none; text-align: left; }
+}
+@media (max-width: 639px) {
+    #v2-app main .v2-event-shell > div { max-width: 100%; }
+    .v2-legacy-content .input-group, .v2-legacy-tab .input-group { width: 100%; }
+    .v2-legacy-content .input-group-btn .btn, .v2-legacy-tab .input-group-btn .btn { white-space: normal; }
+}
+
+/* Guest/login pages share the same constraints without the authenticated shell. */
+.v2-guest { overflow-wrap: anywhere; }
+.v2-guest > div, .v2-guest form { min-width: 0; max-width: 100%; }
+.v2-legacy-content .col-xs-offset-1, .v2-legacy-tab .col-xs-offset-1 { margin-left: 8.33333333%; }
+.v2-legacy-content .modal, .v2-legacy-tab .modal, .v2-legacy-tab.modal {
+    overflow-y: auto; overscroll-behavior: contain;
+}
+@media (max-width: 639px) {
+    #v2-app main input:not([type="checkbox"]):not([type="radio"]),
+    #v2-app main select, #v2-app main textarea,
+    .v2-guest input:not([type="checkbox"]):not([type="radio"]) { font-size: 16px; }
+}

@@ -3,7 +3,9 @@
         <button type="button"
                 id="v2-sidebar-toggle"
                 class="inline-flex items-center justify-center rounded-lg p-2 text-brand hover:bg-brand-surface lg:hidden"
-                aria-label="Abrir menu">
+                aria-label="Abrir menu"
+                aria-controls="v2-sidebar"
+                aria-expanded="false">
             <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
             </svg>
@@ -13,7 +15,7 @@
 
     <div class="flex items-center gap-2 sm:gap-4">
         @auth
-            <span class="hidden text-sm text-gray-600 sm:inline">{{ Auth::user()->name }}</span>
+            <span class="v2-user-name hidden text-sm text-gray-600 sm:inline" title="{{ Auth::user()->name }}">{{ Auth::user()->name }}</span>
             <a href="{{ url('/usuario/password/' . Auth::user()->id) }}"
                class="inline-flex items-center rounded-lg px-3 py-2 text-sm text-brand hover:bg-brand-surface"
                title="Alterar Senha">
