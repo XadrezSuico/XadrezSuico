@@ -3,6 +3,11 @@
 @section('adminlte_css')
     <link rel="stylesheet"
           href="{{ asset('vendor/adminlte/dist/css/skins/skin-' . config('adminlte.skin', 'blue') . '.min.css')}} ">
+    <style>
+        .main-header .navbar .navbar-user-name { color: #fff; }
+        .skin-black .main-header .navbar .navbar-user-name,
+        .skin-black-light .main-header .navbar .navbar-user-name { color: #333; }
+    </style>
     @stack('css')
     @yield('css')
 @stop
@@ -61,8 +66,11 @@
                             @php($USER_USER = \Illuminate\Support\Facades\Auth::user())
                             <li>
                                 <a href="{{url("/usuario/password/".$USER_USER->id)}}" title="Alterar Senha">
-                                    <i class="fa fa-fw fa-lock"></i> <span>{{ $USER_USER->name }}</span>
+                                    <i class="fa fa-fw fa-lock"></i>
                                 </a>
+                            </li>
+                            <li>
+                                <span class="navbar-text navbar-user-name">{{ $USER_USER->name }}</span>
                             </li>
                         @endif
                         <li>
