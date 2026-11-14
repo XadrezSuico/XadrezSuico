@@ -4,6 +4,10 @@
     @include('evento.v2._content.torneio.inscricao.index')
 @endsection
 
+@push('styles')
+<link rel="stylesheet" href="{{ asset('css/v2/registrations.css') }}?v={{ filemtime(public_path('css/v2/registrations.css')) }}">
+@endpush
+
 @push('event-scripts')
 @include('evento.torneio.inscricao.delete-paid-script')
 @foreach(array(
@@ -17,15 +21,8 @@
     ) as $url)
 <script type="text/javascript" src="{{$url}}"></script>
 @endforeach
-<script type="text/javascript">
-    $(document).ready(function(){
-        $("#tabela").DataTable({
-            responsive: true,
-            dom: 'Bfrtip',
-            buttons: [
-                'copy', 'csv', 'excel', 'pdf', 'print'
-            ]
-        });
-    });
+<script src="{{ asset('js/v2/registrations.js') }}?v={{ filemtime(public_path('js/v2/registrations.js')) }}"></script>
+<script>
+    jQuery(function () { window.initV2RegistrationsTable('#tabela', {}); });
 </script>
 @endpush

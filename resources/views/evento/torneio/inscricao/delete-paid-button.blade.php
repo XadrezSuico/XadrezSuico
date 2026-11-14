@@ -6,7 +6,11 @@
             @if(isset($registrationList) && $registrationList)
                 <input type="hidden" name="route" value="event_registration_list">
             @endif
-            <button type="submit" class="btn btn-danger"><i class="fa fa-trash"></i> Excluir inscrição paga</button>
+            <button type="submit" class="{{ !empty($compact) ? 'v2-icon-action v2-icon-action--danger' : 'btn btn-danger' }}"
+                    title="Excluir inscrição paga" aria-label="Excluir inscrição paga"
+                    @if(!empty($compact)) data-toggle="tooltip" data-placement="top" @endif>
+                <i class="fa fa-trash" aria-hidden="true"></i>@if(empty($compact)) Excluir inscrição paga @endif
+            </button>
         </form>
     @endif
 @endif

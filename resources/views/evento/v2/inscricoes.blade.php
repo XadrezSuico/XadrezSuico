@@ -5,16 +5,7 @@
 @endsection
 
 @push('styles')
-    <style>
-.display-none, .displayNone{
-			display: none;
-		}
-
-		.box-title.evento{
-			font-size: 2.5rem;
-			font-weight: bold;
-		}
-    </style>
+<link rel="stylesheet" href="{{ asset('css/v2/registrations.css') }}?v={{ filemtime(public_path('css/v2/registrations.css')) }}">
 @endpush
 
 @push('event-scripts')
@@ -30,17 +21,8 @@
     ) as $url)
 <script type="text/javascript" src="{{$url}}"></script>
 @endforeach
-<script type="text/javascript">
-    $(document).ready(function(){
-        $("#tabela").DataTable({
-            responsive: true,
-            dom: 'Bfrtip',
-            buttons: [
-                'copy', 'csv', 'excel', 'pdf', 'print'
-            ],
-            ordering: false,
-            paging: false
-        });
-    });
+<script src="{{ asset('js/v2/registrations.js') }}?v={{ filemtime(public_path('js/v2/registrations.js')) }}"></script>
+<script>
+    jQuery(function () { window.initV2RegistrationsTable('#tabela', {paging: false, ordering: false}); });
 </script>
 @endpush

@@ -15,7 +15,8 @@
 
     <div class="box">
         <div class="box-body">
-            <table id="tabela" class="table-responsive table-condensed table-striped" style="width: 100%">
+            <div class="v2-registration-scroll">
+            <table id="tabela" class="table table-striped v2-registration-table" style="width: 100%">
                 <thead>
                     <tr>
                         <th>#</th>
@@ -62,12 +63,12 @@
                 <tbody>
                     @foreach($inscricoes as $inscricao)
                         <tr>
-                            <td>{{$inscricao->id}}</td>
+                            <td class="v2-reg-number">{{$inscricao->id}}</td>
                             @if($evento->hasConfig("is_team_tournament"))
-                                <td>@if($inscricao->clube) {{$inscricao->clube->getName()}} @else Sem Clube @endif</td>
+                                <td class="v2-reg-text">@if($inscricao->clube) {{$inscricao->clube->getName()}} @else Sem Clube @endif</td>
                                 <td>{{ ($inscricao->hasConfig("team_order")) ? $inscricao->getConfig("team_order",true) : '' }}</td>
                             @endif
-                            <td>#{{$inscricao->enxadrista->id}} - <a href="{{url("/enxadrista/edit/".$inscricao->enxadrista->id)}}" target="_blank">{{$inscricao->enxadrista->name}}</a></td>
+                            <td class="v2-reg-name">#{{$inscricao->enxadrista->id}} - <a href="{{url("/enxadrista/edit/".$inscricao->enxadrista->id)}}" target="_blank">{{$inscricao->enxadrista->name}}</a></td>
                             @if($evento->tipo_rating) <td>{{$inscricao->enxadrista->ratingParaEvento($evento->id)}}</td> @endif
                             @if($evento->is_lichess || $evento->is_lichess_integration) <td>{{$inscricao->enxadrista->lichess_username}}</td> @endif
                             @if($evento->is_lichess_integration)
@@ -95,12 +96,12 @@
                                 <td>{{$inscricao->enxadrista->lbx_id}}</td>
                                 <td>{{$inscricao->enxadrista->showRating(2,$evento->tipo_modalidade)}}</td>
                             @endif
-                            <td>{{$inscricao->categoria->name}}</td>
-                            <td>{{$inscricao->cidade->name}}</td>
+                            <td class="v2-reg-text">{{$inscricao->categoria->name}}</td>
+                            <td class="v2-reg-text">{{$inscricao->cidade->name}}</td>
                             @if(!$evento->hasConfig("is_team_tournament"))
-                                <td>@if($inscricao->clube) {{$inscricao->clube->getName()}} @else Sem Clube @endif</td>
+                                <td class="v2-reg-text">@if($inscricao->clube) {{$inscricao->clube->getName()}} @else Sem Clube @endif</td>
                             @endif
-                            <td>@if($inscricao->confirmado) Sim @else Não @endif</td>
+                            <td>@if($inscricao->confirmado) <span class="v2-reg-badge v2-reg-badge--success">Sim</span> @else <span class="v2-reg-badge">Não</span> @endif</td>
                             @if($torneio->software->isChessCom())
                                 <td>
                                     @if($inscricao->hasConfig("chesscom_registration_found"))
@@ -114,45 +115,42 @@
                                 <td>@if(!$inscricao->desconsiderar_classificado) Sim @else Não @endif</td>
                             @endif
                             <td  data-sort='{{$inscricao->created_at}}'>{{$inscricao->getCreatedAt()}}</td>
-                            <td>
-
-                                @if(
+                            <td class="v2-reg-options"><div class="input-group v2-registration-actions" role="group" aria-label="Ações da inscrição">@if(
                                     \Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
                                     \Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4]) ||
 						            \Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])
                                 )
                                     @if($inscricao->torneio->evento->is_lichess_integration)
                                         @if(!$inscricao->is_lichess_found)
-                                            <a href="https://api.whatsapp.com/send?phone=55{{$inscricao->enxadrista->celular}}&text=Olá {{$inscricao->enxadrista->name}}! Você preencheu sua inscrição para o {{$inscricao->torneio->evento->name}}, mas falta prosseguir com sua inscrição no Lichess.org. Favor seguir os passos em: {{$inscricao->getLichessProcessLink()}}. Este link serve para se inscrever na etapa no Lichess.org e vincular à sua inscrição do formulário. Qualquer dúvida, estamos à disposição." class="btn btn-success" target="_blank">
-                                                <strong>Enviar Mensagem no<br/>Whatsapp sobre a<br/>Inscrição no Lichess.org</strong>
-                                            </a><br/>
+                                            <a title="Enviar Alerta Via Whatsapp" aria-label="Enviar Alerta Via Whatsapp" data-toggle="tooltip" data-placement="top" href="https://api.whatsapp.com/send?phone=55{{$inscricao->enxadrista->celular}}&text=Olá {{$inscricao->enxadrista->name}}! Você preencheu sua inscrição para o {{$inscricao->torneio->evento->name}}, mas falta prosseguir com sua inscrição no Lichess.org. Favor seguir os passos em: {{$inscricao->getLichessProcessLink()}}. Este link serve para se inscrever na etapa no Lichess.org e vincular à sua inscrição do formulário. Qualquer dúvida, estamos à disposição." class="v2-icon-action v2-icon-action--default" target="_blank" title="Enviar orientação do Lichess pelo WhatsApp" aria-label="Enviar orientação do Lichess pelo WhatsApp" data-toggle="tooltip" data-placement="top"><i class="fa fa-whatsapp" aria-hidden="true"></i></a>
                                             @if(!$inscricao->is_whatsapp_sent)
                                                 @if(env("TWILIO_SID",false) && env("TWILIO_TOKEN",false))
-                                                    <a class="btn btn-default" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/inscricoes/whatsapp/".$inscricao->id)}}" role="button">Enviar Alerta Via Whatsapp</a>
+                                                    <a class="btn btn-default" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/inscricoes/whatsapp/".$inscricao->id)}}" role="button"><i class="fa fa-bell" aria-hidden="true"></i></a>
                                                 @endif
                                             @endif
                                         @endif
                                     @endif
-                                    @if($inscricao->confirmado) <a class="btn btn-default" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/inscricoes/unconfirm/".$inscricao->id)}}" role="button">Desconfirmar</a> @endif
-                                    <a class="btn btn-default" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/inscricoes/edit/".$inscricao->id)}}" role="button">Editar</a>
-                                    @include('evento.torneio.inscricao.delete-paid-button', ['registrationList' => false])
+                                    @if($inscricao->confirmado) <a title="Desconfirmar" aria-label="Desconfirmar" data-toggle="tooltip" data-placement="top" class="v2-icon-action v2-icon-action--warning" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/inscricoes/unconfirm/".$inscricao->id)}}" role="button"><i class="fa fa-undo" aria-hidden="true"></i></a> @endif
+                                    <a title="Editar" aria-label="Editar" data-toggle="tooltip" data-placement="top" class="v2-icon-action v2-icon-action--default" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/inscricoes/edit/".$inscricao->id)}}" role="button"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+                                    @include('evento.torneio.inscricao.delete-paid-button', ['registrationList' => false, 'compact' => true])
                                     @if($inscricao->isDeletavel())
-                                        <a class="btn btn-danger" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/inscricoes/delete/".$inscricao->id)}}" role="button">Apagar</a>
+                                        <a title="Apagar" aria-label="Apagar" data-toggle="tooltip" data-placement="top" class="v2-icon-action v2-icon-action--danger" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/inscricoes/delete/".$inscricao->id)}}" role="button"><i class="fa fa-trash" aria-hidden="true"></i></a>
                                     @else
                                         @if(
                                             \Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal())
                                             @if($inscricao->isDeletavel(true))
-                                                <a class="btn btn-danger" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/inscricoes/delete_admin/".$inscricao->id)}}" role="button">Apagar (Admin)</a>
+                                                <a title="Apagar (Admin)" aria-label="Apagar (Admin)" data-toggle="tooltip" data-placement="top" class="v2-icon-action v2-icon-action--danger" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/inscricoes/delete_admin/".$inscricao->id)}}" role="button"><i class="fa fa-trash" aria-hidden="true"></i></a>
                                             @endif
                                         @endif
                                     @endif
                                 @else
-                                    <a class="btn btn-default" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/inscricoes/edit/".$inscricao->id)}}" role="button">Visualizar</a>
+                                    <a title="Visualizar" aria-label="Visualizar" data-toggle="tooltip" data-placement="top" class="v2-icon-action v2-icon-action--default" href="{{url("/evento/".$evento->id."/torneios/".$torneio->id."/inscricoes/edit/".$inscricao->id)}}" role="button"><i class="fa fa-eye" aria-hidden="true"></i></a>
                                 @endif
-                            </td>
+                            </div></td>
                         </tr>
                     @endforeach
                 </tbody>
             </table>
+            </div>
         </div>
     </div>

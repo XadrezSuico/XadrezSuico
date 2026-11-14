@@ -51,7 +51,7 @@
     function wrapTables(container) {
         var tables = container.matches && container.matches('table') ? [container] : container.querySelectorAll('table');
         Array.prototype.forEach.call(tables, function (table) {
-            if (!table.parentElement || table.parentElement.closest('.v2-table-scroll, .table-responsive, .overflow-x-auto, .dataTables_scroll, .dtr-details')) return;
+            if (!table.parentElement || table.parentElement.closest('.v2-registration-scroll, .v2-table-scroll, .table-responsive, .overflow-x-auto, .dataTables_scroll, .dtr-details')) return;
             var wrapper = document.createElement('div');
             wrapper.className = 'v2-table-scroll';
             wrapper.setAttribute('role', 'region');
