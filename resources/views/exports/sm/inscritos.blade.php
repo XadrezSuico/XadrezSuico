@@ -16,6 +16,7 @@
     <tbody>
         @foreach($evento->torneios->all() as $torneio)
             @foreach($torneio->inscricoes->all() as $inscricao)
+                @php($identity = \App\Support\SwissManagerExportIdentity::forRegistration($inscricao, $evento->exportacao_sm_modelo))
                 <tr>
                     <td>@if($evento->usa_cbx && !$evento->tipo_rating)
                             @if($inscricao->enxadrista->cbx_id)
@@ -39,10 +40,10 @@
                             {{ intval($inscricao->enxadrista->fide_id) }}
                         @endif
                     </td>
-                    <td>{{ $inscricao->enxadrista->getNameToSM() }}</td>
+                    <td>{{ $identity['name'] }}</td>
                     <td>@if($inscricao->clube) {{ mb_strtoupper($inscricao->clube->abbr) }} @endif</td>
-                    <td>{{ $inscricao->cidade->id }}</td>
-                    <td>{{ $inscricao->cidade->getName(true,false) }} @if($inscricao->clube) - {{$inscricao->clube->getName()}} @endif</td>
+                    <td>{{ $identity['club_number'] }}</td>
+                    <td>{{ $identity['club_name'] }}</td>
                     <td>{{ $inscricao->enxadrista->getBornToSM() }}</td>
                     <td>
                         @if($evento->usa_cbx && !$evento->tipo_rating)
