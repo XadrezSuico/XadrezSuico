@@ -62,6 +62,9 @@
                             <li>
                                 <a href="{{url("/usuario/password/".$USER_USER->id)}}" title="Alterar Senha"> <i class="fa fa-fw fa-lock"></i></a>
                             </li>
+                            <li>
+                                <span class="navbar-text">{{ $USER_USER->name }}</span>
+                            </li>
                         @endif
                         <li>
                             @if(!\Illuminate\Support\Facades\Auth::check())
