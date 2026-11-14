@@ -60,10 +60,9 @@
                         @if(\Illuminate\Support\Facades\Auth::check())
                             @php($USER_USER = \Illuminate\Support\Facades\Auth::user())
                             <li>
-                                <a href="{{url("/usuario/password/".$USER_USER->id)}}" title="Alterar Senha"> <i class="fa fa-fw fa-lock"></i></a>
-                            </li>
-                            <li>
-                                <span class="navbar-text">{{ $USER_USER->name }}</span>
+                                <a href="{{url("/usuario/password/".$USER_USER->id)}}" title="Alterar Senha">
+                                    <i class="fa fa-fw fa-lock"></i> <span>{{ $USER_USER->name }}</span>
+                                </a>
                             </li>
                         @endif
                         <li>
