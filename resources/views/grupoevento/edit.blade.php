@@ -8,6 +8,8 @@
 
 
 @section('css')
+    <link rel="stylesheet" href="{{ asset('css/v2/registrations.css') }}?v={{ filemtime(public_path('css/v2/registrations.css')) }}">
+    <link rel="stylesheet" href="{{ asset('css/v2/dashboard-tables.css') }}?v={{ filemtime(public_path('css/v2/dashboard-tables.css')) }}">
 	<style>
 		.display-none, .displayNone{
 			display: none;
@@ -19,6 +21,10 @@
 @endsection
 
 @section("content")
+@php
+    $show_event_status = $user->hasPermissionGlobal() || $user->hasPermissionEventByPerfilByGroupEvent($grupo_evento->id, [4,5]) || $user->hasPermissionGroupEventByPerfil($grupo_evento->id, [7]);
+@endphp
+<div class="v2-dashboard-tables v2-legacy-content">
 <!-- Main row -->
 <ul class="nav nav-pills">
     <li role="presentation"><a href="/grupoevento">Voltar a Lista de Grupos de Evento</a></li>
@@ -214,22 +220,18 @@
 						</div>
 						<!-- form start -->
 							<div class="box-body">
-								<table id="tabela_evento" class="table-responsive table-condensed table-striped" style="width: 100%">
+								<div class="v2-registration-scroll"><table id="tabela_evento" class="table table-striped v2-registration-table v2-dashboard-table" style="width: 100%">
 									<thead>
 										<tr>
 											<th>#</th>
 											<th>Nome</th>
 											<th>Período</th>
-                                            @if(
-                                                \Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
-                                                \Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfilByGroupEvent($grupo_evento->id,[4,5]) ||
-                                                \Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($grupo_evento->id,[7])
-                                            )
-											    <th>Status</th>
+                                            @if($show_event_status)
+                                                <th class="v2-group-status">Status</th>
                                             @endif
 											<th>Local</th>
 											<th>Inscritos</th>
-											<th width="20%">Opções</th>
+											<th class="v2-reg-options">Opções</th>
 										</tr>
 									</thead>
 									<tbody>
@@ -249,12 +251,14 @@
                                                             {{$evento->getDataInicio()}}<br/>{{$evento->getDataFim()}}
                                                         @endif
                                                     </td>
+                                                    @if($show_event_status)
+                                                        <td class="v2-group-status">
                                                     @if(
                                                         \Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
                                                         \Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4,5]) ||
                                                         \Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])
                                                     )
-                                                        <td>
+
                                                             @if(!$evento->inscricoes_encerradas())
                                                                 <strong>Recebendo</strong> Inscrições
                                                             @else
@@ -281,6 +285,7 @@
                                                                 @endif
                                                                 <hr/>
                                                             @endif
+                                                                                                            @endif
                                                         </td>
                                                     @endif
 													<td>{{$evento->cidade->getName()}} <br/> {{$evento->local}}</td>
@@ -301,30 +306,30 @@
                                                             @endif
                                                         @endif
 													</td>
-													<td>
+													<td class="v2-reg-options"><div class="input-group v2-registration-actions" role="group" aria-label="Ações">
 													    @if(
 															\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
 															\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[3,4]) ||
 															\Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[6,7])
 														)
-															<a class="btn btn-default" href="{{url("/evento/dashboard/".$evento->id)}}" role="button">Dashboard</a>
+															<a class="v2-icon-action" href="{{url("/evento/dashboard/".$evento->id)}}" title="Abrir dashboard do evento" aria-label="Abrir dashboard do evento" data-placement="top"><i class="fa fa-dashboard" aria-hidden="true"></i></a>
 														@endif
-                                                        <a class="btn btn-success" href="{{$evento->getEventPublicLink()}}" target="_blank" role="button">Link de Divulgação</a>
+                                                        <a class="v2-icon-action v2-icon-action--success" href="{{$evento->getEventPublicLink()}}" target="_blank" title="Abrir link de divulgação" aria-label="Abrir link de divulgação" data-placement="top"><i class="fa fa-external-link" aria-hidden="true"></i></a>
 														@if(
 															\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
 															\Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($evento->id,[4,5]) ||
 															\Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7])
 														)
-															<a class="btn btn-success" href="{{url("/inscricao/".$evento->id)}}" target="_blank" role="button">Nova Inscrição</a>
+															<a class="v2-icon-action v2-icon-action--success" href="{{url("/inscricao/".$evento->id)}}" target="_blank" title="Nova inscrição" aria-label="Nova inscrição" data-placement="top"><i class="fa fa-user-plus" aria-hidden="true"></i></a>
 														@endif
 
-														@if($evento->isDeletavel() && (\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() || \Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7]) )) <a class="btn btn-danger" href="{{url("/evento/delete/".$evento->id)}}" role="button">Apagar</a> @endif
-													</td>
+														@if($evento->isDeletavel() && (\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() || \Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($evento->grupo_evento->id,[7]) )) <a class="v2-icon-action v2-icon-action--danger" href="{{url("/evento/delete/".$evento->id)}}" title="Excluir" aria-label="Excluir" data-placement="top"><i class="fa fa-trash" aria-hidden="true"></i></a> @endif
+													</div></td>
 												</tr>
 											@endif
 										@endforeach
 									</tbody>
-								</table>
+								</table></div>
 							</div>
 							<!-- /.box-body -->
 					</div>
@@ -368,12 +373,12 @@
 							</div>
 							<!-- form start -->
 								<div class="box-body">
-									<table id="tabela_torneio_template" class="table-responsive table-condensed table-striped" style="width: 100%">
+									<div class="v2-registration-scroll"><table id="tabela_torneio_template" class="table table-striped v2-registration-table v2-dashboard-table" style="width: 100%">
 										<thead>
 											<tr>
 												<th>#</th>
 												<th>Nome</th>
-												<th width="20%">Opções</th>
+												<th class="v2-reg-options">Opções</th>
 											</tr>
 										</thead>
 										<tbody>
@@ -381,14 +386,14 @@
 												<tr>
 													<td>{{$torneio_template->id}}</td>
 													<td>{{$torneio_template->name}}</td>
-													<td>
-														<a class="btn btn-success" href="{{url("/grupoevento/".$grupo_evento->id."/torneiotemplates/dashboard/".$torneio_template->id)}}" role="button"><i class="fa fa-dashboard"></i></a>
-														@if($torneio_template->isDeletavel())<a class="btn btn-danger" href="{{url("/grupoevento/".$grupo_evento->id."/torneiotemplates/delete/".$torneio_template->id)}}" role="button"><i class="fa fa-times"></i></a>@endif
-													</td>
+													<td class="v2-reg-options"><div class="input-group v2-registration-actions" role="group" aria-label="Ações">
+														<a class="v2-icon-action v2-icon-action--success" href="{{url("/grupoevento/".$grupo_evento->id."/torneiotemplates/dashboard/".$torneio_template->id)}}" title="Editar template de torneio" aria-label="Editar template de torneio" data-placement="top"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+														@if($torneio_template->isDeletavel())<a class="v2-icon-action v2-icon-action--danger" href="{{url("/grupoevento/".$grupo_evento->id."/torneiotemplates/delete/".$torneio_template->id)}}" title="Excluir" aria-label="Excluir" data-placement="top"><i class="fa fa-trash" aria-hidden="true"></i></a>@endif
+													</div></td>
 												</tr>
 											@endforeach
 										</tbody>
-									</table>
+									</table></div>
 								</div>
 								<!-- /.box-body -->
 						</div>
@@ -452,7 +457,7 @@
 							</div>
 							<!-- form start -->
 								<div class="box-body">
-									<table id="tabela_criterio_desempate" class="table-responsive table-condensed table-striped" style="width: 100%">
+									<div class="v2-registration-scroll"><table id="tabela_criterio_desempate" data-ordering="false" class="table table-striped v2-registration-table v2-dashboard-table" style="width: 100%">
 										<thead>
 											<tr>
 												<th>#</th>
@@ -460,7 +465,7 @@
 												<th>Tipo de Torneio</th>
 												<th>Software</th>
 												<th>Prior.</th>
-												<th width="20%">Opções</th>
+												<th class="v2-reg-options">Opções</th>
 											</tr>
 										</thead>
 										<tbody>
@@ -471,13 +476,13 @@
 													<td>{{$criterio_desempate->tipo_torneio->name}}</td>
 													<td>{{$criterio_desempate->software->name}}</td>
 													<td>{{$criterio_desempate->prioridade}}</td>
-													<td>
-														<a class="btn btn-danger" href="{{url("/grupoevento/".$grupo_evento->id."/criteriodesempate/remove/".$criterio_desempate->id)}}" role="button"><i class="fa fa-times"></i></a>
-													</td>
+													<td class="v2-reg-options"><div class="input-group v2-registration-actions" role="group" aria-label="Ações">
+														<a class="v2-icon-action v2-icon-action--danger" href="{{url("/grupoevento/".$grupo_evento->id."/criteriodesempate/remove/".$criterio_desempate->id)}}" title="Remover vínculo" aria-label="Remover vínculo" data-placement="top"><i class="fa fa-times" aria-hidden="true"></i></a>
+													</div></td>
 												</tr>
 											@endforeach
 										</tbody>
-									</table>
+									</table></div>
 								</div>
 								<!-- /.box-body -->
 						</div>
@@ -523,13 +528,13 @@
 							</div>
 							<!-- form start -->
 								<div class="box-body">
-									<table id="tabela_criterio_desempate_geral" class="table-responsive table-condensed table-striped" style="width: 100%">
+									<div class="v2-registration-scroll"><table id="tabela_criterio_desempate_geral" data-ordering="false" class="table table-striped v2-registration-table v2-dashboard-table" style="width: 100%">
 										<thead>
 											<tr>
 												<th>#</th>
 												<th>Nome</th>
 												<th>Prior.</th>
-												<th width="20%">Opções</th>
+												<th class="v2-reg-options">Opções</th>
 											</tr>
 										</thead>
 										<tbody>
@@ -538,13 +543,13 @@
 													<td>{{$criterio_desempate->criterio->id}}</td>
 													<td>{{$criterio_desempate->criterio->name}}</td>
 													<td>{{$criterio_desempate->prioridade}}</td>
-													<td>
-														<a class="btn btn-danger" href="{{url("/grupoevento/".$grupo_evento->id."/criteriodesempategeral/remove/".$criterio_desempate->id)}}" role="button"><i class="fa fa-times"></i></a>
-													</td>
+													<td class="v2-reg-options"><div class="input-group v2-registration-actions" role="group" aria-label="Ações">
+														<a class="v2-icon-action v2-icon-action--danger" href="{{url("/grupoevento/".$grupo_evento->id."/criteriodesempategeral/remove/".$criterio_desempate->id)}}" title="Remover vínculo" aria-label="Remover vínculo" data-placement="top"><i class="fa fa-times" aria-hidden="true"></i></a>
+													</div></td>
 												</tr>
 											@endforeach
 										</tbody>
-									</table>
+									</table></div>
 								</div>
 								<!-- /.box-body -->
 						</div>
@@ -608,14 +613,14 @@
 							</div>
 							<!-- form start -->
 								<div class="box-body">
-									<table id="tabela_categoria" class="table-responsive table-condensed table-striped" style="width: 100%">
+									<div class="v2-registration-scroll"><table id="tabela_categoria" class="table table-striped v2-registration-table v2-dashboard-table" style="width: 100%">
 										<thead>
 											<tr>
 												<th>#</th>
 												<th>Nome</th>
 												<th>Código para Identificação da Categoria no SM</th>
 												<th>Classificar?</th>
-												<th width="20%">Opções</th>
+												<th class="v2-reg-options">Opções</th>
 											</tr>
 										</thead>
 										<tbody>
@@ -625,17 +630,17 @@
 													<td>{{$categoria->name}}</td>
 													<td>{{$categoria->code}}</td>
 													<td>@if(!$categoria->nao_classificar) Sim @else Não @endif</td>
-													<td>
-														<a class="btn btn-success" href="{{url("/grupoevento/".$grupo_evento->id."/categorias/dashboard/".$categoria->id)}}" role="button"><i class="fa fa-dashboard"></i></a>
+													<td class="v2-reg-options"><div class="input-group v2-registration-actions" role="group" aria-label="Ações">
+														<a class="v2-icon-action v2-icon-action--success" href="{{url("/grupoevento/".$grupo_evento->id."/categorias/dashboard/".$categoria->id)}}" title="Editar categoria" aria-label="Editar categoria" data-placement="top"><i class="fa fa-pencil" aria-hidden="true"></i></a>
 														@if($categoria->torneios_template()->count() == 0)
-														    <a class="btn btn-warning" href="{{url("/grupoevento/".$grupo_evento->id."/categorias/createTemplate/".$categoria->id)}}" role="button"><i class="fa fa-plus"></i></a>
+														    <a class="v2-icon-action v2-icon-action--warning" href="{{url("/grupoevento/".$grupo_evento->id."/categorias/createTemplate/".$categoria->id)}}" title="Criar template da categoria" aria-label="Criar template da categoria" data-placement="top"><i class="fa fa-copy" aria-hidden="true"></i></a>
                                                         @endif
-                                                        @if($categoria->isDeletavel()) <a class="btn btn-danger" href="{{url("/grupoevento/".$grupo_evento->id."/categorias/delete/".$categoria->id)}}" role="button"><i class="fa fa-times"></i></a> @endif
-													</td>
+                                                        @if($categoria->isDeletavel()) <a class="v2-icon-action v2-icon-action--danger" href="{{url("/grupoevento/".$grupo_evento->id."/categorias/delete/".$categoria->id)}}" title="Excluir" aria-label="Excluir" data-placement="top"><i class="fa fa-trash" aria-hidden="true"></i></a> @endif
+													</div></td>
 												</tr>
 											@endforeach
 										</tbody>
-									</table>
+									</table></div>
 								</div>
 								<!-- /.box-body -->
 						</div>
@@ -676,13 +681,13 @@
 							</div>
 							<!-- form start -->
 								<div class="box-body">
-									<table id="tabela_pontuacao" class="table-responsive table-condensed table-striped" style="width: 100%">
+									<div class="v2-registration-scroll"><table id="tabela_pontuacao" data-ordering="false" class="table table-striped v2-registration-table v2-dashboard-table" style="width: 100%">
 										<thead>
 											<tr>
 												<th>#</th>
 												<th>Posição</th>
 												<th>Pontuação</th>
-												<th width="20%">Opções</th>
+												<th class="v2-reg-options">Opções</th>
 											</tr>
 										</thead>
 										<tbody>
@@ -691,13 +696,13 @@
 													<td>{{$pontuacao->id}}</td>
 													<td>{{$pontuacao->posicao}}</td>
 													<td>{{$pontuacao->pontuacao}}</td>
-													<td>
-														<a class="btn btn-danger" href="{{url("/grupoevento/".$grupo_evento->id."/pontuacao/remove/".$pontuacao->id)}}" role="button"><i class="fa fa-times"></i></a>
-													</td>
+													<td class="v2-reg-options"><div class="input-group v2-registration-actions" role="group" aria-label="Ações">
+														<a class="v2-icon-action v2-icon-action--danger" href="{{url("/grupoevento/".$grupo_evento->id."/pontuacao/remove/".$pontuacao->id)}}" title="Remover vínculo" aria-label="Remover vínculo" data-placement="top"><i class="fa fa-times" aria-hidden="true"></i></a>
+													</div></td>
 												</tr>
 											@endforeach
 										</tbody>
-									</table>
+									</table></div>
 								</div>
 								<!-- /.box-body -->
 						</div>
@@ -712,7 +717,7 @@
 						$can_edit_team_awards = true;
 						$context_label = 'grupo de evento';
 					@endphp
-					@include('partials.team_award_list_tab')
+					@include('partials.team_award_list_tab', ['compact_group_tables' => true])
 				</div>
 				<div role="tabpanel" class="tab-pane" id="campo_personalizado">
 					<br/>
@@ -765,14 +770,14 @@
 							</div>
 							<!-- form start -->
 								<div class="box-body">
-									<table id="tabela_categoria" class="table-responsive table-condensed table-striped" style="width: 100%">
+									<div class="v2-registration-scroll"><table id="tabela_campos" class="table table-striped v2-registration-table v2-dashboard-table" style="width: 100%">
 										<thead>
 											<tr>
 												<th>#</th>
 												<th>Nome</th>
 												<th>Questão</th>
 												<th>Ativo?</th>
-												<th width="20%">Opções</th>
+												<th class="v2-reg-options">Opções</th>
 											</tr>
 										</thead>
 										<tbody>
@@ -782,14 +787,14 @@
 													<td>{{$campo->name}}</td>
 													<td>{{$campo->question}}</td>
 													<td>@if($campo->is_active) Sim @else Não @endif</td>
-													<td>
-														<a class="btn btn-success" href="{{url("/grupoevento/".$grupo_evento->id."/campos/dashboard/".$campo->id)}}" role="button"><i class="fa fa-dashboard"></i></a>
-														@if($campo->isDeletavel()) <a class="btn btn-danger" href="{{url("/grupoevento/".$grupo_evento->id."/campos/delete/".$campo->id)}}" role="button"><i class="fa fa-times"></i></a> @endif
-													</td>
+													<td class="v2-reg-options"><div class="input-group v2-registration-actions" role="group" aria-label="Ações">
+														<a class="v2-icon-action v2-icon-action--success" href="{{url("/grupoevento/".$grupo_evento->id."/campos/dashboard/".$campo->id)}}" title="Editar campo personalizado" aria-label="Editar campo personalizado" data-placement="top"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+														@if($campo->isDeletavel()) <a class="v2-icon-action v2-icon-action--danger" href="{{url("/grupoevento/".$grupo_evento->id."/campos/delete/".$campo->id)}}" title="Excluir" aria-label="Excluir" data-placement="top"><i class="fa fa-trash" aria-hidden="true"></i></a> @endif
+													</div></td>
 												</tr>
 											@endforeach
 										</tbody>
-									</table>
+									</table></div>
 								</div>
 								<!-- /.box-body -->
 						</div>
@@ -804,13 +809,13 @@
 							</div>
 							<!-- form start -->
 								<div class="box-body">
-									<table id="tabela_email_templates" class="table-responsive table-condensed table-striped" style="width: 100%">
+									<div class="v2-registration-scroll"><table id="tabela_email_templates" class="table table-striped v2-registration-table v2-dashboard-table" style="width: 100%">
 										<thead>
 											<tr>
 												<th>#</th>
                                                 <th>Nome</th>
                                                 <th>Assunto do E-mail</th>
-												<th width="20%">Opções</th>
+												<th class="v2-reg-options">Opções</th>
 											</tr>
 										</thead>
 										<tbody>
@@ -819,13 +824,13 @@
                                                     <td>{{$template->id}}</td>
                                                     <td>{{$template->name}}</td>
                                                     <td>{{$template->subject}}</td>
-                                                    <td>
-                                                        <a class="btn btn-default" href="{{url("/emailtemplate/edit/".$template->id)}}" role="button">Editar</a>
-                                                    </td>
+                                                    <td class="v2-reg-options"><div class="input-group v2-registration-actions" role="group" aria-label="Ações">
+                                                        <a class="v2-icon-action" href="{{url("/emailtemplate/edit/".$template->id)}}" title="Editar template de e-mail" aria-label="Editar template de e-mail" data-placement="top"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+                                                    </div></td>
 												</tr>
 											@endforeach
 										</tbody>
-									</table>
+									</table></div>
 								</div>
 								<!-- /.box-body -->
 						</div>
@@ -863,7 +868,7 @@
                                         <ul class="nav nav-pills">
                                             <li role="presentation"><a href="{{url("/classificator/event_group/".$grupo_evento->id."/".$event_classificates->id."/rule/new")}}">Nova Regra</a></li>
                                         </ul>
-                                        <table id="tabela_classificators" class="table-responsive table-condensed table-striped" style="width: 100%">
+                                        <div class="v2-registration-scroll"><table id="tabela_classificator_rules_{{ $event_classificates->id }}" class="table table-striped v2-registration-table v2-dashboard-table" style="width: 100%">
                                             <thead>
                                                 <tr>
                                                     <th>#</th>
@@ -872,7 +877,7 @@
                                                     @if($total_classified > 0)
                                                         <th>Total de Classificados</th>
                                                     @endif
-                                                    <th width="20%">Opções</th>
+                                                    <th class="v2-reg-options">Opções</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -915,13 +920,13 @@
                                                         @if($total_classified > 0)
                                                             <td>{{$rule->howMuchClassificated()}}</td>
                                                         @endif
-                                                        <td>
-                                                            <a class="btn btn-default" href="{{url("/classificator/event_group/".$grupo_evento->id."/".$event_classificates->id."/rule/edit/".$rule->id)}}" role="button">Editar</a>
-                                                        </td>
+                                                        <td class="v2-reg-options"><div class="input-group v2-registration-actions" role="group" aria-label="Ações">
+                                                            <a class="v2-icon-action" href="{{url("/classificator/event_group/".$grupo_evento->id."/".$event_classificates->id."/rule/edit/".$rule->id)}}" title="Editar regra" aria-label="Editar regra" data-placement="top"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+                                                        </div></td>
                                                     </tr>
                                                 @endforeach
                                             </tbody>
-                                        </table>
+                                        </table></div>
                                     </div>
                                     <!-- /.box-body -->
                             </div>
@@ -936,13 +941,13 @@
                                     <ul class="nav nav-pills">
                                         <li role="presentation"><a href="{{url("/grupoevento/".$grupo_evento->id."/classificator/category/new")}}">Novo Vínculo de Categoria</a></li>
                                     </ul>
-                                    <table id="tabela_classificators" class="table-responsive table-condensed table-striped" style="width: 100%">
+                                    <div class="v2-registration-scroll"><table id="tabela_classificator_categories" class="table table-striped v2-registration-table v2-dashboard-table" style="width: 100%">
                                         <thead>
                                             <tr>
                                                 <th>#</th>
                                                 <th>Categoria Base</th>
                                                 <th>Categoria deste Evento</th>
-                                                <th width="20%">Opções</th>
+                                                <th class="v2-reg-options">Opções</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -966,14 +971,14 @@
                                                                 Grupo de Evento: {{$event_class_category->category_classificator->grupo_evento->name}}
                                                             @endif
                                                         </td>
-                                                        <td>
-                                                            <a class="btn btn-default" href="{{url("/grupoevento/".$grupo_evento->id."/classificator/category/edit/".$event_class_category->id)}}" role="button">Editar</a>
-                                                        </td>
+                                                        <td class="v2-reg-options"><div class="input-group v2-registration-actions" role="group" aria-label="Ações">
+                                                            <a class="v2-icon-action" href="{{url("/grupoevento/".$grupo_evento->id."/classificator/category/edit/".$event_class_category->id)}}" title="Editar vínculo de categoria" aria-label="Editar vínculo de categoria" data-placement="top"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+                                                        </div></td>
                                                     </tr>
                                                 @endforeach
                                             @endforeach
                                         </tbody>
-                                    </table>
+                                    </table></div>
                                 </div>
                                 <!-- /.box-body -->
                         </div>
@@ -986,10 +991,23 @@
   <!-- /.Left col -->
 </div>
 <!-- /.row (main row) -->
+</div>
 
 @endsection
 
 @section("js")
+@foreach([
+    'https://cdn.datatables.net/buttons/1.5.6/js/dataTables.buttons.min.js',
+    'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js',
+    'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js',
+    'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js',
+    'https://cdn.datatables.net/buttons/1.5.6/js/buttons.html5.min.js',
+    'https://cdn.datatables.net/buttons/1.5.6/js/buttons.print.min.js'
+] as $tableScript)
+<script src="{{ $tableScript }}"></script>
+@endforeach
+<script src="{{ asset('js/v2/registrations.js') }}?v={{ filemtime(public_path('js/v2/registrations.js')) }}"></script>
+<script src="{{ asset('js/v2/dashboard-tables.js') }}?v={{ filemtime(public_path('js/v2/dashboard-tables.js')) }}"></script>
 <!-- Morris.js charts -->
 <script type="text/javascript" src="{{url("/js/jquery.mask.min.js")}}"></script>
 <script type="text/javascript">
@@ -1065,27 +1083,6 @@
 		@if($grupo_evento->classificador)
 			$("#grupo_evento_classificador_id").val([{{$grupo_evento->classificador->id}}]).change();
 		@endif
-		$("#tabela_torneio_template").DataTable({
-				responsive: true,
-		});
-		$("#tabela_categoria").DataTable({
-				responsive: true,
-		});
-		$("#tabela_evento").DataTable({
-				responsive: true,
-		});
-		$("#tabela_criterio_desempate").DataTable({
-				responsive: true,
-				"ordering": false,
-		});
-		$("#tabela_criterio_desempate_geral").DataTable({
-				responsive: true,
-				"ordering": false,
-		});
-		$("#tabela_pontuacao").DataTable({
-				responsive: true,
-				"ordering": false,
-		});
 		setTimeout(function(){
 			$(".select2").css("width","100%");
 		},"1000");

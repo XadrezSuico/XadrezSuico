@@ -11,6 +11,8 @@
 ] as $scriptUrl)
     <script type="text/javascript" src="{{ $scriptUrl }}"></script>
 @endforeach
+<script src="{{ asset('js/v2/registrations.js') }}?v={{ filemtime(public_path('js/v2/registrations.js')) }}"></script>
+<script src="{{ asset('js/v2/dashboard-tables.js') }}?v={{ filemtime(public_path('js/v2/dashboard-tables.js')) }}"></script>
 <script type="text/javascript">
 $(document).ready(function () {
     if (typeof CKEDITOR !== 'undefined' && document.getElementById('texto')) {
@@ -161,16 +163,6 @@ $(document).ready(function () {
             $('#grupo_evento_classificador_id').val([{{ $evento->grupo_evento_classificador->id }}]).change();
         }
     @endif
-
-    if ($('#tabela_categoria').length) {
-        $('#tabela_categoria').DataTable({ responsive: true });
-    }
-    if ($('#tabela_criterio_desempate_geral').length) {
-        $('#tabela_criterio_desempate_geral').DataTable({ responsive: true, ordering: false });
-    }
-    if ($('#tabela_pontuacao').length) {
-        $('#tabela_pontuacao').DataTable({ responsive: true, ordering: false });
-    }
 
     setTimeout(function () {
         $('.select2').css('width', '100%');

@@ -45,7 +45,7 @@
                 @if($awards->count() === 0)
                     <p class="text-muted" style="padding: 15px;">Nenhuma premiação cadastrada.</p>
                 @else
-                    <table class="table table-hover table-striped" style="width: 100%; margin-bottom: 0;">
+                    <table class="table table-hover table-striped{{ !empty($compact_group_tables) ? ' v2-registration-table v2-dashboard-table' : '' }}" style="width: 100%; margin-bottom: 0;">
                         <thead>
                             <tr>
                                 <th>#</th>
@@ -53,7 +53,7 @@
                                 <th>Modo</th>
                                 <th>Cat.</th>
                                 <th>Status</th>
-                                <th class="text-right">Ações</th>
+                                <th class="text-right{{ !empty($compact_group_tables) ? ' v2-reg-options' : '' }}">Ações</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -87,6 +87,16 @@
                                             <span class="label label-warning">Configurar</span>
                                         @endif
                                     </td>
+                                    @if(!empty($compact_group_tables))
+                                    <td class="v2-reg-options">
+                                        @if($can_edit)
+                                        <div class="input-group v2-registration-actions" role="group" aria-label="Ações da premiação">
+                                            <a class="v2-icon-action" href="{{ $team_award_edit_url_prefix }}/{{ $award->id }}" title="Configurar premiação" aria-label="Configurar premiação" data-placement="top"><i class="fa fa-cog" aria-hidden="true"></i></a>
+                                            <a class="v2-icon-action v2-icon-action--danger" href="{{ $team_award_remove_url_prefix }}/{{ $award->id }}" onclick="return confirm('Remover esta premiação? Os resultados calculados serão apagados.');" title="Remover premiação" aria-label="Remover premiação" data-placement="top"><i class="fa fa-trash" aria-hidden="true"></i></a>
+                                        </div>
+                                        @endif
+                                    </td>
+                                    @else
                                     <td class="text-right">
                                         @if($can_edit)
                                             <a class="btn btn-primary btn-sm" href="{{ $team_award_edit_url_prefix }}/{{ $award->id }}" title="Configurar">
@@ -98,6 +108,7 @@
                                             </a>
                                         @endif
                                     </td>
+                                    @endif
                                 </tr>
                             @endforeach
                         </tbody>

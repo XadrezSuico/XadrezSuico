@@ -1,0 +1,42 @@
+/* Shared table presentation for event and event-group dashboards. */
+.v2-dashboard-tables { min-width: 0; }
+.v2-dashboard-tables .box-body { min-width: 0; }
+.v2-dashboard-tables .box-body.no-padding { padding: 10px !important; }
+.v2-dashboard-tables .v2-registration-scroll { width: 100%; }
+.v2-dashboard-tables .v2-dashboard-table { width: 100%; min-width: 560px; margin-bottom: 0; }
+.v2-dashboard-tables .v2-dashboard-table th { white-space: normal; min-width: 90px; }
+.v2-dashboard-tables .v2-dashboard-table td { min-width: 110px; max-width: 320px; white-space: normal; overflow-wrap: break-word; line-height: 1.5; }
+.v2-dashboard-tables .v2-dashboard-table td:nth-child(2) { min-width: 190px; font-weight: 600; color: #374151; }
+.v2-dashboard-tables .v2-dashboard-table th:first-child,
+.v2-dashboard-tables .v2-dashboard-table td:first-child { min-width: 50px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.v2-dashboard-tables .v2-dashboard-table .v2-reg-options { min-width: 80px; max-width: none; width: 1%; white-space: nowrap; }
+.v2-dashboard-tables .v2-dashboard-table td hr { margin: 8px 0; border-color: #ede9f5; }
+.v2-dashboard-tables #tabela_evento { min-width: 1100px; }
+.v2-dashboard-tables .v2-dashboard-table .v2-group-status { min-width: 260px; }
+.v2-dashboard-tables #tabela_pontuacao td:nth-child(2) { min-width: 90px; }
+.v2-dashboard-tables .v2-registration-toolbar { padding: 0 0 16px; }
+.v2-dashboard-tables .v2-registration-toolbar .dataTables_filter input { height: auto; width: 190px; }
+.v2-dashboard-tables .v2-registration-footer .pagination { margin: 0; }
+.v2-dashboard-tables .dataTables_wrapper .dataTables_scrollBody { border-bottom: 0; }
+.v2-dashboard-tables .v2-dashboard-table .label { display: inline-block; white-space: normal; line-height: 1.4; }
+@media (max-width: 639px) {
+    .v2-dashboard-tables .v2-registration-toolbar .dataTables_filter input { width: 100%; }
+    .v2-dashboard-tables .v2-registration-toolbar .dataTables_filter label { width: 100%; }
+    .v2-dashboard-tables .v2-registration-toolbar .v2-export-actions { flex-wrap: wrap; }
+    .v2-dashboard-tables > .nav { display: flex; flex-wrap: wrap; }
+    .v2-dashboard-tables .nav-tabs { display: flex; overflow-x: auto; overflow-y: hidden; flex-wrap: nowrap; }
+    .v2-dashboard-tables .nav-tabs > li { flex: 0 0 auto; }
+}
+
+/* Summary tables keep their final numeric column and original row order. */
+.v2-dashboard-tables .v2-dashboard-table--text-first th:first-child,
+.v2-dashboard-tables .v2-dashboard-table--text-first td:first-child { min-width: 190px; white-space: normal; }
+.v2-dashboard-tables .v2-dashboard-table--text-first td:not(:first-child) { min-width: 90px; font-weight: 400; }
+.v2-dashboard-tables .v2-dashboard-table[data-has-actions="false"] thead th:last-child { position: static; box-shadow: none; }
+.v2-dashboard-tables .v2-registration-footer .pagination { display: flex; flex-wrap: wrap; gap: 4px; padding: 0; list-style: none; }
+.v2-dashboard-tables .pagination > li > a,
+.v2-dashboard-tables .pagination > li > span { display: block; padding: 5px 10px; border: 1px solid #e5dff0; border-radius: 5px; color: #6b21a8; background: white; text-decoration: none; }
+.v2-dashboard-tables .pagination > li.active > a { background: #6b21a8; color: white; }
+.v2-dashboard-tables .pagination > li.disabled > a { color: #9ca3af; cursor: default; }
+
+.v2-dashboard-tables .v2-icon-action:disabled { opacity: .45; cursor: not-allowed; }

@@ -11,6 +11,8 @@
 
 
 @section('css')
+    <link rel="stylesheet" href="{{ asset('css/v2/registrations.css') }}?v={{ filemtime(public_path('css/v2/registrations.css')) }}">
+    <link rel="stylesheet" href="{{ asset('css/v2/dashboard-tables.css') }}?v={{ filemtime(public_path('css/v2/dashboard-tables.css')) }}">
 	<style>
 		.display-none, .displayNone{
 			display: none;
@@ -154,6 +156,7 @@
 @endphp
 
 @section("content")
+<div class="v2-dashboard-tables v2-legacy-content" data-enhance-tables="true">
 <div class="alert alert-info">
     <a href="{{ url('/evento/dashboard/' . $evento->id) }}">Abrir dashboard no layout novo (v2)</a>
 </div>
@@ -258,6 +261,7 @@
   <!-- /.Left col -->
 </div>
 <!-- /.row (main row) -->
+</div>
 
 @endsection
 
@@ -276,6 +280,8 @@
     ) as $url)
 <script type="text/javascript" src="{{$url}}"></script>
 @endforeach
+<script src="{{ asset('js/v2/registrations.js') }}?v={{ filemtime(public_path('js/v2/registrations.js')) }}"></script>
+<script src="{{ asset('js/v2/dashboard-tables.js') }}?v={{ filemtime(public_path('js/v2/dashboard-tables.js')) }}"></script>
 <script type="text/javascript">
   $(document).ready(function(){
     	CKEDITOR.replace('texto');
@@ -344,34 +350,10 @@
 		    $("#grupo_evento_classificador_id").select2();
 			$("#grupo_evento_classificador_id").val([{{$evento->grupo_evento_classificador->id}}]).change();
         @endif
-		$("#tabela_torneio").DataTable({
-			responsive: true,
-            dom: 'Bfrtip',
-            buttons: [
-                'copy', 'csv', 'excel', 'pdf', 'print'
-            ],
-		});
-		$("#tabela_categoria").DataTable({
-				responsive: true,
-		});
-		$("#tabela_criterio_desempate").DataTable({
-				responsive: true,
-				"ordering": false,
-		});
-		$("#tabela_criterio_desempate_geral").DataTable({
-				responsive: true,
-				"ordering": false,
-		});
-		$("#tabela_pontuacao").DataTable({
-				responsive: true,
-				"ordering": false,
-		});
-		setTimeout(function(){
-			$(".select2").css("width","100%");
-		},"1000");
-		@if($tab)
-			$("#tab_{{$tab}}").tab("show");
-		@endif
+        setTimeout(function () { $(".select2").css("width", "100%"); }, 1000);
+        @if($tab)
+            $("#tab_{{$tab}}").tab("show");
+        @endif
 		$("#evento_data_inicio").mask("00/00/0000");
 		$("#evento_data_fim").mask("00/00/0000");
 		$("#date_start_registration").mask("00/00/0000 00:00");
