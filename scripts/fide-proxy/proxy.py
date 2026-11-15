@@ -33,10 +33,16 @@ class Relay(object):
         self.cache = {}
         self.last_fetch = 0
 
+    LOCK_WAIT_SECONDS = 3
+
     def fetch(self, fide_id):
         # Serialize upstream calls and cache repeat requests to reduce FIDE load.
-        if not self.lock.acquire(False):
-            raise RuntimeError("Busy")
+        clock = getattr(time, 'monotonic', time.time)
+        deadline = clock() + self.LOCK_WAIT_SECONDS
+        while not self.lock.acquire(False):
+            if clock() >= deadline:
+                raise RuntimeError("Busy")
+            time.sleep(0.05)
         try:
             now = time.time()
             cached = self.cache.get(fide_id)

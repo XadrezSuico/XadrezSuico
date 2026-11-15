@@ -39,10 +39,32 @@ class RelayTest(unittest.TestCase):
 
     def test_busy_request_is_rejected(self):
         relay = proxy.Relay({'allowed_ips': ['127.0.0.1'], 'token': 'a' * 40})
+        relay.LOCK_WAIT_SECONDS = 0.05
         relay.lock.acquire()
         with self.assertRaises(RuntimeError):
             relay.fetch('123')
         relay.lock.release()
+
+    def test_concurrent_same_profile_waits_and_reuses_one_upstream_response(self):
+        relay = proxy.Relay({'allowed_ips': ['127.0.0.1'], 'token': 'a' * 40})
+        started = threading.Event()
+        body = b'<h1 class="player-title">Test</h1>'
+        def communicate():
+            started.set()
+            proxy.time.sleep(0.15)
+            return body, b''
+        process = MagicMock(returncode=0)
+        process.communicate.side_effect = communicate
+        results = []
+        with patch.object(proxy.subprocess, 'Popen', return_value=process) as popen:
+            worker = threading.Thread(target=lambda: results.append(relay.fetch('123')))
+            worker.start()
+            self.assertTrue(started.wait(1))
+            results.append(relay.fetch('123'))
+            worker.join(2)
+            self.assertFalse(worker.is_alive())
+            self.assertEqual([body, body], results)
+            self.assertEqual(1, popen.call_count)
 
 
 class HttpsTest(unittest.TestCase):

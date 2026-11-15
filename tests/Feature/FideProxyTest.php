@@ -87,6 +87,26 @@ class FideProxyTest extends TestCase
         $this->artisan('fide:check', ['id' => '123'])->assertExitCode(0);
     }
 
+    public function test_overlapping_batch_exits_before_querying_players()
+    {
+        $originalStorage = storage_path();
+        $testStorage = sys_get_temp_dir() . '/fide-batch-test-' . uniqid();
+        mkdir($testStorage . '/framework/cache', 0700, true);
+        $this->app->useStoragePath($testStorage);
+        $lock = fopen(storage_path('framework/cache/fide-rating-update.lock'), 'c');
+        $this->assertTrue(flock($lock, LOCK_EX | LOCK_NB));
+        try {
+            ob_start();
+            (new FIDERatingController)->updateRatings();
+            $message = ob_get_clean();
+            $this->assertStringContainsString('Atualização FIDE já em andamento', $message);
+        } finally {
+            flock($lock, LOCK_UN);
+            fclose($lock);
+            $this->app->useStoragePath($originalStorage);
+        }
+    }
+
     public function test_invalid_player_id_cannot_inject_a_proxy_path()
     {
         $this->expectException(\InvalidArgumentException::class);

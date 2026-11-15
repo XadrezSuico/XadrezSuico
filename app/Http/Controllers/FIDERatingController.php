@@ -16,23 +16,37 @@ class FIDERatingController extends Controller
 {
     public function updateRatings()
     {
-        $enxadristas = Enxadrista::where([
-            ["fide_id", "!=", null],
-            ["fide_last_update", "<", date("Y-m") . "-01 00:00:00"],
-        ])
-            ->orWhere([
+        $lock = fopen(storage_path('framework/cache/fide-rating-update.lock'), 'c');
+        if ($lock === false) {
+            throw new \RuntimeException('Não foi possível abrir o controle da atualização FIDE.');
+        }
+        if (!flock($lock, LOCK_EX | LOCK_NB)) {
+            fclose($lock);
+            echo "Atualização FIDE já em andamento. Aguarde a conclusão do lote atual.";
+            return;
+        }
+        try {
+            $enxadristas = Enxadrista::where([
                 ["fide_id", "!=", null],
-                ["fide_last_update", "=", null],
+                ["fide_last_update", "<", date("Y-m") . "-01 00:00:00"],
             ])
-            ->limit(5)
-            ->get();
-        foreach ($enxadristas as $enxadrista) {
-            if($enxadrista->fide_id  > 0){
-                $this->getRating($enxadrista);
-            }else{
-                $enxadrista->fide_id = null;
-                $enxadrista->save();
+                ->orWhere([
+                    ["fide_id", "!=", null],
+                    ["fide_last_update", "=", null],
+                ])
+                ->limit(5)
+                ->get();
+            foreach ($enxadristas as $enxadrista) {
+                if($enxadrista->fide_id  > 0){
+                    $this->getRating($enxadrista);
+                }else{
+                    $enxadrista->fide_id = null;
+                    $enxadrista->save();
+                }
             }
+        } finally {
+            flock($lock, LOCK_UN);
+            fclose($lock);
         }
     }
 

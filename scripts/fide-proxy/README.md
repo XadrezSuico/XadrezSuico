@@ -67,7 +67,8 @@ Para manutenção, remova as duas entradas antes de encerrar o processo. Rotacio
 
 ## Limites e verificação
 
-Apenas uma consulta upstream simultânea, intervalo mínimo de 1 segundo, conexão
+Apenas uma consulta upstream simultânea, espera de até 3 segundos quando ocupado
+(com reaproveitamento do cache para o mesmo perfil), intervalo mínimo de 1 segundo, conexão
 até 5 segundos, execução até 20 segundos, HTML até 2 MiB. Cache em memória por
 1 hora, até 128 perfis; respostas inválidas e erros não entram no cache.
 
@@ -83,3 +84,14 @@ recusada/encerrada). Valide novamente após reinício do processo. `/health` med
 o serviço local; uma consulta de perfil é necessária para verificar a FIDE.
 
 Testes locais: `python3 -m unittest discover -s scripts/fide-proxy -p 'test_*.py'`.
+
+A rota de atualização FIDE usa `flock` para impedir lotes simultâneos no mesmo
+servidor da aplicação. Uma chamada sobreposta informa que há atualização em
+andamento e não consulta nem modifica enxadristas. O bloqueio é liberado ao
+finalizar, em exceções ou ao encerrar o processo. Não remova o arquivo de lock
+enquanto houver atualizações em execução.
+
+Ao publicar, garanta que o arquivo de lock possa ser aberto pelo usuário web e
+pelo usuário do cron. No ambiente atual: `touch storage/framework/cache/fide-rating-update.lock`,
+`chown www-data:www-data storage/framework/cache/fide-rating-update.lock` e
+`chmod 660 storage/framework/cache/fide-rating-update.lock`.
