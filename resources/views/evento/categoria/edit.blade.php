@@ -7,6 +7,8 @@
 
 
 @section('css')
+    <link rel="stylesheet" href="{{ asset('css/v2/registrations.css') }}?v={{ filemtime(public_path('css/v2/registrations.css')) }}">
+    <link rel="stylesheet" href="{{ asset('css/v2/dashboard-tables.css') }}?v={{ filemtime(public_path('css/v2/dashboard-tables.css')) }}">
 	<style>
 		.display-none, .displayNone{
 			display: none;
@@ -15,6 +17,7 @@
 @endsection
 
 @section("content")
+<div class="v2-legacy-content v2-dashboard-tables" data-enhance-tables="true">
 	<!-- Main row -->
 	<ul class="nav nav-pills">
 		<li role="presentation"><a href="/evento/dashboard/{{$evento->id}}?tab=categoria">Voltar a Lista de Categorias na Dashboard de Evento</a></li>
@@ -135,15 +138,16 @@
 </div>
 <!-- /.row (main row) -->
 
+</div>
 @endsection
 
 @section("js")
+@include('layouts.v2.partials.dashboard-table-scripts')
 <!-- Morris.js charts -->
 <script type="text/javascript" src="{{url("/js/jquery.mask.min.js")}}"></script>
 <script type="text/javascript">
   $(document).ready(function(){
 		$("#sexos_id").select2();
-		$("#tabela_sexos").DataTable();
         @if($categoria->classificadora)
 		    $("#categoria_classificadora_id").select2();
 			$("#categoria_classificadora_id").val([{{$categoria->classificadora->id}}]).change();

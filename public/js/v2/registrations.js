@@ -1,5 +1,11 @@
 (function ($) {
     'use strict';
+    window.initV2TableTooltips = function () {
+        if ($.fn.tooltip) {
+            $('body').tooltip({selector: '.v2-icon-action, .v2-export-action', placement: 'top', container: 'body', trigger: 'hover focus',
+                template: '<div class="tooltip v2-registration-tooltip" role="tooltip"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div>'});
+        }
+    };
     window.initV2RegistrationsTable = function (selector, options) {
         var buttons = [
             {extend: 'copy', text: '<i class="fa fa-copy" aria-hidden="true"></i> Copiar'},
@@ -28,10 +34,7 @@
         exportGroup.find('button').each(function (index) {
             $(this).addClass('v2-export-action').attr({title: exportLabels[index], 'aria-label': exportLabels[index], 'data-placement': 'top'});
         });
-        if ($.fn.tooltip) {
-            $('body').tooltip({selector: '.v2-icon-action, .v2-export-action', placement: 'top', container: 'body', trigger: 'hover focus',
-                template: '<div class="tooltip v2-registration-tooltip" role="tooltip"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div>'});
-        }
+        window.initV2TableTooltips();
         return table;
     };
 })(jQuery);

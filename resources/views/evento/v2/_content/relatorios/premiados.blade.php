@@ -18,7 +18,7 @@
 		</div>
 
 		<div class="box-body">
-			<table id="tabela" class="table-responsive table-condensed table-striped" style="width: 100%">
+			<table data-dashboard-managed="true" id="tabela" class="table-responsive table-condensed table-striped" style="width: 100%">
                 <thead>
                     <tr>
                         <th>Categoria</th>

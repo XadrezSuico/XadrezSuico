@@ -18,8 +18,7 @@
 		$("#categoria_id").select2();
 		$("#tipo_torneio_id").select2().val({{$torneio->tipo_torneio_id}}).change();
 		$("#softwares_id").select2().val({{$torneio->softwares_id}}).change();
-		$("#tabela").DataTable({
-				responsive: true,
+		window.initV2DashboardManagedTable("#tabela", {
 		});
   });
 </script>
