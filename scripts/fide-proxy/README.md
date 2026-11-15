@@ -22,10 +22,16 @@ FIDE_PROXY_ENABLED=true
 FIDE_PROXY_HOST=10.100.42.79
 FIDE_PROXY_PORT=8443
 FIDE_PROXY_TOKEN=<mesmo token privado>
-FIDE_PROXY_CA=/root/xadrezsuico/storage/app/fide-proxy-ca.crt
+FIDE_PROXY_CA=/var/www/html/storage/app/fide-proxy-ca.crt
 FIDE_HTTP_TIMEOUT=25
 FIDE_HTTP_MAX_DURATION=25
 ```
+
+`FIDE_PROXY_CA` deve apontar para o caminho físico do certificado, acessível pelo
+usuário do processo web. No servidor da aplicação atual, `/root/xadrezsuico` é
+um atalho para `/var/www/html`: não use o caminho sob `/root`, pois esse diretório
+não permite acesso ao usuário `www-data`. O certificado público pode ter modo
+644; mantenha a chave privada exclusivamente no servidor do proxy.
 
 `FIDE_PROXY_HOST` aceita domínio ou IPv4, sem esquema/caminho. O endereço deve
 resolver para o proxy e constar no certificado. Não use o domínio da aplicação
@@ -67,6 +73,11 @@ até 5 segundos, execução até 20 segundos, HTML até 2 MiB. Cache em memória
 
 Da aplicação, teste `/health`, um perfil real e o parser em modo sem gravação.
 Use `php artisan fide:check` para verificar conexão e HTML sem gravar dados (saída 0 em sucesso, 1 em falha).
+Valide também como o usuário web, por exemplo
+`runuser -u www-data -- php artisan fide:check`, a partir do diretório físico
+da aplicação, e pela rota HTTP de atualização. Um teste executado somente como
+root não verifica as permissões do processo web. A rota de atualização grava
+ratings; o comando `fide:check` não grava.
 Teste token incorreto (401), rota arbitrária (404) e outra origem (conexão
 recusada/encerrada). Valide novamente após reinício do processo. `/health` mede
 o serviço local; uma consulta de perfil é necessária para verificar a FIDE.
