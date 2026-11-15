@@ -285,6 +285,7 @@ Route::group(["prefix"=>"evento"],function(){
 	    });
 
         Route::group(["prefix"=>"{torneio_id}/categoria"],function(){
+            Route::post('/batch', 'TorneioController@categoria_batch')->name('evento.torneios.categoria.batch');
             Route::post('/add', 'TorneioController@categoria_add')->name('evento.torneios.categoria.add');
             Route::get('/remove/{categoria_torneio_id}', 'TorneioController@categoria_remove')->name('evento.torneios.categoria.remove');
             Route::group(["prefix"=>"transfer/{categoria_id}"],function(){

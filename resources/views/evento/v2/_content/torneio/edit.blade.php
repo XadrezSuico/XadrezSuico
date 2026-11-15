@@ -1,7 +1,10 @@
 <!-- Main row -->
-<ul class="nav nav-pills">
-  <li role="presentation"><a href="/evento/{{$torneio->evento->id}}/torneios/new">Novo Torneio</a></li>
-</ul>
+<div class="v2-tournament-page-actions">
+    <a class="btn btn-primary" href="{{ url('/evento/' . $torneio->evento->id . '/torneios/new') }}"><i class="fa fa-plus" aria-hidden="true"></i> Novo torneio</a>
+</div>
+@if(session('status'))<div class="alert alert-success" role="status">{{ session('status') }}</div>@endif
+@if($errors->any())<div class="alert alert-danger" role="alert"><ul>@foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul></div>@endif
+
 <div class="row">
   <!-- Left col -->
   <section class="col-lg-6 connectedSortable">
@@ -89,10 +92,27 @@
 			</div>
 			<!-- form start -->
 				<div class="box-body">
-					<table data-dashboard-managed="true" id="tabela" class="table-responsive table-condensed table-striped" style="width: 100%">
+					<div class="js-tournament-categories" data-batch-url="{{ route('evento.torneios.categoria.batch', [$evento->id, $torneio->id]) }}">
+                        <form class="js-category-batch-form" method="post" action="{{ route('evento.torneios.categoria.batch', [$evento->id, $torneio->id]) }}">@csrf</form>
+                        <div class="v2-category-bulk-toolbar">
+                            <div><strong class="js-category-count" aria-live="polite">0 selecionadas</strong> <button type="button" class="btn btn-link js-clear-category-selection" disabled>Limpar seleção</button></div>
+                            <label for="category-target-tournament">Migrar para o torneio</label>
+                            <select id="category-target-tournament" class="form-control js-category-target">
+                                <option value="">Selecione o destino</option>
+                                @foreach($evento->torneios()->where('id', '!=', $torneio->id)->orderBy('name')->get() as $target)
+                                    <option value="{{ $target->id }}">#{{ $target->id }} — {{ $target->name }}</option>
+                                @endforeach
+                            </select>
+                            <div class="btn-group" role="group" aria-label="Ações nas categorias selecionadas">
+                                <button type="button" class="btn btn-warning js-transfer-categories" disabled><i class="fa fa-exchange" aria-hidden="true"></i> Migrar selecionadas</button>
+                                <button type="button" class="btn btn-danger js-delete-categories" disabled><i class="fa fa-trash" aria-hidden="true"></i> Excluir selecionadas</button>
+                            </div>
+                        </div>
+                        <table data-dashboard-managed="true" id="tabela" class="v2-tournament-category-table table-responsive table-condensed table-striped" style="width: 100%">
 						<thead>
 							<tr>
-								<th>#</th>
+								<th class="v2-no-export"><input type="checkbox" class="js-select-all-categories" aria-label="Selecionar categorias do resultado filtrado" title="Selecionar categorias do resultado filtrado"></th>
+                                <th>#</th>
 								<th>Nome</th>
 								<th width="20%">Opções</th>
 							</tr>
@@ -100,16 +120,18 @@
 						<tbody>
 							@foreach($torneio->categorias->all() as $categoria)
 								<tr>
-									<td>{{$categoria->categoria->id}}</td>
+									<td><input type="checkbox" class="js-select-category" value="{{ $categoria->id }}" aria-label="Selecionar {{ $categoria->categoria->name }}"></td>
+                                    <td>{{$categoria->categoria->id}}</td>
 									<td>{{$categoria->categoria->name}}</td>
 									<td>
-										<a class="btn btn-warning" href="{{url("/evento/".$torneio->evento->id."/torneios/".$torneio->id."/categoria/transfer/".$categoria->id)}}" role="button">Transferir Categoria</a>
-										<a class="btn btn-danger" href="{{url("/evento/".$torneio->evento->id."/torneios/".$torneio->id."/categoria/remove/".$categoria->id)}}" role="button">Remover Relação</a>
+										<a class="btn btn-warning" href="{{url("/evento/".$torneio->evento->id."/torneios/".$torneio->id."/categoria/transfer/".$categoria->id)}}" role="button" title="Trocar categoria de torneio" aria-label="Trocar categoria de torneio"><i class="fa fa-exchange" aria-hidden="true"></i></a>
+										<button type="button" class="btn btn-danger js-remove-category" data-category-link="{{ $categoria->id }}" data-category-name="{{ $categoria->categoria->name }}" title="Excluir categoria deste torneio" aria-label="Excluir categoria deste torneio"><i class="fa fa-trash" aria-hidden="true"></i></button>
 									</td>
 								</tr>
 							@endforeach
 						</tbody>
           			</table>
+                    </div>
 				</div>
 				<!-- /.box-body -->
 		</div>

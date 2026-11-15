@@ -5,6 +5,7 @@
 @endsection
 
 @push('styles')
+<link rel="stylesheet" href="{{ asset('css/v2/tournament-categories.css') }}?v={{ filemtime(public_path('css/v2/tournament-categories.css')) }}">
     <style>
 .display-none, .displayNone{
 			display: none;
@@ -13,13 +14,17 @@
 @endpush
 
 @push('event-scripts')
+<script src="{{ asset('js/v2/tournament-categories.js') }}?v={{ filemtime(public_path('js/v2/tournament-categories.js')) }}"></script>
 <script type="text/javascript">
   $(document).ready(function(){
 		$("#categoria_id").select2();
 		$("#tipo_torneio_id").select2().val({{$torneio->tipo_torneio_id}}).change();
 		$("#softwares_id").select2().val({{$torneio->softwares_id}}).change();
-		window.initV2DashboardManagedTable("#tabela", {
-		});
+		var categoryTable = window.initV2DashboardManagedTable("#tabela", {
+            order: [[1, 'asc']],
+            columnDefs: [{targets: [0, 3], orderable: false, searchable: false}]
+        });
+        window.initTournamentCategorySelection(categoryTable);
   });
 </script>
 @endpush

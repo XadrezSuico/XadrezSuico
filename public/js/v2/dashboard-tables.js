@@ -11,7 +11,7 @@
             {extend: 'pdf', text: '<i class="fa fa-file-pdf-o" aria-hidden="true"></i> PDF', orientation: 'landscape', pageSize: 'A3'},
             {extend: 'print', text: '<i class="fa fa-print" aria-hidden="true"></i> Imprimir'}
         ].map(function (button) {
-            button.exportOptions = {columns: ':not(.v2-reg-options)'};
+            button.exportOptions = {columns: ':not(.v2-reg-options):not(.v2-no-export)'};
             return button;
         });
         var table = window.initV2RegistrationsTable(selector, $.extend(true, {
@@ -75,7 +75,7 @@
                 $table.attr('data-table-static', 'true');
             }
             var firstLabel = $table.find('thead th').first().text().trim();
-            if (firstLabel !== '#') {
+            if (firstLabel && firstLabel !== '#') {
                 $table.addClass('v2-dashboard-table--text-first');
                 if (!$table.is('[data-dashboard-managed]')) $table.attr({'data-paging': 'false', 'data-ordering': 'false'});
             }

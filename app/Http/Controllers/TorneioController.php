@@ -112,7 +112,7 @@ class TorneioController extends Controller
 
         $categorias_id = $evento->categorias()->pluck("categoria_id")->toArray();
 
-        $torneio = Torneio::find($torneio_id);
+        $torneio = $evento->torneios()->findOrFail($torneio_id);
         $tipos_torneio = TipoTorneio::all();
         $softwares = Software::all();
         $categorias = Categoria::whereIn("id", $categorias_id)->get();
@@ -357,6 +357,28 @@ class TorneioController extends Controller
 
         return redirect("/evento/" . $evento->id . "/torneios/edit/" . $torneio->id);
     }
+    public function categoria_batch($id, $torneio_id, Request $request)
+    {
+        $evento = Evento::findOrFail($id);
+        $user = Auth::user();
+        abort_unless($user->hasPermissionGlobal()
+            || $user->hasPermissionEventByPerfil($evento->id, [4])
+            || $user->hasPermissionGroupEventByPerfil($evento->grupo_evento_id, [7]), 403);
+        $torneio = $evento->torneios()->findOrFail($torneio_id);
+        $data = $request->validate([
+            'action' => 'required|in:delete,transfer',
+            'category_ids' => 'required|array|min:1|max:1000',
+            'category_ids.*' => 'required|integer|distinct',
+            'tournament_id' => 'nullable|required_if:action,transfer|integer',
+            'confirmation' => 'required_if:action,delete|in:delete_categories',
+        ]);
+        $count = app(\App\Services\TournamentCategoryBatch::class)->execute(
+            $torneio, $data['category_ids'], $data['action'], isset($data['tournament_id']) ? (int) $data['tournament_id'] : null
+        );
+        return redirect('/evento/' . $evento->id . '/torneios/edit/' . $torneio->id)
+            ->with('status', $count . ($data['action'] === 'transfer' ? ' categoria(s) migrada(s) com suas inscrições.' : ' categoria(s) removida(s) deste torneio.'));
+    }
+
     public function categoria_remove($id, $torneio_id, $categoria_torneio_id)
     {
         $evento = Evento::find($id);

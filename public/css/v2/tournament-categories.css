@@ -1,0 +1,12 @@
+.v2-tournament-page-actions { display: flex; margin-bottom: 16px; }
+.v2-tournament-page-actions .btn { display: inline-flex; align-items: center; gap: 8px; }
+.v2-category-bulk-toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 12px; margin-bottom: 18px; border: 1px solid #e5dff0; border-radius: 8px; background: #faf8ff; }
+.v2-category-bulk-toolbar > div:first-child { flex-basis: 100%; }
+.v2-category-bulk-toolbar label { margin: 0; }
+.v2-category-bulk-toolbar select { width: 100%; max-width: 360px; }
+.v2-category-bulk-toolbar .btn-group { display: flex; flex-wrap: wrap; gap: 6px; }
+.v2-category-bulk-toolbar .btn-group > .btn { float: none; border-radius: 5px !important; margin: 0 !important; }
+.v2-dashboard-tables .v2-dashboard-table.v2-tournament-category-table td:nth-child(2) { min-width: 65px; font-weight: 400; }
+.v2-dashboard-tables .v2-dashboard-table.v2-tournament-category-table td:nth-child(3) { min-width: 200px; font-weight: 600; }
+.v2-tournament-category-table input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; accent-color: #6b21a8; }
+@media (max-width: 639px) { .v2-category-bulk-toolbar select { max-width: none; } .v2-category-bulk-toolbar .btn-group { width: 100%; } .v2-category-bulk-toolbar .btn-group .btn { flex: 1 1 180px; } }
