@@ -1,17 +1,12 @@
-@extends('adminlte::page')
+@extends('layouts.v2.catalog')
 
 @section('title', 'Usuários - Alterar Senha')
 
-@section('content_header')
-    <h1>Usuários >> Alterar Senha</h1>
-@stop
+@section('page-header')
+    Usuários >> Alterar Senha
+@endsection
 
-@section('content')
-	@if (session('status'))
-		<div class="alert alert-success">
-				{{ session('status') }}
-		</div>
-	@endif
+@section('catalog-content')
 
 	@if ($ok)
 		<div class="alert alert-success">
@@ -20,36 +15,36 @@
 		</div>
 	@endif
 	@if($USER->hasPermissionGlobalbyPerfil([1]))
-		<ul class="nav nav-pills">
+		<ul class="v2-catalog-nav">
 			<li role="presentation"><a href="{{url("/usuario/new")}}">Novo Usuario</a></li>
 			<li role="presentation"><a href="{{url("/usuario")}}">Listar Todos</a></li>
 		</ul>
 	@endif
-    <div class="box">
-        <div class="box-body">
+    <div class="v2-catalog-panel">
+        <div class="v2-catalog-panel-body">
 			<form method="post">
-				<div class="form-group">
+				<div class="v2-catalog-field">
 					<label for="password">Usuário:</label> {{$user->email}}.
 				</div>
-				<div class="form-group {{ $errors->has('password') ? ' has-error' : '' }}">
+				<div class="v2-catalog-field {{ $errors->has('password') ? ' has-error' : '' }}">
 					<label for="password">Senha</label>
-					<input type="password" class="form-control" id="password" name="password" placeholder="Senha do Usuário">
+					<input type="password" class="v2-catalog-input" id="password" name="password" autocomplete="new-password" placeholder="Senha do Usuário">
 					@if ($errors->has('password'))
-							<span class="help-block">
+							<span class="v2-catalog-error">
 									<strong>{{ $errors->first('password') }}</strong>
 							</span>
 					@endif							
 				</div>
-				<div class="form-group {{ $errors->has('password_confirmation') ? ' has-error' : '' }}">
+				<div class="v2-catalog-field {{ $errors->has('password_confirmation') ? ' has-error' : '' }}">
 					<label for="password_confirmation">Confirmação de Senha</label>
-					<input type="password" class="form-control" id="password" name="password_confirmation" placeholder="Confirmação da Senha do Usuário">
+					<input type="password" class="v2-catalog-input" id="password_confirmation" name="password_confirmation" autocomplete="new-password" placeholder="Confirmação da Senha do Usuário">
 					@if ($errors->has('password_confirmation'))
-							<span class="help-block">
+							<span class="v2-catalog-error">
 									<strong>{{ $errors->first('password_confirmation') }}</strong>
 							</span>
 					@endif							
 				</div>
-				<button type="submit" class="btn btn-success">Enviar</button>
+				<button type="submit" class="btn btn-success"><i class="fa fa-check" aria-hidden="true"></i> Salvar</button>
 				<input type="hidden" name="_token" value="{{ csrf_token() }}">
 			</form>
 		</div>

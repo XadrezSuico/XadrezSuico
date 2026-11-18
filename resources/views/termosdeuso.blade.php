@@ -1,12 +1,12 @@
-@extends('adminlte::page')
+@extends('layouts.v2.document')
 
 @section('title', 'Termos de Uso')
 
-@section('content_header')
-    <h1>Termos de Uso</h1>
-@stop
+@section('document-title')
+    Termos de Uso
+@endsection
 
-@section('content')
+@section('document-content')
     <h3>A. Condições Gerais</h3>
     <p>Este documento contém os Termos de Uso da plataforma de gerenciamento de Circuito de Xadrez {{config("xadrezsuico.name","XadrezSuíço")}}, cuja aceitação plena e integral requisito
         para todos os seus Usuários. Eles incluem, além dos termos gerais, as políticas de responsabilidade, de privacidade e confidencialidade, a licença

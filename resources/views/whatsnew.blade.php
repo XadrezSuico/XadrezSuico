@@ -1,12 +1,12 @@
-@extends('adminlte::page')
+@extends('layouts.v2.document')
 
 @section('title', 'O que há de novo?')
 
-@section('content_header')
-    <h1>O que há de novo?</h1>
-@stop
+@section('document-title')
+    O que há de novo?
+@endsection
 
-@section('content')
+@section('document-content')
     <p>Nesta página estão as atualizações desde a primeira versão Beta lançada do sistema.</p>
     <hr/>
     @foreach($news as $new)

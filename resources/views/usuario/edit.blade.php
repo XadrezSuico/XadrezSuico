@@ -1,64 +1,59 @@
-@extends('adminlte::page')
+@extends('layouts.v2.catalog')
 
 @section('title', 'Usuários - Editar')
 
-@section('content_header')
-    <h1>Usuários >> Editar</h1>
-@stop
+@section('page-header')
+    Usuários >> Editar
+@endsection
 
-@section('content')
-	@if (session('status'))
-		<div class="alert alert-success">
-				{{ session('status') }}
-		</div>
-	@endif
-	<ul class="nav nav-pills">
+@section('catalog-content')
+	<ul class="v2-catalog-nav">
 		<li role="presentation"><a href="{{url("/usuario/new")}}">Novo Usuario</a></li>
 		@if(\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobalbyPerfil([1])) <li role="presentation"><a href="{{url("/usuario/password/".$user->id)}}">Alterar Senha</a></li>@endif
 		<li role="presentation"><a href="{{url("/usuario")}}">Listar Todos</a></li>
 	</ul>
-	<div class="row">
-		<div class="col-md-6">
-			<div class="box">
-				<div class="box-header">
-					<h3 class="box-title">Cadastro</h3>
+	<div class="v2-catalog-grid v2-catalog-grid--two">
+		<div class="v2-catalog-column">
+			<div class="v2-catalog-panel">
+				<div class="v2-catalog-panel-header">
+					<h3 class="v2-catalog-panel-title">Cadastro</h3>
 				</div>
-				<div class="box-body">
+				<div class="v2-catalog-panel-body">
 					@if(\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal()) <form method="post"> @endif
-						<div class="form-group {{ $errors->has('name') ? ' has-error' : '' }}">
+						<div class="v2-catalog-field {{ $errors->has('name') ? ' has-error' : '' }}">
 							<label for="nome">Nome</label>
-							<input type="text" class="form-control" id="nome" name="name" placeholder="Nome do Usuário" value="{{$user->name}}" @if(!\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal()) disabled="disabled" @endif >
+							<input type="text" class="v2-catalog-input" id="nome" name="name" placeholder="Nome do Usuário" value="{{ old('name', $user->name) }}" @if(!\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal()) disabled="disabled" @endif >
 							@if ($errors->has('name'))
-									<span class="help-block">
+									<span class="v2-catalog-error">
 											<strong>{{ $errors->first('name') }}</strong>
 									</span>
 							@endif
 						</div>
-						<div class="form-group {{ $errors->has('email') ? ' has-error' : '' }}">
+						<div class="v2-catalog-field {{ $errors->has('email') ? ' has-error' : '' }}">
 							<label for="email">Email</label>
-							<input type="text" class="form-control" id="email" name="email" placeholder="Email do Usuário" value="{{$user->email}}" @if(!\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal()) disabled="disabled" @endif >
+							<input type="email" class="v2-catalog-input" id="email" name="email" autocomplete="email" placeholder="Email do Usuário" value="{{ old('email', $user->email) }}" @if(!\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal()) disabled="disabled" @endif >
 							@if ($errors->has('email'))
-									<span class="help-block">
+									<span class="v2-catalog-error">
 											<strong>{{ $errors->first('email') }}</strong>
 									</span>
 							@endif
 						</div>
-						<button type="submit" class="btn btn-success" @if(!\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal()) disabled="disabled" @endif >Enviar</button>
+						<button type="submit" class="btn btn-success" @if(!\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal()) disabled="disabled" @endif ><i class="fa fa-check" aria-hidden="true"></i> Salvar</button>
 						<input type="hidden" name="_token" value="{{ csrf_token() }}">
 					@if(\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal()) </form> @endif
 				</div>
 			</div>
 		</div>
-		<div class="col-md-6">
-			<div class="box">
-				<div class="box-header">
-					<h3 class="box-title">Relacionar Perfil</h3>
+		<div class="v2-catalog-column">
+			<div class="v2-catalog-panel">
+				<div class="v2-catalog-panel-header">
+					<h3 class="v2-catalog-panel-title">Relacionar Perfil</h3>
 				</div>
-				<div class="box-body">
+				<div class="v2-catalog-panel-body">
 					<form method="post" action="{{url("/usuario/".$user->id."/perfis/add")}}">
-						<div class="form-group">
+						<div class="v2-catalog-field">
 							<label for="perfils_id">Perfil</label>
-							<select class="form-control" name="perfils_id" id="perfils_id">
+							<select class="v2-catalog-input" name="perfils_id" id="perfils_id">
 								<option value=""> --- Selecione ---</option>
 								@if(\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobalbyPerfil([1]))
 									<option value="1">1 - Super-Administrador</option>
@@ -90,9 +85,9 @@
 								@endif
 							</select>
 						</div>
-						<div class="form-group" id="grupo_evento" style="display: none">
+						<div class="v2-catalog-field" id="grupo_evento" style="display: none">
 							<label for="grupo_evento_id">Grupo de Evento</label>
-							<select class="form-control" name="grupo_evento_id" id="grupo_evento_id">
+							<select class="v2-catalog-input" name="grupo_evento_id" id="grupo_evento_id">
 								<option value=""> --- Selecione ---</option>
 								@foreach(\App\GrupoEvento::all() as $grupo_evento)
                         			@if(
@@ -104,9 +99,9 @@
 								@endforeach
 							</select>
 						</div>
-						<div class="form-group" id="evento" style="display: none">
+						<div class="v2-catalog-field" id="evento" style="display: none">
 							<label for="evento_id">Evento</label>
-							<select class="form-control" name="evento_id" id="evento_id">
+							<select class="v2-catalog-input" name="evento_id" id="evento_id">
 								<option value=""> --- Selecione ---</option>
 								@foreach(\App\Evento::all() as $evento)
                         			@if(\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal() ||
@@ -117,32 +112,36 @@
 								@endforeach
 							</select>
 						</div>
-						<button type="submit" class="btn btn-success">Enviar</button>
+						<button type="submit" class="btn btn-success"><i class="fa fa-check" aria-hidden="true"></i> Salvar</button>
 						<input type="hidden" name="_token" value="{{ csrf_token() }}">
 					</form>
 				</div>
 			</div>
-			<div class="box">
-				<div class="box-header">
-					<h3 class="box-title">Perfis do Usuário</h3>
+			<div class="v2-catalog-panel">
+				<div class="v2-catalog-panel-header">
+					<h3 class="v2-catalog-panel-title">Perfis do Usuário</h3>
 				</div>
-				<div class="box-body">
-					<table id="tabela_categoria" class="table-responsive table-condensed table-striped" style="width: 100%">
+				<div class="v2-catalog-panel-body">
+					<table id="tabela_categoria" class="v2-catalog-table" style="width: 100%">
 						<thead>
 							<tr>
 								<th>#</th>
 								<th>Perfil</th>
 								<th>Relacionamento</th>
-								<th width="20%">Opções</th>
+								<th class="v2-reg-options">Opções</th>
 							</tr>
 						</thead>
 						<tbody>
 							@foreach($user->perfis->all() as $perfil)
-                                @php($permission_check = false)
+                                @php
+                                    $permission_check = false;
+                                @endphp
                                 @if(
                                     \Illuminate\Support\Facades\Auth::user()->hasPermissionGlobal()
                                 )
-                                    @php($permission_check = true)
+                                    @php
+                                    $permission_check = true;
+                                @endphp
                                 @endif
                                 @if(
                                     ($perfil->perfil->id == 3 ||
@@ -155,7 +154,9 @@
                                         \Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfilByGroupEvent($perfil->evento->id,[7]) ||
                                         \Illuminate\Support\Facades\Auth::user()->hasPermissionEventByPerfil($perfil->evento->id,[4])
                                     )
-                                        @php($permission_check = true)
+                                        @php
+                                    $permission_check = true;
+                                @endphp
                                     @endif
                                 @endif
                                 @if(
@@ -167,7 +168,9 @@
                                     @if(
                                         \Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($perfil->grupo_evento->id,[7])
                                     )
-                                        @php($permission_check = true)
+                                        @php
+                                    $permission_check = true;
+                                @endphp
                                     @endif
                                 @endif
                                 @if($permission_check)
@@ -202,7 +205,7 @@
                                                 $perfil->perfil->id == 5
                                             )
                                                 @if(\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobalbyPerfil([1]) || \Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($perfil->evento->grupo_evento->id,[7]))
-                                                    <a class="btn btn-danger" href="{{url("/usuario/".$user->id."/perfis/remove/".$perfil->id)}}" role="button"><i class="fa fa-times"></i></a>
+                                                    <a class="btn btn-danger" data-confirm-delete="true" title="Remover perfil" aria-label="Remover perfil" href="{{url("/usuario/".$user->id."/perfis/remove/".$perfil->id)}}" role="button"><i class="fa fa-times"></i></a>
                                                 @endif
                                             @else
                                                 @if(
@@ -210,11 +213,11 @@
                                                     $perfil->perfil->id == 7
                                                 )
                                                 @if(\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobalbyPerfil([1]) || \Illuminate\Support\Facades\Auth::user()->hasPermissionGroupEventByPerfil($perfil->grupo_evento->id,[7]))
-                                                    <a class="btn btn-danger" href="{{url("/usuario/".$user->id."/perfis/remove/".$perfil->id)}}" role="button"><i class="fa fa-times"></i></a>
+                                                    <a class="btn btn-danger" data-confirm-delete="true" title="Remover perfil" aria-label="Remover perfil" href="{{url("/usuario/".$user->id."/perfis/remove/".$perfil->id)}}" role="button"><i class="fa fa-times"></i></a>
                                                 @endif
                                                 @else
                                                     @if(\Illuminate\Support\Facades\Auth::user()->hasPermissionGlobalbyPerfil([1]))
-                                                        <a class="btn btn-danger" href="{{url("/usuario/".$user->id."/perfis/remove/".$perfil->id)}}" role="button"><i class="fa fa-times"></i></a>
+                                                        <a class="btn btn-danger" data-confirm-delete="true" title="Remover perfil" aria-label="Remover perfil" href="{{url("/usuario/".$user->id."/perfis/remove/".$perfil->id)}}" role="button"><i class="fa fa-times"></i></a>
                                                     @endif
                                                 @endif
                                             @endif
@@ -263,11 +266,4 @@
 		});
 	});
 </script>
-@endsection
-@section("css")
-	<style>
-		.form-control, .select2{
-			width: 100% !important;
-		}
-	</style>
 @endsection

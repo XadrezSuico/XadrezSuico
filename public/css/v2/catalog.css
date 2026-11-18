@@ -34,3 +34,10 @@
 @media(max-width: 639px) { .v2-catalog-panel-body { padding: 14px; } .v2-catalog-panel-header, .v2-catalog-panel-footer { padding: 14px; } .v2-catalog-nav li, .v2-catalog-nav a { width: 100%; } }
 
 .v2-catalog-notice { padding: 14px; margin-bottom: 20px; border: 1px solid #a7f3d0; border-radius: 8px; color: #065f46; background: #ecfdf5; }
+.v2-catalog-error { display: block; margin-top: 6px; color: #b91c1c; font-size: 14px; }
+.v2-catalog .has-error .v2-catalog-input { border-color: #dc2626; }
+.v2-catalog .v2-catalog-input:disabled, .v2-catalog button:disabled { opacity: .65; cursor: not-allowed; }
+.v2-catalog-grid--two .v2-catalog-panel { margin-bottom: 24px; }
+@media(min-width: 1100px) { .v2-catalog-grid--two { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+.v2-catalog .alert-success { border-color: #a7f3d0; color: #065f46; background: #ecfdf5; }
