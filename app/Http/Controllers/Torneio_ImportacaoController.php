@@ -22,6 +22,20 @@ use Illuminate\Support\Facades\Log;
 
 class Torneio_ImportacaoController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+        $this->middleware(function ($request, $next) {
+            $evento = Evento::findOrFail($request->route('id'));
+            $evento->torneios()->findOrFail($request->route('torneio_id'));
+            $user = Auth::user();
+            abort_unless($user && ($user->hasPermissionGlobal()
+                || $user->hasPermissionEventByPerfil($evento->id, [4])
+                || $user->hasPermissionGroupEventByPerfil($evento->grupo_evento_id, [7])), 403);
+            return $next($request);
+        });
+    }
+
 
     /*
      *
@@ -1222,6 +1236,7 @@ class Torneio_ImportacaoController extends Controller
 
     public function sendPairingsFile($evento_id, $torneio_id, Request $request)
     {
+        $request->validate(['arquivo' => 'required|file|max:10240']);
         $torneio = Torneio::find($torneio_id);
         if($torneio){
             $file = file_get_contents($request->file('arquivo'));
@@ -1250,12 +1265,12 @@ class Torneio_ImportacaoController extends Controller
         $torneio = Torneio::find($torneio_id);
         $retornos[] = date("d/m/Y H:i:s") . " - Início do Processamento para os emparceiramentos do torneio de #" . $torneio->id . " - '" . $torneio->name . "' do Evento '" . $torneio->evento->name . "'";
         $retornos[] = "<hr/>";
-        $lines = str_getcsv($emparceiramentos, "\n");
+        $lines = \App\Helper\SwissManagerPairingsCsv::parse($emparceiramentos);
         $i = 0;
         $k = -1;
         $fields = array();
         foreach ($lines as $line) {
-            $columns = str_getcsv($line, ";");
+            $columns = $line;
             if ($i == 0) {
                 $j = 0;
                 $retornos[] = date("d/m/Y H:i:s") . " - Capturando as informações de campos no cabeçalho:";
@@ -1320,7 +1335,7 @@ class Torneio_ImportacaoController extends Controller
                 $retornos[] = date("d/m/Y H:i:s") . " - Finalizado processo de remoção de emparceiramentos.";
             } else {
                 $retornos[] = date("d/m/Y H:i:s") . " - Início de Processamento de Emparceiramento.";
-                $line = explode(";", $line);
+                $line = $columns;
 
                 $rodada_count = $torneio->rodadas()->where([["numero","=", $line[($fields["Rodada"])] ]])->count();
                 if($rodada_count == 0){
@@ -1422,7 +1437,7 @@ class Torneio_ImportacaoController extends Controller
                                     $emparceiramento->resultado_b = (count($explode_res_b) > 1) ? $explode_res_b[0].".".$explode_res_b[1] : $explode_res_b[0];
                                 }
 
-                                if(isset($line[($fields["WO"])])){
+                                if(isset($fields["WO"]) && isset($line[$fields["WO"]])){
                                     if($line[($fields["WO"])] != ""){
                                         $retornos[] = date("d/m/Y H:i:s") . " - Houve W.O no emparceiramento. Verificando resultados com 0 para armazenamento do resultado de W.O.";
                                         if($emparceiramento->resultado_a == 0){

@@ -11,7 +11,7 @@ class EventoController extends Controller
 {
     public function acompanhar($evento_id)
     {
-        $evento = Evento::find($evento_id);
+        $evento = Evento::findOrFail($evento_id);
         if ($evento) {
             return view("evento.publico.torneios.emparceiramentos", compact("evento"));
         }
@@ -20,7 +20,7 @@ class EventoController extends Controller
     }
     public function classificacao($evento_id)
     {
-        $evento = Evento::find($evento_id);
+        $evento = Evento::findOrFail($evento_id);
         if ($evento->mostrar_resultados) {
             return view("evento.publico.classificacao", compact("evento"));
         }
@@ -29,9 +29,10 @@ class EventoController extends Controller
     }
     public function resultados($evento_id, $categoria_id)
     {
-        $evento = Evento::find($evento_id);
-        $categoria = Categoria::find($categoria_id);
+        $evento = Evento::findOrFail($evento_id);
+        $categoria = Categoria::findOrFail($categoria_id);
         $torneio = $categoria->getTorneioByEvento($evento);
+        abort_unless($torneio, 404);
         if ($evento->is_lichess_integration) {
             $inscricoes = Inscricao::where([
                 ["categoria_id", "=", $categoria->id],
@@ -62,11 +63,8 @@ class EventoController extends Controller
     }
     public function classificacao_v2($evento_id)
     {
-        $evento = Evento::find($evento_id);
+        $evento = Evento::findOrFail($evento_id);
 
-        if(!$evento){
-            return abort(404);
-        }
 
         if(Auth::check()){
             $user = Auth::user();
@@ -91,11 +89,8 @@ class EventoController extends Controller
     }
     public function resultados_v2($evento_id, $categoria_id)
     {
-        $evento = Evento::find($evento_id);
+        $evento = Evento::findOrFail($evento_id);
 
-        if (!$evento) {
-            return abort(404);
-        }
 
         $is_internal = false;
         if (Auth::check()) {
@@ -118,8 +113,9 @@ class EventoController extends Controller
         }
 
 
-        $categoria = Categoria::find($categoria_id);
+        $categoria = Categoria::findOrFail($categoria_id);
         $torneio = $categoria->getTorneioByEvento($evento);
+        abort_unless($torneio, 404);
         if ($evento->is_lichess_integration) {
             $inscricoes = Inscricao::where([
                 ["categoria_id", "=", $categoria->id],

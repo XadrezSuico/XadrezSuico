@@ -45,46 +45,32 @@ class RatingController extends Controller
         }
         $tipo_rating = TipoRating::find($tipo_ratings_id);
 
-        $requisicao = $request->all();
-
-        $search = $tipo_rating->ratings()->where(function($q1) use ($requisicao, $tipo_rating){
-            $q1->where([
-                ["id","=",$requisicao["search"]["value"]],
-                ["tipo_ratings_id","=",$tipo_rating->id]
-            ]);
-            $q1->whereHas("enxadrista");
-        })
-        ->orWhere(function($q1) use ($requisicao, $tipo_rating){
-            $q1->whereHas("enxadrista", function($q2) use ($requisicao){
-                $q2->where([["id", "=", $requisicao["search"]["value"]]]);
-                $q2->orWhere([["name", "like", "%".$requisicao["search"]["value"]."%"]]);
+        $request->validate([
+            'search' => 'sometimes|array', 'search.value' => 'nullable|string|max:255',
+            'order' => 'sometimes|array', 'order.0.column' => 'sometimes|integer|min:0|max:4',
+            'order.0.dir' => 'sometimes|in:asc,desc',
+            'length' => 'sometimes|integer|min:-1|max:1000',
+            'start' => 'sometimes|integer|min:0', 'draw' => 'sometimes|integer|min:0',
+        ]);
+        $term = (string) $request->input('search.value', '');
+        $search = $tipo_rating->ratings()->whereHas('enxadrista');
+        if ($term !== '') {
+            $search->where(function ($query) use ($term) {
+                $query->where('ratings.id', $term)->orWhereHas('enxadrista', function ($player) use ($term) {
+                    $player->where('id', $term)->orWhere('name', 'like', '%' . $term . '%');
+                });
             });
-            $q1->where([
-                ["tipo_ratings_id","=",$tipo_rating->id]
-            ]);
-        });
-
-        switch ($requisicao["order"][0]["column"]) {
-            case 1:
-                $search->orderBy("enxadrista_id", mb_strtoupper($requisicao["order"][0]["dir"]));
-                break;
-            // case 2:
-            //     $search->leftJoin("enxadrista","enxadrista.id","ratings.enxadrista_id");
-            //     $search->orderBy("enxadrista.born", mb_strtoupper($requisicao["order"][0]["dir"]));
-            //     break;
-            case 3:
-                $search->orderBy("valor", mb_strtoupper($requisicao["order"][0]["dir"]));
-                break;
-            default:
-                $search->orderBy("id", mb_strtoupper($requisicao["order"][0]["dir"]));
         }
+        $columns = [0 => 'id', 1 => 'enxadrista_id', 3 => 'valor'];
+        $column = $columns[(int) $request->input('order.0.column', 0)] ?? 'id';
+        $search->orderBy($column, $request->input('order.0.dir', 'asc'));
         $total = $search->count();
-        $search->limit($requisicao["length"]);
-        $search->skip($requisicao["start"]);
-
-        $recordsTotal = $tipo_rating->ratings()->count();
-
-        $retorno = array("draw" => $requisicao["draw"], "recordsTotal" => $recordsTotal, "recordsFiltered" => $total, "data" => array(), "requisicao" => $requisicao);
+        $length = (int) $request->input('length', 10);
+        $search->limit($length === -1 ? 1000 : max(1, $length));
+        $search->skip((int) $request->input('start', 0));
+        $recordsTotal = $tipo_rating->ratings()->whereHas('enxadrista')->count();
+        $retorno = ['draw' => (int) $request->input('draw', 0), 'recordsTotal' => $recordsTotal,
+            'recordsFiltered' => $total, 'data' => [], 'requisicao' => $request->all()];
         foreach ($search->get() as $rating) {
             $p = array();
             $p[0] = $rating->id;
