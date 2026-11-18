@@ -1,45 +1,39 @@
-@extends('adminlte::page')
+@extends('layouts.v2.catalog')
 
 @section("title", "Editar Cidade")
 
-@section('content_header')
-  <h1>Editar Cidade</h1>
-@stop
-
-
-@section('css')
-	<style>
-		.display-none, .displayNone{
-			display: none;
-		}
-	</style>
+@section('page-header')
+    Editar Cidade
 @endsection
 
-@section("content")
+
+
+
+@section('catalog-content')
 <!-- Main row -->
-<ul class="nav nav-pills">
+<ul class="v2-catalog-nav">
   <li role="presentation"><a href="/cidade">Voltar a Lista de Cidades</a></li>
   <li role="presentation"><a href="/cidade/new">Nova Cidade</a></li>
 </ul>
-<div class="row">
+<div class="v2-catalog-grid">
   <!-- Left col -->
-  <section class="col-lg-12 connectedSortable">
-	<div class="box box-primary" id="inscricao">
-		<div class="box-header">
-			<h3 class="box-title">Editar Cidade</h3>
+  <section class="v2-catalog-column">
+	<div class="v2-catalog-panel" id="inscricao">
+		<div class="v2-catalog-panel-header">
+			<h3 class="v2-catalog-panel-title">Editar Cidade</h3>
 		</div>
 	  <!-- form start -->
-        <form method="post">
-			<div class="box-body">
-				<div class="form-group">
+        <form method="post" class="v2-catalog-form">
+			<div class="v2-catalog-panel-body">
+				<div class="v2-catalog-field">
 					<label for="name">Nome</label>
-					<input name="name" id="name" class="form-control" type="text" value="{{$cidade->name}}" />
+					<input name="name" id="name" class="v2-catalog-input" type="text" value="{{ old('name', $cidade->name) }}" />
 				</div>
 			</div>
-			<!-- /.box-body -->
+			<!-- /.v2-catalog-panel-body -->
 
-			<div class="box-footer">
-				<button type="submit" class="btn btn-success">Enviar</button>
+			<div class="v2-catalog-panel-footer">
+				<button type="submit" class="btn btn-success"><i class="fa fa-check" aria-hidden="true"></i> Salvar</button>
 				<input type="hidden" name="_token" value="{{ csrf_token() }}">
 			</div>
         </form>

@@ -1,31 +1,26 @@
-@extends('adminlte::page')
+@extends('layouts.v2.catalog')
 
 @section('title', 'Cidades')
 
-@section('content_header')
-    <h1>Cidades</h1>
-@stop
+@section('page-header')
+    Cidades
+@endsection
 
-@section('content')
-    @if (session('status'))
-        <div class="alert alert-success">
-            {{ session('status') }}
-        </div>
-    @endif
-    <ul class="nav nav-pills">
+@section('catalog-content')
+    <ul class="v2-catalog-nav">
         <li role="presentation"><a href="{{url("/cidade/new")}}">Nova Cidade</a></li>
     </ul>
 
-    <div class="box">
-        <div class="box-body">
-            <table id="tabela" class="table-responsive table-condensed table-striped" style="width: 100%">
+    <div class="v2-catalog-panel">
+        <div class="v2-catalog-panel-body">
+            <table id="tabela" data-dashboard-managed="true" class="v2-catalog-table" style="width: 100%">
                 <thead>
                     <tr>
                         <th>#</th>
                         <th>Nome</th>
                         <th>Estado</th>
                         <th>País</th>
-                        <th width="20%">Opções</th>
+                        <th class="v2-reg-options">Opções</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -38,13 +33,11 @@
 @section("js")
 <script type="text/javascript">
     $(document).ready(function(){
-        // $("#tabela").DataTable({
-        //     responsive: true,
-        // });
-        $("#tabela").DataTable({
-            processing: true,
-            serverSide: true,
-            searchDelay: 500,
+        window.initV2DashboardManagedTable('#tabela', {
+            processing: true, serverSide: true, searchDelay: 500,
+            buttons: [],
+            columnDefs: [{targets: [2, 3, 4], orderable: false}],
+            drawCallback: function () { window.enhanceV2CatalogActions(); },
             ajax: '{{url("/cidade/api/searchList")}}',
             language: {
                 "decimal":        "",

@@ -1,47 +1,41 @@
-@extends('adminlte::page')
+@extends('layouts.v2.catalog')
 
 @section("title", "Editar Clube")
 
-@section('content_header')
-  <h1>Editar Clube</h1>
-@stop
-
-
-@section('css')
-	<style>
-		.display-none, .displayNone{
-			display: none;
-		}
-	</style>
+@section('page-header')
+    Editar Clube
 @endsection
 
-@section("content")
+
+
+
+@section('catalog-content')
 <!-- Main row -->
-<ul class="nav nav-pills">
+<ul class="v2-catalog-nav">
   <li role="presentation"><a href="/clube">Voltar a Lista de Clubes</a></li>
   <li role="presentation"><a href="/clube/new">Novo Clube</a></li>
 </ul>
-<div class="row">
+<div class="v2-catalog-grid">
   <!-- Left col -->
-  <section class="col-lg-12 connectedSortable">
-	<div class="box box-primary" id="inscricao">
-		<div class="box-header">
-			<h3 class="box-title">Editar Clube</h3>
+  <section class="v2-catalog-column">
+	<div class="v2-catalog-panel" id="inscricao">
+		<div class="v2-catalog-panel-header">
+			<h3 class="v2-catalog-panel-title">Editar Clube</h3>
 		</div>
 	  <!-- form start -->
-      <form method="post">
-				<div class="box-body">
-					<div class="form-group">
+      <form method="post" class="v2-catalog-form">
+				<div class="v2-catalog-panel-body">
+					<div class="v2-catalog-field">
 						<label for="name">Nome</label>
-						<input name="name" id="name" class="form-control" type="text" value="{{$clube->getName(false)}}" />
+						<input name="name" id="name" class="v2-catalog-input" type="text" value="{{ old('name', $clube->getName(false)) }}" />
 					</div>
-					<div class="form-group">
+					<div class="v2-catalog-field">
 						<label for="abbr">Abreviação</label>
-						<input name="abbr" id="abbr" class="form-control" type="text" maxlength="3" value="{{$clube->abbr}}" />
+						<input name="abbr" id="abbr" class="v2-catalog-input" type="text" maxlength="3" value="{{ old('abbr', $clube->abbr) }}" />
 					</div>
-					<div class="form-group">
+					<div class="v2-catalog-field">
 						<label for="cidade_id">Cidade</label>
-						<select id="cidade_id" name="cidade_id" class="form-control">
+						<select id="cidade_id" name="cidade_id" class="v2-catalog-input">
 							<option value="">--- Selecione uma cidade ---</option>
 							@foreach($cidades as $cidade)
 								<option value="{{$cidade->id}}">{{$cidade->id}} - {{$cidade->name}}</option>
@@ -49,18 +43,18 @@
 						</select>
 					</div>
                     @if(env("ENTITY_DOMAIN",null) == "fexpar.com.br")
-                        <div class="form-group">
+                        <div class="v2-catalog-field">
                             <label><input type="checkbox" name="is_fexpar___clube_filiado" @if($clube->is_fexpar___clube_filiado) checked="checked" @endif /> É clube filiado?</label>
                         </div>
-                        <div class="form-group">
+                        <div class="v2-catalog-field">
                             <label><input type="checkbox" name="is_fexpar___clube_valido_vinculo_federativo" @if($clube->is_fexpar___clube_valido_vinculo_federativo) checked="checked" @endif /> É clube válido para vinculo federativo?</label>
                         </div>
                     @endif
 				</div>
-			<!-- /.box-body -->
+			<!-- /.v2-catalog-panel-body -->
 
-				<div class="box-footer">
-					<button type="submit" class="btn btn-success">Enviar</button>
+				<div class="v2-catalog-panel-footer">
+					<button type="submit" class="btn btn-success"><i class="fa fa-check" aria-hidden="true"></i> Salvar</button>
 					<input type="hidden" name="_token" value="{{ csrf_token() }}">
 				</div>
       </form>

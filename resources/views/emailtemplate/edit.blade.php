@@ -1,23 +1,17 @@
-@extends('adminlte::page')
+@extends('layouts.v2.catalog')
 
 @section("title", "Editar Template de E-mail")
 
-@section('content_header')
-  <h1>Editar Template de E-mail</h1>
-@stop
-
-
-@section('css')
-	<style>
-		.display-none, .displayNone{
-			display: none;
-		}
-	</style>
+@section('page-header')
+    Editar Template de E-mail
 @endsection
 
-@section("content")
+
+
+
+@section('catalog-content')
 <!-- Main row -->
-<ul class="nav nav-pills">
+<ul class="v2-catalog-nav">
 
     @if($email_template->grupo_evento)
         <li role="presentation"><a href="/grupoevento/dashboard/{{$email_template->grupo_evento->id}}?tab=email_template">Voltar a Dashboard de Grupo de Evento</a></li>
@@ -29,50 +23,50 @@
         @endif
     @endif
 </ul>
-<div class="row">
+<div class="v2-catalog-grid">
   <!-- Left col -->
-  <section class="col-lg-8 connectedSortable">
-	<div class="box box-primary">
-		<div class="box-header">
-			<h3 class="box-title">Editar Template de E-mail</h3>
+  <section class="v2-catalog-column v2-catalog-column-main">
+	<div class="v2-catalog-panel">
+		<div class="v2-catalog-panel-header">
+			<h3 class="v2-catalog-panel-title">Editar Template de E-mail</h3>
 		</div>
 	  <!-- form start -->
-        <form method="post">
-			<div class="box-body">
-				<div class="form-group">
+        <form method="post" class="v2-catalog-form">
+			<div class="v2-catalog-panel-body">
+				<div class="v2-catalog-field">
 					<label for="name">Nome</label>
-					<input name="name" id="name" class="form-control" type="text" value="{{$email_template->name}}" />
+					<input name="name" id="name" class="v2-catalog-input" type="text" value="{{ old('name', $email_template->name) }}" />
 				</div>
-				<div class="form-group">
+				<div class="v2-catalog-field">
 					<label for="name">Tipo de E-mail</label><br/>
 					{{$email_template->email_type}} - {{$email_template->getEmailType()}}
 				</div>
-				<div class="form-group">
+				<div class="v2-catalog-field">
 					<label for="subject">Assunto do E-mail</label>
-					<input name="subject" id="subject" class="form-control" type="text" value="{{$email_template->subject}}" />
+					<input name="subject" id="subject" class="v2-catalog-input" type="text" value="{{ old('subject', $email_template->subject) }}" />
 				</div>
-				<div class="form-group">
+				<div class="v2-catalog-field">
 					<label for="message">Mensagem do E-mail</label>
-                    <textarea name="message" id="message" class="form-control">{!!$email_template->message!!}</textarea>
+                    <textarea name="message" id="message" class="v2-catalog-input">{{ old('message', $email_template->message) }}</textarea>
                 </div>
 			</div>
-			<!-- /.box-body -->
+			<!-- /.v2-catalog-panel-body -->
 
-			<div class="box-footer">
-				<button type="submit" class="btn btn-success">Enviar</button>
+			<div class="v2-catalog-panel-footer">
+				<button type="submit" class="btn btn-success"><i class="fa fa-check" aria-hidden="true"></i> Salvar</button>
 				<input type="hidden" name="_token" value="{{ csrf_token() }}">
 			</div>
         </form>
 	</div>
 
   </section>
-  <section class="col-lg-4 connectedSortable">
+  <section class="v2-catalog-column v2-catalog-column-side">
 
-	<div class="box box-primary">
-		<div class="box-header">
-			<h3 class="box-title">Tags do Sistema</h3>
+	<div class="v2-catalog-panel">
+		<div class="v2-catalog-panel-header">
+			<h3 class="v2-catalog-panel-title">Tags do Sistema</h3>
 		</div>
-        <div class="box-body">
+        <div class="v2-catalog-panel-body">
             Existem algumas tags que você pode inserir no template de e-mail para que, quando o e-mail for enviado, estas tags sejam substituídas por informações do sistema.<br/>
             Para utilizar é necessário apenas adicionar a tag completa, que está em negrito. Mas fique atento, visto que existem tags que parecem iguais, mas tem propósitos diferentes.
             <h3>Inscrição</h3>

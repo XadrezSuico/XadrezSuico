@@ -1,35 +1,29 @@
-@extends('adminlte::page')
+@extends('layouts.v2.catalog')
 
 @section("title", 'Clube #'.$clube_base->id." - Unir Clubes")
 
-@section('content_header')
-  <h1>Clube #{{$clube_base->id}} ({{$clube_base->name}}) - Unir Clubes</h1>
-@stop
-
-
-@section('css')
-	<style>
-		.display-none, .displayNone{
-			display: none;
-		}
-	</style>
+@section('page-header')
+    Clube #{{$clube_base->id}} ({{$clube_base->name}}) - Unir Clubes
 @endsection
 
-@section("content")
+
+
+
+@section('catalog-content')
 <!-- Main row -->
-<ul class="nav nav-pills">
+<ul class="v2-catalog-nav">
   <li role="presentation"><a href="/clube">Voltar a Lista de Clubes</a></li>
 </ul>
-<div class="row">
+<div class="v2-catalog-grid">
   <!-- Left col -->
-  <section class="col-lg-12 connectedSortable">
-		<div class="box box-primary" id="inscricao">
-			<div class="box-header">
-				<h3 class="box-title">Unir Clubes</h3>
+  <section class="v2-catalog-column">
+		<div class="v2-catalog-panel" id="inscricao">
+			<div class="v2-catalog-panel-header">
+				<h3 class="v2-catalog-panel-title">Unir Clubes</h3>
 			</div>
 			<!-- form start -->
-			<form method="post">
-				<div class="box-body">
+			<form method="post" class="v2-catalog-form">
+				<div class="v2-catalog-panel-body">
                     <div class="alert alert-warning alert-dismissible" role="alert">
                         <strong>Alerta!</strong><br/>
                         Esta função serve para efetuar a união entre dois clubes.
@@ -37,12 +31,12 @@
                         <strong>Tome cuidado com esta função, visto que não é possível voltar às configurações anteriores!</strong>
                     </div>
 
-					<div class="form-group">
+					<div class="v2-catalog-field">
 						<label for="name">Clube Base: </label> #{{$clube_base->id}} - {{$clube_base->getName()}} ({{$clube_base->getPlace()}})
 					</div>
-					<div class="form-group">
+					<div class="v2-catalog-field">
 						<label for="clube_a_ser_unido">Clube a Ser Unido ao Clube Base</label>
-						<select id="clube_a_ser_unido" name="clube_a_ser_unido" class="form-control">
+						<select id="clube_a_ser_unido" name="clube_a_ser_unido" class="v2-catalog-input">
 							<option value="">-- Selecione --</option>
 							@foreach($clubes as $clube)
 								<option value="{{$clube->id}}"> #{{$clube->id}} - - {{$clube->getName()}} ({{$clube->getPlace()}})</option>
@@ -50,10 +44,10 @@
 						</select>
 					</div>
 				</div>
-				<!-- /.box-body -->
+				<!-- /.v2-catalog-panel-body -->
 
-				<div class="box-footer">
-					<button type="submit" class="btn btn-success">Enviar</button>
+				<div class="v2-catalog-panel-footer">
+					<button type="submit" class="btn btn-success"><i class="fa fa-check" aria-hidden="true"></i> Salvar</button>
 					<input type="hidden" name="_token" value="{{ csrf_token() }}">
 				</div>
 					</form>

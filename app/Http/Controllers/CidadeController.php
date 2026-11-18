@@ -164,8 +164,8 @@ class CidadeController extends Controller
             $p = array();
             $p[0] = $cidade->id;
             $p[1] = $cidade->name;
-            $p[2] = $cidade->estado->nome;
-            $p[3] = $cidade->estado->pais->nome;
+            $p[2] = optional($cidade->estado)->nome ?: '-';
+            $p[3] = optional(optional($cidade->estado)->pais)->nome ?: '-';
 
 
             $p[4] = '<a href="' . url("/cidade/edit/" . $cidade->id) . '" title="Editar Cidade: ' . $cidade->id . ' ' . $cidade->name . '" class="btn btn-default btn-sm" data-toggle="tooltip" data-original-title="Editar Enxadrista"><i class="fa fa-edit"></i></a>';
