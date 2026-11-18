@@ -29,7 +29,7 @@
         <div class="box-body">
                 <h3 style="margin: 0; padding: 0;"><strong>Nome:</strong> {{$enxadrista->getNomePublico()}}<br/></h3>
                 <strong>Data de Nascimento:</strong> {{$enxadrista->getNascimentoPublico()}}<br/>
-                <strong>Cidade:</strong> {{$enxadrista->cidade->name}}<br/>
+                <strong>Cidade:</strong> {{ optional($enxadrista->cidade)->name ?: 'Não informada' }}<br/>
                 @if($enxadrista->clube) <strong>Clube:</strong> {{$enxadrista->clube->getName()}}<br/> @endif
 
                 <h4><strong>Rating Atual:</strong> {{$rating->valor}}</h4>
@@ -66,11 +66,16 @@
                 </thead>
                 <tbody>
                     @foreach($rating->getMovimentacoes() as $movimentacao)
+                        @php
+                            $torneioMovimentacao = $movimentacao->torneio;
+                            $eventoMovimentacao = optional($torneioMovimentacao)->evento;
+                            $grupoMovimentacao = optional($eventoMovimentacao)->grupo_evento;
+                        @endphp
                         <tr>
                             <td>{{$movimentacao->id}}</td>
-                            <td>@if(!$movimentacao->is_inicial) {{$movimentacao->torneio->evento->grupo_evento->name}} @else - @endif</td>
-                            <td>@if(!$movimentacao->is_inicial) {{$movimentacao->torneio->evento->name}} @else - @endif</td>
-                            <td>@if(!$movimentacao->is_inicial) {{$movimentacao->torneio->name}} @else - @endif</td>
+                            <td>@if(!$movimentacao->is_inicial) {{ optional($grupoMovimentacao)->name ?: 'Não disponível' }} @else - @endif</td>
+                            <td>@if(!$movimentacao->is_inicial) {{ optional($eventoMovimentacao)->name ?: 'Não disponível' }} @else - @endif</td>
+                            <td>@if(!$movimentacao->is_inicial) {{ optional($torneioMovimentacao)->name ?: 'Não disponível' }} @else - @endif</td>
                             <td>@if($movimentacao->is_inicial) Sim @else Não @endif</td>
                             <td>{{$movimentacao->valor}}</td>
                         </tr>
@@ -97,10 +102,20 @@
             element   : 'rating-chart',
             resize    : true,
             data      : [
-                @php($ratingGrafico = 0)
+                @php
+                    $ratingGrafico = 0;
+                @endphp
                 @foreach($rating->getMovimentacoes() as $movimentacao)
-                    @php($ratingGrafico += $movimentacao->valor)
-                    { y: '{{($movimentacao->is_inicial) ? date("Y",strtotime($movimentacao->created_at))."-01-01" : $movimentacao->torneio->evento->data_fim}}', rating: {{$ratingGrafico}} },
+                    @php
+                        $ratingGrafico += $movimentacao->valor;
+                    @endphp
+                    @php
+                        $dataEvento = optional(optional($movimentacao->torneio)->evento)->data_fim;
+                        $dataMovimentacao = $movimentacao->is_inicial
+                            ? date('Y', strtotime($movimentacao->created_at)) . '-01-01'
+                            : ($dataEvento ?: date('Y-m-d', strtotime($movimentacao->created_at)));
+                    @endphp
+                    { y: @json($dataMovimentacao), rating: {{$ratingGrafico}} },
                 @endforeach
             ],
             xkey      : 'y',
