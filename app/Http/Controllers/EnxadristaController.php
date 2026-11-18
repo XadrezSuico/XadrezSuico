@@ -292,8 +292,8 @@ class EnxadristaController extends Controller
             return redirect("/");
         }
 
-        $enxadrista = Enxadrista::find($id);
-        $clubes = Clube::all();
+        $enxadrista = Enxadrista::findOrFail($id);
+        $clubes = Clube::with('cidade.estado.pais')->get();
         $sexos = Sexo::all();
 
         return view('enxadrista.edit', compact("enxadrista", "clubes", "sexos"));
